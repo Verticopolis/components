@@ -147,6 +147,23 @@ The unit tests mock the engine and read its catalog from the JSON fixtures in
 `src/simport/fixtures`, so they need no engine build. Every pull request and
 push to `main` packs the tarball as a workflow artifact.
 
+## Gallery
+
+The component gallery is one page with every reusable piece in each color
+scheme: the buttons, windows, wells and key-value rows, the menu bar, the
+icons and the room sprites. It loads the built package from `lib/` the way a
+consumer would, and paints the sprites with the engine's Modern catalog. The
+overview map is not on it, since it draws a running tower.
+
+```sh
+npm run build           # the gallery reads lib/
+npm run gallery         # a local server with the page
+npm run gallery:build   # writes dist-gallery/
+```
+
+The Gallery workflow builds it on every pull request that touches the source,
+and publishes it to GitHub Pages from `main`.
+
 ## Releasing
 
 A release PR raises `version` in `package.json` (and `package-lock.json`,
