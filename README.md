@@ -130,8 +130,9 @@ with `npm version <x.y.z> --no-git-tag-version`). When it merges, **Release
 components** (`.github/workflows/components-release.yml`) packs that commit,
 tags `v<version>` on it, publishes the GitHub release (named after the tag,
 and Latest unless it is a prerelease) with the tarball and its checksum, and
-then publishes that same tarball to npm. Both of those jobs wait on the
-`registry` environment, which only the owner approves. npm publishing uses
+then publishes that same tarball to npm. Only the npm publish waits on the
+`registry` environment, which only the owner approves, so a release takes
+one approval, as in the engine. npm publishing uses
 trusted publishing, so no npm token is stored anywhere and each version
 carries an npm provenance statement.
 
