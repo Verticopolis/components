@@ -22,7 +22,8 @@ permissions:
 # game's e2e, engine-host and WASM jobs stay in the game's repository.
 jobs:
   test:
-    name: Typecheck, lint and test
+    # The name stays "Typecheck and lint": the rulesets require that check.
+    name: Typecheck and lint
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

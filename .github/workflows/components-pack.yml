@@ -101,8 +101,10 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           set -eu
+          # No --clobber: a game pins this tarball by hash, so a re-run that
+          # finds it attached fails instead of replacing it.
           if ! gh release view "$TAG" > /dev/null 2>&1; then
             gh release create "$TAG" --verify-tag --title "Components ${TAG#components-v}" \
               --notes "The @verticopolis/components package for ${TAG#components-v}, with its SHA-256 checksum."
           fi
-          gh release upload "$TAG" dist/* --clobber
+          gh release upload "$TAG" dist/*

@@ -33,6 +33,10 @@ node -e '
 ' "$stage/package/package.json" "$version"
 
 name="verticopolis-components-$version.tgz"
-(cd "$stage" && tar -czf "$out/$name" package)
+# npm pack again, not tar, so the same tree gives the same bytes every time
+# (npm fixes the entries' times and owners). The staged package.json has no
+# scripts left, so no lifecycle script runs.
+(cd "$stage/package" && npm pack --silent --pack-destination "$out" > /dev/null)
+test -f "$out/$name"
 (cd "$out" && sha256sum "$name" > "$name.sha256")
 echo "$out/$name"
