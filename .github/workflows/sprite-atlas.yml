@@ -13,6 +13,9 @@ name: Sprite atlas
 # carries both files, a run is an audit: it checks the attached zip against
 # its checksum, re-bakes, and fails on any difference. A maintainer can run it
 # by hand for a tag whose bake failed.
+# Parked until the split's cut: the release that dispatches it, and the
+# scripts/export-atlas.ts inputs it bakes from, are still in the game's
+# repository. A hand run here does nothing useful yet.
 on:
   workflow_dispatch:
     inputs:
