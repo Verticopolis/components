@@ -41,6 +41,15 @@ labels:
   - name: review-deferral
     color: "ededed"
     description: A finding a code review deferred (filed with the Task form)
+  - name: chore
+    color: "ededed"
+    description: Cleanup or upkeep (filed with the Task form)
+  - name: build
+    color: "ededed"
+    description: Build or packaging work (filed with the Task form)
+  - name: design-decision
+    color: "ededed"
+    description: Needs a design call from the owner before work starts
   # --- mode ---
   - name: classic
     color: "5319e7"
@@ -90,6 +99,12 @@ labels:
   - name: tooling
     color: "c5def5"
     description: "CI, tests, lint and the package build"
+  - name: parity
+    color: "231367"
+    description: Diverges from the 1994 SimTower original
+  - name: transport
+    color: "c5def5"
+    description: "How elevators, stairs and escalators are drawn and operated"
   # --- contributor ---
   - name: good first issue
     color: "7057ff"
@@ -97,3 +112,26 @@ labels:
   - name: help wanted
     color: "008672"
     description: Maintainer would welcome help on this
+  # --- closing (GitHub's defaults) ---
+  - name: duplicate
+    color: "cfd3d7"
+    description: This issue or pull request already exists
+  - name: invalid
+    color: "e4e669"
+    description: This doesn't seem right
+  - name: wontfix
+    color: "ffffff"
+    description: This will not be worked on
+  - name: question
+    color: "d876e3"
+    description: Further information is requested
+  # --- Dependabot ---
+  - name: dependencies
+    color: "0366d6"
+    description: Pull requests that update a dependency file
+  - name: github_actions
+    color: "000000"
+    description: Pull requests that update GitHub Actions code
+  - name: javascript
+    color: "168700"
+    description: Pull requests that update javascript code
