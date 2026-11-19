@@ -41,8 +41,12 @@ The package is not on npm yet. Each folder is a subpath export:
 
 For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"`.
 
-Excalibur, Tone and lit-html are peer dependencies, and
-`@verticopolis/engine` is an optional peer. A host defines four build
+Excalibur, Tone, lit-html and `@verticopolis/engine` are peer
+dependencies. The components never import the engine's JavaScript: the host
+(`host/*`) loads the engine's WebAssembly at run time from the URL the game
+serves it at, and the binding (`binding/*`) is written against that engine's
+API. So a game installs `@verticopolis/engine` itself, serves its `web/`
+build, and keeps it in the version range this package names. A host defines four build
 constants (`__APP_VERSION__`, `__APP_SHA__`, `__TOOLING_ENGINE__`,
 `__ENGINE_PACKAGE__`), declared in `src/env.d.ts`; with Vite that is its
 `define` option.

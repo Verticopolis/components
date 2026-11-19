@@ -50,15 +50,10 @@
     "pack": "sh scripts/pack-components.sh"
   },
   "peerDependencies": {
-    "@verticopolis/engine": "*",
+    "@verticopolis/engine": "^1.57.1",
     "excalibur": "^1.0.0",
     "lit-html": "^3.3.3",
     "tone": "^15.1.22"
-  },
-  "peerDependenciesMeta": {
-    "@verticopolis/engine": {
-      "optional": true
-    }
   },
   "dependencies": {
     "fflate": "^0.8.3"
@@ -66,6 +61,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/node": "^26.6.6",
+    "@verticopolis/engine": "https://github.com/Verticopolis/engine/releases/download/engine-v1.57.1/verticopolis-engine-1.57.1.tgz",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "excalibur": "^1.0.0",
