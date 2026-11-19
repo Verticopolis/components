@@ -1,27 +1,24 @@
 name: Sprite atlas
 
 # Builds the sprite atlas archive (scripts/export-atlas.ts, issue #909) for a
-# version tag and attaches it, with a SHA-256 checksum, to that tag's GitHub
-# release, so any frontend on the open engine can fetch the art for the exact
-# commit it pins. Nothing generated is committed. The bake runs inside the
+# components release tag and attaches it, with a SHA-256 checksum, to that
+# tag's GitHub release, so any frontend can fetch the art for the exact
+# version it pins. Nothing generated is committed. The bake runs inside the
 # pinned Playwright image (the same Chromium the screenshot workflows use), so
 # the pixels and the checksum are reproducible.
 #
-# The release itself comes from github-release.yml, which publishes it first
-# and then dispatches this workflow, so the atlas never delays or blocks a
-# release. This workflow only adds assets. When the tag's release already
-# carries both files, a run is an audit: it checks the attached zip against
-# its checksum, re-bakes, and fails on any difference. A maintainer can run it
-# by hand for a tag whose bake failed.
-# Parked until the split's cut: the release that dispatches it, and the
-# scripts/export-atlas.ts inputs it bakes from, are still in the game's
-# repository. A hand run here does nothing useful yet.
+# Run it from the Actions tab with "Use workflow from" set to the release tag
+# (components-v<version>). Every job checks out that dispatched tag itself and
+# never another ref, so the code it runs is the code the run was started on,
+# and no cache this run could write is shared with main. When the tag's
+# release already carries both files, a run is an audit: it checks the
+# attached zip against its checksum, re-bakes, and fails on any difference.
+#
+# Parked: the package has no `atlas` script yet, and scripts/atlas-catalog.ts
+# still looks for the engine where the game's build puts it rather than in
+# node_modules/@verticopolis/engine. A run fails at the bake until both land.
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Existing version tag (v<version>) to attach or audit the atlas for"
-        required: true
 
 env:
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
@@ -30,70 +27,41 @@ permissions:
   contents: read
 
 concurrency:
-  group: sprite-atlas-${{ github.event.inputs.tag }}
+  group: sprite-atlas-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # Resolve the tag to its commit (checking out refs/tags/<tag> explicitly, so
-  # a branch of the same name can never stand in for it), check that it names
-  # the commit's own package.json version, and pick the Playwright image from
-  # that commit's lockfile. A wrong tag fails here, before any container pull
-  # or install.
+  # Check the run was dispatched from a components release tag, and pick the
+  # Playwright image from that tag's lockfile. A branch or a wrong tag fails
+  # here, before any container pull or install.
   resolve:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       image: ${{ steps.pin.outputs.image }}
-      sha: ${{ steps.pin.outputs.sha }}
-      tag: ${{ steps.pin.outputs.tag }}
     steps:
+      - name: Check the run is on a release tag
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" != "tag" ]; then echo "::error::Run this from a release tag (components-v<version>), not a branch."; exit 1; fi
+          # Build metadata (+) or a pre-release suffix would change the
+          # archive's name; only plain x.y.z releases get an atlas.
+          if ! printf '%s' "$TAG" | grep -Eq '^components-v[0-9]+\.[0-9]+\.[0-9]+$'; then echo "::error::Tag $TAG is not a plain components-v<x.y.z> release tag."; exit 1; fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ format('refs/tags/{0}', github.event.inputs.tag) }}
           persist-credentials: false
       - id: pin
-        env:
-          TAG: ${{ github.event.inputs.tag }}
         run: |
-          sha="$(git rev-parse HEAD)"
-          tagged="$(git rev-parse --verify --quiet "refs/tags/$TAG^{commit}" || true)"
-          if [ "$sha" != "$tagged" ]; then echo "HEAD $sha is not tag $TAG ($tagged)."; exit 1; fi
-          version="$(node -p "require('./package.json').version")"
-          if [ "$TAG" != "v$version" ]; then echo "Tag $TAG does not match package.json version $version (expected v$version)."; exit 1; fi
-          # Build metadata (+) or a pre-release suffix would change the
-          # archive's name; the release workflow only publishes plain x.y.z.
-          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then echo "Tag $TAG is not a plain x.y.z version."; exit 1; fi
           ver=$(node -e "const l=require('./package-lock.json');const p=l.packages&&l.packages['node_modules/playwright'];process.stdout.write((p&&p.version)||require('./package.json').devDependencies.playwright.replace(/[^0-9.]/g,''))")
           echo "image=mcr.microsoft.com/playwright:v${ver}-jammy" >> "$GITHUB_OUTPUT"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-  # The bake draws with the engine's own catalog, read from the engine WASM
-  # package (scripts/atlas-catalog.ts). The pinned Playwright image has no Rust
-  # toolchain, so the package is built (or restored from cache) here and the
-  # build job downloads it.
-  engine-wasm:
-    needs: resolve
-    runs-on: ubuntu-latest
-    # A cache miss compiles the crate (a few minutes); anything near this is a hang.
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ needs.resolve.outputs.sha }}
-          persist-credentials: false
-
-      - name: Use Node.js (from .nvmrc)
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: ".nvmrc"
-
-      - uses: ./.github/actions/engine-wasm
-        with:
-          artifact-name: atlas-engine-wasm
-
+  # The bake draws with the engine's own catalog, from the @verticopolis/engine
+  # package npm ci installs (scripts/atlas-catalog.ts), so nothing is compiled.
   build:
-    needs: [resolve, engine-wasm]
+    needs: resolve
     runs-on: ubuntu-latest
     # A full bake takes about eight minutes; anything near this is a hang.
     timeout-minutes: 45
@@ -102,7 +70,6 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.resolve.outputs.sha }}
           persist-credentials: false
 
       # The image ships an older Node; install the repo's pinned one over it.
@@ -119,17 +86,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - uses: ./.github/actions/engine-wasm-download
-        with:
-          artifact-name: atlas-engine-wasm
-
-      # The export launches Playwright's own Chromium from the image (the
-      # binary the e2e comparison uses), checks the atlas against the game's
-      # paint for the sample signatures, bakes, checks the packed pages, and
-      # writes the archive named after the tag.
+      # The export launches Playwright's own Chromium from the image, checks
+      # the atlas against the game's paint for the sample signatures, bakes,
+      # checks the packed pages, and writes the archive named after the tag.
       - name: Bake the atlas in the pinned Chromium
         env:
-          TAG: ${{ needs.resolve.outputs.tag }}
+          TAG: ${{ github.ref_name }}
         run: npm run atlas -- --out dist-atlas --label "$TAG"
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -139,7 +101,7 @@ jobs:
           if-no-files-found: error
 
   attach:
-    needs: [resolve, build]
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -158,7 +120,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          TAG: ${{ needs.resolve.outputs.tag }}
+          TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           zip="dist-atlas/verticopolis-atlas-${TAG}.zip"
@@ -169,7 +131,7 @@ jobs:
           list="$(gh api "repos/$GH_REPO/releases" --paginate --jq '.[] | select(.tag_name == env.TAG and .draft == false) | .id')"
           count="$(printf '%s\n' "$list" | grep -c . || true)"
           if [ "$count" -eq 0 ]; then
-            echo "::error::Tag $TAG has no published release. Run the GitHub release workflow for it first; it dispatches this one when it finishes."
+            echo "::error::Tag $TAG has no published release. Run the Release components workflow for it first."
             exit 1
           fi
           if [ "$count" -gt 1 ]; then
