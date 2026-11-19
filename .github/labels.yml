@@ -1,0 +1,99 @@
+# The labels of Verticopolis/components, applied by the Sync labels workflow
+# (.github/workflows/labels.yml, which calls the shared one in
+# Verticopolis/.github) on a push to main that changes this file, daily, and
+# by hand. It creates or updates these and never deletes a label. Keep each
+# entry's shape: `name`, then a quoted six-digit `color`, then `description`.
+# Colors are quoted so a YAML reader cannot turn a value like 5319e7 into a
+# number.
+#
+# Axes:
+#   type        - what kind of thing the issue is
+#   mode        - which game mode it touches, when a window or sprite differs by mode
+#   priority    - the do-first order (P1 work next, P2 when you next touch the
+#                 area, P3 low or gated)
+#   state       - where it is in triage
+#   area        - which part of the package it touches (an issue may carry more than one)
+#   contributor - signals aimed at people looking for something to work on
+
+labels:
+  # --- type ---
+  - name: bug
+    color: "d73a4a"
+    description: Something isn't working
+  - name: enhancement
+    color: "a2eeef"
+    description: New component, export or feature
+  - name: security
+    color: "b60205"
+    description: Security-relevant; triaged from a private report
+  - name: documentation
+    color: "0075ca"
+    description: README or doc comment fixes
+  - name: task
+    color: "ededed"
+    description: Internal work with no player-facing report (the Task issue form)
+  - name: perf
+    color: "ededed"
+    description: A speedup or a cost to cut (filed with the Task form)
+  - name: tests
+    color: "ededed"
+    description: Test-only work (filed with the Task form)
+  - name: review-deferral
+    color: "ededed"
+    description: A finding a code review deferred (filed with the Task form)
+  # --- mode ---
+  - name: classic
+    color: "5319e7"
+    description: Affects Classic (1994-faithful) towers
+  - name: modern
+    color: "1d76db"
+    description: Affects Modern (opt-in "what the original couldn't do") towers
+  # --- priority ---
+  - name: P1
+    color: "e60000"
+    description: "Priority 1: work next"
+  - name: P2
+    color: "ff8c00"
+    description: "Priority 2: do when you next touch the area"
+  - name: P3
+    color: "b8e600"
+    description: "Priority 3: low, gated, watch-only or awaiting a spec"
+  # --- state ---
+  - name: needs-triage
+    color: "fbca04"
+    description: Not yet reviewed by a maintainer
+  - name: needs-repro
+    color: "d4c5f9"
+    description: Awaiting a reproduction
+  - name: needs-form
+    color: "e4e669"
+    description: The body does not follow its issue form (set by issue-form.yml)
+  - name: HOLD
+    color: "ededed"
+    description: Do not work on or merge until the owner lifts the hold
+  # --- area ---
+  - name: render
+    color: "c5def5"
+    description: "Sprites, art, canvas drawing and visual effects"
+  - name: ui
+    color: "c5def5"
+    description: "Windows, menus, dialogs, panels, input and toasts"
+  - name: accessibility
+    color: "c5def5"
+    description: "Screen readers, keyboard navigation and other barriers"
+  - name: audio
+    color: "c5def5"
+    description: "Sound effects, music and the audio engine"
+  - name: wasm
+    color: "c5def5"
+    description: "The engine binding, the host loader and the worker"
+  - name: tooling
+    color: "c5def5"
+    description: "CI, tests, lint and the package build"
+  # --- contributor ---
+  - name: good first issue
+    color: "7057ff"
+    description: Good entry point for newcomers
+  - name: help wanted
+    color: "008672"
+    description: Maintainer would welcome help on this

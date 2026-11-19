@@ -1,0 +1,31 @@
+name: 📚 Documentation issue
+description: The README or a doc comment in @verticopolis/components is wrong, unclear, or missing.
+labels: ["documentation", "needs-triage"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Where is it?
+      description: File and section, or the export it is about.
+      placeholder: README.md → Use it
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong or missing?
+      description: Quote the current text if it's an error, or describe what's absent.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix
+      description: What should it say instead? A PR is welcome too.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
