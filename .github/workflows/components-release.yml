@@ -10,10 +10,15 @@ name: Release components
 #
 # The check job reads package.json and the existing tags and releases, with
 # no credential and no approval, so a push that leaves the version alone ends
-# there. The two jobs after it wait on the `registry` environment, which only
-# the owner can approve, so no tag, release or npm version appears without
-# that approval. The `registry` environment must exist on this repository
-# with that rule: GitHub creates a missing one with no protection. npm
+# there. The release job tags and publishes the GitHub release without an
+# approval, as the engine's Release tags workflow does: the version raise
+# already came through a reviewed release PR. Only the npm job waits on the
+# `registry` environment, which only the owner can approve, so a release
+# takes one approval and no npm version appears without it. The `registry`
+# environment must exist on this repository with that rule: GitHub creates a
+# missing one with no protection. The npm job installs nothing and runs no
+# code from the repository, so the OIDC token it may request never reaches a
+# dependency's install script. npm
 # publishes through trusted publishing: npm trusts this repository, this
 # workflow file and that environment, and exchanges GitHub's OIDC token for a
 # short-lived publish token, so no npm token is stored anywhere, and npm
@@ -90,7 +95,6 @@ jobs:
     if: needs.check.outputs.version != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: registry
     permissions:
       contents: write
     steps:
