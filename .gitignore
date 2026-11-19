@@ -4,3 +4,5 @@ coverage/
 *.tgz
 lib/
 dist-gallery/
+test-results/
+playwright-report/

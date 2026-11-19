@@ -1,0 +1,109 @@
+name: Update screenshots
+
+# Regenerates the gallery screenshot baselines (e2e/__screenshots__) inside
+# the pinned Playwright image, the same renderer the Screenshots check runs
+# in, so a baseline minted on another browser never sets the truth. Trigger
+# it by pushing a branch whose head commit message contains
+# [update-screenshots], or from the Actions tab; the refreshed images come
+# back as a bot commit on the same branch. Review that commit's image diff
+# like code: it blesses a new look.
+#
+# The bot pushes with GITHUB_TOKEN, which starts no workflows, so push (or
+# rebase) once more after pulling its commit to get the checks on the final
+# head.
+
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: update-screenshots-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+jobs:
+  resolve-image:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[update-screenshots]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image: ${{ steps.pin.outputs.image }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: pin
+        run: |
+          ver=$(node -e "process.stdout.write(require('./package-lock.json').packages['node_modules/playwright'].version)")
+          echo "image=mcr.microsoft.com/playwright:v${ver}-jammy" >> "$GITHUB_OUTPUT"
+
+  update:
+    needs: resolve-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Earns write: it pushes the refreshed baselines. Only the push step sees
+    # the token; the steps that run branch code (npm ci, the build, the specs)
+    # run with no token on disk.
+    permissions:
+      contents: write
+    container:
+      image: ${{ needs.resolve-image.outputs.image }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      # A container checkout trips git's dubious-ownership guard.
+      - name: Trust the workspace
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Regenerate the baselines
+        run: npx playwright test --update-snapshots
+
+      - name: Commit the refreshed baselines
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e/__screenshots__
+          if git diff --cached --quiet; then
+            echo "The baselines already match this image; nothing to commit."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "Update gallery screenshots from CI"
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # The only step that receives the write token. Every credentialed git
+      # call runs in a fresh throwaway repository with global and system git
+      # config off, since the branch code above could have planted git state
+      # (an insteadOf rewrite, a hook) in the workspace or HOME. The one
+      # command that reads the workspace (the local fetch) runs without the
+      # token in its environment.
+      - name: Push the refreshed baselines
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+          remote="https://x-access-token:${GITHUB_TOKEN}@${GITHUB_SERVER_URL#https://}/${GITHUB_REPOSITORY}.git"
+          pushdir="$(mktemp -d)"
+          git init -q "$pushdir"
+          env -u GITHUB_TOKEN git -C "$pushdir" -c safe.directory='*' fetch -q "$GITHUB_WORKSPACE" HEAD
+          git -C "$pushdir" checkout -q FETCH_HEAD
+          git -C "$pushdir" push "$remote" "HEAD:refs/heads/${GITHUB_REF_NAME}"
