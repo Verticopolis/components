@@ -50,9 +50,16 @@
   width: 24px;
   height: 24px;
 }
-.g-menubar {
-  position: relative;
-  min-height: 160px;
+.g-well {
+  padding: 4px 6px;
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+.g-field {
+  display: block;
+  width: 100%;
+  padding: 2px 4px;
+  margin: 0 0 8px;
 }
 .g-sprites {
   display: grid;

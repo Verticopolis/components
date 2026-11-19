@@ -103,7 +103,12 @@ const WELLS = `
   <div class="win g-win">
     <div class="win-title">Tower Info</div>
     <div class="g-pad">
-      <div class="field">A sunken well</div>
+      <div class="well g-well">
+        <div>8:00 AM: the lobby opened.</div>
+        <div>9:15 AM: an office tenant moved in.</div>
+        <div>11:40 AM: a fast food shop opened.</div>
+      </div>
+      <input class="field g-field" type="text" value="A text field" aria-label="Sample text field" />
       <dl class="kv">
         <dt class="k">Population</dt><dd class="v">1,204</dd>
         <dt class="k">Funds</dt><dd class="v">$2,450,000</dd>
@@ -114,8 +119,7 @@ const WELLS = `
 </div>`;
 
 const MENU = `
-<div class="g-menubar">
-  <nav class="menubar" aria-label="Sample menu">
+<nav class="menubar" aria-label="Sample menu">
     <div class="mb-menu">
       <button type="button" class="mb-title" id="g-file" aria-haspopup="menu" aria-expanded="false" aria-controls="g-file-menu"><u>F</u>ile</button>
       <div class="mb-pop" id="g-file-menu" role="menu" aria-labelledby="g-file" hidden>
@@ -139,8 +143,7 @@ const MENU = `
         <button type="button" role="menuitem" class="mb-item">About…</button>
       </div>
     </div>
-  </nav>
-</div>`;
+</nav>`;
 
 function icons(): HTMLElement {
   const grid = document.createElement("div");
@@ -223,18 +226,22 @@ async function start(): Promise<void> {
   const spritesHolder = document.createElement("div");
   spritesHolder.textContent = "Loading the engine's catalog…";
   const menu = fromMarkup(MENU);
+  const menuNote = document.createElement("p");
+  menuNote.textContent = "The bar at the top of this page: open File or Options to see the menus, with the keyboard too (Alt and the underlined letter).";
   body.append(
     lede,
     schemeSwitcher(),
     section("Buttons", fromMarkup(BUTTONS)),
     section("Windows", fromMarkup(WINDOWS)),
-    section("Wells and key-value rows", fromMarkup(WELLS)),
-    section("Menu bar", menu),
+    section("Wells, fields and key-value rows", fromMarkup(WELLS)),
+    section("Menu bar", menuNote),
     section("Icons", icons()),
     section("Room sprites", spritesHolder),
   );
-  app.replaceChildren(win);
-  new MenuBar(menu.querySelector<HTMLElement>(".menubar")!);
+  // The menu bar sits above the page window, outside any window body, the
+  // way the game places it, so no page rule restyles its items.
+  app.replaceChildren(menu, win);
+  new MenuBar(menu);
 
   try {
     await initEngine();
