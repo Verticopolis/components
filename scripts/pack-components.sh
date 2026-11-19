@@ -4,8 +4,9 @@
 #
 #   scripts/pack-components.sh VERSION [OUT]
 #
-# VERSION is written into the packed package.json only; the committed one
-# keeps 0.0.0. The tarball holds lib/, the compiled JavaScript and types
+# VERSION is written into the packed package.json only, so a pull request's
+# or main's test build never touches the committed version, which only a
+# release PR raises. The tarball holds lib/, the compiled JavaScript and types
 # that npm pack's prepack script builds (scripts/build-lib.sh), and leaves
 # out the TypeScript sources and tests. Run from the repository root.
 set -eu

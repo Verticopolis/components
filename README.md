@@ -26,10 +26,10 @@ npm install @verticopolis/components @verticopolis/engine excalibur tone lit-htm
 The engine, Excalibur, Tone.js and lit-html are peer dependencies, so the
 game installs its own copy of each beside the components.
 
-Each `components-v<version>` release on GitHub carries the same tarball npm
-serves, with its SHA-256 checksum, so a download can be checked against the
-release. Versions published from the release workflow also carry npm
-provenance.
+Each release on GitHub (tagged `v<version>`, or `components-v<version>` up
+to 0.2.1) carries the same tarball npm serves, with its SHA-256 checksum,
+so a download can be checked against the release. Versions published from
+the release workflow also carry npm provenance.
 
 The package ships compiled JavaScript (ES modules, one file per source
 module, with `.d.ts` types and source maps). The types are written for a
@@ -88,15 +88,19 @@ push to `main` packs the tarball as a workflow artifact.
 
 ## Releasing
 
-Run **Release components** (`.github/workflows/components-release.yml`)
-from the Actions tab on `main` with the version. It packs `main`, tags
-`components-v<version>` on that commit, publishes the GitHub release with
-the tarball and its checksum, and then publishes that same tarball to npm.
-The npm job waits on the `registry` environment, which only the owner
-approves, and uses trusted publishing, so no npm token is stored anywhere and
-each version carries an npm provenance statement. A tag, release or npm
-version that already exists is left alone, so a re-run finishes what a
-failed run started.
+A release PR raises `version` in `package.json` (and `package-lock.json`,
+with `npm version <x.y.z> --no-git-tag-version`). When it merges, **Release
+components** (`.github/workflows/components-release.yml`) packs that commit,
+tags `v<version>` on it, publishes the GitHub release (named after the tag,
+and Latest unless it is a prerelease) with the tarball and its checksum, and
+then publishes that same tarball to npm. Both of those jobs wait on the
+`registry` environment, which only the owner approves. npm publishing uses
+trusted publishing, so no npm token is stored anywhere and each version
+carries an npm provenance statement.
+
+A push that leaves the version alone releases nothing. A tag, release or npm
+version that already exists is left alone, so running the workflow again
+from the Actions tab on `main` finishes what a failed run started.
 
 ## Contributing
 

@@ -37,11 +37,13 @@ Closes #
 ## Versioning
 
 <!--
-Do not edit a version. Declare the package's version tier (major / minor /
-patch / none) in a change note; the release raises the version.
+Only a release PR edits `version` in package.json (with
+`npm version <x.y.z> --no-git-tag-version`); merging it releases that
+version. Say in "What & why" whether this PR calls for a major, minor or
+patch release, or none.
 -->
 
-- [ ] Declared the package tier in a change note, **or** this PR changes nothing the package ships
+- [ ] Left `version` alone, **or** this is a release PR
 - [ ] Updated the README where it went stale, **or** read it and it did not
 
 ## Complexity
