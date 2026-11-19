@@ -30,7 +30,8 @@ Each `components-v<version>` release carries the tarball with its SHA-256
 checksum, and the bytes on npm are the bytes attached there.
 
 The package ships compiled JavaScript (ES modules, one file per source
-module, with `.d.ts` types and source maps). Only the CSS files count as side
+module, with `.d.ts` types and source maps). The types are written for a
+bundler (`"moduleResolution": "bundler"` in a game's tsconfig). Only the CSS files count as side
 effects, so a bundler drops every module a game does not import.
 
 The version stays below 1.0 while every module is reachable as a subpath:
@@ -50,12 +51,16 @@ waits for a curated public surface. Each folder is a subpath export:
 | `@verticopolis/components/audio/*` | `src/audio/` | The procedural music and ambience on Tone.js |
 | `@verticopolis/components/windows/*` | `src/ui/` | The Win95 windows, menus and message boxes |
 | `@verticopolis/components/styles.css` | `src/styles.css` | The styles the windows use |
+| `@verticopolis/components/styles/*` | `src/styles/` | The stylesheets `styles.css` imports, one by one |
+| `@verticopolis/components/fixtures/*` | `src/simport/fixtures/` | The engine-written JSON fixtures (catalogs, the view layout) for a game's unit tests |
 
 For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"`.
 
 Excalibur, Tone, lit-html and `@verticopolis/engine` are required peer
-dependencies. Installing the components without the engine only warns, and
-fails at run time when the host loads the engine's WebAssembly. The components never import the engine's JavaScript: the host
+dependencies. npm 7 and later install them with the components; with
+`--legacy-peer-deps` or a package manager that skips peers, a game without
+the engine builds, and fails at run time when the host loads the engine's
+WebAssembly. The components never import the engine's JavaScript: the host
 (`host/*`) loads the engine's WebAssembly at run time from the URL the game
 serves it at, and the binding (`binding/*`) is written against that engine's
 API. So a game installs `@verticopolis/engine` itself, serves its `web/`

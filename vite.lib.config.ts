@@ -26,19 +26,17 @@ function sources(dir: string): string[] {
 
 /**
  * Keeps `import.meta.env` for the game's bundler. Vite's library mode bakes
- * it in (`import.meta.env.DEV` becomes `false`), which would turn the game's
- * own dev checks off for good, so the sources' uses are swapped for a stand-in
- * before Vite reads them and swapped back in the written modules.
+ * it in (`import.meta.env.DEV` becomes `false`, `BASE_URL` becomes `"/"`),
+ * which would fix the game's dev checks and its base path for good, so each
+ * use is swapped for a stand-in as a module is compiled (see
+ * {@link transpileKeepingComments}, after TypeScript has dropped any `as`
+ * cast between `import.meta` and `.env`) and swapped back in the written
+ * modules.
  */
 const ENV_STAND_IN = "__VC_IMPORTENV_"; // as long as `import.meta.env`, so columns and source maps hold
 function keepImportMetaEnv(): Plugin {
   return {
     name: "keep-import-meta-env",
-    enforce: "pre",
-    transform(code, id) {
-      if (!id.endsWith(".ts") || !code.includes("import.meta.env")) return null;
-      return { code: code.replaceAll("import.meta.env", ENV_STAND_IN), map: null };
-    },
     renderChunk(code) {
       return code.includes(ENV_STAND_IN) ? { code: code.replaceAll(ENV_STAND_IN, "import.meta.env"), map: null } : null;
     },
@@ -77,7 +75,8 @@ function transpileKeepingComments(): Plugin {
     transform(code, id) {
       if (!id.endsWith(".ts")) return null;
       const out = ts.transpileModule(code, { fileName: id, compilerOptions });
-      return { code: out.outputText.replace(/\n\/\/# sourceMappingURL=.*$/, ""), map: out.sourceMapText ?? null };
+      const js = out.outputText.replace(/\n\/\/# sourceMappingURL=.*$/, "").replaceAll("import.meta.env", ENV_STAND_IN);
+      return { code: js, map: out.sourceMapText ?? null };
     },
   };
 }

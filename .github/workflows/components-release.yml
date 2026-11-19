@@ -5,8 +5,11 @@ name: Release components
 # components-v<version> on that commit, publishes the GitHub release with the
 # tarball and its checksum, and then publishes that same tarball to npm.
 #
-# The npm job waits on the `registry` environment, which only the owner can
-# approve, so nothing reaches npm without that approval. It publishes through
+# Both jobs wait on the `registry` environment, which only the owner can
+# approve, so no tag, release or npm version appears without that approval.
+# The `registry` environment must exist on this repository with that rule
+# before the first run: GitHub creates a missing one with no protection. npm
+# publishes through
 # trusted publishing: npm trusts this repository, this workflow file and that
 # environment, and exchanges GitHub's OIDC token for a short-lived publish
 # token, so no npm token is stored anywhere, and npm records a provenance
@@ -36,6 +39,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment: registry
     permissions:
       contents: write
     steps:
@@ -83,8 +87,18 @@ jobs:
             gh release delete "$tag" --yes
           fi
           if gh api "repos/$GH_REPO/git/ref/tags/$tag" > /dev/null 2>&1; then
+            # The tarball in dist/ is packed from this run's commit, so a tag
+            # on any other commit would get bytes it never held. Peel an
+            # annotated tag to its commit before comparing.
             target="$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq .object.sha)"
-            echo "$tag exists; releasing it as tagged."
+            if [ "$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq .object.type)" = "tag" ]; then
+              target="$(gh api "repos/$GH_REPO/git/tags/$target" --jq .object.sha)"
+            fi
+            if [ "$target" != "$GITHUB_SHA" ]; then
+              echo "::error::$tag is on $target, not on this run's commit $GITHUB_SHA. A release packs main, so release a new version, or delete the tag if it is wrong."
+              exit 1
+            fi
+            echo "$tag exists on this commit; releasing it."
           else
             gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
             target="$GITHUB_SHA"
