@@ -5,7 +5,6 @@
    stay in src/styles/game/menubar.css. Colors come from retro-tokens.css. */
 @import "./retro-tokens.css";
 
-
 .menubar {
   display: flex;
   align-items: center;

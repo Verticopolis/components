@@ -1,8 +1,9 @@
 /* The window frame (.win) and its navy title bar (.win-title), with the
-   docked, closable, movable and mini variants. A page may import this file on
-   its own: it imports what it needs (the tokens, and the button for the title
-   bar's close box). A bundler inlines each file once, so importing several
-   pieces, or retro-components.css, adds nothing twice. */
+   docked, closable, movable and mini variants. It imports what it needs (the
+   tokens, and the button for the title bar's close box), so a page can name it
+   on its own. Import the pieces from one stylesheet: there a bundler inlines
+   each file once, while separate JS imports each carry their own copy (see the
+   README's Styles section). */
 @import "./retro-tokens.css";
 @import "./button.css";
 

@@ -1,6 +1,7 @@
-/* The two-column key/value grid (.kv). A page may import this file on its own:
-   it imports what it needs (the tokens). A bundler inlines each file once, so
-   importing several pieces, or retro-components.css, adds nothing twice. */
+/* The two-column key/value grid (.kv). It imports what it needs (the tokens),
+   so a page can name it on its own. Import the pieces from one stylesheet:
+   there a bundler inlines each file once, while separate JS imports each carry
+   their own copy (see the README's Styles section). */
 @import "./retro-tokens.css";
 
 /* .kv — two-column key/value grid (editor stats, tower stats, statistics

@@ -89,20 +89,28 @@ order:
 import "@verticopolis/components/styles.css";
 ```
 
-A page that wants only some pieces imports one file per piece. Each piece
-imports what it needs itself (the tokens, and a window's title-bar button),
-so one import is enough, and a bundler inlines each file once, so importing
-several pieces adds nothing twice:
+A page that wants only some pieces imports them from one stylesheet of its
+own. Each piece imports what it needs (the tokens, and a window's title-bar
+button), so naming a piece is enough, and inside one stylesheet a bundler
+inlines each file once, in the order of its first `@import`:
 
-```js
-import "@verticopolis/components/styles/button.css";         // .btn and its looks
-import "@verticopolis/components/styles/window.css";         // .win, .win-title (with the button)
-import "@verticopolis/components/styles/well.css";           // .well, .field
-import "@verticopolis/components/styles/kv.css";             // .kv
-import "@verticopolis/components/styles/menu-bar.css";       // the Win95 menu bar
-import "@verticopolis/components/styles/overview-map.css";   // the overview map (with the window)
-import "@verticopolis/components/styles/overview-map-views.css"; // its View row (with the map)
+```css
+/* page.css: import this file once, from JS or a <link> */
+@import "@verticopolis/components/styles/button.css";       /* .btn and its looks */
+@import "@verticopolis/components/styles/window.css";       /* .win, .win-title (with the button) */
+@import "@verticopolis/components/styles/well.css";         /* .well, .field */
+@import "@verticopolis/components/styles/kv.css";           /* .kv */
+@import "@verticopolis/components/styles/menu-bar.css";     /* the Win95 menu bar */
+@import "@verticopolis/components/styles/overview-map.css"; /* the overview map (with the window) */
+@import "@verticopolis/components/styles/overview-map-views.css"; /* its View row (with the map) */
 ```
+
+Import the pieces from one CSS file rather than one JS `import` each: every
+JS import is its own stylesheet, so each one carries its own copy of the
+tokens. A minified build drops the repeats but keeps the last copy, which
+changes the cascade order, so a token a page overrides between two imports
+is reset by the later copy. No module imports its own CSS, because Node
+cannot load a module that does.
 
 - `styles/retro-tokens.css` holds the colors, bevels and fonts every piece is
   skinned from. Every piece imports it, so a page imports it on its own only

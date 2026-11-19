@@ -1,7 +1,8 @@
 /* The button (.btn), with its primary, danger and disabled looks and the
-   title-bar size. A page may import this file on its own: it imports what it
-   needs (the tokens). A bundler inlines each file once, so importing several
-   pieces, or retro-components.css, adds nothing twice. */
+   title-bar size. It imports what it needs (the tokens), so a page can name it
+   on its own. Import the pieces from one stylesheet: there a bundler inlines
+   each file once, while separate JS imports each carry their own copy (see the
+   README's Styles section). */
 @import "./retro-tokens.css";
 
 /* .btn — THE button. Gray face, bevel out; press = bevel in. No hover
@@ -23,7 +24,7 @@
 }
 /* A .btn on an <a> (the Help "Report an issue" link, the app's only outbound
    link): anchors are inline, so normalize them to a button box — drop the link
-   underline and use inline-flex so the coarse-pointer min-height (below) lands. */
+   underline and use inline-flex so a page's coarse-pointer min-height lands. */
 a.btn {
   display: inline-flex;
   align-items: center;
