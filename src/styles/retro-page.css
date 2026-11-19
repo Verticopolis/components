@@ -118,7 +118,9 @@ body.retro-page {
 .help-section:target h2 {
   color: var(--accent);
 }
-.win-body kbd {
+.win-body kbd:not(.menubar kbd) {
+  /* Key names in page prose get keycaps; a menu bar's shortcuts keep the
+     menu's own plain look (menu-bar.css), wherever the bar sits. */
   display: inline-block;
   min-width: 1.1em;
   padding: 0 5px;
