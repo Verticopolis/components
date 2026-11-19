@@ -1,0 +1,19 @@
+/* The sunken data area (.well) and the text field (.field). A page may import
+   this file on its own: it imports what it needs (the tokens). A bundler
+   inlines each file once, so importing several pieces, or retro-
+   components.css, adds nothing twice. */
+@import "./retro-tokens.css";
+
+/* .well — sunken white data area (the File Manager idiom): lists,
+   textareas, logs, gauges live on wells. .field is a well you type into. */
+.well,
+.field {
+  background: var(--r-hi);
+  color: var(--r-ink);
+  border: 0;
+  border-radius: 0;
+  box-shadow: var(--bevel-in);
+}
+.field {
+  font: inherit;
+}

@@ -26,6 +26,14 @@ npm install @verticopolis/components @verticopolis/engine excalibur tone lit-htm
 The engine, Excalibur, Tone.js and lit-html are peer dependencies, so the
 game installs its own copy of each beside the components.
 
+The one direct dependency is fflate, which the sprite atlas bake
+(`render/atlas/archive`, `render/atlas/png`) uses to write PNG and zip files.
+No module a game draws with imports it, so a game that uses fflate itself
+(the web game reads and writes saves with it) installs one copy for both. The
+engine's WebAssembly does not use this copy: it carries its own Rust port of
+fflate's level-1 deflate, so the engine writes `.vctower` bytes identical to
+the web game's.
+
 Each release on GitHub (tagged `v<version>`, or `components-v<version>` up
 to 0.2.1) carries the same tarball npm serves, with its SHA-256 checksum,
 so a download can be checked against the release. Versions published from
@@ -81,18 +89,26 @@ order:
 import "@verticopolis/components/styles.css";
 ```
 
-A page that wants only some pieces imports the parts itself, in this order,
-because each one is skinned from the tokens and later files restyle earlier
-ones:
+A page that wants only some pieces imports one file per piece. Each piece
+imports what it needs itself (the tokens, and a window's title-bar button),
+so one import is enough, and a bundler inlines each file once, so importing
+several pieces adds nothing twice:
 
 ```js
-import "@verticopolis/components/styles/retro-tokens.css";       // 1. colors, bevels, fonts
-import "@verticopolis/components/styles/retro-components.css";   // 2. .btn, .win, .well, .kv
-import "@verticopolis/components/styles/overview-map.css";       // 3. then the pieces you use
-import "@verticopolis/components/styles/overview-map-views.css"; //    after overview-map.css
-import "@verticopolis/components/styles/menu-bar.css";
+import "@verticopolis/components/styles/button.css";         // .btn and its looks
+import "@verticopolis/components/styles/window.css";         // .win, .win-title (with the button)
+import "@verticopolis/components/styles/well.css";           // .well, .field
+import "@verticopolis/components/styles/kv.css";             // .kv
+import "@verticopolis/components/styles/menu-bar.css";       // the Win95 menu bar
+import "@verticopolis/components/styles/overview-map.css";   // the overview map (with the window)
+import "@verticopolis/components/styles/overview-map-views.css"; // its View row (with the map)
 ```
 
+- `styles/retro-tokens.css` holds the colors, bevels and fonts every piece is
+  skinned from. Every piece imports it, so a page imports it on its own only
+  to read the custom properties.
+- `styles/retro-components.css` is the button, window, well and key/value grid
+  together, in that order.
 - `styles/retro-page.css` is for a standalone page (the sprite gallery, the
   404 page): it imports the tokens and components itself and adds a full-page
   layout and a dark-ground override. `styles.css` does not include it.
