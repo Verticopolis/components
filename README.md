@@ -64,9 +64,9 @@ The components came out of the game's repository, and its rules came with
 them: American English, no em-dashes in prose, a 500-line ceiling per source
 file, and unit tests that stand in for the engine with spies.
 
-This repository is now where these components live. Pull requests open here once the
-game builds from this repository's packages, which takes a few days. Until
-then changes to these folders are paused everywhere, in Verticopolis/web too.
+These components live here now. Pull requests open here once the game
+builds from this repository's packages, which takes a few days. Until then,
+changes to these folders are on hold everywhere, Verticopolis/web included.
 Issues are welcome here now.
 
 ## History
