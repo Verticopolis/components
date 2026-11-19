@@ -4,7 +4,7 @@ import prettier from "eslint-config-prettier";
 
 export default [
   {
-    ignores: ["node_modules", "dist", "coverage", "scripts", "**/*.config.js", "src/public", "src/engineBinding/engine.d.ts"],
+    ignores: ["node_modules", "dist", "lib", "vite.lib.config.ts", "coverage", "scripts", "**/*.config.js", "src/public", "src/engineBinding/engine.d.ts"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
