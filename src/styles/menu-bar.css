@@ -3,6 +3,7 @@
    (help-site/src/components/MenuBar.astro), so both draw the same bar. The
    game's own additions (the phone's logo, the status bar and the windows)
    stay in src/styles/game/menubar.css. Colors come from retro-tokens.css. */
+@import "./retro-tokens.css";
 
 .menubar {
   display: flex;

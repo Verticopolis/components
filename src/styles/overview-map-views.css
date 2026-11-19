@@ -3,6 +3,8 @@
    the row, on a desktop and on a phone alike. On a phone and on any touch
    screen the select is 28 px tall, past the 24 px minimum target of WCAG
    2.5.8, so the row stays slim and the map keeps its size. */
+@import "./overview-map.css";
+
 .overview-map-views {
   display: flex;
   align-items: center;

@@ -1,0 +1,20 @@
+/* The two-column key/value grid (.kv). It imports what it needs (the tokens),
+   so a page can name it on its own. Import the pieces from one stylesheet:
+   there a bundler inlines each file once, while separate JS imports each carry
+   their own copy (see the README's Styles section). */
+@import "./retro-tokens.css";
+
+/* .kv — two-column key/value grid (editor stats, tower stats, statistics
+   dialog columns). */
+.kv {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-content: start;
+}
+.kv .k {
+  color: var(--muted);
+}
+.kv .v {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
