@@ -23,11 +23,13 @@ the engine's WebAssembly package at run time.
 npm install @verticopolis/components @verticopolis/engine excalibur tone lit-html
 ```
 
-Until the first version is on npm, install a release's tarball by its URL,
-for example
-`https://github.com/Verticopolis/components/releases/download/components-v0.2.0/verticopolis-components-0.2.0.tgz`.
-Each `components-v<version>` release carries the tarball with its SHA-256
-checksum, and the bytes on npm are the bytes attached there.
+The engine, Excalibur, Tone.js and lit-html are peer dependencies, so the
+game installs its own copy of each beside the components.
+
+Each `components-v<version>` release on GitHub carries the same tarball npm
+serves, with its SHA-256 checksum, so a download can be checked against the
+release. Versions published from the release workflow also carry npm
+provenance.
 
 The package ships compiled JavaScript (ES modules, one file per source
 module, with `.d.ts` types and source maps). The types are written for a
@@ -35,7 +37,7 @@ bundler (`"moduleResolution": "bundler"` in a game's tsconfig). Only the CSS fil
 effects, so a bundler drops every module a game does not import.
 
 The version stays below 1.0 while every module is reachable as a subpath:
-any subpath may change in a minor version, so pin a minor (`~0.2.0`). 1.0
+any subpath may change in a minor version, so pin a minor (`"@verticopolis/components": "~0.2.1"`). 1.0
 waits for a curated public surface. Each folder is a subpath export:
 
 | Import | Folder | What it is |
