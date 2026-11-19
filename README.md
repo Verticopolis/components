@@ -71,6 +71,43 @@ constants (`__APP_VERSION__`, `__APP_SHA__`, `__TOOLING_ENGINE__`,
 `__ENGINE_PACKAGE__`), declared in `src/env.d.ts`; with Vite that is its
 `define` option.
 
+### Styles
+
+The whole game look is one import, which pulls in the tokens, the shared
+components, every piece, the game layers and both color schemes, in cascade
+order:
+
+```js
+import "@verticopolis/components/styles.css";
+```
+
+A page that wants only some pieces imports the parts itself, in this order,
+because each one is skinned from the tokens and later files restyle earlier
+ones:
+
+```js
+import "@verticopolis/components/styles/retro-tokens.css";       // 1. colors, bevels, fonts
+import "@verticopolis/components/styles/retro-components.css";   // 2. .btn, .win, .well, .kv
+import "@verticopolis/components/styles/overview-map.css";       // 3. then the pieces you use
+import "@verticopolis/components/styles/overview-map-views.css"; //    after overview-map.css
+import "@verticopolis/components/styles/menu-bar.css";
+```
+
+- `styles/retro-page.css` is for a standalone page (the sprite gallery, the
+  404 page): it imports the tokens and components itself and adds a full-page
+  layout and a dark-ground override. `styles.css` does not include it.
+- `styles/not-found.css` is the "page not found" page. It imports
+  `retro-page.css` itself, so it is the only file that page needs.
+- `styles/schemes/skyline.css` and `styles/schemes/high-contrast.css` are the
+  optional color schemes. Each applies only under `html[data-scheme="skyline"]`
+  or `html[data-scheme="high_contrast"]`, and goes last.
+- `styles/game/*` is the game page's own layout. It targets the game's markup
+  and depends on the order `styles.css` gives it, so import `styles.css`
+  rather than these files one by one.
+
+Every stylesheet counts as a side effect, so a bundler keeps a CSS import even
+though nothing names what it exports.
+
 ## Build and test
 
 ```sh
