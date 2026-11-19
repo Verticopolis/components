@@ -1,5 +1,6 @@
 import { readdirSync } from "node:fs";
 import { join, relative } from "node:path";
+import ts from "typescript";
 import { defineConfig, type Plugin } from "vite";
 
 // The package build (`npm run build`): every source module compiled to one
@@ -44,10 +45,48 @@ function keepImportMetaEnv(): Plugin {
   };
 }
 
+/**
+ * Compiles each module with TypeScript itself in place of esbuild, which
+ * drops every comment but a legal one. The shipped modules keep their
+ * comments: the doc comments a reader of `lib/` follows, and the provenance
+ * and license header of vendored content (`ui/iconPaths.generated.ts`
+ * carries pixelarticons' MIT notice), which every copy must keep.
+ */
+function transpileKeepingComments(): Plugin {
+  // tsconfig.json's own options, so class fields, the target and the rest
+  // compile the way the game's bundler compiled the sources before.
+  const config = ts.getParsedCommandLineOfConfigFile("tsconfig.json", {}, {
+    ...ts.sys,
+    onUnRecoverableConfigFileDiagnostic: (d) => {
+      throw new Error(ts.flattenDiagnosticMessageText(d.messageText, "\n"));
+    },
+  });
+  if (!config) throw new Error("tsconfig.json did not parse");
+  const compilerOptions: ts.CompilerOptions = {
+    ...config.options,
+    noEmit: false,
+    declaration: false,
+    module: ts.ModuleKind.ESNext,
+    sourceMap: true,
+    inlineSources: true,
+    removeComments: false,
+  };
+  return {
+    name: "transpile-keeping-comments",
+    enforce: "pre",
+    transform(code, id) {
+      if (!id.endsWith(".ts")) return null;
+      const out = ts.transpileModule(code, { fileName: id, compilerOptions });
+      return { code: out.outputText.replace(/\n\/\/# sourceMappingURL=.*$/, ""), map: out.sourceMapText ?? null };
+    },
+  };
+}
+
 const entries = Object.fromEntries(sources(SRC).map((f) => [relative(SRC, f).replace(/\.ts$/, ""), f]));
 
 export default defineConfig({
-  plugins: [keepImportMetaEnv()],
+  plugins: [keepImportMetaEnv(), transpileKeepingComments()],
+  esbuild: false,
   publicDir: false,
   build: {
     outDir: "lib",
