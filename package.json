@@ -76,7 +76,9 @@
     "test": "vitest run",
     "build": "sh scripts/build-lib.sh",
     "prepack": "sh scripts/build-lib.sh",
-    "pack": "sh scripts/pack-components.sh"
+    "pack": "sh scripts/pack-components.sh",
+    "gallery": "vite -c gallery/vite.config.ts",
+    "gallery:build": "vite build -c gallery/vite.config.ts"
   },
   "peerDependencies": {
     "@verticopolis/engine": "^1.57.1",

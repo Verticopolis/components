@@ -1,0 +1,82 @@
+/* The gallery loads the package's stylesheets from lib/, the way a consumer
+   would, plus the two color schemes. Its own rules only lay the page out. */
+@import "../lib/styles/retro-page.css";
+@import "../lib/styles/menu-bar.css";
+@import "../lib/styles/schemes/skyline.css";
+@import "../lib/styles/schemes/high-contrast.css";
+
+.g-section {
+  margin: 0 0 1.5em;
+}
+.g-section > h2 {
+  margin: 0 0 0.5em;
+  font-size: 1.05em;
+}
+.g-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+.g-schemes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 1em;
+}
+.g-schemes .btn[aria-pressed="true"] {
+  font-weight: bold;
+}
+.g-win {
+  max-width: 320px;
+}
+.g-win .g-pad {
+  padding: 8px;
+}
+.g-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 6px;
+}
+.g-icons figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+.g-icons .vc-icon {
+  width: 24px;
+  height: 24px;
+}
+.g-well {
+  padding: 4px 6px;
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+.g-field {
+  display: block;
+  width: 100%;
+  padding: 2px 4px;
+  margin: 0 0 8px;
+}
+.g-sprites {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 8px;
+}
+.g-sprites figure {
+  margin: 0;
+}
+.g-sprites canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #12151d;
+  image-rendering: pixelated;
+}
+.g-sprites figcaption {
+  font-size: 12px;
+  padding: 2px 0;
+}
