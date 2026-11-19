@@ -78,7 +78,8 @@
     "prepack": "sh scripts/build-lib.sh",
     "pack": "sh scripts/pack-components.sh",
     "gallery": "vite -c gallery/vite.config.ts",
-    "gallery:build": "vite build -c gallery/vite.config.ts"
+    "gallery:build": "vite build -c gallery/vite.config.ts",
+    "atlas": "tsx scripts/export-atlas.ts"
   },
   "peerDependencies": {
     "@verticopolis/engine": "^1.57.1",
@@ -99,7 +100,9 @@
     "happy-dom": "^21.0.4",
     "lit-html": "^3.3.3",
     "pixelarticons": "^2.2.0",
+    "playwright": "^1.61.1",
     "tone": "^15.1.22",
+    "tsx": "^4.23.15",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.54.0",
     "vite": "^7.3.7",

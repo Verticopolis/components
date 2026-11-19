@@ -2,7 +2,7 @@
  * Export the game's procedural sprite art as a scaled texture atlas any
  * frontend on the open engine can load (issue #909). Usage:
  *
- *   npx tsx scripts/export-atlas.ts [--out dist-atlas] [--filter room/office] [--label <tag>]
+ *   npm run atlas -- [--out dist-atlas] [--filter room/office] [--label <tag>]
  *
  * The art is baked ONCE at the canonical size in a real Chromium, then scaled
  * to 2x and 4x by nearest neighbor (the draw routines are not scale-faithful,
@@ -26,7 +26,7 @@
  * documented in docs/atlas.md.
  *
  * The sizes and kind facts the art is drawn with come from the engine's own
- * catalog, read from the engine package (`npm run wasm:build` first; see
+ * catalog, read from the installed `@verticopolis/engine` package (see
  * `scripts/atlas-catalog.ts`).
  */
 import { execFileSync } from "node:child_process";
@@ -47,14 +47,14 @@ const root = resolve(import.meta.dirname, "..");
 const FLAGS = new Set(["--out", "--filter", "--label"]);
 
 /** The app icon for other frontends: the mark's SVG (full bleed and inside the
- *  maskable safe zone) and the committed PNGs the web app ships. */
+ *  maskable safe zone) and the PNGs the web app ships, kept in assets/app-icon. */
 function appIcons(root: string): Record<string, Uint8Array> {
   const icons: Record<string, Uint8Array> = {
     "icon.svg": new TextEncoder().encode(iconSvg(1024, false) + "\n"),
     "icon-maskable.svg": new TextEncoder().encode(iconSvg(1024, true) + "\n"),
   };
   for (const name of ["icon-1024x1024.png", "pwa-512x512.png", "pwa-maskable-512x512.png", "pwa-192x192.png", "apple-touch-icon.png", "favicon.png"]) {
-    icons[name] = new Uint8Array(readFileSync(join(root, "src/public", name)));
+    icons[name] = new Uint8Array(readFileSync(join(root, "assets/app-icon", name)));
   }
   return icons;
 }
