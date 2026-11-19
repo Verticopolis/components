@@ -1,0 +1,108 @@
+name: Components package
+
+# Packs @verticopolis/components (scripts/pack-components.sh), the tarball a
+# game pins.
+#
+# - A pull request or a push to main uploads the tarball as a run artifact.
+#   A PR's tarball is versioned 0.0.0-pr.<number>.<run> and main's
+#   0.0.0-main.<run>, so a game PR can try one without mistaking it for a
+#   release.
+# - A pushed components-v<version> tag attaches the tarball, with its
+#   checksum, to that tag's GitHub release, creating the release when it does
+#   not exist. Nothing here publishes to npm.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ["components-v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    name: Pack the components
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Version
+        id: version
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          PR: ${{ github.event.pull_request.number }}
+          RUN: ${{ github.run_number }}
+        run: |
+          set -eu
+          case "$REF" in
+            refs/tags/components-v*)
+              version="${REF#refs/tags/components-v}"
+              if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+                echo "::error::Tag ${REF#refs/tags/} does not name a version (components-v<x.y.z>)."
+                exit 1
+              fi
+              ;;
+            *)
+              if [ "$EVENT" = pull_request ]; then version="0.0.0-pr.$PR.$RUN"; else version="0.0.0-main.$RUN"; fi
+              ;;
+          esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Pack
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: sh scripts/pack-components.sh "$VERSION" dist
+
+      - name: Upload the tarball
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: components-package-${{ steps.version.outputs.version }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Attach to the release
+    needs: pack
+    if: startsWith(github.ref, 'refs/tags/components-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: components-package-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag --title "Components ${TAG#components-v}" \
+              --notes "The @verticopolis/components package for ${TAG#components-v}, with its SHA-256 checksum."
+          fi
+          gh release upload "$TAG" dist/* --clobber

@@ -1,13 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
 import { TRAFFIC_LABELS, TRAFFIC_LEVELS, trafficLevel, type TrafficTier } from "./traffic";
 import { gameStylesheet } from "../tests/gameStylesheet.ts";
 
-const here = dirname(fileURLToPath(import.meta.url));
 const styles = gameStylesheet();
-const html = readFileSync(resolve(here, "../index.html"), "utf8");
 const TIERS: readonly TrafficTier[] = [0, 1, 2, 3];
 const BARS = [1, 2, 3, 4] as const;
 
@@ -93,10 +88,5 @@ describe("traffic meter level", () => {
       }
       if (BAR_SETTER.test(body)) expect(selector, selector).toMatch(BAR_SETTER_SELECTOR);
     }
-  });
-
-  it("starts the page's meter at Smooth", () => {
-    const tag = /<span\b[^>]*\bid="traffic-glyph"[^>]*>/.exec(html)?.[0] ?? "";
-    expect(tag).toMatch(new RegExp(`\\bdata-level="${trafficLevel(0)}"`));
   });
 });

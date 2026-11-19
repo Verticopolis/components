@@ -35,6 +35,8 @@
     "src",
     "!src/**/*.test.ts",
     "!src/**/*.fixture.ts",
+    "!src/tests",
+    "!src/ui/testing",
     "ASSETS-LICENSE.md"
   ],
   "publishConfig": {
@@ -43,7 +45,9 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "vitest run",
+    "pack": "sh scripts/pack-components.sh"
   },
   "peerDependencies": {
     "@verticopolis/engine": "*",
@@ -67,6 +71,7 @@
     "excalibur": "^1.0.0",
     "happy-dom": "^21.0.4",
     "lit-html": "^3.3.3",
+    "pixelarticons": "^2.2.0",
     "tone": "^15.1.22",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.54.0",

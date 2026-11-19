@@ -53,10 +53,14 @@ constants (`__APP_VERSION__`, `__APP_SHA__`, `__TOOLING_ENGINE__`,
 npm ci
 npm run typecheck
 npm run lint
+npm test
+npm run pack -- 0.0.0-local   # writes dist/verticopolis-components-0.0.0-local.tgz
 ```
 
-The unit tests join CI with the package build, which also replaces the few
-test fixtures that still reach the game's own test helpers.
+The unit tests mock the engine and read its catalog from the JSON fixtures in
+`src/simport/fixtures`, so they need no engine build. Every pull request and
+push to `main` packs the tarball as a workflow artifact, and a
+`components-v<version>` tag attaches it to that tag's GitHub release.
 
 ## Contributing
 

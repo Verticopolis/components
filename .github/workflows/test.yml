@@ -16,14 +16,13 @@ on:
 permissions:
   contents: read
 
-# The package's checks until the split's cut: install from the lockfile, then
-# typecheck and lint the sources that ship. The unit tests join this job in the
-# PR that adds the package build, which also replaces the fixtures that still
-# reach the game's test helpers. The game's e2e, engine-host and WASM jobs stay
-# in the game's repository.
+# The package's checks: install from the lockfile, then typecheck, lint and
+# run the unit tests. The tests mock the engine and read its catalog from the
+# JSON fixtures in src/simport/fixtures, so no engine build is needed. The
+# game's e2e, engine-host and WASM jobs stay in the game's repository.
 jobs:
   test:
-    name: Typecheck and lint
+    name: Typecheck, lint and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -37,3 +36,4 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm test
