@@ -1,0 +1,76 @@
+{
+  "name": "@verticopolis/components",
+  "version": "0.0.0",
+  "description": "Verticopolis's renderer, Excalibur scene, Win95 windows and menus, audio, the engine binding and host, with the game's CC BY art.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Verticopolis/components.git"
+  },
+  "homepage": "https://github.com/Verticopolis/components#readme",
+  "bugs": "https://github.com/Verticopolis/components/issues",
+  "engines": {
+    "node": "26.x"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    "./render/*": "./src/render/*.ts",
+    "./presentation/*": "./src/presentation/*.ts",
+    "./catalog/*": "./src/catalog/*.ts",
+    "./shared/*": "./src/shared/*.ts",
+    "./binding/*": "./src/engineBinding/*.ts",
+    "./port/*": "./src/simport/*.ts",
+    "./host/*": "./src/wasmhost/*.ts",
+    "./events/*": "./src/events/*.ts",
+    "./audio/*": "./src/audio/*.ts",
+    "./windows/*": "./src/ui/*.ts",
+    "./styles/*": "./src/styles/*",
+    "./styles.css": "./src/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.fixture.ts",
+    "ASSETS-LICENSE.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "peerDependencies": {
+    "@verticopolis/engine": "*",
+    "excalibur": "^1.0.0",
+    "lit-html": "^3.3.3",
+    "tone": "^15.1.22"
+  },
+  "peerDependenciesMeta": {
+    "@verticopolis/engine": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "fflate": "^0.8.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^26.6.6",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "excalibur": "^1.0.0",
+    "happy-dom": "^21.0.4",
+    "lit-html": "^3.3.3",
+    "tone": "^15.1.22",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.54.0",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.11"
+  }
+}
