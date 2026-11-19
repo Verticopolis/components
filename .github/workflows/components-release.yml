@@ -1,42 +1,93 @@
 name: Release components
 
-# Releases one version of @verticopolis/components, from the Actions tab
-# (README, "Releasing"): it packs main (scripts/pack-components.sh), tags
-# components-v<version> on that commit, publishes the GitHub release with the
-# tarball and its checksum, and then publishes that same tarball to npm.
+# Releases @verticopolis/components when a push to main raises the version in
+# package.json (README, "Releasing"). A release PR raises it; this workflow
+# then packs that commit (scripts/pack-components.sh), tags v<version> on it,
+# publishes the GitHub release with the tarball and its checksum, and then
+# publishes that same tarball to npm. A maintainer can also run it from the
+# Actions tab on main to finish a run that failed; it releases the version
+# package.json names on main.
 #
-# Both jobs wait on the `registry` environment, which only the owner can
-# approve, so no tag, release or npm version appears without that approval.
-# The `registry` environment must exist on this repository with that rule
-# before the first run: GitHub creates a missing one with no protection. npm
-# publishes through
-# trusted publishing: npm trusts this repository, this workflow file and that
-# environment, and exchanges GitHub's OIDC token for a short-lived publish
-# token, so no npm token is stored anywhere, and npm records a provenance
-# statement. npm sets up a trusted publisher only for a package that already
-# exists, so the first version goes up by hand from its release tarball.
+# The check job reads package.json and the existing tags and releases, with
+# no credential and no approval, so a push that leaves the version alone ends
+# there. The two jobs after it wait on the `registry` environment, which only
+# the owner can approve, so no tag, release or npm version appears without
+# that approval. The `registry` environment must exist on this repository
+# with that rule: GitHub creates a missing one with no protection. npm
+# publishes through trusted publishing: npm trusts this repository, this
+# workflow file and that environment, and exchanges GitHub's OIDC token for a
+# short-lived publish token, so no npm token is stored anywhere, and npm
+# records a provenance statement.
 #
-# A tag, release or npm version that already exists is left alone, so a
-# re-run finishes what a failed run started.
+# Versions up to 0.2.1 were tagged components-v<version>; the check treats
+# either tag as released, so those versions are never released twice. A tag,
+# release or npm version that already exists is left alone, so a re-run
+# finishes what a failed run started.
 on:
+  push:
+    branches: [main]
+    paths: [package.json]
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to release (x.y.z, or x.y.z-pre)"
-        required: true
-        type: string
 
 permissions: {}
 
+# One release run at a time. A run waiting for approval holds the group; a
+# later push queues behind it, and each run releases whatever package.json
+# names when it starts, so a replaced queued run only skips an intermediate
+# version.
 concurrency:
-  group: components-release-${{ inputs.version }}
+  group: components-release
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Pack, tag and release
+  check:
+    name: Find the version to release
     # A release is cut from main, never from a branch's unmerged code.
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: package.json
+          sparse-checkout-cone-mode: false
+
+      - name: Read the version and look for its release
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          version="$(jq -r .version package.json)"
+          if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::package.json names $version, which is not a version (x.y.z or x.y.z-pre)."
+            exit 1
+          fi
+          for tag in "v$version" "components-v$version"; do
+            if [ "$(gh release view "$tag" --json isDraft --jq .isDraft 2> /dev/null || true)" = false ]; then
+              if [ "$(npm view "@verticopolis/components@$version" version 2> /dev/null || true)" = "$version" ]; then
+                echo "$version is already released ($tag) and on npm; nothing to do."
+                exit 0
+              fi
+              if [ "$tag" != "v$version" ]; then
+                echo "::error::$version was released as $tag but is not on npm. Publish it by hand; this workflow only publishes v<version> releases."
+                exit 1
+              fi
+            fi
+          done
+          echo "Releasing $version (v$version)."
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  release:
+    name: Pack, tag and release
+    needs: check
+    if: needs.check.outputs.version != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: registry
@@ -52,31 +103,22 @@ jobs:
           node-version-file: ".nvmrc"
           cache: npm
 
-      - name: Check the version
-        env:
-          VERSION: ${{ inputs.version }}
-        run: |
-          if ! printf '%s\n' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
-            echo "::error::$VERSION is not a version (x.y.z or x.y.z-pre)."
-            exit 1
-          fi
-
       - name: Install dependencies
         run: npm ci
 
       - name: Pack
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ needs.check.outputs.version }}
         run: sh scripts/pack-components.sh "$VERSION" dist
 
       - name: Tag and publish the release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ needs.check.outputs.version }}
         run: |
           set -euo pipefail
-          tag="components-v$VERSION"
+          tag="v$VERSION"
           if gh release view "$tag" --json isDraft --jq .isDraft > draft.txt 2> /dev/null; then
             if [ "$(cat draft.txt)" != "true" ]; then
               # A published release is never edited. The npm job publishes
@@ -104,18 +146,21 @@ jobs:
             target="$GITHUB_SHA"
             echo "Tagged $tag at $GITHUB_SHA."
           fi
-          prerelease=""
-          case "$VERSION" in *-*) prerelease="--prerelease" ;; esac
+          # A release becomes Latest; a prerelease never does.
+          kind="--latest"
+          case "$VERSION" in *-*) kind="--prerelease --latest=false" ;; esac
           # Attach while a draft, then publish, so a published release is never edited.
-          gh release create "$tag" --target "$target" --title "Components $VERSION" $prerelease --draft \
+          # shellcheck disable=SC2086 # $kind holds one or two flags
+          gh release create "$tag" --target "$target" --title "$tag" $kind --draft \
             --notes "The @verticopolis/components package for $VERSION, with its SHA-256 checksum. On npm as [\`@verticopolis/components@$VERSION\`](https://www.npmjs.com/package/@verticopolis/components/v/$VERSION) once the owner approves the publish."
           gh release upload "$tag" dist/*
-          gh release edit "$tag" --draft=false
+          # shellcheck disable=SC2086
+          gh release edit "$tag" --draft=false $kind
           echo "Published $tag with $(ls dist | tr '\n' ' ')"
 
   npm:
     name: Publish to npm
-    needs: release
+    needs: [check, release]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: registry
@@ -137,7 +182,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ needs.check.outputs.version }}
         run: |
           set -euo pipefail
           have="$(npm --version)"
@@ -147,7 +192,7 @@ jobs:
             exit 0
           fi
           tgz="verticopolis-components-$VERSION.tgz"
-          gh release download "components-v$VERSION" --pattern "$tgz" --pattern "$tgz.sha256" --dir release
+          gh release download "v$VERSION" --pattern "$tgz" --pattern "$tgz.sha256" --dir release
           (cd release && sha256sum -c "$tgz.sha256")
           named="$(tar -xOzf "release/$tgz" package/package.json | jq -r '.name + "@" + .version')"
           if [ "$named" != "@verticopolis/components@$VERSION" ]; then echo "::error::$tgz holds $named, not @verticopolis/components@$VERSION."; exit 1; fi
