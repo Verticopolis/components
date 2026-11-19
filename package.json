@@ -17,26 +17,53 @@
     "*.css"
   ],
   "exports": {
-    "./render/*": "./src/render/*.ts",
-    "./presentation/*": "./src/presentation/*.ts",
-    "./catalog/*": "./src/catalog/*.ts",
-    "./shared/*": "./src/shared/*.ts",
-    "./binding/*": "./src/engineBinding/*.ts",
-    "./port/*": "./src/simport/*.ts",
-    "./host/*": "./src/wasmhost/*.ts",
-    "./events/*": "./src/events/*.ts",
-    "./audio/*": "./src/audio/*.ts",
-    "./windows/*": "./src/ui/*.ts",
-    "./styles/*": "./src/styles/*",
-    "./styles.css": "./src/styles.css",
+    "./render/*": {
+      "types": "./lib/render/*.d.ts",
+      "default": "./lib/render/*.js"
+    },
+    "./presentation/*": {
+      "types": "./lib/presentation/*.d.ts",
+      "default": "./lib/presentation/*.js"
+    },
+    "./catalog/*": {
+      "types": "./lib/catalog/*.d.ts",
+      "default": "./lib/catalog/*.js"
+    },
+    "./shared/*": {
+      "types": "./lib/shared/*.d.ts",
+      "default": "./lib/shared/*.js"
+    },
+    "./binding/*": {
+      "types": "./lib/engineBinding/*.d.ts",
+      "default": "./lib/engineBinding/*.js"
+    },
+    "./port/*": {
+      "types": "./lib/simport/*.d.ts",
+      "default": "./lib/simport/*.js"
+    },
+    "./host/*": {
+      "types": "./lib/wasmhost/*.d.ts",
+      "default": "./lib/wasmhost/*.js"
+    },
+    "./events/*": {
+      "types": "./lib/events/*.d.ts",
+      "default": "./lib/events/*.js"
+    },
+    "./audio/*": {
+      "types": "./lib/audio/*.d.ts",
+      "default": "./lib/audio/*.js"
+    },
+    "./windows/*": {
+      "types": "./lib/ui/*.d.ts",
+      "default": "./lib/ui/*.js"
+    },
+    "./fixtures/*": "./lib/simport/fixtures/*",
+    "./styles/*": "./lib/styles/*",
+    "./styles.css": "./lib/styles.css",
     "./package.json": "./package.json"
   },
   "files": [
-    "src",
-    "!src/**/*.test.ts",
-    "!src/**/*.fixture.ts",
-    "!src/tests",
-    "!src/ui/testing",
+    "lib",
     "ASSETS-LICENSE.md"
   ],
   "publishConfig": {
@@ -47,6 +74,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
+    "build": "sh scripts/build-lib.sh",
+    "prepack": "sh scripts/build-lib.sh",
     "pack": "sh scripts/pack-components.sh"
   },
   "peerDependencies": {

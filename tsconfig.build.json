@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+    "sourceMap": false,
+    "outDir": "./lib",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "lib", "dist", "src/**/*.test.ts", "src/**/*.fixture.ts", "src/tests", "src/ui/testing"]
+}

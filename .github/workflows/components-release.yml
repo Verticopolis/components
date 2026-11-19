@@ -1,0 +1,158 @@
+name: Release components
+
+# Releases one version of @verticopolis/components, from the Actions tab
+# (README, "Releasing"): it packs main (scripts/pack-components.sh), tags
+# components-v<version> on that commit, publishes the GitHub release with the
+# tarball and its checksum, and then publishes that same tarball to npm.
+#
+# Both jobs wait on the `registry` environment, which only the owner can
+# approve, so no tag, release or npm version appears without that approval.
+# The `registry` environment must exist on this repository with that rule
+# before the first run: GitHub creates a missing one with no protection. npm
+# publishes through
+# trusted publishing: npm trusts this repository, this workflow file and that
+# environment, and exchanges GitHub's OIDC token for a short-lived publish
+# token, so no npm token is stored anywhere, and npm records a provenance
+# statement. npm sets up a trusted publisher only for a package that already
+# exists, so the first version goes up by hand from its release tarball.
+#
+# A tag, release or npm version that already exists is left alone, so a
+# re-run finishes what a failed run started.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (x.y.z, or x.y.z-pre)"
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: components-release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Pack, tag and release
+    # A release is cut from main, never from a branch's unmerged code.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: registry
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Check the version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! printf '%s\n' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::$VERSION is not a version (x.y.z or x.y.z-pre)."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pack
+        env:
+          VERSION: ${{ inputs.version }}
+        run: sh scripts/pack-components.sh "$VERSION" dist
+
+      - name: Tag and publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          tag="components-v$VERSION"
+          if gh release view "$tag" --json isDraft --jq .isDraft > draft.txt 2> /dev/null; then
+            if [ "$(cat draft.txt)" != "true" ]; then
+              # A published release is never edited. The npm job publishes
+              # its attached tarball, so a re-run can still finish npm.
+              echo "$tag already has a release; leaving it."
+              exit 0
+            fi
+            gh release delete "$tag" --yes
+          fi
+          if gh api "repos/$GH_REPO/git/ref/tags/$tag" > /dev/null 2>&1; then
+            # The tarball in dist/ is packed from this run's commit, so a tag
+            # on any other commit would get bytes it never held. Peel an
+            # annotated tag to its commit before comparing.
+            target="$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq .object.sha)"
+            if [ "$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq .object.type)" = "tag" ]; then
+              target="$(gh api "repos/$GH_REPO/git/tags/$target" --jq .object.sha)"
+            fi
+            if [ "$target" != "$GITHUB_SHA" ]; then
+              echo "::error::$tag is on $target, not on this run's commit $GITHUB_SHA. A release packs main, so release a new version, or delete the tag if it is wrong."
+              exit 1
+            fi
+            echo "$tag exists on this commit; releasing it."
+          else
+            gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
+            target="$GITHUB_SHA"
+            echo "Tagged $tag at $GITHUB_SHA."
+          fi
+          prerelease=""
+          case "$VERSION" in *-*) prerelease="--prerelease" ;; esac
+          # Attach while a draft, then publish, so a published release is never edited.
+          gh release create "$tag" --target "$target" --title "Components $VERSION" $prerelease --draft \
+            --notes "The @verticopolis/components package for $VERSION, with its SHA-256 checksum. On npm as [\`@verticopolis/components@$VERSION\`](https://www.npmjs.com/package/@verticopolis/components/v/$VERSION) once the owner approves the publish."
+          gh release upload "$tag" dist/*
+          gh release edit "$tag" --draft=false
+          echo "Published $tag with $(ls dist | tr '\n' ' ')"
+
+  npm:
+    name: Publish to npm
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: registry
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .nvmrc
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Publish the release's tarball
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          have="$(npm --version)"
+          if [ "$(printf '%s\n%s\n' 11.5.1 "$have" | sort -V | head -n 1)" != 11.5.1 ]; then echo "::error::npm $have is older than 11.5.1, which trusted publishing needs."; exit 1; fi
+          if [ "$(npm view "@verticopolis/components@$VERSION" version 2> /dev/null || true)" = "$VERSION" ]; then
+            echo "@verticopolis/components@$VERSION is already on npm; leaving it."
+            exit 0
+          fi
+          tgz="verticopolis-components-$VERSION.tgz"
+          gh release download "components-v$VERSION" --pattern "$tgz" --pattern "$tgz.sha256" --dir release
+          (cd release && sha256sum -c "$tgz.sha256")
+          named="$(tar -xOzf "release/$tgz" package/package.json | jq -r '.name + "@" + .version')"
+          if [ "$named" != "@verticopolis/components@$VERSION" ]; then echo "::error::$tgz holds $named, not @verticopolis/components@$VERSION."; exit 1; fi
+          # A prerelease goes up under its own dist-tag, so `latest` stays a release.
+          tag=latest
+          case "$VERSION" in *-*) tag=next ;; esac
+          npm publish "release/$tgz" --access public --provenance --tag "$tag"
+          echo "Published @verticopolis/components@$VERSION ($tag)."

@@ -20,10 +20,23 @@ the engine's WebAssembly package at run time.
 ## Use it
 
 ```sh
-npm install @verticopolis/components excalibur tone lit-html
+npm install @verticopolis/components @verticopolis/engine excalibur tone lit-html
 ```
 
-The package is not on npm yet. Each folder is a subpath export:
+Until the first version is on npm, install a release's tarball by its URL,
+for example
+`https://github.com/Verticopolis/components/releases/download/components-v0.2.0/verticopolis-components-0.2.0.tgz`.
+Each `components-v<version>` release carries the tarball with its SHA-256
+checksum, and the bytes on npm are the bytes attached there.
+
+The package ships compiled JavaScript (ES modules, one file per source
+module, with `.d.ts` types and source maps). The types are written for a
+bundler (`"moduleResolution": "bundler"` in a game's tsconfig). Only the CSS files count as side
+effects, so a bundler drops every module a game does not import.
+
+The version stays below 1.0 while every module is reachable as a subpath:
+any subpath may change in a minor version, so pin a minor (`~0.2.0`). 1.0
+waits for a curated public surface. Each folder is a subpath export:
 
 | Import | Folder | What it is |
 | --- | --- | --- |
@@ -38,11 +51,16 @@ The package is not on npm yet. Each folder is a subpath export:
 | `@verticopolis/components/audio/*` | `src/audio/` | The procedural music and ambience on Tone.js |
 | `@verticopolis/components/windows/*` | `src/ui/` | The Win95 windows, menus and message boxes |
 | `@verticopolis/components/styles.css` | `src/styles.css` | The styles the windows use |
+| `@verticopolis/components/styles/*` | `src/styles/` | The stylesheets `styles.css` imports, one by one |
+| `@verticopolis/components/fixtures/*` | `src/simport/fixtures/` | The engine-written JSON fixtures (catalogs, the view layout) for a game's unit tests |
 
 For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"`.
 
-Excalibur, Tone, lit-html and `@verticopolis/engine` are peer
-dependencies. The components never import the engine's JavaScript: the host
+Excalibur, Tone, lit-html and `@verticopolis/engine` are required peer
+dependencies. npm 7 and later install them with the components; with
+`--legacy-peer-deps` or a package manager that skips peers, a game without
+the engine builds, and fails at run time when the host loads the engine's
+WebAssembly. The components never import the engine's JavaScript: the host
 (`host/*`) loads the engine's WebAssembly at run time from the URL the game
 serves it at, and the binding (`binding/*`) is written against that engine's
 API. So a game installs `@verticopolis/engine` itself, serves its `web/`
@@ -58,13 +76,25 @@ npm ci
 npm run typecheck
 npm run lint
 npm test
+npm run build                 # compiles src/ into lib/, what the package ships
 npm run pack -- 0.0.0-local   # writes dist/verticopolis-components-0.0.0-local.tgz
 ```
 
 The unit tests mock the engine and read its catalog from the JSON fixtures in
 `src/simport/fixtures`, so they need no engine build. Every pull request and
-push to `main` packs the tarball as a workflow artifact, and a
-`components-v<version>` tag attaches it to that tag's GitHub release.
+push to `main` packs the tarball as a workflow artifact.
+
+## Releasing
+
+Run **Release components** (`.github/workflows/components-release.yml`)
+from the Actions tab on `main` with the version. It packs `main`, tags
+`components-v<version>` on that commit, publishes the GitHub release with
+the tarball and its checksum, and then publishes that same tarball to npm.
+The npm job waits on the `registry` environment, which only the owner
+approves, and uses trusted publishing, so no npm token is stored anywhere and
+each version carries an npm provenance statement. A tag, release or npm
+version that already exists is left alone, so a re-run finishes what a
+failed run started.
 
 ## Contributing
 

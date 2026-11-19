@@ -9,7 +9,8 @@ name: Components package
 #   release.
 # - A pushed components-v<version> tag attaches the tarball, with its
 #   checksum, to that tag's GitHub release, creating the release when it does
-#   not exist. Nothing here publishes to npm.
+#   not exist. Releases normally come from components-release.yml, which
+#   also publishes to npm; a tag pushed by hand gets the GitHub release only.
 on:
   pull_request:
     branches: [main]
