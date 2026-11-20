@@ -29,6 +29,19 @@ loop, UI and audio are hot paths and also get the hot-path checklist.
   here imports `@verticopolis/engine` (lint refuses it), and the tests, the
   gallery and the atlas bake use hand-written fixtures, never a copy of the
   engine's catalog.
+- **UI is drawn with lit-html.** Every piece of DOM the package or the
+  gallery draws (windows, menus, dialogs, notices, icons, demos) is a
+  lit-html `html` or `svg` template put on the page with `render`, and its
+  events are `@event` bindings in that template. Never write markup as a
+  string (`innerHTML`, `outerHTML`, `insertAdjacentHTML`, or HTML built by
+  concatenating or escaping text), and never put it together by hand with
+  `createElement`, `appendChild` or an `addEventListener` on an element a
+  template draws. Imperative code is left only for what no template owns:
+  listeners on `window`, `document` or an element the game owns, and the
+  canvas the renderer and the atlas bake draw on. Some older UI still
+  builds DOM by hand while it moves onto lit; a change to one of those
+  pieces moves it onto lit and leaves no old API beside it. See
+  [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Design sign-off.** New art, a new look or a new sound needs the owner's
   explicit OK before merge. A party or roundtable verdict is not that OK.
 - **Change notes, never a version edit.** A PR that changes what the package
