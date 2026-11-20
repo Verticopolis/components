@@ -1,14 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DeskWindowSpec } from "./deskWindow";
 import { MovableWindow, WITHIN_PARENT } from "../movableWindow";
-import {
-  DESK_ACTIVE_CLASS,
-  DESK_MAXIMIZED_CLASS,
-  DESK_MINIMIZED_CLASS,
-  DeskWindow,
-  buildFrame,
-  titleButton,
-} from "./deskWindow";
+import { DESK_ACTIVE_CLASS, DESK_MAXIMIZED_CLASS, DESK_MINIMIZED_CLASS, DeskWindow, buildFrame } from "./deskWindow";
 
 const LIMITS = { minW: 300, minH: 200 };
 
@@ -28,11 +21,16 @@ function spec(el: HTMLElement, over: Partial<DeskWindowSpec> = {}): DeskWindowSp
 }
 
 /** A frame on a desk element, the way the desk builds the tower's. */
-function frame(): HTMLElement {
+function frame(close?: () => void): HTMLElement {
   const desk = document.createElement("div");
   desk.id = "desk";
   document.body.appendChild(desk);
-  const { root } = buildFrame(document, "desk-win-tower", "Tower One");
+  const { root } = buildFrame(
+    document,
+    "desk-win-tower",
+    "Tower One",
+    close ? { label: "Close the tower", onClick: close } : undefined,
+  );
   desk.appendChild(root);
   return root;
 }
@@ -41,28 +39,53 @@ beforeEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("buildFrame and titleButton", () => {
-  it("builds a window with a title bar named for it and an empty body", () => {
-    const { root, body, titleText } = buildFrame(document, "desk-win-info", "Info");
+describe("buildFrame", () => {
+  it("draws a window with a title bar named for it and an empty body", () => {
+    const { root, body } = buildFrame(document, "desk-win-info", "Info");
+    const title = root.querySelector<HTMLElement>(".win-title > .desk-title-text")!;
+    expect(root.tagName).toBe("SECTION");
     expect(root.id).toBe("desk-win-info");
-    expect(root.getAttribute("aria-labelledby")).toBe(titleText.id);
-    expect(titleText.textContent).toBe("Info");
-    expect(root.querySelector(".win-title")).not.toBeNull();
+    expect(root.className).toBe("win win-closable desk-win desk-frame");
+    expect(title.id).toBe("desk-win-info-title");
+    expect(root.getAttribute("aria-labelledby")).toBe(title.id);
+    expect(title.textContent).toBe("Info");
+    const icon = root.querySelector<HTMLImageElement>(".win-title > img.desk-title-icon")!;
+    expect([icon.getAttribute("src"), icon.alt, icon.width, icon.height]).toEqual(["./favicon.png", "", 16, 16]);
+    expect(body.className).toBe("desk-body");
     expect(body.childElementCount).toBe(0);
+    expect(root.querySelector(".desk-btn-close")).toBeNull();
   });
 
-  it("labels a title-bar button and draws its glyph", () => {
-    const b = titleButton(document, "close", "Close Info");
-    expect(b.getAttribute("aria-label")).toBe("Close Info");
-    expect(b.classList.contains("desk-btn-close")).toBe(true);
-    expect(b.querySelector("svg")).not.toBeNull();
+  it("draws a labeled close button with its glyph that runs its click", () => {
+    const onClick = vi.fn();
+    const { root } = buildFrame(document, "desk-win-control", "Control Panel", {
+      label: "Close Control Panel",
+      onClick,
+    });
+    const b = root.querySelector<HTMLButtonElement>(".win-title > button.desk-btn-close")!;
+    expect(b.className).toBe("btn xs desk-btn desk-btn-close");
+    expect(b.type).toBe("button");
+    expect(b.getAttribute("aria-label")).toBe("Close Control Panel");
+    expect(b.title).toBe("Close Control Panel");
+    expect(b.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(b.previousElementSibling!.className).toBe("desk-title-text");
+    b.click();
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it("renames the window in place once it is on the desk", () => {
+    const { root, setTitle } = buildFrame(document, "desk-win-tower", "Tower One");
+    document.body.appendChild(root);
+    const title = root.querySelector(".desk-title-text")!;
+    setTitle("Sky Mall");
+    expect(root.querySelector(".desk-title-text")).toBe(title);
+    expect(title.textContent).toBe("Sky Mall");
   });
 });
 
 describe("DeskWindow", () => {
   it("adds minimize before the window's close button, and maximize only where it is allowed", () => {
-    const el = frame();
-    el.querySelector(".win-title")!.appendChild(titleButton(document, "close", "Close"));
+    const el = frame(() => {});
     new DeskWindow(spec(el, { canMax: true }));
     const kinds = [...el.querySelectorAll(".win-title .desk-btn")].map((b) =>
       [...b.classList].find((c) => c.startsWith("desk-btn-")),
@@ -120,6 +143,20 @@ describe("DeskWindow", () => {
     expect(s.changed).toHaveBeenLastCalledWith("unmax");
   });
 
+  it("shows the restore glyph on the same button while maximized", () => {
+    const el = frame();
+    new DeskWindow(spec(el, { canMax: true }));
+    const max = el.querySelector<HTMLElement>(".desk-btn-max")!;
+    const glyph = () => max.querySelector("path")!.getAttribute("d");
+    const maxGlyph = glyph();
+    max.click();
+    expect(el.querySelector(".desk-btn-max")).toBe(max);
+    expect(glyph()).not.toBe(maxGlyph);
+    expect(max.querySelectorAll("svg")).toHaveLength(1);
+    max.click();
+    expect(glyph()).toBe(maxGlyph);
+  });
+
   it("never maximizes a window that may not", () => {
     const el = frame();
     const s = spec(el);
@@ -164,9 +201,31 @@ describe("DeskWindow", () => {
     expect(s.changed).not.toHaveBeenCalled();
     pointer("pointerdown", 100, 100);
     pointer("pointermove", 500, 400);
+    const outline = desk.querySelector<HTMLElement>(".desk-outline")!;
+    expect(outline.style.width).toBe(`${LIMITS.minW + 100}px`);
+    expect(desk.querySelectorAll(".desk-outline")).toHaveLength(1);
     pointer("pointerup", 500, 400);
+    expect(desk.querySelector(".desk-outline")).toBeNull();
     expect(s.changed).toHaveBeenCalledWith("resize");
     expect(el.style.width).toBe(`${LIMITS.minW + 100}px`);
+  });
+
+  it("drops a resize whose release never came when the grip is pressed again, and on dispose", () => {
+    const el = frame();
+    const s = spec(el, { limits: LIMITS });
+    const w = new DeskWindow(s);
+    const grip = el.querySelector<HTMLElement>(".desk-grip")!;
+    const desk = document.getElementById("desk")!;
+    const pointer = (type: string, x: number, y: number) =>
+      grip.dispatchEvent(
+        Object.assign(new MouseEvent(type, { clientX: x, clientY: y, button: 0, bubbles: true }), { pointerId: 1 }),
+      );
+    pointer("pointerdown", 100, 100);
+    pointer("pointerdown", 100, 100);
+    expect(desk.querySelectorAll(".desk-outline")).toHaveLength(1);
+    w.dispose();
+    expect(desk.querySelector(".desk-outline")).toBeNull();
+    expect(s.changed).not.toHaveBeenCalled();
   });
 
   it("takes everything it added off again on dispose", () => {
