@@ -1,4 +1,4 @@
-/* The Open and Save As windows over My Towers (src/ui/templates/fileDialog.ts):
+/* The Open and Save As windows (src/ui/fileDialog/fileDialogTemplate.ts):
    a file list with columns on a sunken well, the File name and type rows
    beside their buttons, and the tools along the bottom. On a phone the rows
    become two-line cards and the columns' header goes (media-phone.css). */
@@ -6,7 +6,7 @@
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {
-  #modal:has(> .fd-window) {
+  #modal:has(> .modal-box > .fd) {
     max-width: min(660px, 96vw);
   }
   .fd {
@@ -431,9 +431,9 @@
     margin-left: 6px;
   }
 
-  /* Previous Versions (src/ui/versionsDialog.ts): one tower's earlier versions
+  /* Previous Versions (src/ui/fileDialog/versionsDialog.ts): one file's earlier versions
    in the same sunken list, newest first, with Open and Cancel under it. */
-  #modal:has(> .pv-window) {
+  #modal:has(> .modal-box > .pv) {
     max-width: min(480px, 96vw);
   }
   .pv {

@@ -45,6 +45,7 @@ export const sidebar = [
       { label: "Menu bar", link: "/controls/menu-bar/" },
       { label: "Message boxes", link: "/controls/message-boxes/" },
       { label: "Appearance", link: "/controls/appearance/" },
+      { label: "Open and Save As", link: "/controls/file-dialog/" },
       { label: "Icons", link: "/controls/icons/" },
     ],
   },

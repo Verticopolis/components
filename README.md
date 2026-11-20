@@ -204,6 +204,13 @@ bundle to one copy of each.
   can import it in Node. `windows/appearance` is the Appearance dialog that
   picks one (`openAppearanceDialog`, or `appearanceView` for a `ModalShell`
   the caller drives); it imports `styles/game/appearance.css`.
+- `windows/fileDialog/fileDialog` is the Open and Save As windows
+  (`showFileDialog(shell, ctx)` in a `ModalShell`), and
+  `windows/fileDialog/versionsDialog` is Previous Versions. They hold no
+  storage: the caller lists the files, runs each command and names its files
+  (`words`, `kinds` with their icon marks from `windows/fileDialog/fileIcons`,
+  the kind Save As writes, and the name rules). Both import
+  `styles/game/file-dialog.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -284,6 +291,7 @@ built package from `lib/` the way a consumer would:
 | Menu bar | a sample menu bar, the same component the site's own bar uses |
 | Message boxes | the modal message box with a message, a question and a notice |
 | Appearance | the Appearance dialog; OK dresses the site in the picked scheme |
+| Open and Save As | the Open, Save As and Previous Versions windows over a made-up folder that lives only on the page |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |

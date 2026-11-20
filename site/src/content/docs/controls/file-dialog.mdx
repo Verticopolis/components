@@ -1,0 +1,16 @@
+---
+title: Open and Save As
+description: The Open and Save As windows over a folder of files, and Previous Versions.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+The Open and Save As windows (`showFileDialog` from `windows/fileDialog/fileDialog`) list a folder the way a 1990s program's file dialogs do: Name, Type, Size and Modified columns that sort when clicked, a File name box, a type list, and Rename, Duplicate and Delete under the list. A right-click on a row, a finger held on it, or the context menu key opens the row's menu. Save As asks before it writes over a file of the same name and offers the next free numbered name instead. Delete asks too. Files dropped on the window are handed to the caller to add.
+
+The windows hold no storage. The caller lists the files and does each command (open, save, rename, duplicate, delete, add), and names its files: the words for one and for many, the folder's name, and the kinds of file with their Type labels, type list entries and icon marks. A pinned row, such as an Auto-save, is listed first and can only be opened. Where the browser can link a folder on the player's computer, the caller can pass that folder too. The Look in box then switches between the two folders, and the windows never rename or delete a file on the player's computer.
+
+Previous Versions (`showVersionsDialog` from `windows/fileDialog/versionsDialog`) lists the earlier versions of one file, newest first. Opened from a row's menu, it takes the window's place, and Cancel, the ✕ and Esc put the window back as the player left it.
+
+The folder here is made up and lives only on this page, so try anything: every command changes it in memory.
+
+<Demo name="file-dialog" />
