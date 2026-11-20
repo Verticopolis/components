@@ -197,7 +197,13 @@ bundle to one copy of each.
   beat a layered rule, and the bar's links come out navy on navy.
 - `styles/schemes/skyline.css` and `styles/schemes/high-contrast.css` are the
   optional color schemes. Each applies only under `html[data-scheme="skyline"]`
-  or `html[data-scheme="high_contrast"]`, and goes last.
+  or `html[data-scheme="high_contrast"]`, and goes last. `windows/schemes`
+  lists the schemes with their names and sets or reads the attribute
+  (`applyScheme`, `schemeOf`, and `loadScheme` and `saveScheme` under a key
+  the page names). It imports no stylesheet and no lit, so a site's config
+  can import it in Node. `windows/appearance` is the Appearance dialog that
+  picks one (`openAppearanceDialog`, or `appearanceView` for a `ModalShell`
+  the caller drives); it imports `styles/game/appearance.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -266,7 +272,7 @@ same shell as the player's manual and the engine docs: the package's
 Starlight stylesheet, a title bar, and a working menu bar across the top.
 Its File menu opens the game, the package on npm and the source, and prints
 the page; Edit finds and copies a link; Options picks light, dark or the
-device's look and a color scheme (Classic, Skyline, High Contrast); Help
+device's look and a color scheme (Standard, Skyline, High Contrast); Help
 links to the manual, the engine docs and the issue form.
 
 Each page mounts demos from `gallery/` (`gallery/demos.ts`), which load the
@@ -277,6 +283,7 @@ built package from `lib/` the way a consumer would:
 | Buttons, Windows, Wells | the chrome, in the scheme Options picks |
 | Menu bar | a sample menu bar, the same component the site's own bar uses |
 | Message boxes | the modal message box with a message, a question and a notice |
+| Appearance | the Appearance dialog; OK dresses the site in the picked scheme |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
