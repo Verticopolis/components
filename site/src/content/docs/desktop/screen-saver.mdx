@@ -1,0 +1,14 @@
+---
+title: Screen saver
+description: The five screen savers, and the Screen Saver dialog that picks one and previews it.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+Five screen savers, each a scene drawn on a small canvas at one pixel per four CSS pixels (`windows/screenSaver/skyScenes` and `towerScenes`). Night Shift draws a tower at night from a snapshot the page reads once; with no tower it draws a made-up one, as here. Bulletin Marquee scrolls lines the page hands it. Each is shown here as one still frame.
+
+<Demo name="saver-scenes" />
+
+The Screen Saver dialog (`openScreenSaverDialog` from `windows/screenSaver/saverDialog`) plays the picked saver on its monitor, sets the wait and whether it also shows on the way back to the tab, and previews it over the whole page (`showScreenSaver`). Any key, press or a real mouse move ends the preview, and that input reaches nothing under it. When to start one on its own is `watchForSaver` (`windows/screenSaver/saverTriggers`), and the choices are kept with `loadSaverPrefs` and `saveSaverPrefs`.
+
+<Demo name="saver-dialog" />
