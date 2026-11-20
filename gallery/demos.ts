@@ -21,6 +21,7 @@ import { paintScene, sceneSize, type Scene } from "./scene.js";
 import { elevatorScenes, lobbyScenes, stairScenes } from "./scenes.js";
 import { soundBoard } from "./sounds.js";
 import { canvasFor, figure } from "./canvas.js";
+import { ROOM_MANUAL, manualLink } from "./manual.js";
 import { people } from "./people.js";
 
 /** Room cell size in CSS px. */
@@ -137,7 +138,12 @@ function roomGrid(cells: RoomCell[]): HTMLElement {
     c.draw(frame(ctx, c.hour), CELL_W, CELL_H);
     const fig = document.createElement("figure");
     const cap = document.createElement("figcaption");
-    cap.textContent = c.label;
+    const name = document.createElement("span");
+    name.className = "g-name";
+    name.textContent = c.label;
+    cap.append(name);
+    const page = ROOM_MANUAL[c.kind];
+    if (page) cap.append(" ", manualLink(page));
     fig.append(canvas, cap);
     grid.append(fig);
   }
@@ -152,7 +158,7 @@ function sceneGrid(scenes: Scene[], facts: (kind: FacilityKind) => RenderFacilit
     const [canvas, ctx] = canvasFor(w * SCENE_MAG, h * SCENE_MAG, scene.title);
     ctx.scale(SCENE_MAG, SCENE_MAG);
     paintScene(frame(ctx, GALLERY_HOUR), scene, facts);
-    grid.append(figure(canvas, scene.title, scene.caption));
+    grid.append(figure(canvas, scene.title, scene.caption, scene.manual ? manualLink(scene.manual) : undefined));
   }
   return grid;
 }

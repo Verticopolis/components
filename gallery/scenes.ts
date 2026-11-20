@@ -13,6 +13,8 @@ const W = 30;
 interface Draft {
   title: string;
   caption: string;
+  /** Where the player's manual covers it (manual.ts). */
+  manual?: string;
   width?: number;
   bottom: number;
   top: number;
@@ -69,6 +71,7 @@ function build(facts: Facts, draft: Draft): Scene {
   return {
     title: draft.title,
     caption: draft.caption,
+    manual: draft.manual,
     width,
     bottom: draft.bottom,
     top: draft.top,
@@ -90,6 +93,7 @@ function groundLobby(height: number): Draft {
   const stories = STORIES[height];
   return {
     title: `Ground lobby, ${stories}`,
+    manual: "building/floors-and-lobbies/#the-ground-lobby",
     caption:
       height === 1
         ? "The front doors with the doorman on the left, the service door on the right."
@@ -106,6 +110,7 @@ function skyLobby(height: number): Draft {
   const stories = STORIES[height];
   return {
     title: `Sky lobby, ${stories}`,
+    manual: "building/floors-and-lobbies/#sky-lobbies",
     caption:
       height === 1
         ? "A transfer floor up the tower: skyline glass, planters and prints instead of the front doors."
@@ -127,6 +132,7 @@ export function lobbyScenes(facts: Facts): Scene[] {
     skyLobby(3),
     {
       title: "Halls of two heights",
+      manual: "building/floors-and-lobbies/#halls-side-by-side",
       caption: "Two ground halls of different heights side by side (Modern), with a revolving door in the wall.",
       bottom: 1,
       top: 4,
@@ -144,6 +150,7 @@ export function stairScenes(facts: Facts): Scene[] {
   const drafts: Draft[] = [
     {
       title: "Stairs",
+      manual: "building/stairs-and-escalators/#the-basics",
       caption: "Each stairway climbs one floor. Stacked one above the next, they make a stairwell up four floors.",
       bottom: 1,
       top: 5,
@@ -153,6 +160,7 @@ export function stairScenes(facts: Facts): Scene[] {
     },
     {
       title: "Escalators",
+      manual: "building/stairs-and-escalators/#the-basics",
       caption: "Escalators climb one floor each too, here up three floors of shops and fast food.",
       width: 36,
       bottom: 1,
@@ -163,6 +171,7 @@ export function stairScenes(facts: Facts): Scene[] {
     },
     {
       title: "Up a tall lobby",
+      manual: "building/stairs-and-escalators/#out-of-a-tall-lobby",
       caption: "Out of a three-story lobby, the stairs spiral and the escalator switches back up the whole hall.",
       bottom: 1,
       top: 4,
@@ -175,6 +184,7 @@ export function stairScenes(facts: Facts): Scene[] {
     },
     {
       title: "Beside a venue",
+      manual: "building/stairs-and-escalators/#beside-a-venue",
       caption: "Next to a two-story venue (Modern), a one-story stair spirals and an escalator turns back halfway.",
       width: 40,
       bottom: 2,
@@ -193,6 +203,7 @@ export function elevatorScenes(facts: Facts): Scene[] {
   const drafts: Draft[] = [
     {
       title: "Elevators",
+      manual: "building/elevators/#three-kinds-of-elevator",
       caption:
         "Standard, service and express shafts with their cars. The express passes floors 2 to 7 without a stop line.",
       bottom: 1,
@@ -223,6 +234,7 @@ export function elevatorScenes(facts: Facts): Scene[] {
     },
     {
       title: "Elevators at a sky lobby",
+      manual: "building/elevators/#express-elevators-and-sky-lobbies",
       caption:
         "The express runs up from the ground lobby to the sky lobby, and standard elevators carry people on from there.",
       bottom: 13,

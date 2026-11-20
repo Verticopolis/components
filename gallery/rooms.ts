@@ -26,6 +26,8 @@ const STRUCTURE = new Set<FacilityKind>(["lobby", "floor"]);
 
 export interface RoomCell {
   label: string;
+  /** The room's kind, for its page in the player's manual. */
+  kind: FacilityKind;
   /** The hour this cell is drawn at. */
   hour: number;
   draw(d: DrawCtx, w: number, h: number): void;
@@ -74,6 +76,7 @@ export function roomCells(facilities: readonly RenderFacility[]): RoomCell[] {
     const occupants = galleryOccupants(f);
     const cell = (label: string, subtype?: string): RoomCell => ({
       label,
+      kind,
       hour,
       draw: (d, w, h) =>
         drawRoomPortrait(d, facts, kind, { state: "occupied", occupants, subtype }, 0, 0, w, h, 0, MAG),

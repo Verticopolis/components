@@ -15,14 +15,16 @@ export function canvasFor(cssW: number, cssH: number, label: string): [HTMLCanva
   return [canvas, ctx];
 }
 
-/** A figure holding a canvas, its title and an optional caption line. */
-export function figure(canvas: HTMLCanvasElement, title: string, caption?: string): HTMLElement {
+/** A figure holding a canvas, its title, an optional caption line and an
+ *  optional link (to the player's manual) at the end of the caption. */
+export function figure(canvas: HTMLCanvasElement, title: string, caption?: string, link?: HTMLElement): HTMLElement {
   const fig = document.createElement("figure");
   const cap = document.createElement("figcaption");
   const name = document.createElement("strong");
   name.textContent = title;
   cap.append(name);
   if (caption) cap.append(document.createElement("br"), caption);
+  if (link) cap.append(" ", link);
   fig.append(canvas, cap);
   return fig;
 }

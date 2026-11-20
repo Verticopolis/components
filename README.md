@@ -292,6 +292,10 @@ flowchart LR
   pages --> dist["site/dist/"]
 ```
 
+Each room, scene and section of the People page links to where the player's
+manual (help.verticopolis.com) covers it; the pages and anchors live in
+`gallery/manual.ts`.
+
 The Docs pages have one source, the Markdown files in this repository:
 `site/scripts/sync-pages.mjs` copies the pages listed in `site/pages.json`
 into the site before each build, points their links at the site or at
