@@ -3,7 +3,8 @@ name: Release components
 # Releases @verticopolis/components when a push to main raises the version in
 # package.json (README, "Releasing"). A release PR raises it; this workflow
 # then packs that commit (scripts/pack-components.sh), tags v<version> on it,
-# publishes the GitHub release with the tarball and its checksum, and then
+# publishes the GitHub release with the version's CHANGELOG.md section, the
+# tarball and its checksum, and then
 # publishes that same tarball to npm. A maintainer can also run it from the
 # Actions tab on main to finish a run that failed; it releases the version
 # package.json names on main.
@@ -110,6 +111,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The version's CHANGELOG.md section, heading excluded, is the
+      # release's notes; checked before anything is tagged.
+      - name: Read the changelog section
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          set -euo pipefail
+          awk -v v="$VERSION" '/^## / { if (on) exit; if ($2 == v) { on = 1; next } } on' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then echo "::error::CHANGELOG.md has no $VERSION section. Rename its Unreleased heading in a release PR."; exit 1; fi
+          printf '\nThe tarball and its SHA-256 checksum are attached. On npm as [`@verticopolis/components@%s`](https://www.npmjs.com/package/@verticopolis/components/v/%s) once the owner approves the publish.\n' "$VERSION" "$VERSION" >> notes.md
+
       - name: Pack
         env:
           VERSION: ${{ needs.check.outputs.version }}
@@ -156,7 +168,7 @@ jobs:
           # Attach while a draft, then publish, so a published release is never edited.
           # shellcheck disable=SC2086 # $kind holds one or two flags
           gh release create "$tag" --target "$target" --title "$tag" $kind --draft \
-            --notes "The @verticopolis/components package for $VERSION, with its SHA-256 checksum. On npm as [\`@verticopolis/components@$VERSION\`](https://www.npmjs.com/package/@verticopolis/components/v/$VERSION) once the owner approves the publish."
+            --notes-file notes.md
           gh release upload "$tag" dist/*
           # shellcheck disable=SC2086
           gh release edit "$tag" --draft=false $kind

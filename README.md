@@ -193,12 +193,20 @@ pixel comparison (`PW_VISUAL=1` compares anyway).
 
 ## Releasing
 
+A pull request that changes what the package ships adds a line under
+`## Unreleased` in [`CHANGELOG.md`](CHANGELOG.md), led by its level:
+**major** for a breaking change to an export or a stylesheet's selectors,
+**minor** for a new export, component or look, **patch** for a fix.
+
 A release PR raises `version` in `package.json` (and `package-lock.json`,
-with `npm version <x.y.z> --no-git-tag-version`). When it merges, **Release
-components** (`.github/workflows/components-release.yml`) packs that commit,
-tags `v<version>` on it, publishes the GitHub release (named after the tag,
-and Latest unless it is a prerelease) with the tarball and its checksum, and
-then publishes that same tarball to npm. Only the npm publish waits on the
+with `npm version <x.y.z> --no-git-tag-version`) to the highest level its
+Unreleased lines name, and renames that heading to `## <version> (<date>)`.
+When it merges, **Release components**
+(`.github/workflows/components-release.yml`) packs that commit, tags
+`v<version>` on it, publishes the GitHub release (named after the tag, and
+Latest unless it is a prerelease) with the version's changelog section, the
+tarball and its checksum, and then publishes that same tarball to npm. It
+refuses a version with no changelog section, before it tags anything. Only the npm publish waits on the
 `registry` environment, which only the owner approves, so a release takes
 one approval, as in the engine. npm publishing uses
 trusted publishing, so no npm token is stored anywhere and each version
@@ -214,10 +222,9 @@ The components came out of the game's repository, and its rules came with
 them: American English, no em-dashes in prose, a 500-line ceiling per source
 file, and unit tests that stand in for the engine with spies.
 
-These components live here now. Pull requests open here once the game
-builds from this repository's packages, which takes a few days. Until then,
-changes to these folders are on hold everywhere, Verticopolis/web included.
-Issues are welcome here now.
+Pull requests and issues for the components open here. The game takes a
+change when a pull request in Verticopolis/web raises its
+`@verticopolis/components` pin.
 
 ## History
 
