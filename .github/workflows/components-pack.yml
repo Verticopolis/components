@@ -86,9 +86,11 @@ jobs:
       # (engine#89): outside the deprecated shims, no built module names it,
       # and the packed tarball loads and type-checks with the engine absent.
       - name: Check lib/ imports no engine outside the shims
+        if: steps.scope.outputs.run == 'true'
         run: node scripts/engine-free.ts
 
       - name: Install the tarball without the engine
+        if: steps.scope.outputs.run == 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: sh scripts/engine-free-consumer.sh "dist/verticopolis-components-$VERSION.tgz"
