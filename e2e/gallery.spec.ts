@@ -159,10 +159,12 @@ test("room sprites", async ({ page }) => {
   const cells = page.locator(".g-sprites figure");
   const count = await cells.count();
   expect(count).toBeGreaterThan(0);
+  // Every room links to where the player's manual covers it (gallery/manual.ts).
+  await expect(cells.filter({ has: page.locator("a.g-manual") })).toHaveCount(count);
   const seen = new Set<string>();
   for (let i = 0; i < count; i++) {
     const cell = cells.nth(i);
-    const name = fileSlug((await cell.locator("figcaption").textContent()) ?? `sprite-${i}`);
+    const name = fileSlug((await cell.locator("figcaption .g-name").textContent()) ?? `sprite-${i}`);
     expect(seen.has(name), `two sprites are both named ${name}`).toBe(false);
     seen.add(name);
     await expect(cell).toHaveScreenshot(`sprite-${name}.png`);

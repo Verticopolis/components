@@ -65,6 +65,8 @@ export interface SceneShaft {
 export interface Scene {
   title: string;
   caption: string;
+  /** Where the player's manual covers it: a page path and anchor (manual.ts). */
+  manual?: string;
   /** Columns across. */
   width: number;
   bottom: number;

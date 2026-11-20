@@ -21,6 +21,7 @@ import {
 } from "../lib/render/pixelSprites/people.js";
 import { personHiVis, personSeated, personStanding, personWalker, sleeper } from "../lib/render/pixelSprites/common.js";
 import { canvasFor, figure } from "./canvas.js";
+import { manualLink } from "./manual.js";
 
 /** Magnification, a whole multiple so world pixels stay square blocks. */
 const MAG = 3;
@@ -116,13 +117,14 @@ function describe(look: Look): string {
   return `${top}, ${HAIR[look.hairStyle]}, ${CARRY[look.carry]}`;
 }
 
-function section(heading: string, note: string, items: HTMLElement[]): HTMLElement {
+function section(heading: string, note: string, items: HTMLElement[], manual?: string): HTMLElement {
   const wrap = document.createElement("section");
   wrap.className = "g-people-section";
   const h = document.createElement("h3");
   h.textContent = heading;
   const p = document.createElement("p");
   p.textContent = note;
+  if (manual) p.append(" ", manualLink(manual));
   const grid = document.createElement("div");
   grid.className = "g-people";
   grid.append(...items);
@@ -132,7 +134,12 @@ function section(heading: string, note: string, items: HTMLElement[]): HTMLEleme
 
 function tenants(): HTMLElement {
   const items = CAST.map((look, i) => strip(`Visitor ${i + 1}`, describe(look), ...walkCycle(look)));
-  return section("Tenants and visitors", "The civilian cast walking: four lit frames, then the two flat ones.", items);
+  return section(
+    "Tenants and visitors",
+    "The civilian cast walking: four lit frames, then the two flat ones.",
+    items,
+    "tower/people/#who-is-in-your-tower",
+  );
 }
 
 function crew(): HTMLElement {
@@ -153,7 +160,12 @@ function crew(): HTMLElement {
     ];
     return strip(`Housekeeper ${i + 1}`, `${describe(withCart)}: pushing the cart, vacuuming, making a bed`, lit, flat);
   });
-  return section("Housekeeping crew", "One uniform on six different people, with the cart and the vacuum.", items);
+  return section(
+    "Housekeeping crew",
+    "One uniform on six different people, with the cart and the vacuum.",
+    items,
+    "rooms/hotels/#housekeeping",
+  );
 }
 
 function staff(): HTMLElement {
@@ -168,7 +180,12 @@ function staff(): HTMLElement {
     strip("Thief", `${describe(thief)}, running`, thiefRunLit, thiefRunFlat),
     strip("Thief, caught", "hands up, the sack dropped", ...both(thief, { pose: "caught", empty: true })),
   ];
-  return section("Staff and the thief", "The guard, the maintenance crew and the thief.", items);
+  return section(
+    "Staff and the thief",
+    "The guard, the maintenance crew and the thief.",
+    items,
+    "tower/events/#thieves",
+  );
 }
 
 const POSES: readonly { pose: Pose; title: string; caption: string }[] = [
@@ -187,7 +204,12 @@ const POSES: readonly { pose: Pose; title: string; caption: string }[] = [
 function poses(): HTMLElement {
   const look = CAST[2];
   const items = POSES.map((p) => strip(p.title, p.caption, ...both(look, { pose: p.pose, frame: 0, empty: true })));
-  return section("Poses", "Every pose, lit and flat, on one visitor with nothing in hand.", items);
+  return section(
+    "Poses",
+    "Every pose, lit and flat, on one visitor with nothing in hand.",
+    items,
+    "tower/people/#what-the-people-are-doing",
+  );
 }
 
 const MOODS: readonly { mood: Mood; pose: Pose; title: string; caption: string }[] = [
@@ -202,7 +224,12 @@ function moods(): HTMLElement {
     const flat = CAST.slice(0, 3).map((look) => ({ look, o: { lit: false, pose: m.pose, mood: m.mood } }));
     return strip(m.title, m.caption, lit, flat);
   });
-  return section("Moods", "How a wait shows: the top takes the mood's color.", items);
+  return section(
+    "Moods",
+    "How a wait shows: the top takes the mood's color.",
+    items,
+    "tower/people/#when-people-wait-too-long",
+  );
 }
 
 /** The room builds, drawn the way the rooms draw their guests. */
