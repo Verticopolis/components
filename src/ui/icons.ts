@@ -80,8 +80,8 @@ interface IconPath {
 
 /** The only baked fills allowed in the set: the red/amber hazard pair the
  *  bulldoze wrecking ball uses. The red matches the tool palette's bulldoze
- *  swatch. `iconCoverage.guard.test.ts` pins that no other fill sneaks in and
- *  that no bulletin icon bakes one. */
+ *  swatch. `icons.test.ts` pins that no other icon bakes a fill and that every
+ *  fill comes from this list. */
 export const ACCENT_FILLS = ["#ff6b6b", "#ffb454"] as const;
 
 /** The custom, hand-drawn glyphs with no pixelarticons equivalent. Everything
@@ -140,8 +140,8 @@ const ICONS: Record<IconName, IconPath[]> = {
   ...CUSTOM,
 } as Record<IconName, IconPath[]>;
 
-/** Every icon name that resolves to real path data. Exported so the coverage
- *  guard can walk the whole set (accent-fill and currentColor checks). */
+/** Every icon name that resolves to real path data, so a caller or a test can
+ *  walk the whole set. */
 export const ICON_NAMES = Object.keys(ICONS) as IconName[];
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -224,9 +224,8 @@ const EMOJI_KEYS = Object.keys(EMOJI_ICONS);
  *  before the emoji cannot silently turn the icon back into tofu text. Still
  *  anchored past that: a mapped emoji after any non-whitespace prefix (a tower
  *  name, a "Day 5:" label, a quote) is left as text, per the contract above.
- *  The emitter side of the invariant is pinned by
- *  `iconCoverage.guard.test.ts`, which fails CI if a message layer ever writes
- *  a mapped emoji that is not message-leading. */
+ *  Each game checks the emitter side: that its own bulletins never write a
+ *  mapped emoji anywhere but the head of a message. */
 const LEADING_EMOJI_RE = new RegExp(
   "^\\s*(" + EMOJI_KEYS.map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")\\uFE0F?",
   "u",

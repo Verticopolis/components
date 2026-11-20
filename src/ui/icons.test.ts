@@ -5,6 +5,8 @@ import {
   appendMessageWithIcons,
   messageWithIcons,
   EMOJI_ICONS,
+  ACCENT_FILLS,
+  ICON_NAMES,
   type IconName,
 } from "./icons";
 import { html } from "lit-html";
@@ -13,9 +15,8 @@ import { renderToFragment } from "./testing/litTestUtils";
 /**
  * The inline icon module (issue #721): the element/template builders, and the
  * two message mappers that swap bulletin emoji for icons while keeping every
- * other character as text. The simulation->bulletin coverage contract (every emoji
- * the simulation emits is mapped) is pinned separately in
- * `src/tests/iconCoverage.guard.test.ts`.
+ * other character as text. Each game checks that every emoji its own
+ * bulletins emit has an entry in EMOJI_ICONS.
  */
 
 const ALL_NAMES = [...new Set(Object.values(EMOJI_ICONS))];
@@ -88,6 +89,33 @@ describe("iconElement", () => {
       for (const p of svg.querySelectorAll("path")) {
         expect(p.getAttribute("d"), `${name} path has empty d`).toBeTruthy();
       }
+    }
+  });
+
+  it("keeps every bulletin icon currentColor-only, so a log line's severity color carries", () => {
+    for (const name of ALL_NAMES) {
+      const svg = iconElement(name as IconName);
+      expect(svg.getAttribute("fill"), `${name} lost its currentColor root`).toBe("currentColor");
+      for (const p of svg.querySelectorAll("path")) {
+        expect(p.getAttribute("fill"), `${name} bakes a path fill; a bulletin icon must inherit its color`).toBeNull();
+      }
+    }
+  });
+
+  it("lets only the bulldoze glyph bake a fill, and only from ACCENT_FILLS", () => {
+    const allowed = new Set<string>(ACCENT_FILLS);
+    const baked = new Map<string, string[]>();
+    for (const name of ICON_NAMES) {
+      const fills = [...iconElement(name).querySelectorAll("path")]
+        .map((p) => p.getAttribute("fill"))
+        .filter((f): f is string => f !== null);
+      if (fills.length > 0) baked.set(name, fills);
+    }
+    expect([...baked.keys()], "only bulldoze may bake a fill; every other icon inherits currentColor").toEqual([
+      "bulldoze",
+    ]);
+    for (const fill of baked.get("bulldoze")!) {
+      expect(allowed.has(fill), `bulldoze uses ${fill}, which is not in ACCENT_FILLS`).toBe(true);
     }
   });
 
@@ -219,9 +247,8 @@ describe("appendMessageWithIcons", () => {
 
   it("keeps a labeled or quoted prefix message as plain text (issue #743)", () => {
     // A non-whitespace prefix means the emoji is not the leading severity
-    // marker, so it stays text here; the emitter-side guard in
-    // iconCoverage.guard.test.ts is what forbids the simulation from ever writing
-    // this shape, keeping the invariant structural instead of assumed.
+    // marker, so it stays text here. Each game checks that its own bulletins
+    // never write this shape.
     for (const message of ["Day 5: 🔥 Blaze in the lobby", '"🔥 Blaze in the lobby" was the bulletin']) {
       const el = document.createElement("div");
       const inserted = appendMessageWithIcons(el, message);
