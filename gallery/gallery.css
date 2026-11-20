@@ -81,3 +81,33 @@
   font-size: 12px;
   padding: 2px 0;
 }
+.g-scenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.g-scenes figure {
+  margin: 0;
+}
+.g-scenes canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #12151d;
+  image-rendering: pixelated;
+}
+.g-scenes figcaption {
+  font-size: 12px;
+  padding: 2px 0;
+}
+.g-sound-row {
+  margin: 0 0 0.75em;
+}
+.g-sound-row > h3 {
+  margin: 0 0 0.35em;
+  font-size: 0.95em;
+}
+.g-sound-row .btn[aria-pressed="true"] {
+  font-weight: bold;
+}

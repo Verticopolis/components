@@ -1,7 +1,8 @@
 /**
  * Screenshot tests over the component gallery: each section of chrome (the
  * page window, buttons, windows, wells, the menu bar closed and open, the
- * icons) in each color scheme, and every room sprite once. The projects in
+ * icons, the sound board) in each color scheme, and every tower scene and
+ * room sprite once. The projects in
  * playwright.config.ts run it on a desktop and a phone screen.
  */
 import { test, expect, type Locator, type Page } from "@playwright/test";
@@ -17,6 +18,7 @@ const SECTIONS = [
   { title: "Windows", slug: "windows" },
   { title: "Wells, fields and key-value rows", slug: "wells" },
   { title: "Icons", slug: "icons" },
+  { title: "Sounds", slug: "sounds" },
 ] as const;
 
 const MENUS = [
@@ -95,9 +97,24 @@ for (const scheme of SCHEMES) {
   });
 }
 
-// The painters draw on a canvas and read no stylesheet, so each sprite is shot
-// once, in the classic scheme; the phone project still shoots them at its own
-// pixel ratio.
+// The painters draw on a canvas and read no stylesheet, so each scene and
+// sprite is shot once, in the classic scheme; the phone project still shoots
+// them at its own pixel ratio.
+test("tower scenes", async ({ page }) => {
+  await openGallery(page, "Classic");
+  const scenes = page.locator(".g-scenes figure");
+  const count = await scenes.count();
+  expect(count).toBeGreaterThan(0);
+  const seen = new Set<string>();
+  for (let i = 0; i < count; i++) {
+    const scene = scenes.nth(i);
+    const name = fileSlug((await scene.locator("figcaption strong").textContent()) ?? `scene-${i}`);
+    expect(seen.has(name), `two scenes are both named ${name}`).toBe(false);
+    seen.add(name);
+    await expect(scene.locator("canvas")).toHaveScreenshot(`scene-${name}.png`);
+  }
+});
+
 test("room sprites", async ({ page }) => {
   await openGallery(page, "Classic");
   const cells = page.locator(".g-sprites figure");

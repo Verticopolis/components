@@ -2,20 +2,23 @@
  * The component gallery: every reusable piece of the package in each color
  * scheme, built from lib/ the way a consumer would. The chrome (windows,
  * buttons, wells, key-value rows, the menu bar and the icons) is plain markup
- * over the package's stylesheets; the room sprites are painted by the
- * package's own portrait painters from the components' hand-written Modern
- * render catalog (`src/tests/catalogFixture.ts`), the stand-in for the one a
- * game hands the renderer. The overview map is left out: it draws a running
- * tower, and the gallery has none.
+ * over the package's stylesheets. The rooms and the tower scenes are painted
+ * by the package's own painters from the components' hand-written render
+ * catalog (`src/tests/catalogFixture.ts`), the stand-in for the catalog a game
+ * hands the renderer. The overview map is left out: it draws a running tower,
+ * and the gallery has none.
  */
 import { catalogFor } from "../src/tests/catalogFixture.js";
-import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/renderModel.js";
+import type { FacilityKind, RenderFacility } from "../lib/render/renderModel.js";
 import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
-import { drawRoomPortrait, drawTransportPortrait } from "../lib/render/roomPortrait.js";
 import type { DrawCtx } from "../lib/render/sprites.js";
 import { MenuBar } from "../lib/ui/menuBar.js";
 import { ICON_NAMES, iconElement } from "../lib/ui/icons.js";
+import { GALLERY_HOUR, roomCells, type RoomCell } from "./rooms.js";
+import { paintScene, sceneSize, type Scene } from "./scene.js";
+import { elevatorScenes, lobbyScenes, stairScenes } from "./scenes.js";
+import { soundBoard } from "./sounds.js";
 
 /** The color schemes, by the value each sets on `html[data-scheme]` (none for
  *  the classic look). */
@@ -25,12 +28,12 @@ const SCHEMES: ReadonlyArray<{ label: string; value: string | null }> = [
   { label: "High contrast", value: "high_contrast" },
 ];
 
-/** Sprite cell size in CSS px, the caption strip the painters keep clear, and
- *  the magnification (a whole multiple, so world pixels stay square blocks). */
+/** Room cell size in CSS px. */
 const CELL_W = 260;
 const CELL_H = 200;
-const CAPTION_H = 0;
-const MAG = 3;
+
+/** Scene magnification, a whole multiple so world pixels stay square blocks. */
+const SCENE_MAG = 2;
 
 const app = document.getElementById("app")!;
 
@@ -157,67 +160,84 @@ function icons(): HTMLElement {
   return grid;
 }
 
-interface Sprite {
-  label: string;
-  draw(d: DrawCtx, w: number, h: number): void;
+/** A still evening frame, the look the game's own sprite gallery used. */
+function frame(ctx: CanvasRenderingContext2D, hour: number): DrawCtx {
+  return { ctx, lit: true, anim: 0, hour, parkingUse: 0.7, recycleFill: 0.66 };
 }
 
-/** Transport drawn over one fixed flight; the rest are drawn over three floors. */
-const FIXED_SPAN = new Set<FacilityKind>(["stairs", "escalator"]);
-
-/** One cell per catalog kind, plus one per named variant (the canon shop,
- *  restaurant and venue names), in the catalog's own order. */
-function sprites(cat: RenderCatalog): Sprite[] {
-  const facts = (kind: FacilityKind): RenderFacility => {
-    const f = cat.facilities.find((e) => e.key === kind);
-    if (!f) throw new Error(`The gallery's catalog has no ${kind}.`);
-    return f;
-  };
-  return cat.facilities.flatMap((f): Sprite[] => {
-    const kind = f.key;
-    if (f.transport) {
-      const span = FIXED_SPAN.has(kind) ? 1 : 3;
-      return [
-        { label: f.name, draw: (d, w, h) => drawTransportPortrait(d, facts, kind, span, 0, 0, w, h, CAPTION_H, MAG) },
-      ];
-    }
-    const base: Sprite = {
-      label: f.name,
-      draw: (d, w, h) => drawRoomPortrait(d, facts, kind, { state: "occupied" }, 0, 0, w, h, CAPTION_H, MAG),
-    };
-    const variants = (f.subtypes ?? []).map((name): Sprite => ({
-      label: `${f.name}: ${name}`,
-      draw: (d, w, h) =>
-        drawRoomPortrait(d, facts, kind, { state: "occupied", subtype: name }, 0, 0, w, h, CAPTION_H, MAG),
-    }));
-    return [base, ...variants];
-  });
+function canvasFor(cssW: number, cssH: number, label: string): [HTMLCanvasElement, CanvasRenderingContext2D] {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  canvas.setAttribute("role", "img");
+  canvas.setAttribute("aria-label", label);
+  const ctx = canvas.getContext("2d")!;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  return [canvas, ctx];
 }
 
-function spriteGrid(list: Sprite[]): HTMLElement {
+function figure(canvas: HTMLCanvasElement, title: string, caption?: string): HTMLElement {
+  const fig = document.createElement("figure");
+  const cap = document.createElement("figcaption");
+  const name = document.createElement("strong");
+  name.textContent = title;
+  cap.append(name);
+  if (caption) cap.append(document.createElement("br"), caption);
+  fig.append(canvas, cap);
+  return fig;
+}
+
+function roomGrid(cells: RoomCell[]): HTMLElement {
   const grid = document.createElement("div");
   grid.className = "g-sprites";
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  for (const s of list) {
+  for (const c of cells) {
+    const [canvas, ctx] = canvasFor(CELL_W, CELL_H, c.label);
+    c.draw(frame(ctx, c.hour), CELL_W, CELL_H);
     const fig = document.createElement("figure");
-    const canvas = document.createElement("canvas");
-    canvas.width = CELL_W * dpr;
-    canvas.height = CELL_H * dpr;
-    canvas.setAttribute("role", "img");
-    canvas.setAttribute("aria-label", s.label);
-    const ctx = canvas.getContext("2d")!;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // A still evening frame, the look the game's own sprite gallery used.
-    s.draw({ ctx, lit: true, anim: 0, hour: 19, parkingUse: 0.7, recycleFill: 0.66 }, CELL_W, CELL_H);
     const cap = document.createElement("figcaption");
-    cap.textContent = s.label;
+    cap.textContent = c.label;
     fig.append(canvas, cap);
     grid.append(fig);
   }
   return grid;
 }
 
-async function start(): Promise<void> {
+function sceneGrid(scenes: Scene[], facts: (kind: FacilityKind) => RenderFacility): HTMLElement {
+  const grid = document.createElement("div");
+  grid.className = "g-scenes";
+  for (const scene of scenes) {
+    const { w, h } = sceneSize(scene);
+    const [canvas, ctx] = canvasFor(w * SCENE_MAG, h * SCENE_MAG, scene.title);
+    ctx.scale(SCENE_MAG, SCENE_MAG);
+    paintScene(frame(ctx, GALLERY_HOUR), scene, facts);
+    grid.append(figure(canvas, scene.title, scene.caption));
+  }
+  return grid;
+}
+
+/** The rooms and the tower scenes, drawn from the Modern render catalog,
+ *  which holds every kind and variety the art draws. */
+function towerSections(): HTMLElement[] {
+  const cat = catalogFor("modern");
+  bindViewWorld(cat.world);
+  bindViewKinds(cat);
+  const byKey = new Map(cat.facilities.map((f) => [f.key, f]));
+  const facts = (kind: FacilityKind): RenderFacility => {
+    const f = byKey.get(kind);
+    if (!f) throw new Error(`The gallery's catalog has no ${kind}.`);
+    return f;
+  };
+  return [
+    section("Lobbies", sceneGrid(lobbyScenes(facts), facts)),
+    section("Stairs and escalators", sceneGrid(stairScenes(facts), facts)),
+    section("Elevators", sceneGrid(elevatorScenes(facts), facts)),
+    section("Rooms", roomGrid(roomCells(cat.facilities))),
+  ];
+}
+
+function start(): void {
   const win = fromMarkup(`
 <div class="win page-win">
   <div class="win-title"><span class="page-title-text">@verticopolis/components</span></div>
@@ -229,7 +249,6 @@ async function start(): Promise<void> {
   <h1>Component gallery</h1>
   <p class="sub">Every reusable piece of the package, drawn from its own stylesheets and painters. Pick a color scheme to see each one in it.</p>
 </div>`);
-  const spritesHolder = document.createElement("div");
   const menu = fromMarkup(MENU);
   const menuNote = document.createElement("p");
   menuNote.textContent =
@@ -242,18 +261,15 @@ async function start(): Promise<void> {
     section("Wells, fields and key-value rows", fromMarkup(WELLS)),
     section("Menu bar", menuNote),
     section("Icons", icons()),
-    section("Room sprites", spritesHolder),
+    section("Sounds", soundBoard()),
+    ...towerSections(),
   );
   // The menu bar sits above the page window, outside any window body, the
   // way the game places it, so no page rule restyles its items.
   app.replaceChildren(menu, win);
   new MenuBar(menu);
 
-  const cat = catalogFor("modern");
-  bindViewWorld(cat.world);
-  bindViewKinds(cat);
-  spritesHolder.replaceChildren(spriteGrid(sprites(cat)));
   (window as unknown as { galleryReady: boolean }).galleryReady = true;
 }
 
-void start();
+start();
