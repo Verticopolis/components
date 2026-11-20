@@ -122,6 +122,16 @@ cannot load a module that does.
   layout and a dark-ground override. `styles.css` does not include it.
 - `styles/not-found.css` is the "page not found" page. It imports
   `retro-page.css` itself, so it is the only file that page needs.
+- `styles/starlight.css` dresses a [Starlight](https://starlight.astro.build)
+  docs site in the game's look: the tokens, `styles/starlight-theme.css` (the
+  How to Play window's title bar, sidebar and well, and the title screen for a
+  page with a hero) and `styles/title-bar.css`, in that order. Starlight puts
+  its own CSS in the `starlight` layer, so the site's first `customCss` entry
+  is a file holding `@layer starlight, vc;`, and `starlight.css` comes next.
+  The title screen's skyline is `/splash-skyline.svg`, which the site serves.
+- `styles/title-bar.css` is the docs title bar on its own: the `.vc-bar`
+  markup a docs site draws in its header, and that a page outside Starlight
+  (such as `cargo doc` output) can draw on a navy bar of its own.
 - `styles/schemes/skyline.css` and `styles/schemes/high-contrast.css` are the
   optional color schemes. Each applies only under `html[data-scheme="skyline"]`
   or `html[data-scheme="high_contrast"]`, and goes last.
@@ -147,7 +157,8 @@ in this order at the top of every stylesheet:
 - `vc.page`: the overview map (`overview-map.css`, `overview-map-views.css`,
   which lay out the game's stage around the map), the game's layout
   (`styles/game/*`), the color schemes and the standalone pages
-  (`retro-page.css`, `not-found.css`), in the order `styles.css` imports them.
+  (`retro-page.css`, `not-found.css`), in the order `styles.css` imports them,
+  and the docs pages (`starlight-theme.css`, then `title-bar.css`).
 
 A later layer beats an earlier one whatever the selectors, and a rule a page
 writes outside any layer beats every `vc` rule, wherever the bundler puts the
