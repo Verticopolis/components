@@ -125,4 +125,25 @@ describe("PaletteFit", () => {
     expect(win.classList.contains(PALETTE_FIT.compact)).toBe(true);
     fit.dispose();
   });
+
+  it("skips the fonts-ready refit once disposed", async () => {
+    let ready!: () => void;
+    const fonts = { ready: new Promise<void>((r) => (ready = r)) };
+    const had = Object.getOwnPropertyDescriptor(document, "fonts");
+    Object.defineProperty(document, "fonts", { configurable: true, value: fonts });
+    try {
+      const heights: Record<string, number> = { "": 300 };
+      const win = windowOf(heights);
+      const fit = new PaletteFit(win);
+      fit.dispose();
+      heights[""] = 500;
+      ready();
+      await fonts.ready;
+      await Promise.resolve();
+      expect(win.className).toBe("");
+    } finally {
+      if (had) Object.defineProperty(document, "fonts", had);
+      else delete (document as { fonts?: unknown }).fonts;
+    }
+  });
 });

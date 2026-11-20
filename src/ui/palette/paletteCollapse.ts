@@ -1,4 +1,5 @@
-import { html, nothing, render, type TemplateResult } from "lit-html";
+import { html, nothing, type TemplateResult } from "lit-html";
+import { renderDetached, type Detached } from "../detached";
 import { PALETTE_FIT_MQ } from "./paletteFit";
 
 /**
@@ -73,6 +74,10 @@ function buttonTemplate(collapsed: boolean, controls: string | undefined, press:
 export class PaletteCollapse {
   private collapsed: boolean;
   private readonly bar: HTMLElement | null;
+  /** The button, drawn on its own and placed at the end of the title bar,
+   *  so the game's own title bar parts (a desk's window buttons) stay out of
+   *  its render. */
+  private button: Detached | null = null;
 
   constructor(
     private readonly win: HTMLElement,
@@ -111,9 +116,12 @@ export class PaletteCollapse {
     this.win.classList.toggle(PALETTE_COLLAPSED_CLASS, this.collapsed);
     if (!this.bar) return;
     const list = this.win.querySelector<HTMLElement>(".palette-scroll");
-    render(
-      buttonTemplate(this.collapsed, list?.id || undefined, () => this.toggle()),
-      this.bar,
-    );
+    const template = buttonTemplate(this.collapsed, list?.id || undefined, () => this.toggle());
+    if (this.button) {
+      this.button.update(template);
+      return;
+    }
+    this.button = renderDetached(this.win.ownerDocument, template);
+    this.bar.append(...this.button.elements);
   }
 }

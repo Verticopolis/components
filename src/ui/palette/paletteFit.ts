@@ -101,6 +101,7 @@ export function changesFoldedRows(record: MutationRecord): boolean {
 export class PaletteFit {
   private readonly media: MediaQueryList | null;
   private readonly stops: (() => void)[] = [];
+  private disposed = false;
 
   constructor(private readonly win: HTMLElement) {
     const view = win.ownerDocument.defaultView;
@@ -129,7 +130,9 @@ export class PaletteFit {
       rows.observe(win, { subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
       this.stops.push(() => rows.disconnect());
     }
-    void win.ownerDocument.fonts?.ready.then(refit);
+    void win.ownerDocument.fonts?.ready.then(() => {
+      if (!this.disposed) this.refit();
+    });
     this.refit();
   }
 
@@ -140,6 +143,7 @@ export class PaletteFit {
 
   /** Stop watching the window. Its classes stay as they are. */
   dispose(): void {
+    this.disposed = true;
     for (const stop of this.stops.splice(0)) stop();
   }
 }

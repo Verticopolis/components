@@ -120,7 +120,7 @@
     color: #eef2ff;
   }
 
-  /* Folding a category from its header (src/ui/paletteSections.ts), wherever
+  /* Folding a category from its header (src/ui/palette/toolPalette.ts), wherever
    the headers show: the desktop and tablet layouts. The query is the
    complement of the phone block's, so a fold stored on a desktop never empties
    a phone's category tab. */
@@ -144,7 +144,7 @@
     }
   }
 
-  /* Desktop fit (src/ui/paletteFit.ts): when every tool will not fit the window's
+  /* Desktop fit (src/ui/palette/paletteFit.ts): when every tool will not fit the window's
    height, the fit picks compact rows, then two columns, then both, so the
    desktop Tools window shows its whole list without a scrollbar. The query
    matches PALETTE_FIT_MQ; phones, sideways phones and tablets keep their own
@@ -193,7 +193,7 @@
       position: static;
     }
 
-    /* The fold button (src/ui/paletteCollapse.ts), and the folded window: a
+    /* The fold button (src/ui/palette/paletteCollapse.ts), and the folded window: a
      thin strip of title bar with "Tools" running down it and the button on
      top, which opens it again. */
     .pal-collapse {

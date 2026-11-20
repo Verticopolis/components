@@ -37,6 +37,18 @@ describe("PaletteCollapse", () => {
     expect(win.classList.contains(PALETTE_COLLAPSED_CLASS)).toBe(false);
   });
 
+  it("keeps the game's own title bar parts placed after it through a press", () => {
+    new PaletteCollapse(win, {});
+    const title = win.querySelector<HTMLElement>(".win-title")!;
+    const max = document.createElement("button");
+    max.className = "win-max";
+    title.append(max);
+    button().click();
+    button().click();
+    expect(title.contains(max)).toBe(true);
+    expect([...title.children]).toEqual([button(), max]);
+  });
+
   it("folds and opens on a press, keeps the choice, and tells the game", () => {
     const toggled = vi.fn();
     const c = new PaletteCollapse(win, { store: { key: "k", storage }, toggled });
