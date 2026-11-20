@@ -1,7 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DeskWindowSpec } from "./deskWindow";
 import { MovableWindow, WITHIN_PARENT } from "../movableWindow";
-import { DESK_ACTIVE_CLASS, DESK_MAXIMIZED_CLASS, DESK_MINIMIZED_CLASS, DeskWindow, buildFrame, titleButton } from "./deskWindow";
+import {
+  DESK_ACTIVE_CLASS,
+  DESK_MAXIMIZED_CLASS,
+  DESK_MINIMIZED_CLASS,
+  DeskWindow,
+  buildFrame,
+  titleButton,
+} from "./deskWindow";
 
 const LIMITS = { minW: 300, minH: 200 };
 
@@ -57,7 +64,9 @@ describe("DeskWindow", () => {
     const el = frame();
     el.querySelector(".win-title")!.appendChild(titleButton(document, "close", "Close"));
     new DeskWindow(spec(el, { canMax: true }));
-    const kinds = [...el.querySelectorAll(".win-title .desk-btn")].map((b) => [...b.classList].find((c) => c.startsWith("desk-btn-")));
+    const kinds = [...el.querySelectorAll(".win-title .desk-btn")].map((b) =>
+      [...b.classList].find((c) => c.startsWith("desk-btn-")),
+    );
     expect(kinds).toEqual(["desk-btn-min", "desk-btn-max", "desk-btn-close"]);
     const plain = buildFrame(document, "desk-win-info", "Info").root;
     document.getElementById("desk")!.appendChild(plain);
@@ -87,7 +96,12 @@ describe("DeskWindow", () => {
     const w = new DeskWindow(s);
     // happy-dom lays nothing out: read the window's box from its own styles.
     const px = (v: string) => parseFloat(v) || 0;
-    for (const [prop, css] of [["offsetLeft", "left"], ["offsetTop", "top"], ["offsetWidth", "width"], ["offsetHeight", "height"]] as const) {
+    for (const [prop, css] of [
+      ["offsetLeft", "left"],
+      ["offsetTop", "top"],
+      ["offsetWidth", "width"],
+      ["offsetHeight", "height"],
+    ] as const) {
       Object.defineProperty(el, prop, { get: () => px(el.style[css]) });
     }
     w.place({ x: 40, y: 30, w: 500, h: 400 });
@@ -139,7 +153,10 @@ describe("DeskWindow", () => {
     const desk = document.getElementById("desk")!;
     Object.defineProperty(desk, "clientWidth", { value: 2000 });
     Object.defineProperty(desk, "clientHeight", { value: 2000 });
-    const pointer = (type: string, x: number, y: number) => grip.dispatchEvent(Object.assign(new MouseEvent(type, { clientX: x, clientY: y, button: 0, bubbles: true }), { pointerId: 1 }));
+    const pointer = (type: string, x: number, y: number) =>
+      grip.dispatchEvent(
+        Object.assign(new MouseEvent(type, { clientX: x, clientY: y, button: 0, bubbles: true }), { pointerId: 1 }),
+      );
     pointer("pointerdown", 100, 100);
     expect(desk.querySelector(".desk-outline")).not.toBeNull();
     pointer("pointerup", 100, 100);
@@ -161,7 +178,8 @@ describe("DeskWindow", () => {
     w.minimize();
     w.dispose();
     expect(el.querySelector(".desk-btn-min, .desk-btn-max, .desk-grip")).toBeNull();
-    for (const c of ["desk-win", DESK_MINIMIZED_CLASS, DESK_MAXIMIZED_CLASS, DESK_ACTIVE_CLASS]) expect(el.classList.contains(c)).toBe(false);
+    for (const c of ["desk-win", DESK_MINIMIZED_CLASS, DESK_MAXIMIZED_CLASS, DESK_ACTIVE_CLASS])
+      expect(el.classList.contains(c)).toBe(false);
     expect(el.getAttribute("style") ?? "").not.toMatch(/width|height|left|top/);
     el.dispatchEvent(new Event("pointerdown"));
     expect(s.pressed).not.toHaveBeenCalled();

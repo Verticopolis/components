@@ -16,7 +16,8 @@ function sinkCtx(): CanvasRenderingContext2D {
   return new Proxy({} as Record<string, unknown>, {
     get(target, prop) {
       if (prop in target) return target[prop as string];
-      if (prop === "createLinearGradient" || prop === "createRadialGradient" || prop === "createPattern") return () => grad;
+      if (prop === "createLinearGradient" || prop === "createRadialGradient" || prop === "createPattern")
+        return () => grad;
       if (prop === "measureText") return () => ({ width: 10 });
       if (prop === "getLineDash") return () => [];
       return () => undefined;
@@ -33,7 +34,18 @@ const VACANCY_KINDS = new Set<FacilityKind>(["office", "condo", "rentalStudio", 
 
 /** The services and venues the game draws as interiors (`sprites.ts`
  *  `drawInterior`): they never show the closed shutter. */
-const INTERIOR_KINDS = new Set<FacilityKind>(["partyHall", "aquaticCenter", "weddingHall", "security", "medical", "housekeeping", "metro", "parking", "parkingRamp", "recycling"]);
+const INTERIOR_KINDS = new Set<FacilityKind>([
+  "partyHall",
+  "aquaticCenter",
+  "weddingHall",
+  "security",
+  "medical",
+  "housekeeping",
+  "metro",
+  "parking",
+  "parkingRamp",
+  "recycling",
+]);
 
 /** Whether the game paints `s` as a full room (so it should split), rather
  *  than a vacancy card, a closed shutter or a gutted shell. */
@@ -47,7 +59,9 @@ function paintsRoom(s: UnitPaint): boolean {
 /** The marks one paint makes, in order. */
 function marks(s: UnitPaint, w: number, h: number): string[] {
   const seen: string[] = [];
-  withLayerHook({ shellEnd: () => seen.push("break"), furnitureEnd: () => seen.push("end") }, () => paint(sinkCtx(), s, w, h));
+  withLayerHook({ shellEnd: () => seen.push("break"), furnitureEnd: () => seen.push("end") }, () =>
+    paint(sinkCtx(), s, w, h),
+  );
   return seen;
 }
 
@@ -83,7 +97,9 @@ describe("depth-layer marks on the lobby", () => {
   it("splits every lobby tile and every entrance frame with exactly one break", () => {
     const lobby = structureJobs().filter((j) => j.keys.kind === "lobby");
     const paints: [string, PaintSpec, number, number][] = lobby.flatMap((j) =>
-      j.type === "still" ? [[j.name, j.paint, j.w, j.h] as [string, PaintSpec, number, number]] : j.frames.map((f, i) => [`${j.name}/${i}`, f, j.w, j.h] as [string, PaintSpec, number, number]),
+      j.type === "still"
+        ? [[j.name, j.paint, j.w, j.h] as [string, PaintSpec, number, number]]
+        : j.frames.map((f, i) => [`${j.name}/${i}`, f, j.w, j.h] as [string, PaintSpec, number, number]),
     );
     // Two styles x lit/unlit x each variant, plus four entrances x lit/unlit
     // x staffed/unstaffed x two poses.
@@ -92,7 +108,9 @@ describe("depth-layer marks on the lobby", () => {
     const wrong: string[] = [];
     for (const [name, spec, w, h] of paints) {
       const seen: string[] = [];
-      withLayerHook({ shellEnd: () => seen.push("break"), furnitureEnd: () => seen.push("end") }, () => paint(sinkCtx(), spec, w, h));
+      withLayerHook({ shellEnd: () => seen.push("break"), furnitureEnd: () => seen.push("end") }, () =>
+        paint(sinkCtx(), spec, w, h),
+      );
       if (seen.join() !== "break") wrong.push(`${name}: ${seen.join() || "no marks"}`);
     }
     expect(wrong).toEqual([]);
@@ -101,7 +119,9 @@ describe("depth-layer marks on the lobby", () => {
 
 describe("depth-layer marks on the cabs and the metro train", () => {
   it("breaks every cab and train frame once, at every rider count, and ends the cab's riders", () => {
-    const jobs = [...transportJobs(), ...legacyShaftJobs(), ...vehicleJobs()].filter((j): j is StillJob => j.type === "still" && j.layers === true);
+    const jobs = [...transportJobs(), ...legacyShaftJobs(), ...vehicleJobs()].filter(
+      (j): j is StillJob => j.type === "still" && j.layers === true,
+    );
     const names = jobs.map((j) => j.name);
     expect(names.some((n) => n.startsWith("car/"))).toBe(true);
     expect(names.filter((n) => n.startsWith("vehicle/metrotrain/"))).toHaveLength(2);
@@ -112,7 +132,9 @@ describe("depth-layer marks on the cabs and the metro train", () => {
     for (const j of jobs) {
       for (const [i, spec] of [j.paint, ...Object.values(j.chains ?? {}).flatMap((c) => c.steps)].entries()) {
         const seen: string[] = [];
-        withLayerHook({ shellEnd: () => seen.push("break"), furnitureEnd: () => seen.push("end") }, () => paint(sinkCtx(), spec, j.w, j.h));
+        withLayerHook({ shellEnd: () => seen.push("break"), furnitureEnd: () => seen.push("end") }, () =>
+          paint(sinkCtx(), spec, j.w, j.h),
+        );
         if (seen.join() !== "break,end") wrong.push(`${j.name} step ${i}: ${seen.join() || "no marks"}`);
       }
     }
@@ -141,14 +163,22 @@ describe("the vehicles' draw order", () => {
     expect(tm).not.toContain("#C6CCD4");
     expect(tf).toContain("#C6CCD4"); // the body comes after
     // Every cab kind, arrow and FULL state, at its fullest.
-    const cabs = [...transportJobs(), ...legacyShaftJobs()].filter((j): j is StillJob => j.type === "still" && j.name.startsWith("car/"));
+    const cabs = [...transportJobs(), ...legacyShaftJobs()].filter(
+      (j): j is StillJob => j.type === "still" && j.name.startsWith("car/"),
+    );
     expect(cabs.length).toBeGreaterThan(0);
     for (const cab of cabs) {
       const steps = cab.chains!.riders.steps;
       const [, cm, cf] = phases(steps[steps.length - 1], cab.w, cab.h);
       expect(cm.length, cab.name).toBeGreaterThan(0);
-      expect(cm.some((c) => c.startsWith("rgba(40,44,54")), cab.name).toBe(false);
-      expect(cf.some((c) => c.startsWith("rgba(40,44,54")), cab.name).toBe(true); // the door frames
+      expect(
+        cm.some((c) => c.startsWith("rgba(40,44,54")),
+        cab.name,
+      ).toBe(false);
+      expect(
+        cf.some((c) => c.startsWith("rgba(40,44,54")),
+        cab.name,
+      ).toBe(true); // the door frames
     }
   });
 });
@@ -161,12 +191,18 @@ describe("the cab floor band", () => {
       const out: Rect[][] = [[], [], []];
       let phase = 0;
       const ctx = sinkCtx();
-      (ctx as unknown as { fillRect: (x: number, y: number, w: number, h: number) => void }).fillRect = (x, y, rw, rh) => out[phase].push({ x, y, w: rw, h: rh });
+      (ctx as unknown as { fillRect: (x: number, y: number, w: number, h: number) => void }).fillRect = (
+        x,
+        y,
+        rw,
+        rh,
+      ) => out[phase].push({ x, y, w: rw, h: rh });
       withLayerHook({ shellEnd: () => (phase = 1), furnitureEnd: () => (phase = 2) }, () => paint(ctx, spec, w, h));
       return out;
     };
     const banded = transportJobs().filter(
-      (j): j is StillJob => j.type === "still" && (j.name.startsWith("car/elevatorService/") || j.name.startsWith("car/elevatorExpress/")),
+      (j): j is StillJob =>
+        j.type === "still" && (j.name.startsWith("car/elevatorService/") || j.name.startsWith("car/elevatorExpress/")),
     );
     expect(banded.some((j) => j.name.startsWith("car/elevatorService/"))).toBe(true);
     expect(banded.some((j) => j.name.startsWith("car/elevatorExpress/"))).toBe(true);
@@ -179,11 +215,17 @@ describe("the cab floor band", () => {
       for (const step of cab.chains!.riders.steps) {
         const [shell, riders, front] = rects(step, cab.w, cab.h);
         // The band (a 3-row plate across the cab bottom) is painted before the break...
-        expect(shell.some((r) => r.x === 2 && r.y === cab.h - 5 && r.w === cab.w - 4 && r.h === 3), cab.name).toBe(true);
+        expect(
+          shell.some((r) => r.x === 2 && r.y === cab.h - 5 && r.w === cab.w - 4 && r.h === 3),
+          cab.name,
+        ).toBe(true);
         // ...the front marks still come after the riders...
         expect(front.length, cab.name).toBeGreaterThan(0);
         // ...and none of them paints over the band but the frames and the seam.
-        expect(front.filter((r) => r.y + r.h > cab.h - 5 && !frames(r)), cab.name).toEqual([]);
+        expect(
+          front.filter((r) => r.y + r.h > cab.h - 5 && !frames(r)),
+          cab.name,
+        ).toEqual([]);
         for (const r of riders) {
           // No rider reaches the right side frame (its door frame is at w - 3);
           // the first rider's contact shadow does meet the left one at x 2.
@@ -196,14 +238,23 @@ describe("the cab floor band", () => {
       // bottom one, so no whole band row could move to the front without
       // changing a pixel of the flat frame: the band stays on the shell, as the
       // game draws it (split by column, it would tear where the layers part).
-      expect([...covered].sort((a, b) => a - b), cab.name).toEqual(bandRows);
+      expect(
+        [...covered].sort((a, b) => a - b),
+        cab.name,
+      ).toEqual(bandRows);
     }
   });
 });
 
 describe("the recycling center's depth split", () => {
   it("paints its curb and gauge as shell art among the furniture", () => {
-    const job = roomJobs().find((j): j is StillJob => j.type === "still" && (j.paint as UnitPaint).kind === "recycling" && j.layers === true && j.chains !== undefined);
+    const job = roomJobs().find(
+      (j): j is StillJob =>
+        j.type === "still" &&
+        (j.paint as UnitPaint).kind === "recycling" &&
+        j.layers === true &&
+        j.chains !== undefined,
+    );
     expect(job).toBeDefined();
     // The frame and every fill step, the full one (with its FULL cue) too.
     const steps = [job!.paint, ...job!.chains!.fill.steps];
@@ -228,7 +279,13 @@ describe("the recycling center's depth split", () => {
 
 describe("the aquatic center's depth split", () => {
   it("keeps the diver and the swimmers on the shell, so only the deck chairs come forward", () => {
-    const job = roomJobs().find((j): j is StillJob => j.type === "still" && (j.paint as UnitPaint).kind === "aquaticCenter" && j.layers === true && j.chains !== undefined);
+    const job = roomJobs().find(
+      (j): j is StillJob =>
+        j.type === "still" &&
+        (j.paint as UnitPaint).kind === "aquaticCenter" &&
+        j.layers === true &&
+        j.chains !== undefined,
+    );
     expect(job).toBeDefined();
     const steps = job!.chains!.occupants.steps;
     const last = steps[steps.length - 1];
@@ -239,10 +296,17 @@ describe("the aquatic center's depth split", () => {
     let broke = false;
     const after: { top: number; bottom: number }[] = [];
     const ctx = sinkCtx();
-    (ctx as unknown as { fillRect: (x: number, y: number, w: number, h: number) => void }).fillRect = (_x, y, _w, h) => {
+    (ctx as unknown as { fillRect: (x: number, y: number, w: number, h: number) => void }).fillRect = (
+      _x,
+      y,
+      _w,
+      h,
+    ) => {
       if (broke) after.push({ top: y, bottom: y + h });
     };
-    withLayerHook({ shellEnd: () => (broke = true), furnitureEnd: () => undefined }, () => paint(ctx, last as UnitPaint, job!.w, job!.h));
+    withLayerHook({ shellEnd: () => (broke = true), furnitureEnd: () => undefined }, () =>
+      paint(ctx, last as UnitPaint, job!.w, job!.h),
+    );
     expect(broke).toBe(true);
     const midY = Math.round(job!.h * 0.42);
     expect(after.length).toBeGreaterThan(0);
@@ -258,7 +322,9 @@ describe("the soft furniture pass's assumption", () => {
     // composite mode of its own would override that. Only the soft pass
     // itself may set one.
     const root = join(__dirname, "..");
-    const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter((f) => f.endsWith(".ts") && !f.endsWith(".test.ts") && f !== join("atlas", "browserEntry.ts"));
+    const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
+      (f) => f.endsWith(".ts") && !f.endsWith(".test.ts") && f !== join("atlas", "browserEntry.ts"),
+    );
     expect(files.length).toBeGreaterThan(20);
     const offenders = files.filter((f) => readFileSync(join(root, f), "utf8").includes("globalCompositeOperation"));
     expect(offenders).toEqual([]);

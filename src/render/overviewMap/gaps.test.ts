@@ -8,7 +8,13 @@ import { fitLayout, lineToMapY, tileToMapX } from "./geometry";
 const layout = fitLayout({ leftTile: 0, width: 400, topLine: 10, bottomLine: 0 }, 300, 100);
 
 type Run = MapGapSource["structure"][number];
-const run = (floor: number, x: number, count: number, kind: Run["kind"] = "floor"): Run => ({ kind, floor, x, width: 1, count });
+const run = (floor: number, x: number, count: number, kind: Run["kind"] = "floor"): Run => ({
+  kind,
+  floor,
+  x,
+  width: 1,
+  count,
+});
 
 function source(over: Partial<MapGapSource> = {}): MapGapSource {
   return { structure: [], rooms: [], floorsOf: () => 1, tallLobbies: () => [], ...over };
@@ -51,13 +57,22 @@ describe("buildMapGaps", () => {
   });
 
   it("joins runs that touch, whatever their kind, into one building", () => {
-    expect(buildMapGaps(layout, source({ structure: [run(1, 100, 20, "lobby"), run(1, 120, 20, "floor")] }), 4)).toEqual([]);
+    expect(
+      buildMapGaps(layout, source({ structure: [run(1, 100, 20, "lobby"), run(1, 120, 20, "floor")] }), 4),
+    ).toEqual([]);
   });
 
   it("counts a tall room's upper floors and a tall lobby hall's raised stories as built", () => {
     // Floor 6 has tiles only at the towers' ends; a two-floor room from floor 5
     // and a three-story hall from floor 4 fill the rest of each tower.
-    const structure = [run(4, 0, 50, "lobby"), run(4, 60, 50, "lobby"), run(5, 0, 50), run(5, 60, 50), run(6, 0, 10), run(6, 100, 10)];
+    const structure = [
+      run(4, 0, 50, "lobby"),
+      run(4, 60, 50, "lobby"),
+      run(5, 0, 50),
+      run(5, 60, 50),
+      run(6, 0, 10),
+      run(6, 100, 10),
+    ];
     const gaps = buildMapGaps(
       layout,
       source({
@@ -87,7 +102,6 @@ describe("buildMapGaps", () => {
     const gaps = buildMapGaps(layout, source({ structure }), 0);
     expect(gaps).toEqual([{ x: 75, y: 50, w: 75, h: 10 }]);
   });
-
 
   it("keeps a floor whose runs touch as one span, so a tower in one piece answers no gaps without a walk", () => {
     const spans = new FloorSpans(layout);

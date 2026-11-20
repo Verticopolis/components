@@ -7,7 +7,16 @@ import { blank, type Image } from "./pixels";
  */
 
 /** Copy the `w` x `h` block of `src` at (sx, sy) to (dx, dy) in `dst`. */
-export function blit(dst: Image, src: Image, sx: number, sy: number, w: number, h: number, dx: number, dy: number): void {
+export function blit(
+  dst: Image,
+  src: Image,
+  sx: number,
+  sy: number,
+  w: number,
+  h: number,
+  dx: number,
+  dy: number,
+): void {
   for (let row = 0; row < h; row++) {
     const from = ((sy + row) * src.w + sx) * 4;
     dst.data.set(src.data.subarray(from, from + w * 4), ((dy + row) * dst.w + dx) * 4);
@@ -83,8 +92,10 @@ export function normalMap(img: Image): Image {
         out.data.set([128, 128, 255, 0], i);
         continue;
       }
-      const gx = at(x + 1, y - 1) + 2 * at(x + 1, y) + at(x + 1, y + 1) - at(x - 1, y - 1) - 2 * at(x - 1, y) - at(x - 1, y + 1);
-      const gyDown = at(x - 1, y + 1) + 2 * at(x, y + 1) + at(x + 1, y + 1) - at(x - 1, y - 1) - 2 * at(x, y - 1) - at(x + 1, y - 1);
+      const gx =
+        at(x + 1, y - 1) + 2 * at(x + 1, y) + at(x + 1, y + 1) - at(x - 1, y - 1) - 2 * at(x - 1, y) - at(x - 1, y + 1);
+      const gyDown =
+        at(x - 1, y + 1) + 2 * at(x, y + 1) + at(x + 1, y + 1) - at(x - 1, y - 1) - 2 * at(x, y - 1) - at(x + 1, y - 1);
       // Image rows run down; +Y up flips the vertical gradient's sign.
       const nx = -gx * NORMAL_STRENGTH;
       const ny = gyDown * NORMAL_STRENGTH;

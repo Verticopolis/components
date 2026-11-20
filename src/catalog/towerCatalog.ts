@@ -48,7 +48,10 @@ export function catalogOn(key: object, mode: GameMode): Catalog {
   let c = h.read.get(mode);
   if (!c) {
     const source = h.source ?? fallback;
-    if (!source) throw new Error(`no catalog source is set for this tower's ${mode} catalog: the engine host sets one on every tower it runs`);
+    if (!source)
+      throw new Error(
+        `no catalog source is set for this tower's ${mode} catalog: the engine host sets one on every tower it runs`,
+      );
     c = source(mode);
     h.read.set(mode, c);
   }

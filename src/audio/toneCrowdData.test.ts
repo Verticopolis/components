@@ -229,8 +229,17 @@ describe("laugh seed regions", () => {
 describe("every scene key resolves to a spec", () => {
   it("has a CROWD_SCENES entry for each key the resolver can return", () => {
     const keys: CrowdSceneKey[] = [
-      "lobby", "office", "condo", "hotel", "restaurant", "fastFood",
-      "shop", "cinema", "partyHall", "metro", "outside",
+      "lobby",
+      "office",
+      "condo",
+      "hotel",
+      "restaurant",
+      "fastFood",
+      "shop",
+      "cinema",
+      "partyHall",
+      "metro",
+      "outside",
     ];
     for (const k of keys) expect(CROWD_SCENES[k], k).toBeDefined();
   });

@@ -131,7 +131,12 @@ function makeScenery(engine: TowerEngine): SceneryRec {
     // stepped clock keeps screenshots deterministic. The canvas is tiny, so
     // the per-frame cost is noise.
     const { x, y, w, h } = pieces.fountain;
-    const cv = new ex.Canvas({ width: w, height: h, cache: false, draw: (ctx) => drawFountain(ctx, w, h, engine.d.anim) });
+    const cv = new ex.Canvas({
+      width: w,
+      height: h,
+      cache: false,
+      draw: (ctx) => drawFountain(ctx, w, h, engine.d.anim),
+    });
     const a = new ex.Actor({ pos: ex.vec(x, y), width: w, height: h, anchor: ex.vec(0, 0), z: Z_PLANT });
     a.graphics.use(cv);
     engine.engine.add(a);

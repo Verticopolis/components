@@ -23,7 +23,13 @@ describe("manifest formula rules", () => {
     for (let q = 0; q < 96; q++) {
       const hour = q / 4;
       const t = Math.cos(((hour - 13) / 24) * 2 * Math.PI) * 0.5 + 0.5;
-      const hex = ends.map(([a, b]) => Math.round(a + (b - a) * t).toString(16).padStart(2, "0")).join("");
+      const hex = ends
+        .map(([a, b]) =>
+          Math.round(a + (b - a) * t)
+            .toString(16)
+            .padStart(2, "0"),
+        )
+        .join("");
       expect(`#${hex}`).toBe(skyColor(hour));
     }
   });
@@ -43,7 +49,9 @@ describe("manifest formula rules", () => {
     // 109461 is the first id where a 32-bit first multiply would differ.
     // Ids 69,273,667 through 138,547,332 make id * 31 wrap to a negative
     // int32, so n enters the float64 step negative (69,273,667, 100,000,000).
-    for (const id of [0, 1, 7, 12, 99, 4321, 65535, 109460, 109461, 69_273_666, 69_273_667, 100_000_000, 2_147_483_647]) {
+    for (const id of [
+      0, 1, 7, 12, 99, 4321, 65535, 109460, 109461, 69_273_666, 69_273_667, 100_000_000, 2_147_483_647,
+    ]) {
       expect(documented(int32(id * 31))).toBe(rand((id * 31) | 0));
     }
     // The wording keeps frontends off the integer multiply for that step.

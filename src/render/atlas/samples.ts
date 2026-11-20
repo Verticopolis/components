@@ -25,12 +25,17 @@ export interface Sample {
   eighths?: boolean;
 }
 
-
 const DAY: LiveScene = { hour: 12, lit: false, parkingUse: 0, recycleFill: 0, dead: false };
 const NIGHT: LiveScene = { ...DAY, hour: 20, lit: true };
 const LATE: LiveScene = { ...DAY, hour: 2, lit: true };
 
-function s(label: string, unit: Partial<Sample["unit"]> & { kind: FacilityKind }, scene: LiveScene, variant = 0, frame?: number): Sample {
+function s(
+  label: string,
+  unit: Partial<Sample["unit"]> & { kind: FacilityKind },
+  scene: LiveScene,
+  variant = 0,
+  frame?: number,
+): Sample {
   return { label, unit: { state: "occupied", occupants: 0, id: 1, ...unit }, scene, variant, frame };
 }
 
@@ -86,7 +91,10 @@ export const SAMPLES: Sample[] = [
   s("parking empty", { kind: "parking", id: 9 }, DAY),
   s("parking with a car", { kind: "parking", id: 12 }, { ...DAY, parkingUse: 1 }, 1),
   s("parking dead", { kind: "parking", id: 12 }, { ...DAY, parkingUse: 1, dead: true }, 2),
-  { ...s("recycling half full, through the eighths", { kind: "recycling" }, { ...DAY, recycleFill: 4 / 8 }), eighths: true },
+  {
+    ...s("recycling half full, through the eighths", { kind: "recycling" }, { ...DAY, recycleFill: 4 / 8 }),
+    eighths: true,
+  },
   { ...s("recycling full, through the eighths", { kind: "recycling" }, { ...DAY, recycleFill: 1 }, 2), eighths: true },
   s("recycling full", { kind: "recycling" }, { ...DAY, recycleFill: 1 }, 2),
   s("recycling between eighths", { kind: "recycling" }, { ...DAY, recycleFill: 0.37 }, 1),

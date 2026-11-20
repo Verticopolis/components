@@ -64,6 +64,8 @@ describe("each tower's entrance shows its staff only while someone is in it (#55
     expect(staffed).not.toBe(empty);
     expect(fills(staffed)).toContain(DOORMAN);
     expect(fills(empty)).not.toContain(DOORMAN);
-    expect(engine.tallLobbyGfx(false, true, 2, 1, "grand-right", true)).toBe(engine.tallLobbyGfx(false, true, 2, 1, "grand-right", false));
+    expect(engine.tallLobbyGfx(false, true, 2, 1, "grand-right", true)).toBe(
+      engine.tallLobbyGfx(false, true, 2, 1, "grand-right", false),
+    );
   });
 });

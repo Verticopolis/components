@@ -2,7 +2,16 @@ import { describe, it, expect } from "vitest";
 import { SKY_HEADROOM_FLOORS } from "../cameraBounds";
 import { FLOOR, TILE } from "../scale";
 import { dragCenter, fitLayout, mapExtent, mapPointToCenter, type MapCamera, type MapWorld } from "./geometry";
-import { MAP_BAND_FLOORS, MAP_MIN_FLOORS, MAP_SIDE_MARGIN_SHARE, bandedExtent, edgeBand, mapSideMarginTiles, sameExtent, viewPlacement } from "./extent";
+import {
+  MAP_BAND_FLOORS,
+  MAP_MIN_FLOORS,
+  MAP_SIDE_MARGIN_SHARE,
+  bandedExtent,
+  edgeBand,
+  mapSideMarginTiles,
+  sameExtent,
+  viewPlacement,
+} from "./extent";
 
 const WORLD: MapWorld = { lotWidth: 375, minFloor: -9, maxFloor: 100 };
 const SKY = SKY_HEADROOM_FLOORS;
@@ -27,7 +36,12 @@ describe("bandedExtent (the banded crop)", () => {
   it("adds just enough sky over the crop that a legend's strip at the top hides no floor (#1769)", () => {
     const plain = bandedExtent(WORLD, built(1, 60), SKY);
     const floors = plain.topLine - plain.bottomLine;
-    for (const [box, strip] of [[432, 68], [300, 40], [216, 1], [432, 200]] as const) {
+    for (const [box, strip] of [
+      [432, 68],
+      [300, 40],
+      [216, 1],
+      [432, 200],
+    ] as const) {
       const e = bandedExtent(WORLD, built(1, 60), SKY, box, strip);
       const added = e.topLine - plain.topLine;
       expect(e.bottomLine).toBe(plain.bottomLine);
@@ -40,7 +54,13 @@ describe("bandedExtent (the banded crop)", () => {
     // A strip over half the box is held to half; no strip, or a bad one, adds nothing.
     const half = bandedExtent(WORLD, built(1, 60), SKY, 300, 150);
     expect(bandedExtent(WORLD, built(1, 60), SKY, 300, 290)).toEqual(half);
-    for (const [box, strip] of [[300, 0], [300, -5], [300, NaN], [0, 40], [NaN, 40]]) {
+    for (const [box, strip] of [
+      [300, 0],
+      [300, -5],
+      [300, NaN],
+      [0, 40],
+      [NaN, 40],
+    ]) {
       expect(bandedExtent(WORLD, built(1, 60), SKY, box, strip)).toEqual(plain);
     }
   });
@@ -98,7 +118,14 @@ describe("bandedExtent (the banded crop)", () => {
   });
 
   it("is at least the minimum height for a small tower, with its top still on the band grid", () => {
-    for (const [lo, hi] of [[1, 1], [1, 3], [1, 13], [0, 3], [-9, 1], [-9, 13]]) {
+    for (const [lo, hi] of [
+      [1, 1],
+      [1, 3],
+      [1, 13],
+      [0, 3],
+      [-9, 1],
+      [-9, 13],
+    ]) {
       const e = bandedExtent(WORLD, built(lo, hi), SKY);
       expect(e.topLine - e.bottomLine, `${lo}..${hi}`).toBeGreaterThanOrEqual(MAP_MIN_FLOORS);
       expect(e.topLine % MAP_BAND_FLOORS, `${lo}..${hi}`).toBe(0);
@@ -120,7 +147,9 @@ describe("bandedExtent (the banded crop)", () => {
     expect(deep.width).toBe(shallow.width);
     // On a small tower too, where the minimum height holds the top up, down to B10.
     for (let lo = 1; lo >= -9; lo--) {
-      expect(bandedExtent(WORLD, built(lo, 3), SKY).topLine, `lowest ${lo}`).toBe(bandedExtent(WORLD, built(1, 3), SKY).topLine);
+      expect(bandedExtent(WORLD, built(lo, 3), SKY).topLine, `lowest ${lo}`).toBe(
+        bandedExtent(WORLD, built(1, 3), SKY).topLine,
+      );
     }
   });
 
@@ -128,7 +157,10 @@ describe("bandedExtent (the banded crop)", () => {
     const whole = mapExtent(WORLD, SKY);
     for (const b of [built(-9, 100), built(-50, 400)]) {
       const e = bandedExtent(WORLD, b, SKY);
-      expect({ topLine: e.topLine, bottomLine: e.bottomLine }).toEqual({ topLine: whole.topLine, bottomLine: whole.bottomLine });
+      expect({ topLine: e.topLine, bottomLine: e.bottomLine }).toEqual({
+        topLine: whole.topLine,
+        bottomLine: whole.bottomLine,
+      });
     }
   });
 
@@ -222,7 +254,13 @@ describe("viewPlacement", () => {
 
   it("never leaves the view without a rectangle or a band, even a hair from an edge", () => {
     const small = fitLayout(bandedExtent(WORLD, built(1, 5), SKY), 400, 300);
-    const p = viewPlacement(small, { posX: 1870, posY: -1651.3186420006434, zoom: 0.7002553794847827, viewWidth: 900, viewHeight: 422 });
+    const p = viewPlacement(small, {
+      posX: 1870,
+      posY: -1651.3186420006434,
+      zoom: 0.7002553794847827,
+      viewWidth: 900,
+      viewHeight: 422,
+    });
     expect(p.rect.h > 0 || edgeBand(small, p, 4) !== null).toBe(true);
     for (let zoom = 0.25; zoom <= 4; zoom *= 2) {
       for (let h = 300; h <= 1600; h += 50) {
@@ -245,7 +283,13 @@ describe("viewPlacement", () => {
     expect(p.rect.h).toBeCloseTo(crop.height, 5);
     // Zoomed out over the top: 80 floors around line 67 reach down to line 27,
     // so the rectangle is the crop from line 27 to its top.
-    const q = viewPlacement(crop, { posX: 187 * TILE, posY: -67 * FLOOR, zoom: 0.25, viewWidth: 900, viewHeight: 80 * FLOOR * 0.25 });
+    const q = viewPlacement(crop, {
+      posX: 187 * TILE,
+      posY: -67 * FLOOR,
+      zoom: 0.25,
+      viewWidth: 900,
+      viewHeight: 80 * FLOOR * 0.25,
+    });
     expect(q.outside).toBe("none");
     expect(q.rect.y).toBe(0);
     expect(q.rect.h).toBeCloseTo((crop.extent.topLine - 27) * crop.pxPerFloor, 5);

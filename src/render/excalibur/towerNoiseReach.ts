@@ -20,7 +20,13 @@ export type NoiseTiles = Pick<TowerView, "unitAt" | "hasStructure" | "structureK
  *  walk of at most `limit` tiles each way, a few binary searches per tile
  *  and no allocation: `unitAt` is asked only where there is no structure,
  *  so it finds a room or nothing and never builds a tile view. */
-export function openTiles(tower: NoiseTiles, floor: number, x: number, width: number, limit: number): { left: number; right: number } {
+export function openTiles(
+  tower: NoiseTiles,
+  floor: number,
+  x: number,
+  width: number,
+  limit: number,
+): { left: number; right: number } {
   const walk = (start: number, dir: -1 | 1): number => {
     let n = 0;
     while (n < limit) {

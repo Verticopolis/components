@@ -29,7 +29,6 @@
 @import "./styles/overview-map.css";
 @import "./styles/overview-map-views.css";
 
-
 /* ---- 2 to 5. THE GAME'S OWN LAYERS --------------------------------------
    Base, components, the screen regions and the media blocks, in cascade
    order. Each part is plain CSS that the build inlines here, so the order

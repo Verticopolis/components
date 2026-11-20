@@ -9,9 +9,26 @@ import { figureOf, newGlide, newStepClock } from "./crowdLook";
  */
 
 const shaft = (x: number, over: Partial<TransportView> = {}): TransportView => ({
-  id: x, kind: "elevatorStandard", x, width: 4, bottom: 0, top: 10, cars: 1, carPositions: [0], carDir: [0], ...over,
+  id: x,
+  kind: "elevatorStandard",
+  x,
+  width: 4,
+  bottom: 0,
+  top: 10,
+  cars: 1,
+  carPositions: [0],
+  carDir: [0],
+  ...over,
 });
-const waiter = (x: number, floor = 1): PersonView => ({ id: 1, seed: 5, state: "waiting", x, floor, fy: floor, wait: 0 });
+const waiter = (x: number, floor = 1): PersonView => ({
+  id: 1,
+  seed: 5,
+  state: "waiting",
+  x,
+  floor,
+  fy: floor,
+  wait: 0,
+});
 const look: CrowdLook = { lit: false, fedUpWait: 60, progress: 1, clock: newStepClock(0) };
 
 describe("waitShaftMid", () => {

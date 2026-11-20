@@ -4,7 +4,16 @@ import { drawRoom } from "../pixelSprites";
 import { geoVariant, RESERVED_COLORS, type RoomCtx } from "./common";
 import { CAST, castIndex } from "./people";
 import { FLOOR, TILE } from "../scale";
-import { APARTMENT_WALLS, CONDO_PICTURES, CONDO_WALLS, HOTEL_WALLS, OFFICE_WALLS, RENTAL_PICTURES, STUDIO_WALLS, SUITE_WALLS } from "./residential.looks";
+import {
+  APARTMENT_WALLS,
+  CONDO_PICTURES,
+  CONDO_WALLS,
+  HOTEL_WALLS,
+  OFFICE_WALLS,
+  RENTAL_PICTURES,
+  STUDIO_WALLS,
+  SUITE_WALLS,
+} from "./residential.looks";
 
 /**
  * Behavior coverage for the enriched tenant-room art (office, condo, and the
@@ -21,26 +30,56 @@ function spyCtx() {
   const log: string[] = [];
   const ctx: Record<string, unknown> = {};
   for (const m of [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc",
-    "fill", "stroke", "fillRect", "strokeRect", "fillText", "translate", "scale",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "fillText",
+    "translate",
+    "scale",
   ]) {
     ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   }
   for (const p of ["fillStyle", "strokeStyle", "lineWidth", "font", "textAlign", "globalAlpha"]) {
     let v: unknown;
-    Object.defineProperty(ctx, p, { get: () => v, set: (nv) => { v = nv; log.push(`${p}=${String(nv)}`); } });
+    Object.defineProperty(ctx, p, {
+      get: () => v,
+      set: (nv) => {
+        v = nv;
+        log.push(`${p}=${String(nv)}`);
+      },
+    });
   }
   return { ctx: ctx as unknown as CanvasRenderingContext2D, log };
 }
 
-const room = (ctx: CanvasRenderingContext2D, over: Partial<RoomCtx> = {}): RoomCtx =>
-  ({ ctx, lit: false, anim: 0, hour: 12, ...over });
+const room = (ctx: CanvasRenderingContext2D, over: Partial<RoomCtx> = {}): RoomCtx => ({
+  ctx,
+  lit: false,
+  anim: 0,
+  hour: 12,
+  ...over,
+});
 
 let nextId = 1;
 function unit(over: Partial<Unit> = {}): Unit {
   return {
-    id: nextId++, kind: "office", floor: 10, x: 20, width: 9, state: "occupied",
-    satisfaction: 0.8, occupants: 4, ...over,
+    id: nextId++,
+    kind: "office",
+    floor: 10,
+    x: 20,
+    width: 9,
+    state: "occupied",
+    satisfaction: 0.8,
+    occupants: 4,
+    ...over,
   } as Unit;
 }
 
@@ -51,7 +90,9 @@ function peopleCount(log: string[]): number {
 }
 
 const hex = (h: string): [number, number, number] => [
-  parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16),
+  parseInt(h.slice(1, 3), 16),
+  parseInt(h.slice(3, 5), 16),
+  parseInt(h.slice(5, 7), 16),
 ];
 
 /** Every fillRect the log recorded, as [x, w] pairs. Enough to catch furniture
@@ -82,7 +123,14 @@ describe("narrow rooms draw inside their own box", () => {
     for (const x1 of [0, 300]) {
       for (let x0 = 0; x0 < 40; x0++) {
         const s = spyCtx();
-        drawRoom(room(s.ctx), unit({ x: x0, kind: "rentalStudio", width: 6, state: "occupied", occupants: 1 }), x1, 0, W, FLOOR);
+        drawRoom(
+          room(s.ctx),
+          unit({ x: x0, kind: "rentalStudio", width: 6, state: "occupied", occupants: 1 }),
+          x1,
+          0,
+          W,
+          FLOOR,
+        );
         for (const [x, w] of rectSpans(s.log)) {
           expect(x, `studio at x${x0} origin ${x1} drew from ${x}`).toBeGreaterThanOrEqual(x1 - LIP);
           expect(x + w, `studio at x${x0} origin ${x1} drew to ${x + w}, past ${x1 + W}`).toBeLessThanOrEqual(x1 + W);
@@ -108,7 +156,14 @@ describe("narrow rooms draw inside their own box", () => {
       const hits = new Set<string>();
       for (let x0 = 0; x0 < 60; x0++) {
         const s = spyCtx();
-        drawRoom(room(s.ctx), unit({ x: x0, kind: "rentalApartment", width: 11, state: "occupied", occupants: 3 }), 0, 0, w, FLOOR);
+        drawRoom(
+          room(s.ctx),
+          unit({ x: x0, kind: "rentalApartment", width: 11, state: "occupied", occupants: 3 }),
+          0,
+          0,
+          w,
+          FLOOR,
+        );
         if (s.log.includes("fillStyle=#E8C14A")) hits.add("dining"); // the dining candle
         if (s.log.includes("fillStyle=#4A5464")) hits.add("study"); // the study monitor
       }
@@ -118,7 +173,16 @@ describe("narrow rooms draw inside their own box", () => {
     // their layouts, so pin that too: neither may enter a look table, which is
     // the way a decoration color would start appearing in layouts that do not
     // own it.
-    for (const table of [CONDO_WALLS, CONDO_PICTURES, STUDIO_WALLS, APARTMENT_WALLS, RENTAL_PICTURES, OFFICE_WALLS, HOTEL_WALLS, SUITE_WALLS]) {
+    for (const table of [
+      CONDO_WALLS,
+      CONDO_PICTURES,
+      STUDIO_WALLS,
+      APARTMENT_WALLS,
+      RENTAL_PICTURES,
+      OFFICE_WALLS,
+      HOTEL_WALLS,
+      SUITE_WALLS,
+    ]) {
       for (const c of table) expect(["#E8C14A", "#4A5464"]).not.toContain(c.toUpperCase());
     }
     const WIDE = 11 * TILE; // the Apartment's real width
@@ -130,7 +194,14 @@ describe("narrow rooms draw inside their own box", () => {
 });
 
 describe("residential look tables", () => {
-  const WALL_TABLES: Record<string, string[]> = { OFFICE_WALLS, CONDO_WALLS, HOTEL_WALLS, SUITE_WALLS, STUDIO_WALLS, APARTMENT_WALLS };
+  const WALL_TABLES: Record<string, string[]> = {
+    OFFICE_WALLS,
+    CONDO_WALLS,
+    HOTEL_WALLS,
+    SUITE_WALLS,
+    STUDIO_WALLS,
+    APARTMENT_WALLS,
+  };
 
   it("every wall variant holds within 10 per RGB channel of its anchor", () => {
     for (const [name, table] of Object.entries(WALL_TABLES)) {
@@ -138,14 +209,25 @@ describe("residential look tables", () => {
       for (const c of table) {
         const v = hex(c);
         for (let ch = 0; ch < 3; ch++) {
-          expect(Math.abs(v[ch] - anchor[ch]), `${name} ${c} channel ${ch} vs anchor ${table[0]}`).toBeLessThanOrEqual(10);
+          expect(Math.abs(v[ch] - anchor[ch]), `${name} ${c} channel ${ch} vs anchor ${table[0]}`).toBeLessThanOrEqual(
+            10,
+          );
         }
       }
     }
   });
 
   it("no wall or picture look equals a reserved state color", () => {
-    const all = [...OFFICE_WALLS, ...CONDO_WALLS, ...HOTEL_WALLS, ...SUITE_WALLS, ...CONDO_PICTURES, ...STUDIO_WALLS, ...APARTMENT_WALLS, ...RENTAL_PICTURES];
+    const all = [
+      ...OFFICE_WALLS,
+      ...CONDO_WALLS,
+      ...HOTEL_WALLS,
+      ...SUITE_WALLS,
+      ...CONDO_PICTURES,
+      ...STUDIO_WALLS,
+      ...APARTMENT_WALLS,
+      ...RENTAL_PICTURES,
+    ];
     for (const c of all) expect(RESERVED_COLORS as readonly string[]).not.toContain(c.toUpperCase());
   });
 });
@@ -202,7 +284,14 @@ describe("occupancy is honest (maps to roomOccupants, no ghost people)", () => {
     expect(peopleCount(three.log)).toBe(3);
     // Two of the three step out for a meal: only the visible one remains.
     const oneOut = spyCtx();
-    drawRoom(room(oneOut.ctx), unit({ kind: "office", floor: 10, x: 20, occupants: 3, outForMeal: 2 }), 0, 0, 9 * TILE, FLOOR);
+    drawRoom(
+      room(oneOut.ctx),
+      unit({ kind: "office", floor: 10, x: 20, occupants: 3, outForMeal: 2 }),
+      0,
+      0,
+      9 * TILE,
+      FLOOR,
+    );
     expect(peopleCount(oneOut.log)).toBe(1);
     // An empty office (occupied state, zero present) seats no one.
     const none = spyCtx();
@@ -212,10 +301,24 @@ describe("occupancy is honest (maps to roomOccupants, no ghost people)", () => {
 
   it("a condo draws residents only when home, never in the small hours", () => {
     const home = spyCtx();
-    drawRoom(room(home.ctx, { hour: 19 }), unit({ kind: "condo", width: 16, floor: 10, x: 20, occupants: 3 }), 0, 0, 16 * TILE, FLOOR);
+    drawRoom(
+      room(home.ctx, { hour: 19 }),
+      unit({ kind: "condo", width: 16, floor: 10, x: 20, occupants: 3 }),
+      0,
+      0,
+      16 * TILE,
+      FLOOR,
+    );
     expect(peopleCount(home.log)).toBeGreaterThan(0);
     const lateNight = spyCtx();
-    drawRoom(room(lateNight.ctx, { hour: 2, lit: true }), unit({ kind: "condo", width: 16, floor: 10, x: 20, occupants: 3 }), 0, 0, 16 * TILE, FLOOR);
+    drawRoom(
+      room(lateNight.ctx, { hour: 2, lit: true }),
+      unit({ kind: "condo", width: 16, floor: 10, x: 20, occupants: 3 }),
+      0,
+      0,
+      16 * TILE,
+      FLOOR,
+    );
     expect(peopleCount(lateNight.log)).toBe(0); // asleep: no one "up"
   });
 
@@ -235,7 +338,9 @@ describe("occupancy is honest (maps to roomOccupants, no ghost people)", () => {
     };
     const sofaHome = condo(2);
     const withSleeper = asleep((ctx) => drawRoom(room(ctx, { hour: 2, lit: true }), sofaHome, 0, 0, 16 * TILE, FLOOR));
-    const nobodyHome = asleep((ctx) => drawRoom(room(ctx, { hour: 2, lit: true }), { ...sofaHome, occupants: 0 }, 0, 0, 16 * TILE, FLOOR));
+    const nobodyHome = asleep((ctx) =>
+      drawRoom(room(ctx, { hour: 2, lit: true }), { ...sofaHome, occupants: 0 }, 0, 0, 16 * TILE, FLOOR),
+    );
     expect(withSleeper).toBeGreaterThan(nobodyHome);
     const sleeper = spyCtx();
     drawRoom(room(sleeper.ctx, { hour: 2, lit: true }), sofaHome, 0, 0, 16 * TILE, FLOOR);
@@ -283,14 +388,28 @@ describe("hotel state cues render outside the mirror", () => {
   it("the dirty tray and ready lamp draw after the mirror wrapper closes", () => {
     for (const flip of [false, true]) {
       const dirty = spyCtx();
-      drawRoom(room(dirty.ctx, { hour: 10 }), { ...hotelAt(flip), state: "dirty", occupants: 0 }, 0, 0, 6 * TILE, FLOOR);
+      drawRoom(
+        room(dirty.ctx, { hour: 10 }),
+        { ...hotelAt(flip), state: "dirty", occupants: 0 },
+        0,
+        0,
+        6 * TILE,
+        FLOOR,
+      );
       const lastRestore = dirty.log.lastIndexOf("restore:[]");
       const trayAt = dirty.log.findIndex((l) => l === "fillStyle=#D4623A");
       expect(trayAt, "dirty tray painted").toBeGreaterThanOrEqual(0);
       expect(trayAt, "dirty tray is outside the mirror").toBeGreaterThan(lastRestore);
 
       const ready = spyCtx();
-      drawRoom(room(ready.ctx, { hour: 20, lit: true }), { ...hotelAt(flip), state: "occupied", occupants: 1 }, 0, 0, 6 * TILE, FLOOR);
+      drawRoom(
+        room(ready.ctx, { hour: 20, lit: true }),
+        { ...hotelAt(flip), state: "occupied", occupants: 1 },
+        0,
+        0,
+        6 * TILE,
+        FLOOR,
+      );
       const lampAt = ready.log.findIndex((l) => l === "fillStyle=#FFD86A");
       expect(lampAt, "ready lamp painted").toBeGreaterThanOrEqual(0);
       expect(lampAt, "ready lamp is outside the mirror").toBeGreaterThan(ready.log.lastIndexOf("restore:[]"));
@@ -309,7 +428,14 @@ describe("hotel state cues render outside the mirror", () => {
     const dirty = spyCtx();
     drawRoom(room(dirty.ctx, { hour: 10 }), { ...hotelAt(false), state: "dirty", occupants: 0 }, 0, 0, 6 * TILE, FLOOR);
     const infested = spyCtx();
-    drawRoom(room(infested.ctx, { hour: 10 }), { ...hotelAt(false), state: "infested", occupants: 0 }, 0, 0, 6 * TILE, FLOOR);
+    drawRoom(
+      room(infested.ctx, { hour: 10 }),
+      { ...hotelAt(false), state: "infested", occupants: 0 },
+      0,
+      0,
+      6 * TILE,
+      FLOOR,
+    );
     expect(roachBodies(dirty.log), "dirty room has a warning roach").toBeGreaterThan(0);
     expect(roachBodies(infested.log), "infested room swarms harder").toBeGreaterThan(roachBodies(dirty.log));
     const firstRoach = infested.log.findIndex((l) => l === CHESTNUT);

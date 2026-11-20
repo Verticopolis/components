@@ -24,7 +24,8 @@ function recorder() {
     clip: () => calls.push("clip"),
     fill: () => fills.push(String(ctx.fillStyle)),
     stroke: () => calls.push(`stroke ${String(ctx.strokeStyle)}`),
-    fillRect: (x: number, y: number, w: number, h: number) => fills.push(`${String(ctx.fillStyle)} ${x},${y},${w},${h}`),
+    fillRect: (x: number, y: number, w: number, h: number) =>
+      fills.push(`${String(ctx.fillStyle)} ${x},${y},${w},${h}`),
     createLinearGradient: () => ({ addColorStop: () => {} }),
   };
   return { g: ctx as unknown as CanvasRenderingContext2D, calls, fills };
@@ -46,7 +47,12 @@ describe("drawBridgeTile", () => {
     for (const look of LOOKS)
       for (const part of PARTS) {
         const { calls, fills } = drawn(look, 3, 8, false, part);
-        expect(calls.slice(0, 4), `${look} ${part}`).toEqual(["save", `rect 0,0,${W},${H}`, "clip", `translate ${-3 * W},0`]);
+        expect(calls.slice(0, 4), `${look} ${part}`).toEqual([
+          "save",
+          `rect 0,0,${W},${H}`,
+          "clip",
+          `translate ${-3 * W},0`,
+        ]);
         expect(calls[calls.length - 1], `${look} ${part}`).toBe("restore");
         expect(fills.length, `${look} ${part}`).toBeGreaterThan(0);
       }
@@ -60,7 +66,9 @@ describe("drawBridgeTile", () => {
   it("draws each look in other colors at night", () => {
     for (const look of LOOKS)
       for (const part of PARTS)
-        expect(drawn(look, 1, 6, true, part).fills, `${look} ${part}`).not.toEqual(drawn(look, 1, 6, false, part).fills);
+        expect(drawn(look, 1, 6, true, part).fills, `${look} ${part}`).not.toEqual(
+          drawn(look, 1, 6, false, part).fills,
+        );
   });
 
   it("spaces each look's pattern to the bridge's span", () => {

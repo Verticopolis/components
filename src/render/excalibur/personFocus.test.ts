@@ -17,10 +17,16 @@ import type { TowerEngine } from "./TowerEngine";
 
 /** A drawn figure standing with its feet at world (x, y). */
 function figure(x: number, y: number, visible = true) {
-  return { actor: { pos: ex.vec(x, y), graphics: { isVisible: visible }, isKilled: false }, glide: { x: x / TILE, fy: 3 } };
+  return {
+    actor: { pos: ex.vec(x, y), graphics: { isVisible: visible }, isKilled: false },
+    glide: { x: x / TILE, fy: 3 },
+  };
 }
 
-function engine(actors: Array<[number, ReturnType<typeof figure>]>, people: Array<{ id: number; x: number; fy: number }> = []) {
+function engine(
+  actors: Array<[number, ReturnType<typeof figure>]>,
+  people: Array<{ id: number; x: number; fy: number }> = [],
+) {
   const e = {
     cam: { pos: ex.vec(0, 0), zoom: 1 },
     crowdActors: new Map(actors),
@@ -29,9 +35,14 @@ function engine(actors: Array<[number, ReturnType<typeof figure>]>, people: Arra
     moved: 0,
     worldX: (tile: number) => tile * TILE,
     worldYTop: (floor: number) => -floor * FLOOR,
-    applyView: vi.fn((v: { tile: number; floor: number; zoom: number }) => (e.cam.pos = ex.vec(v.tile * TILE, -v.floor * FLOOR))),
+    applyView: vi.fn(
+      (v: { tile: number; floor: number; zoom: number }) => (e.cam.pos = ex.vec(v.tile * TILE, -v.floor * FLOOR)),
+    ),
     // The screen is the world shifted by the camera and scaled by the zoom.
-    engine: { worldToScreenCoordinates: (p: ex.Vector) => ex.vec((p.x - e.cam.pos.x) * e.cam.zoom, (p.y - e.cam.pos.y) * e.cam.zoom) },
+    engine: {
+      worldToScreenCoordinates: (p: ex.Vector) =>
+        ex.vec((p.x - e.cam.pos.x) * e.cam.zoom, (p.y - e.cam.pos.y) * e.cam.zoom),
+    },
   };
   return e as typeof e & TowerEngine;
 }
@@ -165,7 +176,15 @@ describe("the follow", () => {
 describe("the ring and the card's anchor", () => {
   /** A canvas context that records the ellipse it is asked to stroke. */
   function ctx() {
-    return { save: vi.fn(), restore: vi.fn(), beginPath: vi.fn(), stroke: vi.fn(), ellipse: vi.fn(), strokeStyle: "", lineWidth: 0 };
+    return {
+      save: vi.fn(),
+      restore: vi.fn(),
+      beginPath: vi.fn(),
+      stroke: vi.fn(),
+      ellipse: vi.fn(),
+      strokeStyle: "",
+      lineWidth: 0,
+    };
   }
 
   it("draws nothing and anchors nothing with no one picked", () => {

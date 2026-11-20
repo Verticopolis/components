@@ -23,12 +23,8 @@ export function createRoomTone(bedFilter: Tone.Filter): RoomTone {
   // Truly subsonic (35 Hz): it clears speaker-flapping rumble without
   // touching the deep beds of the low-cutoff scenes (metro lowpass 90,
   // cinema 110), whose rush must survive.
-  const ambTone = new Tone.Filter({ type: "highpass", frequency: 35, rolloff: -12 }).connect(
-    ambGain,
-  );
-  const ambFilter = new Tone.Filter({ type: "lowpass", frequency: 600, rolloff: -48 }).connect(
-    ambTone,
-  );
+  const ambTone = new Tone.Filter({ type: "highpass", frequency: 35, rolloff: -12 }).connect(ambGain);
+  const ambFilter = new Tone.Filter({ type: "lowpass", frequency: 600, rolloff: -48 }).connect(ambTone);
   const ambNoise = new Tone.Noise("pink").connect(ambFilter);
   ambNoise.volume.value = -20;
   ambNoise.start();

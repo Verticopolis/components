@@ -1,5 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { LINE_WAIT, linePressure, nextTrafficTier, TRAFFIC_BOUNDS, TRAFFIC_HOLD, trafficTier, worstLine, type LandingLines, type LineWaitTier } from "./traffic";
+import {
+  LINE_WAIT,
+  linePressure,
+  nextTrafficTier,
+  TRAFFIC_BOUNDS,
+  TRAFFIC_HOLD,
+  trafficTier,
+  worstLine,
+  type LandingLines,
+  type LineWaitTier,
+} from "./traffic";
 
 /**
  * The readout's line rules (owner, 2026-11-17): how much a waiting line
@@ -25,7 +35,9 @@ describe("linePressure", () => {
 
   it("reads a huge line that has only just formed, and climbs as its front grows impatient", () => {
     // 300 people who have just walked up: Busy at once, not Smooth.
-    const fresh = [LINE_WAIT.content, LINE_WAIT.impatient, LINE_WAIT.fedUp].map((tier) => trafficTier(linePressure({ count: 300, tier })));
+    const fresh = [LINE_WAIT.content, LINE_WAIT.impatient, LINE_WAIT.fedUp].map((tier) =>
+      trafficTier(linePressure({ count: 300, tier })),
+    );
     expect(fresh).toEqual([1, 2, 3]);
     // A car's worth that has just walked up is a car about to come: Smooth.
     expect(trafficTier(linePressure({ count: 21, tier: LINE_WAIT.content }))).toBe(0);

@@ -58,7 +58,10 @@ export function inputEng(over: Record<string, unknown> = {}) {
       },
     },
     screenToWorld(sx: number, sy: number) {
-      return ex.vec((sx - e.viewWidth / 2) / e.cam.zoom + e.cam.pos.x, (sy - e.viewHeight / 2) / e.cam.zoom + e.cam.pos.y);
+      return ex.vec(
+        (sx - e.viewWidth / 2) / e.cam.zoom + e.cam.pos.x,
+        (sy - e.viewHeight / 2) / e.cam.zoom + e.cam.pos.y,
+      );
     },
     screenToFloor(sy: number) {
       return Math.ceil(-e.screenToWorld(e.viewWidth / 2, sy).y / FLOOR);

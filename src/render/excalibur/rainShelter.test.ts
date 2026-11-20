@@ -47,17 +47,40 @@ const runs = (rows: Record<number, FloorEdge[]>) => new Map(Object.entries(rows)
 
 describe("shelterRuns", () => {
   it("flattens every floor's runs into floor, first tile, end tile", () => {
-    const flat = shelterRuns(runs({ 1: [{ min: 0, max: 8 }, { min: 12, max: 20 }], 2: [{ min: 2, max: 6 }] }));
+    const flat = shelterRuns(
+      runs({
+        1: [
+          { min: 0, max: 8 },
+          { min: 12, max: 20 },
+        ],
+        2: [{ min: 2, max: 6 }],
+      }),
+    );
     expect([...flat]).toEqual([1, 0, 8, 1, 12, 20, 2, 2, 6]);
   });
 
   it("orders the rows by floor whatever order the map holds them in", () => {
-    const flat = shelterRuns(new Map([[5, [{ min: 0, max: 2 }]], [1, [{ min: 3, max: 4 }]], [3, [{ min: 6, max: 9 }]]]));
+    const flat = shelterRuns(
+      new Map([
+        [5, [{ min: 0, max: 2 }]],
+        [1, [{ min: 3, max: 4 }]],
+        [3, [{ min: 6, max: 9 }]],
+      ]),
+    );
     expect([...flat]).toEqual([1, 3, 4, 3, 6, 9, 5, 0, 2]);
   });
 
   it("finds the first run on a floor or above by binary search", () => {
-    const flat = shelterRuns(runs({ 1: [{ min: 0, max: 8 }, { min: 12, max: 20 }], 4: [{ min: 2, max: 6 }], 9: [{ min: 1, max: 3 }] }));
+    const flat = shelterRuns(
+      runs({
+        1: [
+          { min: 0, max: 8 },
+          { min: 12, max: 20 },
+        ],
+        4: [{ min: 2, max: 6 }],
+        9: [{ min: 1, max: 3 }],
+      }),
+    );
     expect(firstRunAtOrAbove(flat, -3)).toBe(0);
     expect(firstRunAtOrAbove(flat, 1)).toBe(0);
     expect(firstRunAtOrAbove(flat, 2)).toBe(6); // floor 4's run
@@ -91,7 +114,16 @@ describe("clipToOpenSky", () => {
     const engine = fakeEngine();
     // Floor 20 sits at y -100 to -80, above the view; floor 1's second run
     // starts past the right edge.
-    setRainShelter(engine, runs({ 1: [{ min: 0, max: 8 }, { min: 80, max: 90 }], 20: [{ min: 0, max: 8 }] }));
+    setRainShelter(
+      engine,
+      runs({
+        1: [
+          { min: 0, max: 8 },
+          { min: 80, max: 90 },
+        ],
+        20: [{ min: 0, max: 8 }],
+      }),
+    );
     const { ctx, calls } = recorder();
     clipToOpenSky(engine, ctx, 800, 600);
     expect(calls.filter((c) => c.startsWith("rect"))).toEqual(["rect 0 0 800 300", "rect 100 280 80 20"]);
@@ -105,7 +137,11 @@ describe("clipToOpenSky", () => {
     setRainShelter(engine, runs({ 1: row, 15: row, 16: row, 45: row, 46: row, 90: row }));
     const { ctx, calls } = recorder();
     clipToOpenSky(engine, ctx, 800, 600);
-    expect(calls.filter((c) => c.startsWith("rect"))).toEqual(["rect 0 0 800 600", "rect 100 580 10 20", "rect 100 0 10 20"]);
+    expect(calls.filter((c) => c.startsWith("rect"))).toEqual([
+      "rect 0 0 800 600",
+      "rect 100 580 10 20",
+      "rect 100 0 10 20",
+    ]);
   });
 
   it("clips nothing and draws no rain when the view is all underground", () => {
@@ -123,7 +159,12 @@ describe("clipToOpenSky", () => {
 
 describe("drawRain", () => {
   const rainy = (ground: number) =>
-    Object.assign(fakeEngine(ground), { sim: { weather: "rain" }, viewWidth: 800, viewHeight: 600, d: { anim: 0 } }) as unknown as TowerEngine;
+    Object.assign(fakeEngine(ground), {
+      sim: { weather: "rain" },
+      viewWidth: 800,
+      viewHeight: 600,
+      d: { anim: 0 },
+    }) as unknown as TowerEngine;
 
   it("lays the tint and the streaks inside the open-sky clip, then lifts it", () => {
     const { ctx, calls } = recorder();

@@ -33,23 +33,58 @@ function spyCtx() {
 
   const ctx: any = {};
   const methods = [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc", "arcTo",
-    "quadraticCurveTo", "bezierCurveTo", "rect", "roundRect", "ellipse", "fill", "stroke",
-    "fillRect", "strokeRect", "clearRect", "fillText", "strokeText", "translate", "scale",
-    "rotate", "clip", "setLineDash", "drawImage",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "arcTo",
+    "quadraticCurveTo",
+    "bezierCurveTo",
+    "rect",
+    "roundRect",
+    "ellipse",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "clearRect",
+    "fillText",
+    "strokeText",
+    "translate",
+    "scale",
+    "rotate",
+    "clip",
+    "setLineDash",
+    "drawImage",
   ];
   for (const m of methods) ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   ctx.createLinearGradient = (...a: unknown[]) => (log.push(`grad:${JSON.stringify(a)}`), grad);
   ctx.createRadialGradient = (...a: unknown[]) => (log.push(`rgrad:${JSON.stringify(a)}`), grad);
   ctx.measureText = () => ({ width: 10 });
-  for (const p of ["fillStyle", "strokeStyle", "lineWidth", "globalAlpha", "font", "textAlign", "textBaseline", "lineCap", "lineJoin"]) {
+  for (const p of [
+    "fillStyle",
+    "strokeStyle",
+    "lineWidth",
+    "globalAlpha",
+    "font",
+    "textAlign",
+    "textBaseline",
+    "lineCap",
+    "lineJoin",
+  ]) {
     let v: unknown = "";
     Object.defineProperty(ctx, p, { get: () => v, set: (nv) => (log.push(`${p}=${String(nv)}`), void (v = nv)) });
   }
   return {
     ctx: ctx as CanvasRenderingContext2D,
     log,
-    painted: () => log.some((l) => l.startsWith("fillRect") || l.startsWith("fill:") || l.startsWith("stroke:") || l.startsWith("fillText")),
+    painted: () =>
+      log.some(
+        (l) => l.startsWith("fillRect") || l.startsWith("fill:") || l.startsWith("stroke:") || l.startsWith("fillText"),
+      ),
   };
 }
 
@@ -58,7 +93,6 @@ function spyCtx() {
  *  sane default that individual tests override. */
 
 function eng(over: Record<string, any> = {}): any {
-
   const e: any = {
     viewWidth: 800,
     viewHeight: 600,
@@ -111,7 +145,6 @@ describe("drawOverlay", () => {
     expect(e.overlayCanvas.width).toBe(800);
     expect(e.overlayCanvas.height).toBe(600);
   });
-
 });
 
 describe("weather and event visuals paint", () => {
@@ -164,9 +197,15 @@ describe("weather and event visuals paint", () => {
 
   it("the thief paints, and its caught variant differs from the free one", () => {
     const free = spyCtx();
-    drawOverlay(eng({ thiefStart: 0, thiefCaught: false, thiefSpan: { left: 100, right: 140 }, d: { anim: 1 } }), free.ctx);
+    drawOverlay(
+      eng({ thiefStart: 0, thiefCaught: false, thiefSpan: { left: 100, right: 140 }, d: { anim: 1 } }),
+      free.ctx,
+    );
     const caught = spyCtx();
-    drawOverlay(eng({ thiefStart: 0, thiefCaught: true, thiefSpan: { left: 100, right: 140 }, d: { anim: 1 } }), caught.ctx);
+    drawOverlay(
+      eng({ thiefStart: 0, thiefCaught: true, thiefSpan: { left: 100, right: 140 }, d: { anim: 1 } }),
+      caught.ctx,
+    );
     expect(free.painted()).toBe(true);
     expect(free.log.join("|")).not.toBe(caught.log.join("|"));
   });
@@ -189,7 +228,10 @@ describe("preview and selection painters", () => {
 
   it("a transport preview ghost paints its shaft footprint", () => {
     const s = spyCtx();
-    drawOverlay(eng({ transportPreview: { kind: "elevatorStandard", x: 100, bottom: 1, top: 10, valid: true } }), s.ctx);
+    drawOverlay(
+      eng({ transportPreview: { kind: "elevatorStandard", x: 100, bottom: 1, top: 10, valid: true } }),
+      s.ctx,
+    );
     expect(s.painted()).toBe(true);
   });
 
@@ -238,7 +280,9 @@ describe("elevator floor numbers wired into the overlay", () => {
   it("paints shaft numbers in the shaft column (drawOverlay calls drawShaftNumbers)", () => {
     const s = spyCtx();
     const e = eng();
-    e.sim.tower.transports = [{ id: 1, kind: "elevatorStandard", x: 100, width: 4, bottom: 1, top: 3, carPositions: [] }];
+    e.sim.tower.transports = [
+      { id: 1, kind: "elevatorStandard", x: 100, width: 4, bottom: 1, top: 3, carPositions: [] },
+    ];
     drawOverlay(e, s.ctx);
     // Assert on strokeText, which only drawShaftNumbers emits (the ruler and
     // legend use fillText), at x === 102 (the shaft center, x:100 + width 4 / 2).
@@ -250,7 +294,6 @@ describe("elevator floor numbers wired into the overlay", () => {
 
 describe("syncEventFx event-visual state machine", () => {
   function fxEngine(over: Record<string, unknown> = {}) {
-
     const e: any = {
       d: { anim: 10 },
       santaStart: null,
@@ -337,7 +380,6 @@ describe("syncEventFx event-visual state machine", () => {
 
 describe("reduced motion and the decorative clock", () => {
   it("setReducedMotion(true) drops every in-flight event visual", () => {
-
     const e: any = {
       reducedMotion: false,
       santaStart: 5,
@@ -358,15 +400,20 @@ describe("reduced motion and the decorative clock", () => {
   });
 
   it("setReducedMotion(false) leaves visuals untouched", () => {
-
-    const e: any = { reducedMotion: true, santaStart: 5, explosions: [], thiefStart: null, treasures: [], vipStart: null };
+    const e: any = {
+      reducedMotion: true,
+      santaStart: 5,
+      explosions: [],
+      thiefStart: null,
+      treasures: [],
+      vipStart: null,
+    };
     setReducedMotion(e, false);
     expect(e.reducedMotion).toBe(false);
     expect(e.santaStart).toBe(5);
   });
 
   it("resetDecorativeClock zeroes both the clock and the published anim value", () => {
-
     const e: any = { animClock: 42, d: { anim: 42 } };
     resetDecorativeClock(e);
     expect(e.animClock).toBe(0);
@@ -400,7 +447,10 @@ describe("a search guard on screen", () => {
   // Off from floor 2 at minute 100, three floors of stairs (6 minutes) up to
   // floor 5 on the fire escape left of tile 160, then the rooms from tile
   // 160 to 200 until minute 126.
-  const route = [[2, 160], [5, 160]] as const;
+  const route = [
+    [2, 160],
+    [5, 160],
+  ] as const;
   const g = { floor: 5, left: 160, right: 200, from: 2, start: 100, arrive: 106, done: 126, route };
 
   it("climbs the emergency stairs beside the rooms, floor by floor", () => {
@@ -415,7 +465,19 @@ describe("a search guard on screen", () => {
   });
 
   it("goes down the stairs as well as up", () => {
-    expect(guardPosition({ ...g, from: 8, route: [[8, 160], [5, 160]] }, 103).floor).toBe(6.5);
+    expect(
+      guardPosition(
+        {
+          ...g,
+          from: 8,
+          route: [
+            [8, 160],
+            [5, 160],
+          ],
+        },
+        103,
+      ).floor,
+    ).toBe(6.5);
   });
 
   it("climbs straight beside the rooms when an older save gave no route", () => {

@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { glideCar, newCarDraw } from "../carMotion";
-import { GAP_WEIGHT, advanceGlide, newGlide, newStepClock, smoothedInterval, stepProgress, tickStepClock } from "./crowdLook";
+import {
+  GAP_WEIGHT,
+  advanceGlide,
+  newGlide,
+  newStepClock,
+  smoothedInterval,
+  stepProgress,
+  tickStepClock,
+} from "./crowdLook";
 
 const FRAME = 1000 / 60;
 

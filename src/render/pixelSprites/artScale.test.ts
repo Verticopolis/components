@@ -42,7 +42,11 @@ describe("artRow measures capacity by the authored room", () => {
   });
 
   it("keeps every anchor inside the run, in either direction", () => {
-    for (const [from, limit, dir] of [[0, 100, 1], [100, 0, -1], [7, 7, 1]] as const) {
+    for (const [from, limit, dir] of [
+      [0, 100, 1],
+      [100, 0, -1],
+      [7, 7, 1],
+    ] as const) {
       const spots = artRow(110, from, limit, 12, dir);
       expect(spots.length).toBeGreaterThan(0);
       for (const s of spots) {
@@ -91,7 +95,13 @@ describe("artRow measures capacity by the authored room", () => {
     // out one wider than the run, and the row repeated its last anchor: two
     // people drawn on one pixel, reading as one. `artRow(100, 2.6, 2.6, 7)`
     // returned [3, 3].
-    for (const [from, limit] of [[2.4, 2.6], [2.6, 2.6], [3.5, 97.5], [97.5, 3.5], [0.5, 1.4]] as const) {
+    for (const [from, limit] of [
+      [2.4, 2.6],
+      [2.6, 2.6],
+      [3.5, 97.5],
+      [97.5, 3.5],
+      [0.5, 1.4],
+    ] as const) {
       const dir = limit < from ? -1 : 1;
       const spots = artRow(110, from, limit, 7, dir);
       expect(new Set(spots).size, `${from}..${limit} repeated an anchor`).toBe(spots.length);

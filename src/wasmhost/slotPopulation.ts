@@ -33,7 +33,10 @@ function hashText(text: string): number {
  * throw before it propagates, and boot hands it to the trap path the tick and
  * the save writer use (#1612); a plain refusal is not a trap and stops nothing.
  */
-export function populationReaderFromModule(mod: Pick<WasmModule, "Engine">, onThrow?: (error: unknown) => void): (text: string) => number {
+export function populationReaderFromModule(
+  mod: Pick<WasmModule, "Engine">,
+  onThrow?: (error: unknown) => void,
+): (text: string) => number {
   const memo = new Map<string, number>();
   return (text) => {
     const key = `${text.length}:${hashText(text)}`;
@@ -50,7 +53,8 @@ export function populationReaderFromModule(mod: Pick<WasmModule, "Engine">, onTh
       runEach(
         () => {
           const stats = JSON.parse(engine.towerStats()) as { population: unknown };
-          if (typeof stats.population !== "number" || !Number.isFinite(stats.population)) throw new Error("The engine reported no population.");
+          if (typeof stats.population !== "number" || !Number.isFinite(stats.population))
+            throw new Error("The engine reported no population.");
           population = stats.population;
         },
         () => engine.free(),

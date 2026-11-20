@@ -25,14 +25,20 @@ describe("buildMapDrawList", () => {
   });
 
   it("puts a floor run at its real tile and floor, one mark for the whole run", () => {
-    const marks = buildMapDrawList(layout, source({ structure: [{ kind: "floor", floor: 3, x: 100, width: 5, count: 8 }] }));
+    const marks = buildMapDrawList(
+      layout,
+      source({ structure: [{ kind: "floor", floor: 3, x: 100, width: 5, count: 8 }] }),
+    );
     expect(marks).toEqual([{ layer: "structure", kind: "floor", rect: { x: 100, y: yOfLine(3), w: 40, h: 3 } }]);
   });
 
   it("draws a tall lobby hall over every story it rises, columns x0 to x1 both included (#308)", () => {
     // The big-lobby save: a 3-story ground hall whose tiles sit on floor 1 alone.
     const tallLobbies = vi.fn(() => [{ floor: 1, x0: 100, x1: 139, height: 3 }]);
-    const marks = buildMapDrawList(layout, source({ structure: [{ kind: "lobby", floor: 1, x: 100, width: 1, count: 40 }], tallLobbies }));
+    const marks = buildMapDrawList(
+      layout,
+      source({ structure: [{ kind: "lobby", floor: 1, x: 100, width: 1, count: 40 }], tallLobbies }),
+    );
     expect(tallLobbies).toHaveBeenCalledTimes(1);
     expect(marks).toEqual([
       { layer: "structure", kind: "lobby", rect: { x: 100, y: yOfLine(1), w: 40, h: 3 } },
@@ -70,7 +76,10 @@ describe("buildMapDrawList", () => {
   });
 
   it("draws a shaft as a block as wide as the shaft, over every floor it serves, bottom to top inclusive", () => {
-    const [shaft] = buildMapDrawList(layout, source({ transports: [{ kind: "elevatorStandard", x: 10, width: 4, bottom: -2, top: 30 }] }));
+    const [shaft] = buildMapDrawList(
+      layout,
+      source({ transports: [{ kind: "elevatorStandard", x: 10, width: 4, bottom: -2, top: 30 }] }),
+    );
     expect(shaft.layer).toBe("transport");
     expect(shaft.rect.x).toBe(10);
     expect(shaft.rect.w).toBe(4);
@@ -79,8 +88,14 @@ describe("buildMapDrawList", () => {
   });
 
   it("draws a shaft whose ends come the wrong way round over the same floors", () => {
-    const upright = buildMapDrawList(layout, source({ transports: [{ kind: "stairs", x: 5, width: 2, bottom: 3, top: 4 }] }));
-    const flipped = buildMapDrawList(layout, source({ transports: [{ kind: "stairs", x: 5, width: 2, bottom: 4, top: 3 }] }));
+    const upright = buildMapDrawList(
+      layout,
+      source({ transports: [{ kind: "stairs", x: 5, width: 2, bottom: 3, top: 4 }] }),
+    );
+    const flipped = buildMapDrawList(
+      layout,
+      source({ transports: [{ kind: "stairs", x: 5, width: 2, bottom: 4, top: 3 }] }),
+    );
     expect(flipped).toEqual(upright);
   });
 
@@ -98,7 +113,10 @@ describe("buildMapDrawList", () => {
 
   it("groups rooms of one kind together so the painter changes style once per kind", () => {
     const kinds: FacilityKind[] = ["office", "condo", "office", "condo", "office"];
-    const marks = buildMapDrawList(layout, source({ rooms: kinds.map((kind, i) => ({ kind, floor: 2, x: i * 10, width: 9 })) }));
+    const marks = buildMapDrawList(
+      layout,
+      source({ rooms: kinds.map((kind, i) => ({ kind, floor: 2, x: i * 10, width: 9 })) }),
+    );
     expect(marks.map((m) => m.kind)).toEqual(["office", "office", "office", "condo", "condo"]);
     // Order inside a kind is the source order.
     expect(marks.filter((m) => m.kind === "office").map((m) => m.rect.x)).toEqual([0, 20, 40]);
@@ -106,14 +124,22 @@ describe("buildMapDrawList", () => {
 
   it("asks the catalog for each kind's height once, however many rooms there are", () => {
     const asked: FacilityKind[] = [];
-    const rooms = Array.from({ length: 50 }, (_, i) => ({ kind: (i % 2 ? "office" : "condo") as FacilityKind, floor: 2, x: i * 7, width: 6 }));
+    const rooms = Array.from({ length: 50 }, (_, i) => ({
+      kind: (i % 2 ? "office" : "condo") as FacilityKind,
+      floor: 2,
+      x: i * 7,
+      width: 6,
+    }));
     buildMapDrawList(layout, source({ rooms, floorsOf: (k) => (asked.push(k), 1) }));
     expect(asked.sort()).toEqual(["condo", "office"]);
   });
 
   it("draws a room of unknown or bad height as one floor", () => {
     for (const bad of [Number.NaN, Number.POSITIVE_INFINITY, 0, -3, 0.4]) {
-      const [m] = buildMapDrawList(layout, source({ rooms: [{ kind: "office", floor: 5, x: 0, width: 9 }], floorsOf: () => bad }));
+      const [m] = buildMapDrawList(
+        layout,
+        source({ rooms: [{ kind: "office", floor: 5, x: 0, width: 9 }], floorsOf: () => bad }),
+      );
       expect(m.rect.h, String(bad)).toBe(3);
     }
   });
@@ -131,7 +157,10 @@ describe("buildMapDrawList", () => {
 
   it("keeps a narrow shaft one pixel wide at least, in the last column and the bottom row", () => {
     const small = fitLayout(EXTENT, 180, extentFloors(EXTENT));
-    const [edge] = buildMapDrawList(small, source({ transports: [{ kind: "stairs", x: 374, width: 1, bottom: -9, top: -9 }] }));
+    const [edge] = buildMapDrawList(
+      small,
+      source({ transports: [{ kind: "stairs", x: 374, width: 1, bottom: -9, top: -9 }] }),
+    );
     expect(edge.rect.w).toBeGreaterThanOrEqual(1);
     expect(edge.rect.x + edge.rect.w).toBeLessThanOrEqual(180);
     expect(edge.rect.y + edge.rect.h).toBeLessThanOrEqual(small.height);
@@ -176,7 +205,10 @@ describe("buildMapDrawList", () => {
     const margin = mapSideMarginTiles(WORLD.lotWidth);
     const [first, last] = buildMapDrawList(
       wide,
-      source({ structure: [{ kind: "floor", floor: 1, x: 0, width: 1, count: 1 }], rooms: [{ kind: "office", floor: 1, x: 366, width: 9 }] }),
+      source({
+        structure: [{ kind: "floor", floor: 1, x: 0, width: 1, count: 1 }],
+        rooms: [{ kind: "office", floor: 1, x: 366, width: 9 }],
+      }),
     );
     // One map pixel per tile: the lot's first tile starts `margin` pixels in, and its last ends as far from the right edge.
     expect(first.rect.x).toBe(margin);

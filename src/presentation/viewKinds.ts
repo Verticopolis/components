@@ -25,7 +25,8 @@ export function bindViewKinds(catalog: Catalog): void {
 }
 
 function entry(kind: FacilityKind): CatalogFacility {
-  if (!bound) throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
+  if (!bound)
+    throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
   const f = bound.get(kind);
   if (!f) throw new Error(`the catalog lists no ${kind}`);
   return f;
@@ -34,13 +35,15 @@ function entry(kind: FacilityKind): CatalogFacility {
 /** The catalog facts for `kind`, or null when the bound catalog lists none.
  *  Throws before the first bind. */
 export function findViewKind(kind: FacilityKind): CatalogFacility | null {
-  if (!bound) throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
+  if (!bound)
+    throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
   return bound.get(kind) ?? null;
 }
 
 /** The kind keys in the bound catalog, in catalog order. */
 export function viewKindKeys(): FacilityKind[] {
-  if (!bound) throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
+  if (!bound)
+    throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
   return [...bound.keys()];
 }
 

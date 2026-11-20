@@ -19,8 +19,10 @@ function recordingCtx() {
   let fill = "";
   const ctx = new Proxy({} as Record<string, unknown>, {
     get: (_t, prop) => {
-      if (prop === "fillRect") return (x: number, y: number, w: number, h: number) => void log.push(`${fill} ${x},${y} ${w}x${h}`);
-      if (prop === "rect") return (x: number, y: number, w: number, h: number) => void log.push(`clip ${x},${y} ${w}x${h}`);
+      if (prop === "fillRect")
+        return (x: number, y: number, w: number, h: number) => void log.push(`${fill} ${x},${y} ${w}x${h}`);
+      if (prop === "rect")
+        return (x: number, y: number, w: number, h: number) => void log.push(`clip ${x},${y} ${w}x${h}`);
       if (prop === "createLinearGradient" || prop === "createRadialGradient") return () => ({ addColorStop: () => {} });
       if (prop === "measureText") return () => ({ width: 10 });
       return () => {};
@@ -74,7 +76,9 @@ describe("drawTallLobbyTile", () => {
     for (const ground of [true, false]) {
       const band = ground ? "#DCD2B8" : "#CBC3B0";
       const slice = drawn((d) => drawTallLobbyTile(d, 0, Y, TILE, 3 * STORY, 0, ground, 3));
-      expect(slice.filter((r) => r.startsWith(`${band} `) && r.endsWith(`${TILE}x5`))).toEqual([`${band} 0,${Y + 3 * STORY - 5} ${TILE}x5`]);
+      expect(slice.filter((r) => r.startsWith(`${band} `) && r.endsWith(`${TILE}x5`))).toEqual([
+        `${band} 0,${Y + 3 * STORY - 5} ${TILE}x5`,
+      ]);
     }
   });
 
@@ -99,7 +103,9 @@ describe("drawTallLobbyTile", () => {
     expect(left[0]).toMatch(new RegExp(`^#C9A24B 1,\\d+ ${2 * TILE - 2}x`));
     expect(right).toEqual([left[0].replace(" 1,", ` ${1 - TILE},`)]);
     for (const v of [1, 2]) {
-      const clip = drawn((d) => drawTallLobbyTile(d, 0, Y, TILE, 3 * STORY, v, true, 3)).filter((r) => r.startsWith("clip"));
+      const clip = drawn((d) => drawTallLobbyTile(d, 0, Y, TILE, 3 * STORY, v, true, 3)).filter((r) =>
+        r.startsWith("clip"),
+      );
       expect(clip, `slot ${v}`).toEqual([`clip 0,${Y} ${TILE}x${2 * STORY + 4}`]);
     }
     // No window elsewhere downstairs, and none in a sky hall (its wall is glass).
@@ -125,7 +131,9 @@ describe("drawTallLobbyTile", () => {
 
   it("lights a sky hall's globe pendants after dark", () => {
     const glow = (lit: boolean) =>
-      drawn((d) => drawTallLobbyTile(d, 0, 0, TILE, 2 * STORY, 2, false, 2), lit).filter((r) => r.startsWith("#FBE7B8"));
+      drawn((d) => drawTallLobbyTile(d, 0, 0, TILE, 2 * STORY, 2, false, 2), lit).filter((r) =>
+        r.startsWith("#FBE7B8"),
+      );
     expect(glow(true)).toHaveLength(3);
     expect(glow(false)).toHaveLength(0);
   });
@@ -162,8 +170,14 @@ describe("drawTallLobbyEntrance", () => {
       // Drawn after the doors: a full-width wall down past the doors' cornice,
       // and the hall's one cornice at the top.
       const after = slice.slice(at + doors.length);
-      expect(after.some((r) => r.includes(`0,`) && r.includes(` ${TILE}x`) && rows(r)[0] <= lowY && rows(r)[1] >= lowY + 4), kind).toBe(true);
-      expect(after.filter((r) => r.startsWith("#C9A24B") && r.endsWith(`${TILE}x3`)), kind).toEqual([`#C9A24B 0,0 ${TILE}x3`]);
+      expect(
+        after.some((r) => r.includes(`0,`) && r.includes(` ${TILE}x`) && rows(r)[0] <= lowY && rows(r)[1] >= lowY + 4),
+        kind,
+      ).toBe(true);
+      expect(
+        after.filter((r) => r.startsWith("#C9A24B") && r.endsWith(`${TILE}x3`)),
+        kind,
+      ).toEqual([`#C9A24B 0,0 ${TILE}x3`]);
     }
   });
 });
@@ -175,7 +189,8 @@ describe("tall lobby pieces", () => {
   });
 
   it("shows city lights through an arched window only after dark", () => {
-    const lights = (lit: boolean) => drawn((d) => archedWindow(d, 0, 0, 8, 80, false, 7), lit).filter((r) => r.startsWith("#B89A62"));
+    const lights = (lit: boolean) =>
+      drawn((d) => archedWindow(d, 0, 0, 8, 80, false, 7), lit).filter((r) => r.startsWith("#B89A62"));
     expect(lights(true).length).toBeGreaterThan(0);
     expect(lights(false)).toEqual([]);
   });

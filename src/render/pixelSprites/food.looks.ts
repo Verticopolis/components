@@ -35,11 +35,39 @@ export const FASTFOOD_DEFAULT: FastFoodLook = {
   interior: "classic",
 };
 export const FASTFOOD_LOOKS: Record<string, FastFoodLook> = {
-  "Japanese Soba": { band: "#3A4E8C", stripe: "#F4F0E4", wall: "#E6E0CC", floor: "#7A5A3A", floorStyle: "plain", interior: "counterBar" },
-  "Chinese Cafe": { band: "#8E2424", stripe: "#E8C14A", wall: "#EEE2C8", floor: "#9A7A52", floorStyle: "plain", interior: "teahouse" },
+  "Japanese Soba": {
+    band: "#3A4E8C",
+    stripe: "#F4F0E4",
+    wall: "#E6E0CC",
+    floor: "#7A5A3A",
+    floorStyle: "plain",
+    interior: "counterBar",
+  },
+  "Chinese Cafe": {
+    band: "#8E2424",
+    stripe: "#E8C14A",
+    wall: "#EEE2C8",
+    floor: "#9A7A52",
+    floorStyle: "plain",
+    interior: "teahouse",
+  },
   "Hamburger Stand": FASTFOOD_DEFAULT,
-  "Ice Cream": { band: "#E88AB0", stripe: "#FFFFFF", wall: "#F0E0EA", floor: "#E8B7C8", floorStyle: "checker", interior: "parlor" },
-  "Coffee Shop": { band: "#6E4A32", stripe: "#E8DCC8", wall: "#E8DCC6", floor: "#8A6A48", floorStyle: "plain", interior: "cafe" },
+  "Ice Cream": {
+    band: "#E88AB0",
+    stripe: "#FFFFFF",
+    wall: "#F0E0EA",
+    floor: "#E8B7C8",
+    floorStyle: "checker",
+    interior: "parlor",
+  },
+  "Coffee Shop": {
+    band: "#6E4A32",
+    stripe: "#E8DCC8",
+    wall: "#E8DCC6",
+    floor: "#8A6A48",
+    floorStyle: "plain",
+    interior: "cafe",
+  },
 };
 
 export interface RestaurantLook {
@@ -54,11 +82,16 @@ export interface RestaurantLook {
    *  sushi bar, or steak-house booths. */
   interior: "cloth" | "pub" | "banquet" | "sushi" | "booths";
 }
-export const RESTAURANT_DEFAULT: RestaurantLook = { wall: "#4A2A3A", floor: "#3A2440", fixture: "chandelier", interior: "cloth" };
+export const RESTAURANT_DEFAULT: RestaurantLook = {
+  wall: "#4A2A3A",
+  floor: "#3A2440",
+  fixture: "chandelier",
+  interior: "cloth",
+};
 export const RESTAURANT_LOOKS: Record<string, RestaurantLook> = {
   "English Pub": { wall: "#4A3626", floor: "#33251A", fixture: "lamps", interior: "pub" },
-  "French": RESTAURANT_DEFAULT,
-  "Chinese": { wall: "#5A2020", floor: "#3A1818", fixture: "lanterns", interior: "banquet" },
+  French: RESTAURANT_DEFAULT,
+  Chinese: { wall: "#5A2020", floor: "#3A1818", fixture: "lanterns", interior: "banquet" },
   "Sushi Bar": { wall: "#B89A6A", floor: "#8A6E48", fixture: "none", interior: "sushi" },
   "Steak House": { wall: "#4A2A22", floor: "#33201A", fixture: "ember", interior: "booths" },
 };
@@ -70,7 +103,12 @@ export const RESTAURANT_LOOKS: Record<string, RestaurantLook> = {
 // actually draws). The six stalls spread across the five interior styles (one
 // reuse of `cloth`, split by a distinct wall palette). Reusing the restaurant
 // interiors is deliberate for now; bespoke stall art is a future refinement.
-export const FOODHALL_DEFAULT: RestaurantLook = { wall: "#5A4028", floor: "#3A2A1A", fixture: "lanterns", interior: "banquet" };
+export const FOODHALL_DEFAULT: RestaurantLook = {
+  wall: "#5A4028",
+  floor: "#3A2A1A",
+  fixture: "lanterns",
+  interior: "banquet",
+};
 export const FOODHALL_LOOKS: Record<string, RestaurantLook> = {
   "Ramen Bar": { wall: "#5A2424", floor: "#3A1818", fixture: "lanterns", interior: "banquet" },
   "Taco Stand": { wall: "#7A5620", floor: "#4A3616", fixture: "ember", interior: "booths" },

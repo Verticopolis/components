@@ -78,7 +78,9 @@ export function diffLayer(prev: Image, next: Image): Piece | null {
     const b = next.data;
     if (a[i] === b[i] && a[i + 1] === b[i + 1] && a[i + 2] === b[i + 2] && a[i + 3] === b[i + 3]) continue;
     if (b[i + 3] !== 255 && a[i + 3] !== 0) {
-      throw new LayerError(`diffLayer: pixel ${p % w},${Math.floor(p / w)} changes under translucency (alpha ${a[i + 3]} to ${b[i + 3]})`);
+      throw new LayerError(
+        `diffLayer: pixel ${p % w},${Math.floor(p / w)} changes under translucency (alpha ${a[i + 3]} to ${b[i + 3]})`,
+      );
     }
     const x = p % w;
     const y = (p - x) / w;

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { bumpVersion, nextVersion, renameUnreleased, unreleasedTier } from "./releaseCut";
 
-const changelog = (body: string) => `# Components changelog\n\nIntro.\n\n## Unreleased\n\n${body}\n## 0.2.2 (2026-11-19)\n\n- **major**: an old entry.\n`;
+const changelog = (body: string) =>
+  `# Components changelog\n\nIntro.\n\n## Unreleased\n\n${body}\n## 0.2.2 (2026-11-19)\n\n- **major**: an old entry.\n`;
 
 describe("unreleasedTier", () => {
   it("takes the highest tier among the Unreleased entries", () => {
@@ -17,7 +18,9 @@ describe("unreleasedTier", () => {
   it("refuses an entry with no tier, an empty section and a missing one", () => {
     expect(() => unreleasedTier(changelog("- **patch**: a fix.\n- a line with no tier.\n"))).toThrow(/names no tier/);
     expect(() => unreleasedTier(changelog(""))).toThrow(/no entries/);
-    expect(() => unreleasedTier("# Components changelog\n\n## 1.0.0 (2026-01-01)\n\n- **patch**: x.\n")).toThrow(/no "## Unreleased"/);
+    expect(() => unreleasedTier("# Components changelog\n\n## 1.0.0 (2026-01-01)\n\n- **patch**: x.\n")).toThrow(
+      /no "## Unreleased"/,
+    );
   });
 });
 
@@ -54,6 +57,8 @@ describe("renameUnreleased", () => {
   });
 
   it("refuses a version the changelog already has", () => {
-    expect(() => renameUnreleased(changelog("- **patch**: a.\n"), "0.2.2", "2026-11-20")).toThrow(/already has a 0\.2\.2/);
+    expect(() => renameUnreleased(changelog("- **patch**: a.\n"), "0.2.2", "2026-11-20")).toThrow(
+      /already has a 0\.2\.2/,
+    );
   });
 });

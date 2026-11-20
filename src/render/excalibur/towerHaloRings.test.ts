@@ -9,9 +9,33 @@ import { drawHaloRings, haloStrength, storyDistance, type RingView } from "./tow
  * lot and the tower's floor range, then one dashed outline.
  */
 
-const GYM: CatalogHalo = { effect: "lift", floors: 5, max: 0.03, capLift: 0.15, feltBy: ["condo"], openHoursOnly: false, familyScaled: false };
-const CLUB: CatalogHalo = { effect: "drain", floors: 4, max: 0.12, capLift: null, feltBy: ["condo"], openHoursOnly: true, familyScaled: false };
-const POOL: CatalogHalo = { effect: "lift", floors: 6, max: 0.035, capLift: 0.15, feltBy: ["condo"], openHoursOnly: false, familyScaled: false };
+const GYM: CatalogHalo = {
+  effect: "lift",
+  floors: 5,
+  max: 0.03,
+  capLift: 0.15,
+  feltBy: ["condo"],
+  openHoursOnly: false,
+  familyScaled: false,
+};
+const CLUB: CatalogHalo = {
+  effect: "drain",
+  floors: 4,
+  max: 0.12,
+  capLift: null,
+  feltBy: ["condo"],
+  openHoursOnly: true,
+  familyScaled: false,
+};
+const POOL: CatalogHalo = {
+  effect: "lift",
+  floors: 6,
+  max: 0.035,
+  capLift: 0.15,
+  feltBy: ["condo"],
+  openHoursOnly: false,
+  familyScaled: false,
+};
 const WORLD = { lotWidth: 375, minFloor: -9, maxFloor: 100 };
 
 /** A context that records each band's fill (alpha and rect) and the outline. */
@@ -21,7 +45,9 @@ function recorder() {
   const ctx = {
     ...state,
     lineWidth: 1,
-    fillRect: vi.fn((_x: number, y: number, w: number, h: number) => bands.push({ alpha: ctx.globalAlpha, y, w, h, color: ctx.fillStyle })),
+    fillRect: vi.fn((_x: number, y: number, w: number, h: number) =>
+      bands.push({ alpha: ctx.globalAlpha, y, w, h, color: ctx.fillStyle }),
+    ),
     strokeRect: vi.fn(),
     setLineDash: vi.fn(),
   };
@@ -44,11 +70,20 @@ describe("placement range rings", () => {
     drawHaloRings(ctx as unknown as CanvasRenderingContext2D, GYM, 20, 1, WORLD, VIEW);
     // Floors 16 to 24: four either side of the gym's own.
     expect(bands.map((b) => b.y)).toEqual([16, 17, 18, 19, 20, 21, 22, 23, 24].map((f) => -f * 100));
-    expect(bands.every((b) => b.w === WORLD.lotWidth * TILE * 2 && b.h === FLOOR * 2 && b.color === "#4fcf86")).toBe(true);
+    expect(bands.every((b) => b.w === WORLD.lotWidth * TILE * 2 && b.h === FLOOR * 2 && b.color === "#4fcf86")).toBe(
+      true,
+    );
     const own = bands[4].alpha;
-    expect(bands.map((b) => b.alpha / own)).toEqual([0.2, 0.4, 0.6, 0.8, 1, 0.8, 0.6, 0.4, 0.2].map((v) => expect.closeTo(v, 9)));
+    expect(bands.map((b) => b.alpha / own)).toEqual(
+      [0.2, 0.4, 0.6, 0.8, 1, 0.8, 0.6, 0.4, 0.2].map((v) => expect.closeTo(v, 9)),
+    );
     expect(ctx.setLineDash).toHaveBeenNthCalledWith(1, [6, 4]);
-    expect(ctx.strokeRect).toHaveBeenCalledWith(10.5, -24 * 100 + 0.5, WORLD.lotWidth * TILE * 2 - 1, 9 * FLOOR * 2 - 1);
+    expect(ctx.strokeRect).toHaveBeenCalledWith(
+      10.5,
+      -24 * 100 + 0.5,
+      WORLD.lotWidth * TILE * 2 - 1,
+      9 * FLOOR * 2 - 1,
+    );
     expect(ctx.setLineDash).toHaveBeenLastCalledWith([]);
     expect(ctx.globalAlpha).toBe(1);
   });
@@ -71,6 +106,11 @@ describe("placement range rings", () => {
     expect(bands[6].alpha).toBe(own);
     expect(bands[4].alpha / own).toBeCloseTo(5 / 6, 9);
     expect(bands[7].alpha / own).toBeCloseTo(5 / 6, 9);
-    expect(ctx.strokeRect).toHaveBeenCalledWith(10.5, -26 * 100 + 0.5, WORLD.lotWidth * TILE * 2 - 1, 12 * FLOOR * 2 - 1);
+    expect(ctx.strokeRect).toHaveBeenCalledWith(
+      10.5,
+      -26 * 100 + 0.5,
+      WORLD.lotWidth * TILE * 2 - 1,
+      12 * FLOOR * 2 - 1,
+    );
   });
 });

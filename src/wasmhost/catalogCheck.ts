@@ -22,7 +22,9 @@ export function refuseForeignCatalogs(catalogs: Readonly<Record<GameMode, Catalo
   for (const c of Object.values(catalogs)) refuseUndrawnKinds(c);
   for (const field of VIEW_WORLD_FIELDS) {
     if (catalogs.classic.world[field] !== catalogs.modern.world[field]) {
-      throw new Error(`the Rust engine's classic and modern catalogs state different worlds (${field}), and the view draws one world for the page`);
+      throw new Error(
+        `the Rust engine's classic and modern catalogs state different worlds (${field}), and the view draws one world for the page`,
+      );
     }
   }
 }
@@ -36,10 +38,17 @@ function refuseUndrawnKinds(c: Catalog): void {
   const extra = keys.filter((k) => !DRAWN_KINDS.has(k));
   const missing = [...DRAWN_KINDS].filter((k) => !listed.has(k));
   if (extra.length > 0 || missing.length > 0) {
-    const parts = [extra.length > 0 ? `unknown ${extra.join(", ")}` : "", missing.length > 0 ? `missing ${missing.join(", ")}` : ""];
-    throw new Error(`the Rust engine's ${c.mode} catalog lists other facility kinds than this build draws (${parts.filter(Boolean).join("; ")})`);
+    const parts = [
+      extra.length > 0 ? `unknown ${extra.join(", ")}` : "",
+      missing.length > 0 ? `missing ${missing.join(", ")}` : "",
+    ];
+    throw new Error(
+      `the Rust engine's ${c.mode} catalog lists other facility kinds than this build draws (${parts.filter(Boolean).join("; ")})`,
+    );
   }
   if (!DRAWN_KINDS.has(c.world.groundFloorStructure)) {
-    throw new Error(`the Rust engine's ${c.mode} catalog lays the ground floor with a kind this build does not draw (${c.world.groundFloorStructure})`);
+    throw new Error(
+      `the Rust engine's ${c.mode} catalog lays the ground floor with a kind this build does not draw (${c.world.groundFloorStructure})`,
+    );
   }
 }

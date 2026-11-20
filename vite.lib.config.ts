@@ -53,12 +53,16 @@ function keepImportMetaEnv(): Plugin {
 function transpileKeepingComments(): Plugin {
   // tsconfig.json's own options, so class fields, the target and the rest
   // compile the way the game's bundler compiled the sources before.
-  const config = ts.getParsedCommandLineOfConfigFile("tsconfig.json", {}, {
-    ...ts.sys,
-    onUnRecoverableConfigFileDiagnostic: (d) => {
-      throw new Error(ts.flattenDiagnosticMessageText(d.messageText, "\n"));
+  const config = ts.getParsedCommandLineOfConfigFile(
+    "tsconfig.json",
+    {},
+    {
+      ...ts.sys,
+      onUnRecoverableConfigFileDiagnostic: (d) => {
+        throw new Error(ts.flattenDiagnosticMessageText(d.messageText, "\n"));
+      },
     },
-  });
+  );
   if (!config) throw new Error("tsconfig.json did not parse");
   const compilerOptions: ts.CompilerOptions = {
     ...config.options,
@@ -97,7 +101,8 @@ export default defineConfig({
     lib: { entry: entries, formats: ["es"] },
     rollupOptions: {
       // Bare specifiers are dependencies; relative and absolute paths are ours.
-      external: (id) => !id.startsWith(".") && !id.startsWith("/") && !/^[A-Za-z]:[\\/]/.test(id) && !id.startsWith("\0"),
+      external: (id) =>
+        !id.startsWith(".") && !id.startsWith("/") && !/^[A-Za-z]:[\\/]/.test(id) && !id.startsWith("\0"),
       output: {
         preserveModules: true,
         preserveModulesRoot: SRC,

@@ -35,7 +35,15 @@ export class FloorSpans {
    *  map, or a value that is not finite, records nothing. */
   add(floor: number, from: number, to: number): void {
     const row = floor - this.lowest;
-    if (!(row >= 0 && row < this.rows.length && Number.isInteger(row) && Number.isFinite(from) && to > from && Number.isFinite(to))) return;
+    if (!(
+      row >= 0 &&
+      row < this.rows.length &&
+      Number.isInteger(row) &&
+      Number.isFinite(from) &&
+      to > from &&
+      Number.isFinite(to)
+    ))
+      return;
     const list = this.rows[row];
     if (!list) {
       this.rows[row] = [from, to];

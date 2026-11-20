@@ -80,9 +80,7 @@ describe("focus() crowd and hour plumbing", () => {
     expect(empty.crowd).toBe(0); // open but nobody eating: quiet
     const half = focus(
       stubEngine({
-        units: [
-          { kind: "restaurant", floor: 5, x: 4, width: 6, occupants: cap, customersIn: Math.round(cap / 2) },
-        ],
+        units: [{ kind: "restaurant", floor: 5, x: 4, width: 6, occupants: cap, customersIn: Math.round(cap / 2) }],
       }),
     );
     expect(half.crowd).toBeCloseTo(0.5, 1);

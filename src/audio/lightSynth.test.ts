@@ -73,7 +73,11 @@ const ctx = {
   }),
 };
 const toneConnect = vi.fn();
-const volumes: Array<{ volume: { value: number }; connect: ReturnType<typeof vi.fn>; dispose: ReturnType<typeof vi.fn> }> = [];
+const volumes: Array<{
+  volume: { value: number };
+  connect: ReturnType<typeof vi.fn>;
+  dispose: ReturnType<typeof vi.fn>;
+}> = [];
 
 vi.mock("tone", () => ({
   getContext: () => ctx,

@@ -26,12 +26,7 @@ import type { BuildMetadataResult } from "./buildSection";
  * About's Report a problem puts it in the GitHub link it opens on the player's
  * click (src/ui/bugReport.ts), where the player reviews it before submitting.
  */
-export type DiagnosticsState =
-  | "ok"
-  | "not-running"
-  | "not-loaded"
-  | "mismatch"
-  | "unavailable";
+export type DiagnosticsState = "ok" | "not-running" | "not-loaded" | "mismatch" | "unavailable";
 
 export interface DiagnosticsRow {
   label: string;
@@ -70,8 +65,7 @@ export interface DiagnosticsInput {
 /** An engine message can be long; the clipboard text keeps the start. */
 const MESSAGE_CAP = 300;
 
-const cap = (s: string): string =>
-  s.length > MESSAGE_CAP ? `${s.slice(0, MESSAGE_CAP)}...` : s;
+const cap = (s: string): string => (s.length > MESSAGE_CAP ? `${s.slice(0, MESSAGE_CAP)}...` : s);
 
 /** One row is one line of the clipboard text, so a message that spans lines
  *  (a stack, a multi-line engine error) is folded onto one. */
@@ -99,13 +93,9 @@ export function identityMismatches(
   const out: string[] = [];
   const crate = expected?.crate;
   if (crate && crate.name !== identity.crate.name)
-    out.push(
-      `crate name (engine ${identity.crate.name}, this page was built for ${crate.name})`,
-    );
+    out.push(`crate name (engine ${identity.crate.name}, this page was built for ${crate.name})`);
   if (crate && crate.version !== identity.crate.version)
-    out.push(
-      `crate version (engine ${identity.crate.version}, this page was built for ${crate.version})`,
-    );
+    out.push(`crate version (engine ${identity.crate.version}, this page was built for ${crate.version})`);
   const source = sourceMismatch(expected, build);
   if (source) out.push(source);
   return out;
@@ -113,10 +103,8 @@ export function identityMismatches(
 
 /** Why the source hash cannot be shown, or null when it can (or was not read). */
 function buildUnavailable(build: BuildMetadataResult | undefined): string | null {
-  if (build?.state === "missing")
-    return "its binary carries no build metadata section";
-  if (build?.state === "malformed")
-    return `its build metadata section is malformed (${build.why})`;
+  if (build?.state === "missing") return "its binary carries no build metadata section";
+  if (build?.state === "malformed") return `its build metadata section is malformed (${build.why})`;
   return null;
 }
 
@@ -158,14 +146,10 @@ export function buildDiagnostics(input: DiagnosticsInput): DiagnosticsReport {
   const running = wasmRunning(input);
   const mismatches = identity
     ? identityMismatches(identity, expected, boot?.binary)
-    : [sourceMismatch(expected, boot?.binary)].filter(
-        (m): m is string => m !== null,
-      );
+    : [sourceMismatch(expected, boot?.binary)].filter((m): m is string => m !== null);
   const noBuild = buildUnavailable(boot?.binary);
   // "Matches" is claimed only when a comparison ran.
-  const compared =
-    (!!identity && !!expected?.crate) ||
-    (boot?.binary?.state === "ok" && !!expected?.sources);
+  const compared = (!!identity && !!expected?.crate) || (boot?.binary?.state === "ok" && !!expected?.sources);
 
   let state: DiagnosticsState;
   let summary: string;
@@ -180,8 +164,7 @@ export function buildDiagnostics(input: DiagnosticsInput): DiagnosticsReport {
     summary = "The Rust engine does not match the build this page expected.";
   } else if (!identity) {
     state = "unavailable";
-    summary =
-      "The Rust engine is running, but this package does not report its identity.";
+    summary = "The Rust engine is running, but this package does not report its identity.";
   } else if (noBuild) {
     state = "unavailable";
     summary = `The Rust engine is running, but ${noBuild}, so its source hash is unavailable.`;
@@ -190,8 +173,7 @@ export function buildDiagnostics(input: DiagnosticsInput): DiagnosticsReport {
     summary = "The Rust engine is running and matches this build.";
   } else {
     state = "ok";
-    summary =
-      "The Rust engine is running. This page has no build record to compare it with.";
+    summary = "The Rust engine is running. This page has no build record to compare it with.";
   }
 
   const rows: DiagnosticsRow[] = [
@@ -201,8 +183,7 @@ export function buildDiagnostics(input: DiagnosticsInput): DiagnosticsReport {
     },
   ];
   if (input.date) rows.push({ label: "Date", value: input.date });
-  if (input.userAgent)
-    rows.push({ label: "Browser", value: cap(input.userAgent) });
+  if (input.userAgent) rows.push({ label: "Browser", value: cap(input.userAgent) });
   // No "Build" row: every build runs the Rust engine alone (#1875), so the
   // boot state's bundle kind always read "wasm-only" and told a player nothing.
   rows.push({ label: "Engine in use", value: engineName(input) });
@@ -211,10 +192,8 @@ export function buildDiagnostics(input: DiagnosticsInput): DiagnosticsReport {
     rows.push({ label: "Reason", value: failure.reason });
     rows.push({ label: "Detail", value: cap(failure.message) });
   }
-  if (host?.lastError)
-    rows.push({ label: "Last engine error", value: cap(host.lastError) });
-  if (host?.droppedErrors)
-    rows.push({ label: "Errors not kept", value: String(host.droppedErrors) });
+  if (host?.lastError) rows.push({ label: "Last engine error", value: cap(host.lastError) });
+  if (host?.droppedErrors) rows.push({ label: "Errors not kept", value: String(host.droppedErrors) });
   if (expected) {
     rows.push({
       label: "Package id this page expects",

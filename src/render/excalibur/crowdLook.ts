@@ -20,7 +20,18 @@ import { SNAP_FLOORS as CAR_SNAP_FLOORS } from "../carMotion";
  * new position over one step's length instead of jumping there.
  */
 
-export const POSES: readonly Pose[] = ["walk", "stand", "watch", "hips", "armsUp", "climb", "push", "bend", "run", "caught"];
+export const POSES: readonly Pose[] = [
+  "walk",
+  "stand",
+  "watch",
+  "hips",
+  "armsUp",
+  "climb",
+  "push",
+  "bend",
+  "run",
+  "caught",
+];
 export const MOODS: readonly Mood[] = ["content", "impatient", "fedUp"];
 const POSE_CODE = new Map(POSES.map((p, i) => [p, i]));
 const MOOD_CODE = new Map(MOODS.map((m, i) => [m, i]));
@@ -213,7 +224,15 @@ export function newGlide(x: number, fy: number, left: boolean): Glide {
  * step they get out included: on the walkers' shorter limit a fast car's
  * rider jumped ahead of it and hung in the empty shaft until it caught up.
  */
-export function advanceGlide(g: Glide, x: number, fy: number, stepped: boolean, progress: number, show: boolean, riding = false): void {
+export function advanceGlide(
+  g: Glide,
+  x: number,
+  fy: number,
+  stepped: boolean,
+  progress: number,
+  show: boolean,
+  riding = false,
+): void {
   if (stepped || x !== g.toX || fy !== g.toFy) {
     // The step a rider gets out on is the car's last glide to their floor.
     const snapFloors = riding || g.rode ? CAR_SNAP_FLOORS : SNAP_FLOORS;

@@ -11,12 +11,22 @@ import type { RenderSim } from "../renderSim";
 import type { TowerEngine } from "./TowerEngine";
 
 // The next frame's sync calls these directly; spy on them so no canvas bakes.
-vi.mock("./towerReconcile", async (original) => ({ ...(await original<object>()), syncScene: vi.fn(), syncFacade: vi.fn() }));
+vi.mock("./towerReconcile", async (original) => ({
+  ...(await original<object>()),
+  syncScene: vi.fn(),
+  syncFacade: vi.fn(),
+}));
 vi.mock("./towerCrowd", async (original) => ({ ...(await original<object>()), syncMotion: vi.fn() }));
 // A swap binds the new tower's world and kinds; these stand-ins hold none.
 vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules: {} }) }));
-vi.mock("../../presentation/viewWorld", async (original) => ({ ...(await original<object>()), bindViewWorld: vi.fn() }));
-vi.mock("../../presentation/viewKinds", async (original) => ({ ...(await original<object>()), bindViewKinds: vi.fn() }));
+vi.mock("../../presentation/viewWorld", async (original) => ({
+  ...(await original<object>()),
+  bindViewWorld: vi.fn(),
+}));
+vi.mock("../../presentation/viewKinds", async (original) => ({
+  ...(await original<object>()),
+  bindViewKinds: vi.fn(),
+}));
 
 /**
  * An undo or redo step changes the tower the scene draws, so the renderer
@@ -274,7 +284,10 @@ describe("a swap to a tower with another top floor (#1985)", () => {
     expect(scene.engine.remove, "the old map leaves the scene").toHaveBeenCalledWith(oldMap);
     expect(scene.engine.add, "the new one enters it").toHaveBeenCalledWith(map);
     expect(map).not.toBe(oldMap);
-    expect([map.rows, map.columns], "one row per floor of the bound world").toEqual([world.maxFloor - world.minFloor + 1, world.lotWidth]);
+    expect([map.rows, map.columns], "one row per floor of the bound world").toEqual([
+      world.maxFloor - world.minFloor + 1,
+      world.lotWidth,
+    ]);
     expect(scene.structTopFloor, "the tile pass now maps floors against this map").toBe(world.maxFloor);
   });
 

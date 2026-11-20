@@ -59,7 +59,7 @@ export function skyBar(d: RoomCtx, u: UnitView, x: number, y: number, w: number,
       const ry = wy - y; // the window's height inside the room
       if (skylineWindowLit(seed, i, k)) {
         ctx.fillStyle = WINDOW_LIGHT[(i + ry) % WINDOW_LIGHT.length];
-        ctx.fillRect(bx + 1 + ((ry & 1) ? 2 : 0), wy, 1, 1);
+        ctx.fillRect(bx + 1 + (ry & 1 ? 2 : 0), wy, 1, 1);
       }
     }
   }

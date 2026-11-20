@@ -73,7 +73,17 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
       focus({ zoom: 2.0, dominant: "empty", centerFloor: -3 }), // metro (basement)
       focus({ zoom: 0.35, dominant: "empty", centerFloor: 30 }), // back out → overview
     ];
-    const expected: Scene[] = ["overview", "office", "hotel", "food", "cinema", "service", "outside", "metro", "overview"];
+    const expected: Scene[] = [
+      "overview",
+      "office",
+      "hotel",
+      "food",
+      "cinema",
+      "service",
+      "outside",
+      "metro",
+      "overview",
+    ];
     const ambFilter = recOf(inner(eng).ambFilter);
     path.forEach((f, i) => {
       const before = ambFilter.ramps.length;
@@ -308,9 +318,7 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
     expect(swell?.kind).toBe("Gain");
     // More than one LFO lives in the graph now (the street hum breathes on its
     // own); find the rain gust by its exact signature.
-    const lfo = graph.nodes.find(
-      (n) => n.kind === "LFO" && (n.args[0] as { frequency?: number })?.frequency === 0.3,
-    );
+    const lfo = graph.nodes.find((n) => n.kind === "LFO" && (n.args[0] as { frequency?: number })?.frequency === 0.3);
     expect(lfo, "gust LFO missing").toBeTruthy();
     expect(lfo!.args[0]).toEqual({ frequency: 0.3, min: 0.7, max: 1 });
     expect(lfo!.started).toBe(true);
@@ -329,7 +337,6 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
     eng.update(focus({ zoom: 2.2, dominant: "office", weather: "rain" }));
     expect(rain.ramps[rain.ramps.length - 1]).toEqual([0, 1.5]); // indoors → no rain
   });
-
 
   it("honest rooms: a near-empty attendance venue schedules no crowd sounds", () => {
     vi.useFakeTimers();
@@ -407,9 +414,7 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
     const eng = new ToneAudioEngine();
     eng.start();
     const steepInto = (rec: NodeRec) =>
-      rec.connects.some(
-        (t) => t.kind === "Filter" && ((t.args[0] ?? {}) as { rolloff?: number }).rolloff === -48,
-      );
+      rec.connects.some((t) => t.kind === "Filter" && ((t.args[0] ?? {}) as { rolloff?: number }).rolloff === -48);
     // The crowd layer's NoiseSynth (venue bursts) and the metro's brown rumble
     // must both pass the audition's no-static rule. The room-tone bed now takes
     // the same steep treatment (a steep rolloff -48 lowpass, per-scene cutoff);
@@ -417,18 +422,14 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
     const noiseSynths = graph.nodes.filter((n) => n.kind === "NoiseSynth");
     expect(noiseSynths.length).toBeGreaterThan(0);
     for (const n of noiseSynths) expect(steepInto(n)).toBe(true);
-    const rumble = graph.nodes.find(
-      (n) => n.kind === "Noise" && String(n.args[0]) === "brown",
-    );
+    const rumble = graph.nodes.find((n) => n.kind === "Noise" && String(n.args[0]) === "brown");
     expect(rumble, "metro rumble missing").toBeTruthy();
     expect(steepInto(rumble!)).toBe(true);
     // The room-tone bed's pink noise (constructed with the bare "pink" string,
     // unlike the rain layer's `{ type: "pink", ... }` options object) must sit
     // behind the steep filter too: it is the de-static change, and without this
     // pin a future edit could drop it back to a bright bandpass and stay green.
-    const roomTone = graph.nodes.find(
-      (n) => n.kind === "Noise" && n.args[0] === "pink",
-    );
+    const roomTone = graph.nodes.find((n) => n.kind === "Noise" && n.args[0] === "pink");
     expect(roomTone, "room-tone pink noise missing").toBeTruthy();
     expect(steepInto(roomTone!)).toBe(true);
   });
@@ -459,9 +460,7 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
     };
     settle(focus({ zoom: 2.4, dominant: "hotelSuite", hour: 12, crowd: 0.6 }));
     // Some gain ramped to the hotel's 0.24 murmur level from the spec table.
-    const rampedToHotel = graph.nodes.some(
-      (n) => n.kind === "Gain" && n.ramps.some((r) => r[0] === 0.24),
-    );
+    const rampedToHotel = graph.nodes.some((n) => n.kind === "Gain" && n.ramps.some((r) => r[0] === 0.24));
     expect(rampedToHotel).toBe(true);
   });
 
@@ -486,7 +485,9 @@ describe("ToneAudioEngine — full graph driven with a mocked Tone.js", () => {
     expect(inner(eng).started).toBe(false);
     expect(inner(eng).ambFilter).toBeNull();
     expect(inner(eng).rain).toBeNull();
-    const leaked = built.filter((n) => !n.disposed && n.kind !== "ToneAudioBuffer").map((n) => `${n.kind} #${graph.nodes.indexOf(n)}`);
+    const leaked = built
+      .filter((n) => !n.disposed && n.kind !== "ToneAudioBuffer")
+      .map((n) => `${n.kind} #${graph.nodes.indexOf(n)}`);
     expect(leaked, "nodes still alive after dispose").toEqual([]);
   });
 });

@@ -40,7 +40,11 @@ const SAMPLES_PER_SECOND = 20;
 
 /** A clock that shows each cycle at the step `want` names (cycles it does not
  *  name at step 0), or null when no moment in the first `seconds` does. */
-export function clockFor(cycles: Readonly<Record<string, CycleSpec>>, want: Readonly<Record<string, number>>, seconds = 2): number | null {
+export function clockFor(
+  cycles: Readonly<Record<string, CycleSpec>>,
+  want: Readonly<Record<string, number>>,
+  seconds = 2,
+): number | null {
   for (let i = 0; i < seconds * SAMPLES_PER_SECOND; i++) {
     const clock = (i + 0.5) / SAMPLES_PER_SECOND;
     if (Object.entries(cycles).every(([k, c]) => cycleStep(c, clock) === (want[k] ?? 0))) return clock;

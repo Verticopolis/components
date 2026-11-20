@@ -23,7 +23,14 @@ export function spiralAngle(t: number, stories: number): number {
  *  and darker, then the pole, then the near half, so the stair reads as
  *  winding around it. Lands on the arrival deck at `bandTop` on the right.
  *  Drawn strictly inside `[sx, sx + w]`. Integer coordinates. */
-export function drawSpiralStair(ctx: CanvasRenderingContext2D, sx: number, w: number, bandTop: number, bandBottom: number, stories: number): void {
+export function drawSpiralStair(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  w: number,
+  bandTop: number,
+  bandBottom: number,
+  stories: number,
+): void {
   const cx = Math.round(sx + w / 2);
   const r = spiralRadius(w);
   const treadsPerTurn = 10;
@@ -64,7 +71,7 @@ export function drawSpiralStair(ctx: CanvasRenderingContext2D, sx: number, w: nu
       const a = angle(i);
       const x = Math.round(cx + r * Math.sin(a));
       const y = Math.round(yBot - i * rise) - 2 - railH;
-      if ((Math.cos(a) >= 0) === far) {
+      if (Math.cos(a) >= 0 === far) {
         prev = null;
         continue;
       }

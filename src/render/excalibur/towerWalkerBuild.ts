@@ -80,16 +80,40 @@ export function buildWalkers(engine: TowerEngine): void {
         // onto a traffic lot.
         const anchor = x0w + rank * runW;
         const half = Math.min(14, runW / 2);
-        spawnWalker(engine, Math.max(x0w, anchor - half), Math.min(x1w, anchor + half), foot, seed, 7 + (Math.abs(seed) % 6), rank, floor);
+        spawnWalker(
+          engine,
+          Math.max(x0w, anchor - half),
+          Math.min(x1w, anchor + half),
+          foot,
+          seed,
+          7 + (Math.abs(seed) % 6),
+          rank,
+          floor,
+        );
       }
     }
   }
 }
 
-function spawnWalker(engine: TowerEngine, x0w: number, x1w: number, yw: number, seed: number, speed: number, rank: number, floor: number): void {
+function spawnWalker(
+  engine: TowerEngine,
+  x0w: number,
+  x1w: number,
+  yw: number,
+  seed: number,
+  speed: number,
+  rank: number,
+  floor: number,
+): void {
   // Actor bounds track the shared figure canvas (see reconcileCrowd); the
   // frame loop picks the bake, since the walk frame moves every beat.
-  const a = new ex.Actor({ pos: ex.vec(x0w, yw), width: FIGURE_W, height: FIGURE_H, anchor: FIGURE_ANCHOR, z: Z.walker });
+  const a = new ex.Actor({
+    pos: ex.vec(x0w, yw),
+    width: FIGURE_W,
+    height: FIGURE_H,
+    anchor: FIGURE_ANCHOR,
+    z: Z.walker,
+  });
   engine.engine.add(a);
   engine.walkers.push({
     actor: a,

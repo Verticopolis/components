@@ -16,7 +16,8 @@ const parts = {
   empty: vi.fn((kind: string, w: number, arrow: string | null, full: boolean) => `empty:${kind}:${w}:${arrow}:${full}`),
   rider: vi.fn((figure: number) => `rider:${figure}`),
 };
-const cabOf = (ind: CarIndicator = IDLE_CAR, w = 40) => new CabGraphic({ w, kind: "elevatorStandard" }, ind, parts as unknown as CabParts);
+const cabOf = (ind: CarIndicator = IDLE_CAR, w = 40) =>
+  new CabGraphic({ w, kind: "elevatorStandard" }, ind, parts as unknown as CabParts);
 const entry = (): CabGfxEntry => ({ w: 40, kind: "elevatorStandard" });
 /** Rider `seed`'s standing figure, as the crowd draws them. */
 const fig = (seed: number) => figureKey(castIndex(seed), "stand", 1, "content", false, false);
@@ -30,13 +31,15 @@ const carrying = (...seeds: number[]) => {
 function drawn(cab: CabGraphic, x = 0, y = 0): string[] {
   const out: string[] = [];
   const ctx = {
-    drawImage: (img: string, ...a: number[]) => out.push(a.length === 2 ? `${img}@${a[0]},${a[1]}` : `${img}[${a[0]}+${a[2]}x${a[3]}]@${a[4]},${a[5]}`),
+    drawImage: (img: string, ...a: number[]) =>
+      out.push(a.length === 2 ? `${img}@${a[0]},${a[1]}` : `${img}[${a[0]}+${a[2]}x${a[3]}]@${a[4]},${a[5]}`),
   };
   (cab as unknown as { _drawImage(c: unknown, x: number, y: number): void })._drawImage(ctx, x, y);
   return out;
 }
 /** The riders a frame draws. */
-const ridersIn = (calls: string[]) => calls.filter((c) => c.startsWith("rider:")).map((c) => Number(c.slice(6, c.indexOf("["))));
+const ridersIn = (calls: string[]) =>
+  calls.filter((c) => c.startsWith("rider:")).map((c) => Number(c.slice(6, c.indexOf("["))));
 const foot = FLOOR - 3 - RIDER_FOOT;
 const slotX = (cw: number, rc: number, p: number) => Math.round(cabRiderX(cw, rc, p) ?? NaN) - RIDER_X;
 /** Rider `p` of `rc` in a cab `cw` wide drawn at (x, y): the part of their
@@ -72,7 +75,9 @@ describe("cab graphics", () => {
     // The first slot's picture starts left of the cab, and in a narrow cab the
     // last one runs past the right wall.
     expect(slotX(40, 2, 0)).toBeLessThan(0);
-    expect(drawn(cabOf(carrying(5, 8)))[1]).toBe(`rider:${fig(5)}[${-slotX(40, 2, 0)}+${RIDER_W + slotX(40, 2, 0)}x${RIDER_H}]@0,${foot}`);
+    expect(drawn(cabOf(carrying(5, 8)))[1]).toBe(
+      `rider:${fig(5)}[${-slotX(40, 2, 0)}+${RIDER_W + slotX(40, 2, 0)}x${RIDER_H}]@0,${foot}`,
+    );
     const w = 14;
     const last = slotX(w, 2, 1);
     expect(last + RIDER_W).toBeGreaterThan(w);

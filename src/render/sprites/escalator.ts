@@ -9,7 +9,14 @@
  *  the way the last came, from a steel platform at the turn held up by a
  *  post to the hall floor. The bottom run climbs left to right like a
  *  one-story escalator. Drawn strictly inside `[sx, sx + w]`. */
-export function drawEscalatorSwitchback(ctx: CanvasRenderingContext2D, sx: number, w: number, topY: number, floorH: number, stories: number): void {
+export function drawEscalatorSwitchback(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  w: number,
+  topY: number,
+  floorH: number,
+  stories: number,
+): void {
   const hallFloor = topY + (stories + 1) * floorH;
   for (let k = 0; k < stories; k++) {
     const bandTop = topY + (stories - k) * floorH;
@@ -35,7 +42,13 @@ export function drawEscalatorSwitchback(ctx: CanvasRenderingContext2D, sx: numbe
  *  left to right and then right to left. Lands at the left of the arrival deck
  *  at `bandTop`. The landing sits a pixel above the halfway line so both runs
  *  keep whole-pixel bands. Drawn strictly inside `[sx, sx + w]`. */
-export function drawEscalatorHalfTurn(ctx: CanvasRenderingContext2D, sx: number, w: number, bandTop: number, bandBottom: number): void {
+export function drawEscalatorHalfTurn(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  w: number,
+  bandTop: number,
+  bandBottom: number,
+): void {
   const turn = halfTurnY(bandTop, bandBottom);
   drawEscalatorRun(ctx, sx, w, turn, bandBottom);
   ctx.save();
@@ -54,7 +67,14 @@ export function halfTurnY(bandTop: number, bandBottom: number): number {
 
 /** The steel platform a switchback turns on, at the right or left of the
  *  shaft, whose run below arrives at `y`, held up by a post to `floorY`. */
-function drawTurnPlatform(ctx: CanvasRenderingContext2D, sx: number, w: number, y: number, right: boolean, floorY: number): void {
+function drawTurnPlatform(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  w: number,
+  y: number,
+  right: boolean,
+  floorY: number,
+): void {
   const pw = 14;
   const px = right ? sx + w - 2 - pw : sx + 2;
   const deck = y - 12;
@@ -77,7 +97,13 @@ function drawTurnPlatform(ctx: CanvasRenderingContext2D, sx: number, w: number, 
  *  `[bandTop, bandBottom)` like the stair flight and drawn strictly inside
  *  `[sx, sx + w]`. Structure only, NO baked rider: the engine's routed sims ride
  *  over it, so an empty tower shows a bare, unoccupied run. Integer coordinates. */
-export function drawEscalatorRun(ctx: CanvasRenderingContext2D, sx: number, w: number, bandTop: number, bandBottom: number): void {
+export function drawEscalatorRun(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  w: number,
+  bandTop: number,
+  bandBottom: number,
+): void {
   const railH = 10; // handrail height above the belt top
   const beltThk = 8; // belt thickness
   const x0 = sx + 10; // bottom landing on the left
@@ -152,4 +178,3 @@ export function drawEscalatorRun(ctx: CanvasRenderingContext2D, sx: number, w: n
   ctx.fillStyle = "#1A1D24";
   ctx.fillRect(x1 - 1, bandTop, 2, Math.min(8, yBot - bandTop));
 }
-

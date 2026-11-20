@@ -4,7 +4,17 @@ import prettier from "eslint-config-prettier";
 
 export default [
   {
-    ignores: ["node_modules", "dist", "lib", "vite.lib.config.ts", "coverage", "scripts", "**/*.config.js", "src/public", "src/engineBinding/engine.d.ts"],
+    ignores: [
+      "node_modules",
+      "dist",
+      "lib",
+      "vite.lib.config.ts",
+      "coverage",
+      "scripts",
+      "**/*.config.js",
+      "src/public",
+      "src/engineBinding/engine.d.ts",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -17,10 +27,7 @@ export default [
     },
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "prefer-const": "error",
       "no-var": "error",
       "no-nested-ternary": "error",
@@ -42,10 +49,7 @@ export default [
     },
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "prefer-const": "error",
       "no-var": "error",
       "no-nested-ternary": "error",

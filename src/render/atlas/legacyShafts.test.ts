@@ -22,7 +22,14 @@ describe("legacy shaft widths (#917)", () => {
         // The reader names exactly these frames.
         const names = lookupShaft(kind as FacilityKind, tiles);
         expect(names).not.toHaveProperty("stretchTo");
-        expect(mine.every((j) => j.name === names.shaft || j.name.startsWith(`${names.shaft}/`) || (names.car !== undefined && j.name.startsWith(`${names.car}/`)))).toBe(true);
+        expect(
+          mine.every(
+            (j) =>
+              j.name === names.shaft ||
+              j.name.startsWith(`${names.shaft}/`) ||
+              (names.car !== undefined && j.name.startsWith(`${names.car}/`)),
+          ),
+        ).toBe(true);
       }
     }
   });
@@ -32,7 +39,13 @@ describe("legacy shaft widths (#917)", () => {
     const src: Image = { w: 2, h: 1, data: new Uint8ClampedArray([...px(255, 0, 0), ...px(0, 0, 255)]) };
     const out = stretch(src, 5);
     expect(out.w).toBe(5);
-    expect(Array.from(out.data)).toEqual([...px(255, 0, 0), ...px(255, 0, 0), ...px(255, 0, 0), ...px(0, 0, 255), ...px(0, 0, 255)]);
+    expect(Array.from(out.data)).toEqual([
+      ...px(255, 0, 0),
+      ...px(255, 0, 0),
+      ...px(255, 0, 0),
+      ...px(0, 0, 255),
+      ...px(0, 0, 255),
+    ]);
     expect(Array.from(stretch(src, 1).data)).toEqual(px(255, 0, 0));
     expect(() => stretch(src, 0)).toThrow();
     expect(() => stretch(src, 2.5)).toThrow();

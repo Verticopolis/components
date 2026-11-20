@@ -59,7 +59,8 @@ describe("MenuBar", () => {
 
   it("pointing at another title switches menus only while one is open", () => {
     const { $ } = setup();
-    const point = (el: HTMLElement, pointerType: string) => el.dispatchEvent(new PointerEvent("pointerenter", { pointerType }));
+    const point = (el: HTMLElement, pointerType: string) =>
+      el.dispatchEvent(new PointerEvent("pointerenter", { pointerType }));
     point($("t-edit"), "mouse");
     expect($("m-edit").hidden).toBe(true);
     $("t-file").click();
@@ -227,7 +228,8 @@ describe("MenuBar", () => {
 });
 
 describe("MenuBar trips (the menu analytics' hooks)", () => {
-  const pointerClick = (el: HTMLElement) => el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 }));
+  const pointerClick = (el: HTMLElement) =>
+    el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 }));
   function tripSetup() {
     const onTrip = vi.fn();
     const onDismiss = vi.fn();

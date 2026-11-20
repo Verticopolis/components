@@ -50,7 +50,13 @@ export interface LiveScene {
  *  at its real width. */
 export type Lookup =
   | { animation: string; stretchTo?: number }
-  | { frame: string; chains: Record<string, number>; overlays: string[]; cycles?: Record<string, number>; stretchTo?: number };
+  | {
+      frame: string;
+      chains: Record<string, number>;
+      overlays: string[];
+      cycles?: Record<string, number>;
+      stretchTo?: number;
+    };
 
 /** Reader choices. `recyclingEighths` reads a recycling center through its
  *  `fill` eighths (the game's re-bake buckets) instead of the exact chain. */
@@ -87,7 +93,12 @@ function lookupAtCatalogWidth(u: LiveUnit, s: LiveScene, variant: number, width:
     return { frame: stem, chains: {}, overlays };
   }
   if (u.kind === "recycling") {
-    if (opts.recyclingEighths) return { frame: stem, chains: { fill: Math.round(Math.max(0, Math.min(1, finite(s.recycleFill))) * RECYCLE_STEPS) }, overlays: [] };
+    if (opts.recyclingEighths)
+      return {
+        frame: stem,
+        chains: { fill: Math.round(Math.max(0, Math.min(1, finite(s.recycleFill))) * RECYCLE_STEPS) },
+        overlays: [],
+      };
     // The exact chain, drawn instead of the eighths ('fill', which is
     // round(fill * 8)): every fill matches the game's paint.
     return { frame: stem, chains: { fillExact: recyclingFillStep(RECYCLE_BREAKS, s.recycleFill) }, overlays: [] };
@@ -120,6 +131,8 @@ export function lookupShaft(kind: FacilityKind, width: number): { shaft: string;
   const cat = f.width;
   const w = Number.isFinite(width) && Math.round(width) >= 1 ? Math.round(width) : cat;
   const seg = w !== cat && (LEGACY_SHAFT_WIDTHS[kind] ?? []).includes(w) ? `/w${w}` : "";
-  const names = isElevatorKind(kind) ? { shaft: `shaft/${kind}${seg}`, car: `car/${kind}${seg}` } : { shaft: `transport/${kind}${seg}` };
+  const names = isElevatorKind(kind)
+    ? { shaft: `shaft/${kind}${seg}`, car: `car/${kind}${seg}` }
+    : { shaft: `transport/${kind}${seg}` };
   return w === cat || seg ? names : { ...names, stretchTo: w };
 }

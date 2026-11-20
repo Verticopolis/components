@@ -48,11 +48,22 @@ const older: StillJob = {
 };
 const other: StillJob = { ...older, name: "other", paint: spec(1), chains: undefined };
 const checks: StillJob["cycleChecks"] = [];
-for (let m = 0; m < 2; m++) for (let s = 0; s < 3; s++) checks.push({ at: { m, s }, chains: { exact: 3 }, paint: spec(3, m, s) }, { at: { m, s }, chains: {}, paint: spec(0, m, s) });
+for (let m = 0; m < 2; m++)
+  for (let s = 0; s < 3; s++)
+    checks.push(
+      { at: { m, s }, chains: { exact: 3 }, paint: spec(3, m, s) },
+      { at: { m, s }, chains: {}, paint: spec(0, m, s) },
+    );
 const added: StillJob = {
   ...older,
-  chains: { ...older.chains, exact: { input: "exactPeople", steps: [0, 1, 2, 3, 4].map((n) => spec(n)), alternativeTo: "people" } },
-  cycles: { m: { rate: 4, steps: [spec(0), spec(0, 1)] }, s: { rate: 2.5, steps: [0, 1, 2].map((s) => spec(0, 0, s)) } },
+  chains: {
+    ...older.chains,
+    exact: { input: "exactPeople", steps: [0, 1, 2, 3, 4].map((n) => spec(n)), alternativeTo: "people" },
+  },
+  cycles: {
+    m: { rate: 4, steps: [spec(0), spec(0, 1)] },
+    s: { rate: 2.5, steps: [0, 1, 2].map((s) => spec(0, 0, s)) },
+  },
   cycleChecks: checks,
 };
 const info = { version: "1", commit: "x", attribution: "a", licenseText: "", catalog: catalogFor("modern") };
@@ -66,7 +77,11 @@ describe("data added to frames that already shipped", () => {
     expect(after.frameImages).toBe(before.frameImages);
     expect(after.addedImages).toBe(before.images.length);
     expect(after.images.length).toBeGreaterThan(before.images.length);
-    before.images.forEach((img, i) => expect(sameImage(after.images[i], img) && sameImage(after.normals[i], before.normals[i]), `image ${i}`).toBe(true));
+    before.images.forEach((img, i) =>
+      expect(sameImage(after.images[i], img) && sameImage(after.normals[i], before.normals[i]), `image ${i}`).toBe(
+        true,
+      ),
+    );
     const { cycles, chains, layers, ...rest } = rec(after, "room");
     const { chains: oldChains, layers: oldLayers, ...oldRest } = rec(before, "room");
     expect(rest).toEqual(oldRest);
@@ -76,7 +91,13 @@ describe("data added to frames that already shipped", () => {
     expect(chains!.exact.alternativeTo).toBe("people");
     expect(rec(after, "other")).toEqual(rec(before, "other"));
     // Every added reference points past the older images, or at one of them.
-    const refs = [...chains!.exact.steps, ...layers!.chains!.exact.shell, ...layers!.chains!.exact.furniture, ...cycles!.m.steps, ...cycles!.s.steps];
+    const refs = [
+      ...chains!.exact.steps,
+      ...layers!.chains!.exact.shell,
+      ...layers!.chains!.exact.furniture,
+      ...cycles!.m.steps,
+      ...cycles!.s.steps,
+    ];
     for (const ref of refs) if (ref) expect(ref.id).toBeLessThan(after.images.length);
     expect(refs.some((ref) => ref && ref.id >= before.images.length)).toBe(true);
   });
@@ -87,9 +108,17 @@ describe("data added to frames that already shipped", () => {
       for (let s = 0; s < 3; s++) {
         for (let n = 0; n <= 4; n++) {
           const want = renderer.render(spec(n, m, s), 6, 2);
-          expect(sameImage(composeFrame(after, room, { exact: n }, [], { m, s }), want), `exact ${n} ${m} ${s}`).toBe(true);
-          expect(sameImage(composeLayered(after, room, { exact: n }, [], false, { m, s }), want), `depth ${n} ${m} ${s}`).toBe(true);
-          if (n % 2 === 0) expect(sameImage(composeFrame(after, room, { people: n / 2 }, [], { m, s }), want), `people ${n}`).toBe(true);
+          expect(sameImage(composeFrame(after, room, { exact: n }, [], { m, s }), want), `exact ${n} ${m} ${s}`).toBe(
+            true,
+          );
+          expect(
+            sameImage(composeLayered(after, room, { exact: n }, [], false, { m, s }), want),
+            `depth ${n} ${m} ${s}`,
+          ).toBe(true);
+          if (n % 2 === 0)
+            expect(sameImage(composeFrame(after, room, { people: n / 2 }, [], { m, s }), want), `people ${n}`).toBe(
+              true,
+            );
         }
       }
     }
@@ -102,7 +131,9 @@ describe("data added to frames that already shipped", () => {
     const a = buildArchive(before, info, undefined, 8);
     const b = buildArchive(after, info, undefined, 8);
     expect(b.pages.length).toBeGreaterThan(a.pages.length);
-    a.pages.forEach((page, i) => expect(sameImage(b.pages[i], page) && sameImage(b.normalPages[i], a.normalPages[i]), `page ${i}`).toBe(true));
+    a.pages.forEach((page, i) =>
+      expect(sameImage(b.pages[i], page) && sameImage(b.normalPages[i], a.normalPages[i]), `page ${i}`).toBe(true),
+    );
     const { cycles, chains, layers, ...rest } = b.manifest.frames.room;
     const { chains: oldChains, layers: oldLayers, ...oldRest } = a.manifest.frames.room;
     expect(rest).toEqual(oldRest);
@@ -112,12 +143,15 @@ describe("data added to frames that already shipped", () => {
     expect(cycles!.m.rate).toBe(4);
     expect(cycles!.s.steps).toHaveLength(3);
     expect(cycles!.m.steps[0]).toBeNull();
-    for (const p of [...chains!.exact.steps, ...cycles!.m.steps, ...cycles!.s.steps]) if (p) expect(p.rect.page).toBeGreaterThanOrEqual(a.pages.length);
+    for (const p of [...chains!.exact.steps, ...cycles!.m.steps, ...cycles!.s.steps])
+      if (p) expect(p.rect.page).toBeGreaterThanOrEqual(a.pages.length);
     // Each added step reads back out of the pages as the bake's image.
     const room = rec(after, "room");
     const pairs: [LayerRef, ImageRef | null][] = [
       ...chains!.exact.steps.map((p, i): [LayerRef, ImageRef | null] => [p, room.chains!.exact.steps[i]]),
-      ...Object.entries(cycles!).flatMap(([k, c]) => c.steps.map((p, i): [LayerRef, ImageRef | null] => [p, room.cycles![k].steps[i]])),
+      ...Object.entries(cycles!).flatMap(([k, c]) =>
+        c.steps.map((p, i): [LayerRef, ImageRef | null] => [p, room.cycles![k].steps[i]]),
+      ),
     ];
     for (const [p, ref] of pairs) {
       if (!p || !ref) {
@@ -140,7 +174,10 @@ describe("data added to frames that already shipped", () => {
   });
 
   it("leaves out a cycle that never changes the frame", () => {
-    const still = bake([{ ...added, cycles: { m: { rate: 4, steps: [spec(0), spec(0)] } }, cycleChecks: [] }], renderer);
+    const still = bake(
+      [{ ...added, cycles: { m: { rate: 4, steps: [spec(0), spec(0)] } }, cycleChecks: [] }],
+      renderer,
+    );
     expect(rec(still, "room").cycles).toBeUndefined();
   });
 
@@ -158,12 +195,19 @@ describe("data added to frames that already shipped", () => {
     const ok = bake([added, other], soft(9));
     expect(rec(ok, "room").layers!.soft).not.toBeUndefined();
     expect(rec(ok, "room").layers!.chains!.exact.soft).not.toBeUndefined();
-    expect(() => bake([added, other], soft(3))).toThrow(/room: chain exact step 3: an alternative chain's soft step fails/);
+    expect(() => bake([added, other], soft(3))).toThrow(
+      /room: chain exact step 3: an alternative chain's soft step fails/,
+    );
   });
 
   it("refuses an alternative chain on a vehicle", () => {
-    const split: Renderer = { ...renderer, renderSplit: (p, w, h) => ({ back: paintRoom(p, w, h, false), mid: paintRoom(p, w, h, true) }) };
-    expect(() => bake([{ ...added, front: true, cycles: undefined, cycleChecks: [] }], split)).toThrow(/room: a vehicle cannot carry an alternative chain/);
+    const split: Renderer = {
+      ...renderer,
+      renderSplit: (p, w, h) => ({ back: paintRoom(p, w, h, false), mid: paintRoom(p, w, h, true) }),
+    };
+    expect(() => bake([{ ...added, front: true, cycles: undefined, cycleChecks: [] }], split)).toThrow(
+      /room: a vehicle cannot carry an alternative chain/,
+    );
   });
 
   it("splits at most one chain besides its alternatives", () => {

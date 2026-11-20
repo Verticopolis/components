@@ -56,7 +56,7 @@ export function nightclub(d: RoomCtx, u: UnitView, x: number, y: number, w: numb
   const danceX1 = x + Math.round(w * 0.66);
   const danceArtW = Math.round(authoredWidth(u.width) * 0.66) - 4;
   for (let fx = danceX0, k = 0; fx + 3 < danceX1; fx += 4, k++) {
-    ctx.fillStyle = (k % 2 === 0) ? shade(BEAMS[(k + seed) % BEAMS.length], -10) : "#14101E";
+    ctx.fillStyle = k % 2 === 0 ? shade(BEAMS[(k + seed) % BEAMS.length], -10) : "#14101E";
     ctx.fillRect(fx, floorY - 2, 4, 2);
   }
 

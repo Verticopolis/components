@@ -15,7 +15,16 @@
  * sit above the crop; `viewPlacement` says when.
  */
 import { FLOOR } from "../scale";
-import { MAP_LINES_BELOW_LOWEST_FLOOR, mapExtent, viewportRect, type MapCamera, type MapExtent, type MapLayout, type MapRect, type MapWorld } from "./geometry";
+import {
+  MAP_LINES_BELOW_LOWEST_FLOOR,
+  mapExtent,
+  viewportRect,
+  type MapCamera,
+  type MapExtent,
+  type MapLayout,
+  type MapRect,
+  type MapWorld,
+} from "./geometry";
 
 /** The crop's top rounds up to a multiple of this many floor lines. */
 export const MAP_BAND_FLOORS = 10;
@@ -56,7 +65,13 @@ export interface BuiltFloors {
  * The strip is held to half the box, and a strip that is not a positive
  * number, or a box that is not, adds nothing.
  */
-export function bandedExtent(world: MapWorld, built: BuiltFloors | null, skyFloors: number, boxHeight = 0, reserve = 0): MapExtent {
+export function bandedExtent(
+  world: MapWorld,
+  built: BuiltFloors | null,
+  skyFloors: number,
+  boxHeight = 0,
+  reserve = 0,
+): MapExtent {
   const whole = mapExtent(world, skyFloors);
   // The same sky `mapExtent` used (it reads a bad value as no sky), so the world's
   // top floor below falls out of `whole` exactly.
@@ -168,7 +183,12 @@ export function viewPlacement(layout: MapLayout, cam: MapCamera): ViewPlacement 
  * against the top edge for a view above the map and the bottom edge for one
  * below. Null when the view is on the map.
  */
-export function edgeBand(layout: MapLayout, placement: ViewPlacement, thickness: number, minWidth = thickness): MapRect | null {
+export function edgeBand(
+  layout: MapLayout,
+  placement: ViewPlacement,
+  thickness: number,
+  minWidth = thickness,
+): MapRect | null {
   if (placement.outside === "none") return null;
   // At least a pixel each way, whatever the caller asks for.
   const atLeastOne = (n: number) => (Number.isFinite(n) && n > 1 ? n : 1);

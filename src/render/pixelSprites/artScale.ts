@@ -104,7 +104,14 @@ export function screenLength(authoredLength: number): number {
  * outside the run, which is the ordinary cost of drawing pixel art at a
  * fractional offset and not a containment failure at any whole-pixel caller.
  */
-export function artRow(authoredRun: number, from: number, limit: number, pitch: number, dir: 1 | -1 = 1, minStep = 0): number[] {
+export function artRow(
+  authoredRun: number,
+  from: number,
+  limit: number,
+  pitch: number,
+  dir: 1 | -1 = 1,
+  minStep = 0,
+): number[] {
   if (!(pitch > 0) || !(dir * (limit - from) >= 0) || !(authoredRun >= 0)) return []; // nothing fits (NaN included)
   // An infinite end would make the count Infinity, and `Array.from` throws on it
   // in the render path. A unit forged with `width: Infinity` is the way in.
@@ -146,7 +153,5 @@ export function artRow(authoredRun: number, from: number, limit: number, pitch: 
   const step = count > 1 ? Math.min(pitch, run / (count - 1)) : 0;
   const lo = Math.min(start, edge);
   const hi = Math.max(start, edge);
-  return Array.from({ length: count }, (_, i) =>
-    Math.min(hi, Math.max(lo, Math.round(start + dir * i * step))));
+  return Array.from({ length: count }, (_, i) => Math.min(hi, Math.max(lo, Math.round(start + dir * i * step))));
 }
-

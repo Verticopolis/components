@@ -13,7 +13,10 @@ import type { RoomCtx } from "./common";
  * the last one clear of the DJ booth.
  */
 
-interface Figure { x: number; y: number }
+interface Figure {
+  x: number;
+  y: number;
+}
 
 /** Every finalized figure a room draws: the person builds stamp one contact-shadow
  *  literal per figure, one pixel left of it. */
@@ -22,7 +25,22 @@ function figures(u: Unit, hour: number): Figure[] {
   let fill = "";
   let armed = false;
   const ctx: Record<string, unknown> = {};
-  for (const m of ["save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc", "fill", "stroke", "strokeRect", "fillText", "translate", "scale", "setTransform"]) {
+  for (const m of [
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "fill",
+    "stroke",
+    "strokeRect",
+    "fillText",
+    "translate",
+    "scale",
+    "setTransform",
+  ]) {
     ctx[m] = () => {};
   }
   ctx.fillRect = (x: number, y: number) => {
@@ -31,15 +49,38 @@ function figures(u: Unit, hour: number): Figure[] {
     armed = false;
   };
   for (const p of ["strokeStyle", "lineWidth", "font", "textAlign", "globalAlpha"]) ctx[p] = undefined;
-  Object.defineProperty(ctx, "fillStyle", { get: () => fill, set: (v: string) => { fill = String(v); armed = fill === "rgba(0,0,0,0.24)"; } });
-  drawRoom({ ctx: ctx as unknown as CanvasRenderingContext2D, lit: false, anim: 0, hour } as RoomCtx, u, 0, 0, u.width * TILE, FLOOR);
+  Object.defineProperty(ctx, "fillStyle", {
+    get: () => fill,
+    set: (v: string) => {
+      fill = String(v);
+      armed = fill === "rgba(0,0,0,0.24)";
+    },
+  });
+  drawRoom(
+    { ctx: ctx as unknown as CanvasRenderingContext2D, lit: false, anim: 0, hour } as RoomCtx,
+    u,
+    0,
+    0,
+    u.width * TILE,
+    FLOOR,
+  );
   return out;
 }
 
 const key = (f: Figure): string => `${f.x},${f.y}`;
 
 function unitAt(kind: FacilityKind, subtype: string | undefined, x: number, occupants: number): Unit {
-  return { id: 7, floor: 12, x, kind, subtype, state: "occupied", width: kindFacts(kind).width, satisfaction: 0.8, occupants } as Unit;
+  return {
+    id: 7,
+    floor: 12,
+    x,
+    kind,
+    subtype,
+    state: "occupied",
+    width: kindFacts(kind).width,
+    satisfaction: 0.8,
+    occupants,
+  } as Unit;
 }
 
 const SPREAD: [FacilityKind, string | undefined, number][] = [
@@ -55,9 +96,14 @@ describe("a lone visitor is spread over the whole row", () => {
     // room is the visitors.
     const rooms = Array.from({ length: 200 }, (_, x) => figures(unitAt(kind, subtype, x, 1), hour));
     const staff = new Set(rooms[0].map(key).filter((k) => rooms.every((r) => r.some((f) => key(f) === k))));
-    const visitors = rooms.flat().filter((f) => !staff.has(key(f))).map((f) => f.x);
+    const visitors = rooms
+      .flat()
+      .filter((f) => !staff.has(key(f)))
+      .map((f) => f.x);
     // The full crowd gives the row's extent.
-    const full = figures(unitAt(kind, subtype, 3, kindFacts(kind).population), hour).filter((f) => !staff.has(key(f))).map((f) => f.x);
+    const full = figures(unitAt(kind, subtype, 3, kindFacts(kind).population), hour)
+      .filter((f) => !staff.has(key(f)))
+      .map((f) => f.x);
     const lo = Math.min(...full);
     const hi = Math.max(...full);
     const span = hi - lo;
@@ -76,7 +122,10 @@ describe("the nightclub crowd", () => {
     const all = figures(u, 22);
     const floorY = Math.max(...all.map((f) => f.y));
     // The DJ stands behind the booth, above the floor line; the dancers on it.
-    const dancers = all.filter((f) => f.y === floorY).map((f) => f.x).sort((a, b) => a - b);
+    const dancers = all
+      .filter((f) => f.y === floorY)
+      .map((f) => f.x)
+      .sort((a, b) => a - b);
     expect(dancers.length).toBeGreaterThan(8);
     expect(new Set(dancers.slice(1).map((x, i) => x - dancers[i]))).toEqual(new Set([6]));
     const boothX = Math.round(w * 0.72);

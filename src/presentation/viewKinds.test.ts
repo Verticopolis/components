@@ -1,7 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
 import { catalogFacility } from "../catalog/catalogTypes";
-import { bindViewKinds, hasBusinessHours, isCommercialKind, isElevatorKind, isHotelKind, isLeaseAmenityKind, isOpenAt, isUnmetDemandKind, kindFloors, kindWidth, resetViewKindsForTests, viewKindKeys } from "./viewKinds";
+import {
+  bindViewKinds,
+  hasBusinessHours,
+  isCommercialKind,
+  isElevatorKind,
+  isHotelKind,
+  isLeaseAmenityKind,
+  isOpenAt,
+  isUnmetDemandKind,
+  kindFloors,
+  kindWidth,
+  resetViewKindsForTests,
+  viewKindKeys,
+} from "./viewKinds";
 import type { FacilityKind } from "../model/types";
 
 describe("the view's kind facts", () => {
@@ -11,13 +24,51 @@ describe("the view's kind facts", () => {
   // The kind sets and posted hours the Rust engine states (`engine-rs/src/facilities.rs`:
   // the kind predicates and `Kind::is_open_at`), pinned so a catalog that moved a
   // kind across a line, or a binding that read the wrong field, fails here.
-  const SETS: Record<string, { readonly ask: (kind: FacilityKind) => boolean; readonly kinds: readonly FacilityKind[] }> = {
-    commercial: { ask: isCommercialKind, kinds: ["fastFood", "restaurant", "foodHall", "shop", "cinema", "amusements", "boutiqueBay", "nightclub", "spa", "skyBar", "daycare"] },
+  const SETS: Record<
+    string,
+    { readonly ask: (kind: FacilityKind) => boolean; readonly kinds: readonly FacilityKind[] }
+  > = {
+    commercial: {
+      ask: isCommercialKind,
+      kinds: [
+        "fastFood",
+        "restaurant",
+        "foodHall",
+        "shop",
+        "cinema",
+        "amusements",
+        "boutiqueBay",
+        "nightclub",
+        "spa",
+        "skyBar",
+        "daycare",
+      ],
+    },
     hotel: { ask: isHotelKind, kinds: ["hotelSingle", "hotelDouble", "hotelSuite"] },
     leaseAmenity: { ask: isLeaseAmenityKind, kinds: ["fitnessClub", "clinic"] },
-    unmetDemand: { ask: isUnmetDemandKind, kinds: ["office", "condo", "hotelSingle", "hotelDouble", "hotelSuite", "rentalApartment"] },
+    unmetDemand: {
+      ask: isUnmetDemandKind,
+      kinds: ["office", "condo", "hotelSingle", "hotelDouble", "hotelSuite", "rentalApartment"],
+    },
     elevator: { ask: isElevatorKind, kinds: ["elevatorStandard", "elevatorService", "elevatorExpress"] },
-    businessHours: { ask: hasBusinessHours, kinds: ["fastFood", "restaurant", "foodHall", "shop", "cinema", "partyHall", "amusements", "boutiqueBay", "nightclub", "spa", "skyBar", "aquaticCenter", "daycare"] },
+    businessHours: {
+      ask: hasBusinessHours,
+      kinds: [
+        "fastFood",
+        "restaurant",
+        "foodHall",
+        "shop",
+        "cinema",
+        "partyHall",
+        "amusements",
+        "boutiqueBay",
+        "nightclub",
+        "spa",
+        "skyBar",
+        "aquaticCenter",
+        "daycare",
+      ],
+    },
   };
 
   /** The whole hours from `from` up to, not including, `to`. */
@@ -56,7 +107,14 @@ describe("the view's kind facts", () => {
         for (let hour = 0; hour < 24; hour++) {
           expect(isOpenAt(kind, hour), `${mode} ${kind} at ${hour}`).toBe(open === undefined || open.includes(hour));
         }
-        for (const [read, as] of [[1.5, 1], [6.99, 6], [13.9, 13], [19.5, 19], [23.75, 23], [24, 0]] as const) {
+        for (const [read, as] of [
+          [1.5, 1],
+          [6.99, 6],
+          [13.9, 13],
+          [19.5, 19],
+          [23.75, 23],
+          [24, 0],
+        ] as const) {
           expect(isOpenAt(kind, read), `${mode} ${kind} at ${read}`).toBe(isOpenAt(kind, as));
         }
       }

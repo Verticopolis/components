@@ -134,7 +134,16 @@ function grassSamples(): Map<string, number> {
 function still(name: string, sz: { w: number; h: number }, paint: ScenerySpec, keys: Keys): StillJob {
   // The scenery joined the atlas after its first release, so its images pack
   // on pages of their own and leave the older pages as they were.
-  return { type: "still", name, w: sz.w, h: sz.h, anchor: { x: 0, y: 0 }, keys: { kind: "scenery", ...keys }, paint, ownPages: true };
+  return {
+    type: "still",
+    name,
+    w: sz.w,
+    h: sz.h,
+    anchor: { x: 0, y: 0 },
+    keys: { kind: "scenery", ...keys },
+    paint,
+    ownPages: true,
+  };
 }
 
 /** Every scenery frame. */
@@ -149,16 +158,47 @@ export function sceneryJobs(): Job[] {
     still("scenery/ground/road", size.road, { p: "scenery", piece: "road", phase: 4 }, { piece: "road" }),
   ];
   for (const pct of LAMP_STEPS) {
-    jobs.push(still(`scenery/plaza-lamp/a${pct}`, size.plazaLamp, { p: "scenery", piece: "plazaLamp", a: pct / 100 }, { piece: "plazaLamp", lamp: pct }));
-    jobs.push(still(`scenery/street-lamp/a${pct}`, size.streetLamp, { p: "scenery", piece: "streetLamp", a: pct / 100 }, { piece: "streetLamp", lamp: pct }));
+    jobs.push(
+      still(
+        `scenery/plaza-lamp/a${pct}`,
+        size.plazaLamp,
+        { p: "scenery", piece: "plazaLamp", a: pct / 100 },
+        { piece: "plazaLamp", lamp: pct },
+      ),
+    );
+    jobs.push(
+      still(
+        `scenery/street-lamp/a${pct}`,
+        size.streetLamp,
+        { p: "scenery", piece: "streetLamp", a: pct / 100 },
+        { piece: "streetLamp", lamp: pct },
+      ),
+    );
   }
-  for (let v = 0; v < TREE_VARIANTS; v++) jobs.push(still(`scenery/tree/v${v}`, size.tree, { p: "scenery", piece: "tree", seed: v }, { piece: "tree", variant: v }));
+  for (let v = 0; v < TREE_VARIANTS; v++)
+    jobs.push(
+      still(`scenery/tree/v${v}`, size.tree, { p: "scenery", piece: "tree", seed: v }, { piece: "tree", variant: v }),
+    );
   for (const [name, tile] of grassSamples()) {
     const g = grassLook(tile);
-    jobs.push(still(`scenery/ground/grass/${name}`, size.strip, { p: "scenery", piece: "strip", tile, paved: false }, { piece: "grass", shade: g.shade, tuft: g.tuft }));
+    jobs.push(
+      still(
+        `scenery/ground/grass/${name}`,
+        size.strip,
+        { p: "scenery", piece: "strip", tile, paved: false },
+        { piece: "grass", shade: g.shade, tuft: g.tuft },
+      ),
+    );
   }
   for (const joint of [false, true]) {
-    jobs.push(still(`scenery/ground/pave/${joint ? "joint" : "plain"}`, size.strip, { p: "scenery", piece: "strip", tile: joint ? 0 : 1, paved: true }, { piece: "pave", joint }));
+    jobs.push(
+      still(
+        `scenery/ground/pave/${joint ? "joint" : "plain"}`,
+        size.strip,
+        { p: "scenery", piece: "strip", tile: joint ? 0 : 1, paved: true },
+        { piece: "pave", joint },
+      ),
+    );
   }
   const fountain: AnimJob = {
     type: "anim",
@@ -169,7 +209,11 @@ export function sceneryJobs(): Job[] {
     dt: FOUNTAIN_DT,
     loop: true,
     ownPages: true,
-    frames: Array.from({ length: FOUNTAIN_FRAMES }, (_, i): ScenerySpec => ({ p: "scenery", piece: "fountain", t: i * FOUNTAIN_DT })),
+    frames: Array.from({ length: FOUNTAIN_FRAMES }, (_, i): ScenerySpec => ({
+      p: "scenery",
+      piece: "fountain",
+      t: i * FOUNTAIN_DT,
+    })),
   };
   jobs.push(fountain);
   return jobs;
@@ -189,7 +233,13 @@ export function sceneryData() {
     ground: {
       // Solid fills: the dirt from the ground line down, and the ground line
       // centered on y 0, both across `lots` lot widths centered on the lot.
-      dirt: { color: GROUND.dirt, x: -((GROUND.lots - 1) / 2) * world.lotWidth * TILE, w: GROUND.lots * world.lotWidth * TILE, y: 0, h: groundBelowFloors(world) * FLOOR },
+      dirt: {
+        color: GROUND.dirt,
+        x: -((GROUND.lots - 1) / 2) * world.lotWidth * TILE,
+        w: GROUND.lots * world.lotWidth * TILE,
+        y: 0,
+        h: groundBelowFloors(world) * FLOOR,
+      },
       line: { color: GROUND.line, y: -GROUND.lineH / 2, h: GROUND.lineH },
       strip: {
         y: -STRIP_ABOVE,
@@ -249,7 +299,10 @@ export function skyData() {
     clouds: {
       ...CLOUD_DRIFT,
       // The engine's weather to the cloud frames it shows (clear shows none).
-      weathers: { cloudy: "overcast", rain: "rain" } satisfies Record<Exclude<WeatherKind, "clear">, Extract<PaintSpec, { p: "cloud" }>["weather"]>,
+      weathers: { cloudy: "overcast", rain: "rain" } satisfies Record<
+        Exclude<WeatherKind, "clear">,
+        Extract<PaintSpec, { p: "cloud" }>["weather"]
+      >,
       list: Array.from({ length: CLOUD_COUNT }, (_, i) => ({ frame: i, ...cloudMotion(cloudSeed(i)) })),
     },
     // Drawn in front of the world on rainy days, over the open sky only:
@@ -267,7 +320,14 @@ const PLANE_FRAMES: Record<keyof typeof Z, string[]> = {
   groundLine: [],
   strip: ["scenery/ground/grass", "scenery/ground/pave"],
   groundEdge: ["scenery/ground/sidewalk", "scenery/ground/road", "scenery/roundabout", "scenery/ground/forecourt"],
-  plant: ["scenery/fountain", "scenery/plaza-lamp", "scenery/street-lamp", "scenery/planter", "scenery/tree", "scenery/bush"],
+  plant: [
+    "scenery/fountain",
+    "scenery/plaza-lamp",
+    "scenery/street-lamp",
+    "scenery/planter",
+    "scenery/tree",
+    "scenery/bush",
+  ],
   hang: ["facade/escape", "facade/awning", "facade/crane"],
   structure: ["structure/floor", "structure/lobby", "structure/entrance"],
   room: ["room"],

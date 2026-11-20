@@ -146,7 +146,13 @@ export function drawTransport(
  *  `[sx, sx + w]` so it never overpaints a neighbor. Structure only, NO baked
  *  climber: the engine's routed sims ride over it as separate actors, so an empty
  *  tower shows a bare, unoccupied flight. Integer coordinates. */
-function drawStairFlight(ctx: CanvasRenderingContext2D, sx: number, w: number, bandTop: number, bandBottom: number): void {
+function drawStairFlight(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  w: number,
+  bandTop: number,
+  bandBottom: number,
+): void {
   const railH = 9; // handrail height above a tread
   const depth = 7; // stringer thickness under the treads
   const x0 = sx + 10; // bottom (lower) landing sits on the left
@@ -299,7 +305,12 @@ export function cabRiderFoot(floorH: number): number {
 }
 
 /** The back of a cab: its frame, interior and kind band, under the riders. */
-export function drawCarBack(ctx: CanvasRenderingContext2D, w: number, floorH: number, kind: FacilityKind = "elevatorStandard"): void {
+export function drawCarBack(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  floorH: number,
+  kind: FacilityKind = "elevatorStandard",
+): void {
   // Per-kind cab dressing, keyed to the catalog palette so the cab echoes its
   // shaft and toolbar identity. All three cabs share the warm brass-and-walnut
   // read; the kind cue is carried by the interior tint and a distinct
@@ -355,7 +366,13 @@ export function drawCarBack(ctx: CanvasRenderingContext2D, w: number, floorH: nu
 
 /** The front of a cab, over its riders: the door frames, the center seam,
  *  the FULL bar and the direction lantern. */
-export function drawCarFront(ctx: CanvasRenderingContext2D, w: number, floorH: number, arrow: CarArrow = null, full = false): void {
+export function drawCarFront(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  floorH: number,
+  arrow: CarArrow = null,
+  full = false,
+): void {
   const cw = Math.max(1, Math.round(w));
   // Door frames + the central seam, drawn over the riders so the cab reads as
   // an enclosed car.

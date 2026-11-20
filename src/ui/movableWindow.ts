@@ -129,7 +129,8 @@ export class MovableWindow {
       const box = this.box();
       if (box) this.resizeObserver.observe(box);
     }
-    if (opts.within === WITHIN_PARENT || !opts.within) win.ownerDocument.defaultView?.addEventListener("resize", this.onViewportResize);
+    if (opts.within === WITHIN_PARENT || !opts.within)
+      win.ownerDocument.defaultView?.addEventListener("resize", this.onViewportResize);
   }
 
   /** Hear each move the player makes, as `placed` does; returns the unhook.
@@ -239,7 +240,11 @@ export class MovableWindow {
       return;
     }
     const { bounds } = drag;
-    const spot = clampSpot({ x: e.clientX - drag.grabX - bounds.left, y: e.clientY - drag.grabY - bounds.top }, drag.size, bounds);
+    const spot = clampSpot(
+      { x: e.clientX - drag.grabX - bounds.left, y: e.clientY - drag.grabY - bounds.top },
+      drag.size,
+      bounds,
+    );
     drag.moved = true;
     this.spot = spot;
     this.write(spot);
@@ -301,7 +306,12 @@ export class MovableWindow {
       return { left: 0, top: 0, w: root.clientWidth, h: root.clientHeight };
     }
     const r = within.getBoundingClientRect();
-    return { left: r.left + within.clientLeft, top: r.top + within.clientTop, w: within.clientWidth, h: within.clientHeight };
+    return {
+      left: r.left + within.clientLeft,
+      top: r.top + within.clientTop,
+      w: within.clientWidth,
+      h: within.clientHeight,
+    };
   }
 
   /** Place the window's top-left corner. `margin: 0` lets a centered dialog

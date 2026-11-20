@@ -1,6 +1,14 @@
 import { bake, type BakeResult, type Renderer } from "./bake";
 import { roomJobs, type Job } from "./catalog";
-import { facadeJobs, legacyShaftJobs, peopleJobs, skyJobs, structureJobs, transportJobs, vehicleJobs } from "./catalogExtras";
+import {
+  facadeJobs,
+  legacyShaftJobs,
+  peopleJobs,
+  skyJobs,
+  structureJobs,
+  transportJobs,
+  vehicleJobs,
+} from "./catalogExtras";
 import { paint, type PaintSpec } from "./paint";
 import { sceneryJobs } from "./scenery";
 import { LayerError, type Image } from "./pixels";
@@ -22,7 +30,17 @@ import { bindViewKinds } from "../../presentation/viewKinds";
 
 /** Every job the atlas bakes, in a fixed order. */
 export function allJobs(): Job[] {
-  return [...roomJobs(), ...structureJobs(), ...transportJobs(), ...peopleJobs(), ...facadeJobs(), ...vehicleJobs(), ...skyJobs(), ...sceneryJobs(), ...legacyShaftJobs()];
+  return [
+    ...roomJobs(),
+    ...structureJobs(),
+    ...transportJobs(),
+    ...peopleJobs(),
+    ...facadeJobs(),
+    ...vehicleJobs(),
+    ...skyJobs(),
+    ...sceneryJobs(),
+    ...legacyShaftJobs(),
+  ];
 }
 
 /** A 2D context for `canvas` at `w` x `h`, cleared and prepared like an
@@ -130,7 +148,10 @@ export function canvasRenderer(doc: Document): Renderer {
       back.restore();
       mid.restore();
       if (!split) return null;
-      return { back: { w, h, data: back.getImageData(0, 0, w, h).data }, mid: { w, h, data: mid.getImageData(0, 0, w, h).data } };
+      return {
+        back: { w, h, data: back.getImageData(0, 0, w, h).data },
+        mid: { w, h, data: mid.getImageData(0, 0, w, h).data },
+      };
     },
     // The same paint once more: at the break the canvas is cleared, so the
     // furniture lands on transparency with its own glows and shadows; at the
@@ -207,7 +228,12 @@ const api: AtlasPage = {
     const jobs = filter ? allJobs().filter((j) => j.name.startsWith(filter)) : allJobs();
     const stats = { softDropped: [] as string[] };
     result = bake(jobs, canvasRenderer(document), undefined, stats);
-    return { images: result.images.length, frames: result.frames.length, animations: result.animations.length, softDropped: stats.softDropped };
+    return {
+      images: result.images.length,
+      frames: result.frames.length,
+      animations: result.animations.length,
+      softDropped: stats.softDropped,
+    };
   },
   records() {
     if (!result) throw new Error("run() first");
@@ -229,7 +255,10 @@ const api: AtlasPage = {
   verify(samples = SAMPLES) {
     const jobs = allJobs();
     const renderer = canvasRenderer(document);
-    return [...samples.flatMap((s) => verifySample(document, jobs, renderer, s)), ...verifyExtras(document, jobs, renderer)];
+    return [
+      ...samples.flatMap((s) => verifySample(document, jobs, renderer, s)),
+      ...verifyExtras(document, jobs, renderer),
+    ];
   },
 };
 (globalThis as unknown as { __vcAtlas: AtlasPage }).__vcAtlas = api;

@@ -78,7 +78,8 @@ describe("an extent with a margin beside the lot", () => {
     expect(tileToMapX(padded, 0)).toBe(MARGIN);
     expect(tileToMapX(padded, 375)).toBe(375 + MARGIN);
     expect(tileToMapX(padded, -MARGIN)).toBe(0);
-    for (const tile of [-MARGIN, -3.5, 0, 187.25, 375, 375 + MARGIN]) expect(mapXToTile(padded, tileToMapX(padded, tile))).toBeCloseTo(tile, 9);
+    for (const tile of [-MARGIN, -3.5, 0, 187.25, 375, 375 + MARGIN])
+      expect(mapXToTile(padded, tileToMapX(padded, tile))).toBeCloseTo(tile, 9);
     expect(blockRect(padded, 0, 9, 1).x).toBe(MARGIN);
     expect(snappedBlock(padded, 366, 9, 1, 1)!.x + 9).toBe(375 + MARGIN);
   });
@@ -104,7 +105,9 @@ describe("an extent with a margin beside the lot", () => {
   it("lets a drag carry the view into the margin and no further", () => {
     const start = { tile: 5, floor: 20 };
     expect(dragCenter(padded, start, { x: 100, y: 100 }, { x: 80, y: 100 }).tile).toBe(-MARGIN);
-    expect(dragCenter(padded, { tile: 370, floor: 20 }, { x: 100, y: 100 }, { x: 130, y: 100 }).tile).toBe(375 + MARGIN);
+    expect(dragCenter(padded, { tile: 370, floor: 20 }, { x: 100, y: 100 }, { x: 130, y: 100 }).tile).toBe(
+      375 + MARGIN,
+    );
     // A start already past the margin is never pushed further out.
     expect(dragCenter(padded, { tile: -40, floor: 20 }, { x: 100, y: 100 }, { x: 90, y: 100 }).tile).toBe(-40);
   });
@@ -225,7 +228,13 @@ describe("viewportRect", () => {
   });
 
   it("covers the whole map for a camera so far out that its half sizes would overflow", () => {
-    const r = viewportRect(l, { posX: 187 * TILE, posY: -50 * FLOOR, zoom: 1e-310, viewWidth: 1e308, viewHeight: 1e308 });
+    const r = viewportRect(l, {
+      posX: 187 * TILE,
+      posY: -50 * FLOOR,
+      zoom: 1e-310,
+      viewWidth: 1e308,
+      viewHeight: 1e308,
+    });
     expect(r).toEqual({ x: 0, y: 0, w: l.width, h: l.height });
   });
 
@@ -322,7 +331,11 @@ describe("dragCenter", () => {
 });
 
 describe("snappedBlock", () => {
-  const unit = fitLayout(mapExtent(WORLD, SKY_HEADROOM_FLOORS), 375, extentFloors(mapExtent(WORLD, SKY_HEADROOM_FLOORS)) * 3);
+  const unit = fitLayout(
+    mapExtent(WORLD, SKY_HEADROOM_FLOORS),
+    375,
+    extentFloors(mapExtent(WORLD, SKY_HEADROOM_FLOORS)) * 3,
+  );
 
   it("snaps both edges of each axis to whole pixels", () => {
     const half = fitLayout(mapExtent(WORLD, SKY_HEADROOM_FLOORS), 250, 300);

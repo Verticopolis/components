@@ -22,19 +22,66 @@ import { facilityColor } from "../presentation/facilityPresentation";
 function spyCtx() {
   const log: string[] = [];
   const ctx: Record<string, unknown> = {};
-  const methods = ["save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc", "arcTo", "quadraticCurveTo", "bezierCurveTo", "rect", "roundRect", "ellipse", "fill", "stroke", "fillRect", "strokeRect", "clearRect", "fillText", "strokeText", "translate", "scale", "rotate", "clip", "setLineDash", "drawImage"];
+  const methods = [
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "arcTo",
+    "quadraticCurveTo",
+    "bezierCurveTo",
+    "rect",
+    "roundRect",
+    "ellipse",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "clearRect",
+    "fillText",
+    "strokeText",
+    "translate",
+    "scale",
+    "rotate",
+    "clip",
+    "setLineDash",
+    "drawImage",
+  ];
   for (const m of methods) ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   ctx.createLinearGradient = () => ({ addColorStop: () => {} });
   ctx.createRadialGradient = () => ({ addColorStop: () => {} });
   ctx.measureText = () => ({ width: 10 });
-  for (const p of ["fillStyle", "strokeStyle", "lineWidth", "globalAlpha", "font", "textAlign", "textBaseline", "lineCap", "lineJoin"]) {
+  for (const p of [
+    "fillStyle",
+    "strokeStyle",
+    "lineWidth",
+    "globalAlpha",
+    "font",
+    "textAlign",
+    "textBaseline",
+    "lineCap",
+    "lineJoin",
+  ]) {
     let v: unknown = "";
     Object.defineProperty(ctx, p, { get: () => v, set: (nv) => (log.push(`${p}=${String(nv)}`), void (v = nv)) });
   }
   return { ctx: ctx as unknown as CanvasRenderingContext2D, log };
 }
 function unit(over: Partial<Unit>): Unit {
-  return { id: 7, kind: "office", floor: 3, x: 5, width: 8, state: "occupied", satisfaction: 1, occupants: 2, ...over } as Unit;
+  return {
+    id: 7,
+    kind: "office",
+    floor: 3,
+    x: 5,
+    width: 8,
+    state: "occupied",
+    satisfaction: 1,
+    occupants: 2,
+    ...over,
+  } as Unit;
 }
 const draw = (ctx: CanvasRenderingContext2D): DrawCtx => ({ ctx, lit: true, anim: 0.5, hour: 14 });
 const fillColorSets = (log: string[]) => log.filter((l) => l.startsWith("fillStyle=")).length;
@@ -68,9 +115,7 @@ describe("no facility kind falls through to the flat facility-color fallback (sy
   // added can't slip through the same gap the two rentals did.
   // Transports (stairs/escalator/elevators) are catalog facilities but are drawn
   // by the transport renderer, never through drawUnit, so they are out of scope.
-  const kinds = kindKeys().filter(
-    (k) => kindFacts(k).maxCars === null && !kindFacts(k).fixedSpan,
-  );
+  const kinds = kindKeys().filter((k) => kindFacts(k).maxCars === null && !kindFacts(k).fixedSpan);
   it.each(kinds)("%s renders content, not a flat facility-color block", (kind) => {
     const s = spyCtx();
     const w = Math.max(4, kindFacts(kind).width) * 11;
@@ -78,6 +123,9 @@ describe("no facility kind falls through to the flat facility-color fallback (sy
     const colors = new Set(s.log.filter((l) => l.startsWith("fillStyle=")).map((l) => l.slice("fillStyle=".length)));
     // The flat fallback sets exactly the one facility color and nothing else.
     const hitFlatFallback = colors.size <= 1 && colors.has(facilityColor(kind));
-    expect(hitFlatFallback, `${kind} rendered as a flat ${facilityColor(kind)} block, missing from ROOM_KINDS or lacking a drawInterior case?`).toBe(false);
+    expect(
+      hitFlatFallback,
+      `${kind} rendered as a flat ${facilityColor(kind)} block, missing from ROOM_KINDS or lacking a drawInterior case?`,
+    ).toBe(false);
   });
 });

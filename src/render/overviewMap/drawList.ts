@@ -51,7 +51,11 @@ export interface MapSource {
  * once per kind into `memo`. A non-finite or sub-floor answer (a kind the
  * catalog does not list) draws as one floor.
  */
-export function floorsFor(source: Pick<MapSource, "floorsOf">, kind: FacilityKind, memo: Map<FacilityKind, number>): number {
+export function floorsFor(
+  source: Pick<MapSource, "floorsOf">,
+  kind: FacilityKind,
+  memo: Map<FacilityKind, number>,
+): number {
   let floors = memo.get(kind);
   if (floors === undefined) {
     const asked = source.floorsOf(kind);

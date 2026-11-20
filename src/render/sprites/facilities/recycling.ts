@@ -3,7 +3,21 @@ import { personHiVis } from "../../pixelSprites/common";
 import { layerBreak, layerShell } from "../../pixelSprites/layers";
 import { rand, serviceLabel, type DrawCtx } from "../common";
 import { box, glow, refMap } from "./serviceKit";
-import { RECYCLING_BAG_W, RECYCLING_BALER_X, RECYCLING_CUBES, RECYCLING_CUBE_GAP, RECYCLING_CUBE_W, RECYCLING_DECK, RECYCLING_GAUGE_ROWS, RECYCLING_GAUGE_TOP, RECYCLING_PILE_PITCH, RECYCLING_PILE_X0, RECYCLING_REF_H, RECYCLING_REF_W, recyclingLook } from "./recyclingLook";
+import {
+  RECYCLING_BAG_W,
+  RECYCLING_BALER_X,
+  RECYCLING_CUBES,
+  RECYCLING_CUBE_GAP,
+  RECYCLING_CUBE_W,
+  RECYCLING_DECK,
+  RECYCLING_GAUGE_ROWS,
+  RECYCLING_GAUGE_TOP,
+  RECYCLING_PILE_PITCH,
+  RECYCLING_PILE_X0,
+  RECYCLING_REF_H,
+  RECYCLING_REF_W,
+  recyclingLook,
+} from "./recyclingLook";
 
 /**
  * The recycling center, first ported from its Figma reference build script
@@ -52,7 +66,9 @@ export function drawRecycling(d: DrawCtx, u: UnitView, x: number, y: number, w: 
   F(0, 3, W, 1, "#9AA0A8");
   // Fourteen pipe brackets on a 14px pitch from x 8: the last one ends 8px
   // from the right wall, the same margin as the first.
-  const bracketX0 = 8, bracketW = 2, brackets = 14;
+  const bracketX0 = 8,
+    bracketW = 2,
+    brackets = 14;
   const bracketPitch = (W - 2 * bracketX0 - bracketW) / (brackets - 1);
   for (let b = 0; b < brackets; b++) Fu(bracketX0 + b * bracketPitch, 2, bracketW, 4, "#5A6068");
   F(0, 7, W, 3, "#565C64");
@@ -74,7 +90,11 @@ export function drawRecycling(d: DrawCtx, u: UnitView, x: number, y: number, w: 
   }
   // Overhead sorting sign. The glyph run is centered off the board width, so
   // the eleven letters keep matching margins at both ends.
-  const signX = 84, signW = 63, glyphs = 11, glyphW = 3, glyphPitch = 5;
+  const signX = 84,
+    signW = 63,
+    glyphs = 11,
+    glyphW = 3,
+    glyphPitch = 5;
   const glyphInset = Math.round((signW - ((glyphs - 1) * glyphPitch + glyphW)) / 2);
   box(F, signX, 5, signW, 10, "#2A6E3A");
   for (let i = 0; i < glyphs; i++) Fu(signX + glyphInset + i * glyphPitch, 8, glyphW, 4, "#DCE8C0"); // sign letters
@@ -87,12 +107,16 @@ export function drawRecycling(d: DrawCtx, u: UnitView, x: number, y: number, w: 
   // drops bales and items. The bales are centered between the two caps, so the
   // run leaves the same gap to each.
   const by = deck - 24;
-  const beltX = 24, beltW = 109;
+  const beltX = 24,
+    beltW = 109;
   const beltEnd = beltX + beltW - 2; // the end cap's left edge
   F(beltX, by, beltW, 6, "#3A3E44");
   F(beltX, by, beltW, 1, "#4E545C");
   F(beltX, by + 5, beltW, 1, "#242830");
-  const baleW = 3, balePitch = 6, runX = beltX + 2, runW = beltEnd - runX;
+  const baleW = 3,
+    balePitch = 6,
+    runX = beltX + 2,
+    runW = beltEnd - runX;
   const bales = Math.floor((runW - 2 + balePitch - baleW) / balePitch); // at least 1px clear of each cap
   const baleInset = Math.floor((runW - ((bales - 1) * balePitch + baleW)) / 2);
   for (let i = 0; i < bales; i++) Fu(runX + baleInset + i * balePitch, by + 1, baleW, 4, "#2E323A"); // baled recyclables
@@ -107,7 +131,8 @@ export function drawRecycling(d: DrawCtx, u: UnitView, x: number, y: number, w: 
   // so each pair sits centered in the plate that carries it.
   // Width stops at the gauge channel (W - 6) so the gauge cannot paint over the
   // baler's right bevel and flatten it.
-  const cx = RECYCLING_BALER_X, balerW = W - 6 - cx - 1;
+  const cx = RECYCLING_BALER_X,
+    balerW = W - 6 - cx - 1;
   box(F, cx, by - 18, balerW, deck - (by - 18), "#7E828A");
   F(cx + 2, by - 16, 18, 14, "#5A5E66");
   F(cx + 2, by - 16, 18, 1, "#3A3E44");

@@ -48,7 +48,12 @@ export function setRainShelter(engine: TowerEngine, runs: ReadonlyMap<number, re
  * on-screen run of the building. Returns false, with nothing clipped, when no
  * sky is on screen (a view of the basements). The caller saves and restores.
  */
-export function clipToOpenSky(engine: TowerEngine, ctx: CanvasRenderingContext2D, viewW: number, viewH: number): boolean {
+export function clipToOpenSky(
+  engine: TowerEngine,
+  ctx: CanvasRenderingContext2D,
+  viewW: number,
+  viewH: number,
+): boolean {
   // Floor f spans world rows from f - 1 (its bottom) to f (its top); the
   // ground line is floor 1's bottom.
   const ground = engine.worldToScreenY(0);

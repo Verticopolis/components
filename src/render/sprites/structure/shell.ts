@@ -67,7 +67,7 @@ export function drawConstruction(d: DrawCtx, x: number, y: number, w: number, h:
   ctx.fillRect(x, y, w, 2);
   // Yellow/black hazard band along the floor.
   for (let hx = x; hx < x + w; hx += 8) {
-    ctx.fillStyle = (Math.floor(hx / 8) % 2) === 0 ? "#e8c14a" : "#2a2a2a";
+    ctx.fillStyle = Math.floor(hx / 8) % 2 === 0 ? "#e8c14a" : "#2a2a2a";
     ctx.fillRect(hx, y + h - 4, 4, 4);
   }
   // Scaffolding poles and cross-braces.

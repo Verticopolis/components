@@ -80,7 +80,16 @@ export class TowerEngine {
   // Set by the controller each frame; rendered by the overlay. `reason` is the
   // refusal string (only when `valid` is false AND the tower's catalog says the
   // preview names a refusal, `rules.previewNamesRefusal`; presentation only).
-  preview: { kind: FacilityKind; floor: number; x: number; valid: boolean; span?: number; reason?: string; stories?: number; label?: string } | null = null;
+  preview: {
+    kind: FacilityKind;
+    floor: number;
+    x: number;
+    valid: boolean;
+    span?: number;
+    reason?: string;
+    stories?: number;
+    label?: string;
+  } | null = null;
   transportPreview: { kind: FacilityKind; x: number; bottom: number; top: number; valid: boolean } | null = null;
   selectedId: number | null = null;
 
@@ -231,7 +240,9 @@ export class TowerEngine {
   reducedMotion = false;
   /** Modern's "Show decorative passers-by" switch (#2091): off (the default) hides them all. */
   passersBy = false;
-  setReducedMotion(on: boolean): void { overlayFx.setReducedMotion(this, on); }
+  setReducedMotion(on: boolean): void {
+    overlayFx.setReducedMotion(this, on);
+  }
 
   /** Frame-clock-derived animation time that only advances while unpaused.
    *  @internal friend-module access (towerOverlay resetDecorativeClock). */
@@ -268,7 +279,14 @@ export class TowerEngine {
   /** One story of a tall lobby's slice (#308), baked on first use and kept:
    *  by lighting, ground or sky style, height, story (0 = the lobby's floor)
    *  and pattern slot or entrance kind. */
-  tallLobbyGfx!: (lit: boolean, ground: boolean, height: number, story: number, slot: number | EntranceKind, staffed: boolean) => ex.Canvas;
+  tallLobbyGfx!: (
+    lit: boolean,
+    ground: boolean,
+    height: number,
+    story: number,
+    slot: number | EntranceKind,
+    staffed: boolean,
+  ) => ex.Canvas;
   /** Per-tile entrance kind for the floor-1 lobby, refreshed at the top of every
    *  {@link reconcile.syncScene} sweep. Keyed by grid x; absent x takes the
    *  normal 4-variant cycle. Recomputed by walking the lobby's CONTIGUOUS runs so
@@ -299,7 +317,11 @@ export class TowerEngine {
   /** `reader`: the shared view reader. `start()` takes the saved camera, the
    *  hour and the revisions from it when given (slice 7, PR 4); the frame
    *  reads stay on `sim` until the frame slices move behind the view. */
-  constructor(canvas: HTMLCanvasElement, sim: RenderSim, private readonly reader?: SimView) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    sim: RenderSim,
+    private readonly reader?: SimView,
+  ) {
     this.sim = sim;
     scene.bindSceneWorld(sim);
     guardPointerButtons(canvas); // before Excalibur's own listeners; see the module
@@ -384,19 +406,33 @@ export class TowerEngine {
 
   // ---- Delegations to friend-modules --------------------------------------
 
-  setSim(sim: RenderSim, opts?: { keepCamera?: boolean }): void { scene.setSim(this, sim, opts); }
+  setSim(sim: RenderSim, opts?: { keepCamera?: boolean }): void {
+    scene.setSim(this, sim, opts);
+  }
   /** An undo or redo step changed the drawn tower: keep the scene (towerScene). */
-  followStep(): void { scene.followStep(this); }
+  followStep(): void {
+    scene.followStep(this);
+  }
 
   // Frame-pump steps for fake-driven ticks (stub these three directly);
   // scene syncs route through towerSyncSchedule's module functions, observed
   // with module mocks (towerEngineMealOverlay.test.ts). start() uses the
   // sync delegations below.
-  private syncScene(): void { reconcile.syncScene(this); }
-  private syncFacade(): void { reconcile.syncFacade(this); }
-  private syncMotion(): void { crowd.syncMotion(this); }
-  private updateMotion(elapsedMs: number): void { crowd.updateMotion(this, elapsedMs); }
-  private reconcileCrowd(): void { crowd.reconcileCrowd(this); }
+  private syncScene(): void {
+    reconcile.syncScene(this);
+  }
+  private syncFacade(): void {
+    reconcile.syncFacade(this);
+  }
+  private syncMotion(): void {
+    crowd.syncMotion(this);
+  }
+  private updateMotion(elapsedMs: number): void {
+    crowd.updateMotion(this, elapsedMs);
+  }
+  private reconcileCrowd(): void {
+    crowd.reconcileCrowd(this);
+  }
 
   /** Camera policy for a swapped-in (or boot-loaded) tower (see towerInputCamera).
    *  @internal friend-module access (towerScene setSim). */
@@ -409,8 +445,12 @@ export class TowerEngine {
     return camera.pickEntityAt(this, world);
   }
 
-  pan(dxScreen: number, dyScreen: number): void { camera.pan(this, dxScreen, dyScreen); }
-  zoomAt(factor: number, sx: number, sy: number): void { camera.zoomAt(this, factor, sx, sy); }
+  pan(dxScreen: number, dyScreen: number): void {
+    camera.pan(this, dxScreen, dyScreen);
+  }
+  zoomAt(factor: number, sx: number, sy: number): void {
+    camera.zoomAt(this, factor, sx, sy);
+  }
   /** @internal friend-module access (towerInputCamera) / prototype tests. */
   dynamicMinZoom(): number {
     return camera.dynamicMinZoom(this);

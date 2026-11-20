@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { clampCameraY, fitZoom, FIT_SKY_FLOORS, MIN_FIT_SPAN_FLOORS, MAX_FIT_ZOOM, SKY_HEADROOM_FLOORS, WEDDING_HALL_RISE_FLOORS } from "./cameraBounds";
+import {
+  clampCameraY,
+  fitZoom,
+  FIT_SKY_FLOORS,
+  MIN_FIT_SPAN_FLOORS,
+  MAX_FIT_ZOOM,
+  SKY_HEADROOM_FLOORS,
+  WEDDING_HALL_RISE_FLOORS,
+} from "./cameraBounds";
 import { VIEW_ZOOM_MIN } from "../model/types";
 import { catalogFor } from "../tests/catalogFixture";
 import { CRANE_H } from "./sprites/structure/rooftop";
@@ -19,8 +27,7 @@ const VIEW_H = 800;
 const TOP_Y = -(MAX_FLOOR + SKY_HEADROOM_FLOORS) * FLOOR;
 const BOTTOM_Y = -(MIN_FLOOR - 2) * FLOOR;
 
-const clamp = (y: number, zoom: number) =>
-  clampCameraY(y, VIEW_H, zoom, FLOOR, MIN_FLOOR, MAX_FLOOR);
+const clamp = (y: number, zoom: number) => clampCameraY(y, VIEW_H, zoom, FLOOR, MIN_FLOOR, MAX_FLOOR);
 const bottomEdge = (y: number, zoom: number) => y + VIEW_H / 2 / zoom;
 const topEdge = (y: number, zoom: number) => y - VIEW_H / 2 / zoom;
 

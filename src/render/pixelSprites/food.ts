@@ -1,7 +1,14 @@
 import type { UnitView } from "../../simport/view";
 import { geoVariant, roomOccupants, type RoomCtx } from "./common";
 import { drawCinema, drawFastFood, drawRestaurant } from "./food.interiors";
-import { FASTFOOD_DEFAULT, FASTFOOD_LOOKS, FOODHALL_DEFAULT, FOODHALL_LOOKS, RESTAURANT_DEFAULT, RESTAURANT_LOOKS } from "./food.looks";
+import {
+  FASTFOOD_DEFAULT,
+  FASTFOOD_LOOKS,
+  FOODHALL_DEFAULT,
+  FOODHALL_LOOKS,
+  RESTAURANT_DEFAULT,
+  RESTAURANT_LOOKS,
+} from "./food.looks";
 
 /**
  * Food and entertainment room art: fast food, restaurant, and cinema. Each KIND

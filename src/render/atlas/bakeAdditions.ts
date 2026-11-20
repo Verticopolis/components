@@ -45,7 +45,10 @@ export function checkCycles(result: BakeResult, r: Renderer, jobs: readonly Stil
       if (rec.layers) pictures.push(composeLayered(result, rec, check.chains, [], false, check.at));
       for (const p of pictures) {
         const cmp = compareImages(want, p);
-        if (cmp.mismatches > 0) throw new LayerError(`${job.name}: cycles ${JSON.stringify(check.at)} with chains ${JSON.stringify(check.chains)} miss ${cmp.mismatches} pixels`);
+        if (cmp.mismatches > 0)
+          throw new LayerError(
+            `${job.name}: cycles ${JSON.stringify(check.at)} with chains ${JSON.stringify(check.chains)} miss ${cmp.mismatches} pixels`,
+          );
       }
     }
   }

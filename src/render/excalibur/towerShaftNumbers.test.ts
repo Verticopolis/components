@@ -15,8 +15,18 @@ import { drawShaftNumbers } from "./towerShaftNumbers";
 function spyCtx() {
   const log: string[] = [];
   const ctx: any = {};
-  for (const m of ["fillText", "strokeText", "fillRect", "save", "restore"]) ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
-  for (const p of ["fillStyle", "strokeStyle", "lineWidth", "font", "textAlign", "textBaseline", "lineJoin", "miterLimit"]) {
+  for (const m of ["fillText", "strokeText", "fillRect", "save", "restore"])
+    ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
+  for (const p of [
+    "fillStyle",
+    "strokeStyle",
+    "lineWidth",
+    "font",
+    "textAlign",
+    "textBaseline",
+    "lineJoin",
+    "miterLimit",
+  ]) {
     let v: unknown = "";
     Object.defineProperty(ctx, p, { get: () => v, set: (nv) => (log.push(`${p}=${String(nv)}`), void (v = nv)) });
   }
@@ -171,7 +181,10 @@ describe("elevator floor numbers (overlay)", () => {
 
   it("does not number stairs or escalators", () => {
     const s = spyCtx();
-    drawShaftNumbers(withShafts([shaft({ kind: "stairs", bottom: 1, top: 3 }), shaft({ kind: "escalator", bottom: 1, top: 3 })]), s.ctx);
+    drawShaftNumbers(
+      withShafts([shaft({ kind: "stairs", bottom: 1, top: 3 }), shaft({ kind: "escalator", bottom: 1, top: 3 })]),
+      s.ctx,
+    );
     expect(textCalls(s.log, "fillText").length).toBe(0);
   });
 

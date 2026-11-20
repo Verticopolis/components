@@ -1,5 +1,15 @@
 import type { UnitView } from "../../simport/view";
-import { busyStations, castShadow, hash, personSeated, personStanding, roomOccupants, shade, shell, type RoomCtx } from "./common";
+import {
+  busyStations,
+  castShadow,
+  hash,
+  personSeated,
+  personStanding,
+  roomOccupants,
+  shade,
+  shell,
+  type RoomCtx,
+} from "./common";
 import { artRow, authoredWidth } from "./artScale";
 import { layerBreak } from "./layers";
 
@@ -46,7 +56,15 @@ function figureSeed(u: Pick<UnitView, "floor" | "x">): number {
 /** The mirror strip: the shared anchor. A bright glass band with a thin accent
  *  frame along the upper wall, the one shape every gym keeps. Returns the Y just
  *  below it. */
-function mirrorStrip(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, wall: string, accent: string, lit: boolean): number {
+function mirrorStrip(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  wall: string,
+  accent: string,
+  lit: boolean,
+): number {
   const band = 6;
   ctx.fillStyle = shade(wall, lit ? 30 : 14); // glass
   ctx.fillRect(x + 2, y + 2, w - 4, band);
@@ -57,7 +75,15 @@ function mirrorStrip(ctx: CanvasRenderingContext2D, x: number, y: number, w: num
   return y + band + 3;
 }
 
-function drawWeights(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, look: FitnessLook, occ: number, seed: number): void {
+function drawWeights(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  look: FitnessLook,
+  occ: number,
+  seed: number,
+): void {
   // A dumbbell rack along the back and a flat bench with a lifter.
   ctx.fillStyle = shade(look.wall, 24); // rack frame
   ctx.fillRect(x + 3, floorY - 12, w - 6, 2);
@@ -78,7 +104,16 @@ function drawWeights(ctx: CanvasRenderingContext2D, x: number, floorY: number, w
   castShadow(ctx, bX, floorY, 14);
 }
 
-function drawYoga(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, aw: number, look: FitnessLook, occ: number, seed: number): void {
+function drawYoga(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  aw: number,
+  look: FitnessLook,
+  occ: number,
+  seed: number,
+): void {
   // A calm studio: mats laid on the floor, standing figures mid-pose, a plant.
   // Mat anchors: the 12px pitch is authored art, counted against the authored
   // run and fitted into the screen run by `artRow`. Read off the room's pixel width
@@ -101,7 +136,16 @@ function drawYoga(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: n
   ctx.fillRect(pX, floorY - 9, 4, 5);
 }
 
-function drawSpin(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, aw: number, look: FitnessLook, occ: number, seed: number): void {
+function drawSpin(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  aw: number,
+  look: FitnessLook,
+  occ: number,
+  seed: number,
+): void {
   // A dim room of stationary bikes lit by an accent glow, riders on some.
   ctx.fillStyle = shade(look.accent, -30); // floor light wash
   ctx.fillRect(x + 2, floorY - 1, w - 4, 1);
@@ -124,7 +168,15 @@ function drawSpin(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: n
   });
 }
 
-function drawBoxing(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, look: FitnessLook, occ: number, seed: number): void {
+function drawBoxing(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  look: FitnessLook,
+  occ: number,
+  seed: number,
+): void {
   // A heavy bag hanging from the ceiling, a ring corner post with ropes, a boxer.
   const bagX = x + Math.round(w * 0.34);
   ctx.fillStyle = "#4A4A52"; // chain
@@ -144,7 +196,16 @@ function drawBoxing(ctx: CanvasRenderingContext2D, x: number, floorY: number, w:
   castShadow(ctx, bagX, floorY, 5);
 }
 
-function drawClimb(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: FitnessLook, occ: number, seed: number): void {
+function drawClimb(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: FitnessLook,
+  occ: number,
+  seed: number,
+): void {
   // A tall bouldering wall studded with colorful holds, a climber part-way up.
   const wallX = x + 4;
   const wallW = Math.round(w * 0.5);

@@ -73,7 +73,10 @@ describe("pointer down routing", () => {
     handlers.down(ptr({ shift: true, ctrl: true, tile: 12, floor: 1 }));
     handlers.up(ptr({ shift: true, ctrl: true, tile: 12, floor: 1 }));
     handlers.down(ptr({ shift: true, meta: true, tile: 12, floor: 1 }));
-    expect(classifyDown.mock.calls).toEqual([[0, false, false], [0, false, false]]);
+    expect(classifyDown.mock.calls).toEqual([
+      [0, false, false],
+      [0, false, false],
+    ]);
     expect(e.onActionDown).toHaveBeenCalledWith(12, 1, false, null);
   });
 

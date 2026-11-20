@@ -36,7 +36,8 @@ function largeTower(): MapSource & { tiles: number } {
     }
   }
   for (let i = 0; i < 24; i++) transports.push({ kind: "elevatorStandard", x: 14 * i, width: 4, bottom: -9, top: 100 });
-  for (let i = 0; i < 64; i++) transports.push({ kind: "stairs", x: 5 * i, width: 2, bottom: i % 90, top: (i % 90) + 1 });
+  for (let i = 0; i < 64; i++)
+    transports.push({ kind: "stairs", x: 5 * i, width: 2, bottom: i % 90, top: (i % 90) + 1 });
   return { structure, rooms, transports, floorsOf: (k) => (k === "cinema" ? 2 : 1), tallLobbies: () => [], tiles };
 }
 
@@ -98,7 +99,10 @@ describe("overview map budget on a large tower", () => {
     // Every floor of the tower as two buildings, columns 180 to 189 open.
     const split = {
       ...tower,
-      structure: tower.structure.flatMap((r) => [{ ...r, x: 0, count: 20 }, { ...r, x: 190, count: 20 }]),
+      structure: tower.structure.flatMap((r) => [
+        { ...r, x: 0, count: 20 },
+        { ...r, x: 190, count: 20 },
+      ]),
       rooms: tower.rooms.filter((room) => room.x + room.width <= 180 || room.x >= 190),
       floorsOf: () => 1,
     };

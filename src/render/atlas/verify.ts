@@ -61,7 +61,13 @@ function region(doc: Document, w: number, h: number): CanvasRenderingContext2D {
 
 /** The game's paint of `unit`: inside a region with the room at `at`, or into
  *  its own canvas when `at` is null. */
-function webPaint(doc: Document, unit: UnitView, s: LiveScene, anim: number, at: { x: number; y: number } | null): Image {
+function webPaint(
+  doc: Document,
+  unit: UnitView,
+  s: LiveScene,
+  anim: number,
+  at: { x: number; y: number } | null,
+): Image {
   const w = unit.width * TILE;
   const h = kindFloors(unit.kind) * FLOOR;
   const ox = at?.x ?? 0;
@@ -101,7 +107,10 @@ export function verifySample(doc: Document, jobs: readonly Job[], renderer: Rend
   const baked = bake([job], renderer);
   const composed = composeLookup(baked, found, sample.frame ?? 0);
   const rec = baked.frames.find((f) => f.name === composed.name);
-  const layered = rec?.layers && !("animation" in found) ? composeLayered(baked, rec, found.chains, found.overlays, false, found.cycles) : null;
+  const layered =
+    rec?.layers && !("animation" in found)
+      ? composeLayered(baked, rec, found.chains, found.overlays, false, found.cycles)
+      : null;
   const pictures = [{ label: sample.label, image: composed.image }];
   if (layered) pictures.push({ label: `${sample.label} (depth layers)`, image: layered });
   const animated = unit.state === "fire" || unit.state === "construction";
@@ -110,7 +119,14 @@ export function verifySample(doc: Document, jobs: readonly Job[], renderer: Rend
     const ref = webPaint(doc, unit, sample.scene, anim, at);
     return pictures.map((p) => {
       const cmp = compareImages(ref, p.image);
-      return { label: p.label, frame: composed.name, pixels: ref.w * ref.h, mismatches: cmp.mismatches, box: cmp.box, offset: at ?? { x: 0, y: 0 } };
+      return {
+        label: p.label,
+        frame: composed.name,
+        pixels: ref.w * ref.h,
+        mismatches: cmp.mismatches,
+        box: cmp.box,
+        offset: at ?? { x: 0, y: 0 },
+      };
     });
   });
 }

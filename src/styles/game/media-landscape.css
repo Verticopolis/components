@@ -88,11 +88,21 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  #traffic { width: 10.8em; }
-  #stat-time { width: 6.2em; }
-  #stat-date { width: 13.1em; }
-  #stat-money { width: 9.5em; }
-  #stat-pop { width: 4.8em; }
+  #traffic {
+    width: 10.8em;
+  }
+  #stat-time {
+    width: 6.2em;
+  }
+  #stat-date {
+    width: 13.1em;
+  }
+  #stat-money {
+    width: 9.5em;
+  }
+  #stat-pop {
+    width: 4.8em;
+  }
   #speed {
     gap: 3px;
   }
@@ -269,7 +279,9 @@
      overview-map.css drops the pill, the inspector and the toasts to z 1 so
      the pill sits above the editor; here they keep that order above the
      card too. */
-  body:has(> #onboard.onboard--mobile) #stage:has(> .overview-map-toggle:not([hidden])):has(> #editor:not(.hidden)) > :is(.overview-map-toggle, #inspector, #toast-wrap) {
+  body:has(> #onboard.onboard--mobile)
+    #stage:has(> .overview-map-toggle:not([hidden])):has(> #editor:not(.hidden))
+    > :is(.overview-map-toggle, #inspector, #toast-wrap) {
     z-index: 27;
   }
   #onboard.onboard--mobile .ob-list {

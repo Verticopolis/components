@@ -47,14 +47,20 @@ function simFixture(over: Record<string, any> = {}): any {
     mode: "modern",
     population: 400,
     crowd: { people: [] },
-    clock: { minutes: 0, hour: 12, minuteOfDay: 12 * 60, isMorning: () => false, isEvening: () => false, isNight: () => false },
+    clock: {
+      minutes: 0,
+      hour: 12,
+      minuteOfDay: 12 * 60,
+      isMorning: () => false,
+      isEvening: () => false,
+      isNight: () => false,
+    },
     tower: { revision: 1, units: [], transports: [] },
     ...over,
   };
 }
 
 function eng(over: Record<string, any> = {}): any {
-
   const e: any = {
     engine: { add: vi.fn() },
     d: { anim: 0 },
@@ -89,7 +95,11 @@ function eng(over: Record<string, any> = {}): any {
 describe("reap (retained-actor reconciliation tail)", () => {
   it("disposes and drops every entry the pass did not mark seen", () => {
     const killed: number[] = [];
-    const map = new Map([[1, "a"], [2, "b"], [3, "c"]]);
+    const map = new Map([
+      [1, "a"],
+      [2, "b"],
+      [3, "c"],
+    ]);
     reap(map, new Set([2]), (_v, k) => killed.push(k));
     expect(killed.sort()).toEqual([1, 3]);
     expect([...map.keys()]).toEqual([2]);
@@ -98,7 +108,12 @@ describe("reap (retained-actor reconciliation tail)", () => {
 
 describe("reconcileCrowd draws one actor per live person", () => {
   it("adds an actor for a new person, positions it, and reaps the departed", () => {
-    const e = eng({ sim: { ...eng().sim, crowd: { people: [{ id: 1, seed: 0, staff: false, state: "toDest", x: 10, fy: 5, wait: 0 }] } } });
+    const e = eng({
+      sim: {
+        ...eng().sim,
+        crowd: { people: [{ id: 1, seed: 0, staff: false, state: "toDest", x: 10, fy: 5, wait: 0 }] },
+      },
+    });
     frame(e);
     expect(e.crowdActors.size).toBe(1);
     expect(e.engine.add).toHaveBeenCalledTimes(1);
@@ -120,10 +135,15 @@ describe("reconcileCrowd draws one actor per live person", () => {
 
   it("hides a riding tenant but keeps riding staff visible", () => {
     const e = eng({
-      sim: { ...eng().sim, crowd: { people: [
-        { id: 1, seed: 0, staff: false, state: "riding", x: 10, fy: 5, wait: 0 },
-        { id: 2, seed: 1, staff: true, state: "riding", x: 12, fy: 6, wait: 0 },
-      ] } },
+      sim: {
+        ...eng().sim,
+        crowd: {
+          people: [
+            { id: 1, seed: 0, staff: false, state: "riding", x: 10, fy: 5, wait: 0 },
+            { id: 2, seed: 1, staff: true, state: "riding", x: 12, fy: 6, wait: 0 },
+          ],
+        },
+      },
     });
     frame(e);
     expect(e.crowdActors.get(1).actor.graphics.isVisible).toBe(false);
@@ -133,7 +153,22 @@ describe("reconcileCrowd draws one actor per live person", () => {
   it("shows a wait as a pose and a mood: the time, then hips in amber, then arms up in red", () => {
     // The fixture catalog's fed-up line is 25 minutes (`rules.fedUpWait`).
     const waits = [2, 10, 18, 30];
-    const e = eng({ sim: { ...eng().sim, crowd: { people: waits.map((wait, i) => ({ id: i + 1, seed: i, staff: false, state: "waiting", x: 10 + i, fy: 5, wait })) } } });
+    const e = eng({
+      sim: {
+        ...eng().sim,
+        crowd: {
+          people: waits.map((wait, i) => ({
+            id: i + 1,
+            seed: i,
+            staff: false,
+            state: "waiting",
+            x: 10 + i,
+            fy: 5,
+            wait,
+          })),
+        },
+      },
+    });
     frame(e);
     const shown = waits.map((_w, i) => figureOf(e.crowdActors.get(i + 1).key));
     expect(shown.map((f) => [f.pose, f.mood])).toEqual([
@@ -150,7 +185,10 @@ describe("reconcileCrowd draws one actor per live person", () => {
     // shaft at 18 is nearer the line, and is not theirs.
     const person = { id: 1, seed: 0, staff: false, state: "toShaft", x: 4, floor: 5, fy: 5, wait: 0 };
     const car = { kind: "elevatorStandard", width: 4, bottom: 0, top: 20, cars: 1, carPositions: [0], carDir: [0] };
-    const transports = [{ id: 9, x: 10, ...car }, { id: 8, x: 18, ...car }];
+    const transports = [
+      { id: 9, x: 10, ...car },
+      { id: 8, x: 18, ...car },
+    ];
     const e = eng({ sim: simFixture({ crowd: { people: [person] }, tower: { revision: 1, units: [], transports } }) });
     const step = (minutes: number, change: object) => {
       Object.assign(person, change);
@@ -308,10 +346,17 @@ describe("reconcileCrowd draws one actor per live person", () => {
   });
 
   it("vacuums while a housekeeper dwells at a room, and climbs on the stairs", () => {
-    const e = eng({ sim: { ...eng().sim, crowd: { people: [
-      { id: 1, seed: 0, staff: true, state: "dwelling", x: 10, fy: 5, wait: 0 },
-      { id: 2, seed: 3, staff: false, state: "climbing", x: 14, fy: 5.5, wait: 0 },
-    ] } } });
+    const e = eng({
+      sim: {
+        ...eng().sim,
+        crowd: {
+          people: [
+            { id: 1, seed: 0, staff: true, state: "dwelling", x: 10, fy: 5, wait: 0 },
+            { id: 2, seed: 3, staff: false, state: "climbing", x: 14, fy: 5.5, wait: 0 },
+          ],
+        },
+      },
+    });
     frame(e);
     expect(figureOf(e.crowdActors.get(1).key)).toMatchObject({ look: LOOK.housekeeperCleaning, pose: "push" });
     expect(figureOf(e.crowdActors.get(2).key)).toMatchObject({ look: castIndex(3), pose: "climb" });
@@ -359,8 +404,12 @@ describe("zoom cull skips the per-frame loops (CAP-1's cost mechanism)", () => {
     const car = {
       actor: actor(),
       t: { x: 12, kind: "elevatorStandard", carPositions: [8], carLoad: [0], carDir: [0] },
-      i: 0, seed: 0, w: 4 * TILE, kind: "elevatorStandard",
-      cab: { show: vi.fn() }, shown: "0:x:e:",
+      i: 0,
+      seed: 0,
+      w: 4 * TILE,
+      kind: "elevatorStandard",
+      cab: { show: vi.fn() },
+      shown: "0:x:e:",
     };
     const e = eng({ carActors: [car], cam: { zoom: 0.06 } });
     updateMotion(e);
@@ -373,7 +422,10 @@ describe("zoom cull skips the per-frame loops (CAP-1's cost mechanism)", () => {
   it("reconcileCrowd under the cull threshold adds no actor for a live person", () => {
     const e = eng({
       cam: { zoom: 0.06 },
-      sim: { ...eng().sim, crowd: { people: [{ id: 1, seed: 0, staff: false, state: "walking", x: 10, fy: 5, wait: 0 }] } },
+      sim: {
+        ...eng().sim,
+        crowd: { people: [{ id: 1, seed: 0, staff: false, state: "walking", x: 10, fy: 5, wait: 0 }] },
+      },
     });
     frame(e);
     expect(e.crowdCulled).toBe(true);
@@ -436,7 +488,19 @@ describe("updateMotion repositions the moving actors", () => {
 
   it("shows the garbage truck only during the collection hour at a running plant", () => {
     const truck = { actor: actor(), u: { x: 30, floor: 1, width: 4, state: "occupied" }, w: 44 };
-    const e = eng({ truckActors: [truck], sim: { ...eng().sim, clock: { hour: 5, minuteOfDay: 5 * 60 + 20, isMorning: () => false, isEvening: () => false, isNight: () => false } } });
+    const e = eng({
+      truckActors: [truck],
+      sim: {
+        ...eng().sim,
+        clock: {
+          hour: 5,
+          minuteOfDay: 5 * 60 + 20,
+          isMorning: () => false,
+          isEvening: () => false,
+          isNight: () => false,
+        },
+      },
+    });
     updateMotion(e);
     expect(truck.actor.graphics.isVisible).toBe(true);
 
@@ -447,13 +511,35 @@ describe("updateMotion repositions the moving actors", () => {
 
     // Collection hour but a gutted plant processes nothing: hidden.
     const dead = { actor: actor(), u: { x: 30, floor: 1, width: 4, state: "gutted" }, w: 44 };
-    updateMotion(eng({ truckActors: [dead], sim: { ...eng().sim, clock: { hour: 5, minuteOfDay: 5 * 60 + 20, isMorning: () => false, isEvening: () => false, isNight: () => false } } }));
+    updateMotion(
+      eng({
+        truckActors: [dead],
+        sim: {
+          ...eng().sim,
+          clock: {
+            hour: 5,
+            minuteOfDay: 5 * 60 + 20,
+            isMorning: () => false,
+            isEvening: () => false,
+            isNight: () => false,
+          },
+        },
+      }),
+    );
     expect(dead.actor.graphics.isVisible).toBe(false);
   });
 
   it("cruises garage cars only during a rush with cars parked", () => {
     const car = { actor: actor(), floor: -1, x0w: 100, x1w: 300, seed: 3 };
-    const rush = eng({ garageCars: [car], displayParkingUse: 0.5, d: { anim: 2 }, sim: { ...eng().sim, clock: { hour: 8, minuteOfDay: 480, isMorning: () => true, isEvening: () => false, isNight: () => false } } });
+    const rush = eng({
+      garageCars: [car],
+      displayParkingUse: 0.5,
+      d: { anim: 2 },
+      sim: {
+        ...eng().sim,
+        clock: { hour: 8, minuteOfDay: 480, isMorning: () => true, isEvening: () => false, isNight: () => false },
+      },
+    });
     updateMotion(rush);
     expect(car.actor.graphics.isVisible).toBe(true);
     expect(car.actor.pos.x).toBeGreaterThanOrEqual(100);

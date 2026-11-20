@@ -68,7 +68,10 @@ export function pack(images: readonly PackInput[], pageSize: number, padding: nu
       spot = { page: pages.length - 1, x: 0, y: 0 };
     }
     const at = index.get(it.id) as number;
-    placements[at].push({ rect: { page: spot.page, x: spot.x + padding, y: spot.y + padding, w: it.w, h: it.h }, sx: it.sx });
+    placements[at].push({
+      rect: { page: spot.page, x: spot.x + padding, y: spot.y + padding, w: it.w, h: it.h },
+      sx: it.sx,
+    });
   }
   for (const list of placements) list.sort((a, b) => a.sx - b.sx);
   return { pages: pages.length, placements };

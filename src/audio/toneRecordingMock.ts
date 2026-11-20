@@ -101,7 +101,6 @@ export function node(kind = "anon", args: unknown[] = []): unknown {
   return p;
 }
 
-
 /** The module object for `vi.mock("tone", async () => (await import("./toneRecordingMock")).toneMock())`. */
 export function toneMock() {
   // Regular functions (not arrows) so `new Tone.Gain(...)` works; each returns a

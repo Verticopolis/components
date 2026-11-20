@@ -37,7 +37,15 @@ import {
  */
 
 /** The hall's back wall and the gilded cornice along its ceiling. */
-function hallShell(d: DrawCtx, x0: number, y0: number, ww: number, floorTop: number, ground: boolean, seed: number): void {
+function hallShell(
+  d: DrawCtx,
+  x0: number,
+  y0: number,
+  ww: number,
+  floorTop: number,
+  ground: boolean,
+  seed: number,
+): void {
   const { ctx } = d;
   const hh = floorTop - y0;
   if (ground) {
@@ -138,7 +146,16 @@ function wideWindowHalf(d: DrawCtx, x0: number, y0: number, ww: number, lowY: nu
 /** The ground entrance slice of a tall lobby: the one-story entrance on the
  *  bottom story, under a tall glass wall (grand doors) or plain marble
  *  (service door) that runs up to the hall's cornice. */
-function tallEntrance(d: DrawCtx, x0: number, y0: number, ww: number, storyH: number, lowY: number, floorTop: number, variant: number): void {
+function tallEntrance(
+  d: DrawCtx,
+  x0: number,
+  y0: number,
+  ww: number,
+  storyH: number,
+  lowY: number,
+  floorTop: number,
+  variant: number,
+): void {
   const { ctx, lit } = d;
   const grand = variant !== ENTRANCE_SERVICE;
   const upper = (): void => {
@@ -176,6 +193,14 @@ const ENTRANCE_VARIANT: Record<EntranceKind, number> = {
 };
 
 /** The ground entrance slice of a tall lobby, `h` covering all its stories. */
-export function drawTallLobbyEntrance(d: DrawCtx, kind: EntranceKind, x: number, y: number, w: number, h: number, stories: number): void {
+export function drawTallLobbyEntrance(
+  d: DrawCtx,
+  kind: EntranceKind,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  stories: number,
+): void {
   drawTallLobbyTile(d, x, y, w, h, ENTRANCE_VARIANT[kind] ?? ENTRANCE_SERVICE, true, stories);
 }

@@ -52,8 +52,12 @@
   animation: boot-night 2.8s ease-in-out both;
 }
 @keyframes boot-night {
-  from { opacity: 0.78; }
-  to { opacity: 0; }
+  from {
+    opacity: 0.78;
+  }
+  to {
+    opacity: 0;
+  }
 }
 .boot-stars {
   inset: 0 0 50% 0;
@@ -68,8 +72,12 @@
   animation: boot-stars 2.6s ease-in both;
 }
 @keyframes boot-stars {
-  from { opacity: 1; }
-  to { opacity: 0.55; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
 }
 /* Ends exactly where .splash-sun sits, so the title screen takes over in place. */
 .boot-sun {
@@ -84,8 +92,12 @@
   animation: boot-sun 2.8s ease-in-out both;
 }
 @keyframes boot-sun {
-  from { transform: translate(-50%, calc(-50% + 34vh)); }
-  to { transform: translate(-50%, -50%); }
+  from {
+    transform: translate(-50%, calc(-50% + 34vh));
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
 }
 .boot-brand {
   position: absolute;
@@ -105,7 +117,9 @@
   padding: 2px;
   transform: translateX(-50%);
   background: #000;
-  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff;
+  box-shadow:
+    inset 1px 1px #808080,
+    inset -1px -1px #fff;
   box-sizing: border-box;
 }
 .boot-bar i {
@@ -118,7 +132,9 @@
   transition: transform 0.25s;
 }
 @keyframes boot-bar {
-  from { transform: scaleX(0.04); }
+  from {
+    transform: scaleX(0.04);
+  }
 }
 /* Ready: clicks reach the title screen at once while the cover fades. */
 #boot-cover.boot-ready {
@@ -145,7 +161,9 @@
   transform: translateX(-50%);
   text-align: center;
   color: #cdd3da;
-  font: 15px/1.5 system-ui, sans-serif;
+  font:
+    15px/1.5 system-ui,
+    sans-serif;
 }
 .splash-stars,
 .splash-sun,
@@ -165,8 +183,12 @@
   animation: splash-twinkle 4s ease-in-out infinite alternate;
 }
 @keyframes splash-twinkle {
-  from { opacity: 0.55; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .splash-sun {
   position: absolute;
@@ -215,8 +237,12 @@
   stroke: rgba(0, 0, 0, 0.35);
   stroke-width: 2px;
 }
-.splash-word .a { fill: var(--splash-wordmark); }
-.splash-word .b { fill: var(--splash-amber); }
+.splash-word .a {
+  fill: var(--splash-wordmark);
+}
+.splash-word .b {
+  fill: var(--splash-amber);
+}
 /* The trademark mark beside the wordmark (owner, 2026-11-13): small, raised and
    unstroked, so it reads as a mark beside the lettering. The name is the project's
    trademark, which the MIT license does not grant. */
@@ -270,8 +296,13 @@
   border-radius: 8px;
   cursor: pointer;
 }
-.splash-mute:hover { background: rgba(13, 13, 16, 0.55); }
-.splash-mute:focus-visible { outline: 2px solid var(--splash-amber); outline-offset: 2px; }
+.splash-mute:hover {
+  background: rgba(13, 13, 16, 0.55);
+}
+.splash-mute:focus-visible {
+  outline: 2px solid var(--splash-amber);
+  outline-offset: 2px;
+}
 
 /* The persistent splash install button (SPEC-pwa-install CAP-5): the quiet
    front door for getting Verticopolis onto the device. A labeled pill (download
@@ -301,8 +332,13 @@
   border-radius: 8px;
   cursor: pointer;
 }
-.splash-install:hover { background: rgba(13, 13, 16, 0.55); }
-.splash-install:focus-visible { outline: 2px solid var(--splash-amber); outline-offset: 2px; }
+.splash-install:hover {
+  background: rgba(13, 13, 16, 0.55);
+}
+.splash-install:focus-visible {
+  outline: 2px solid var(--splash-amber);
+  outline-offset: 2px;
+}
 
 /* The Sponsor link (owner, 2026-11-13): a quiet tip jar in the top-left corner,
    mirroring the install pill's box-art chrome so the corners read as one family.
@@ -329,9 +365,16 @@
   border: 2px solid rgba(230, 220, 192, 0.55);
   border-radius: 8px;
 }
-.splash-sponsor .vc-icon { color: var(--splash-amber); }
-.splash-sponsor:hover { background: rgba(13, 13, 16, 0.55); }
-.splash-sponsor:focus-visible { outline: 2px solid var(--splash-amber); outline-offset: 2px; }
+.splash-sponsor .vc-icon {
+  color: var(--splash-amber);
+}
+.splash-sponsor:hover {
+  background: rgba(13, 13, 16, 0.55);
+}
+.splash-sponsor:focus-visible {
+  outline: 2px solid var(--splash-amber);
+  outline-offset: 2px;
+}
 
 .splash-btn {
   font-family: var(--r-font);
@@ -341,13 +384,24 @@
   color: var(--splash-plate-ink);
   background: var(--splash-cream);
   border: 2px solid var(--splash-ink);
-  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.75), inset -2px -2px 0 rgba(0, 0, 0, 0.2), 3px 3px 0 rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.75),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.2),
+    3px 3px 0 rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
-.splash-btn:active { box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3); }
+.splash-btn:active {
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
 /* The global navy focus ring is invisible on the night-sky splash. */
-.splash-btn:focus-visible { outline: 2px solid var(--splash-amber); outline-offset: 2px; }
-.splash-btn.primary { background: var(--splash-amber); font-weight: 700; }
+.splash-btn:focus-visible {
+  outline: 2px solid var(--splash-amber);
+  outline-offset: 2px;
+}
+.splash-btn.primary {
+  background: var(--splash-amber);
+  font-weight: 700;
+}
 .splash-btn.ghost {
   background: transparent;
   box-shadow: none;
@@ -407,7 +461,15 @@
    the rail's usual stacking is left exactly as it was. No ancestor of the rail creates a stacking context
    (#stage is position:relative with z-index auto), so this competes with
    #splash directly. */
-body.splash-up #toast-wrap { z-index: 45; }
+body.splash-up #toast-wrap {
+  z-index: 45;
+}
 
-#splash.splash--mobile .splash-actions { flex-direction: column; width: min(86vw, 320px); }
-#splash.splash--mobile .splash-btn { width: 100%; min-height: 48px; }
+#splash.splash--mobile .splash-actions {
+  flex-direction: column;
+  width: min(86vw, 320px);
+}
+#splash.splash--mobile .splash-btn {
+  width: 100%;
+  min-height: 48px;
+}

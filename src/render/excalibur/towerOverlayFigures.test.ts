@@ -113,7 +113,14 @@ describe("a figure walking a floor fits inside it at every zoom", () => {
         weather: "clear",
         clock: { hour: 12, minutes: 20 },
         bombSearch: { deadline: 600, sweeping, searched: [], seq: 1 },
-        tower: { revision: 1, mealOverlayRevision: 0, transports: [], getUnit: () => undefined, getTransport: () => undefined, facilityOf: () => ({ width: 3 }) },
+        tower: {
+          revision: 1,
+          mealOverlayRevision: 0,
+          transports: [],
+          getUnit: () => undefined,
+          getTransport: () => undefined,
+          facilityOf: () => ({ width: 3 }),
+        },
       },
       worldToScreenX: (tile: number) => tile * 10 * zoom,
       worldToScreenY: (floor: number) => 300 - floor * FLOOR * zoom,
@@ -133,8 +140,19 @@ describe("a guard crossing to another tower on the lot", () => {
   // (tile 200) and up 4 to floor 5 (rooms from tile 210): 7 floors of
   // stairs, 14 minutes.
   const g = {
-    floor: 5, left: 210, right: 219, from: 4, start: 0, arrive: 14, done: 18.5,
-    route: [[4, 100], [1, 100], [1, 200], [5, 200]] as const,
+    floor: 5,
+    left: 210,
+    right: 219,
+    from: 4,
+    start: 0,
+    arrive: 14,
+    done: 18.5,
+    route: [
+      [4, 100],
+      [1, 100],
+      [1, 200],
+      [5, 200],
+    ] as const,
   };
 
   it("walks down its own tower's stairs to the lobby first", () => {
@@ -153,8 +171,18 @@ describe("a guard crossing to another tower on the lot", () => {
     // Up 1 to a bridge on 6, over to the middle tower, down 3 to a bridge
     // on 3, over to the right tower and up 2: 6 floors, 12 minutes.
     const zigzag = {
-      ...g, from: 5, arrive: 12, done: 20,
-      route: [[5, 100], [6, 100], [6, 200], [3, 200], [3, 300], [5, 300]] as const,
+      ...g,
+      from: 5,
+      arrive: 12,
+      done: 20,
+      route: [
+        [5, 100],
+        [6, 100],
+        [6, 200],
+        [3, 200],
+        [3, 300],
+        [5, 300],
+      ] as const,
     };
     expect(guardPosition(zigzag, 1)).toEqual({ floor: 5.5, x: 100 - ON_THE_ESCAPE, climbing: true });
     expect(guardPosition(zigzag, 4)).toEqual({ floor: 5, x: 200 - ON_THE_ESCAPE, climbing: true });

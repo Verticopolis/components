@@ -3,14 +3,7 @@ import type { FacilityKind } from "../../model/types";
 import type { PersonBuild } from "../pixelSprites/common";
 import { BUILDS as FIGURE_BUILDS, SHIRTS, moodTint } from "../pixelSprites/common";
 import { FLOOR, TILE } from "../scale";
-import {
-  AWNING_W,
-  CRANE_H,
-  CRANE_W,
-  ESCAPE_W,
-  LOBBY_VARIANTS,
-  type EntranceKind,
-} from "../sprites";
+import { AWNING_W, CRANE_H, CRANE_W, ESCAPE_W, LOBBY_VARIANTS, type EntranceKind } from "../sprites";
 import { GARBAGE_TRUCK_H, METRO_TRAIN_H } from "../sprites/facilities/vehicles";
 import { CLOUD_COUNT, MOON_R, SUN_R, cloudRadius, cloudSeed } from "../sprites/sky";
 import type { AnimJob, Job, Keys, StillJob } from "./catalog";
@@ -37,7 +30,16 @@ export function structureJobs(): Job[] {
     for (const lit of [false, true]) {
       for (let v = 0; v < LOBBY_VARIANTS; v++) {
         const style = ground ? "ground" : "sky";
-        jobs.push({ ...still(`structure/lobby/${style}/${lit2(lit)}/v${v}`, TILE, FLOOR, { p: "lobby", ground, variant: v, lit }, { kind: "lobby", style, lit, variant: v }), layers: true });
+        jobs.push({
+          ...still(
+            `structure/lobby/${style}/${lit2(lit)}/v${v}`,
+            TILE,
+            FLOOR,
+            { p: "lobby", ground, variant: v, lit },
+            { kind: "lobby", style, lit, variant: v },
+          ),
+          layers: true,
+        });
       }
     }
   }
@@ -103,7 +105,9 @@ export const LEGACY_SHAFT_WIDTHS: Partial<Record<FacilityKind, readonly number[]
 export function legacyShaftJobs(): Job[] {
   const jobs: Job[] = [];
   for (const [kind, widths] of Object.entries(LEGACY_SHAFT_WIDTHS) as [FacilityKind, readonly number[]][]) {
-    for (const tiles of widths) for (const job of shaftJobs(kind, tiles, `/w${tiles}`)) jobs.push({ ...job, keys: { ...job.keys, width: tiles }, ownPages: "legacy-shafts" });
+    for (const tiles of widths)
+      for (const job of shaftJobs(kind, tiles, `/w${tiles}`))
+        jobs.push({ ...job, keys: { ...job.keys, width: tiles }, ownPages: "legacy-shafts" });
   }
   return jobs;
 }
@@ -116,7 +120,15 @@ function shaftJobs(kind: FacilityKind, tiles: number, seg = ""): Job[] {
   const w = tiles * TILE;
   if (!isElevatorKind(kind)) {
     // Stairs and escalators always span exactly two floors.
-    jobs.push(still(`transport/${kind}${seg}`, w, 2 * FLOOR, { p: "shaft", kind, floors: 2, band: 0, skip: [] }, { kind, floors: 2 }));
+    jobs.push(
+      still(
+        `transport/${kind}${seg}`,
+        w,
+        2 * FLOOR,
+        { p: "shaft", kind, floors: 2, band: 0, skip: [] },
+        { kind, floors: 2 },
+      ),
+    );
     return jobs;
   }
   const band = (piece: string, floors: number, b: number, skip: number[]): StillJob =>
@@ -142,7 +154,12 @@ function shaftJobs(kind: FacilityKind, tiles: number, seg = ""): Job[] {
         const car = (riders: number): PaintSpec => ({ p: "car", kind, seed, riders, arrow, full });
         const steps = Array.from({ length: RIDER_CAP + 1 }, (_, r) => car(r));
         jobs.push({
-          ...still(`car/${kind}${seg}/${arrow ?? "idle"}/${full ? "full" : "notfull"}/s${s}`, w, FLOOR, car(0), { kind, arrow: arrow ?? "idle", full, variant: s }),
+          ...still(`car/${kind}${seg}/${arrow ?? "idle"}/${full ? "full" : "notfull"}/s${s}`, w, FLOOR, car(0), {
+            kind,
+            arrow: arrow ?? "idle",
+            full,
+            variant: s,
+          }),
           chains: { riders: { input: "riders", steps } },
           // The cab's interior is the back, its riders, step by step, the
           // furniture, and its door frames, FULL bar and lantern the front.
@@ -173,7 +190,16 @@ export function peopleJobs(): Job[] {
     const size = personSize(BUILDS[build].w, BUILDS[build].h);
     for (const [name, fill] of fills) {
       const anchor = { x: Math.floor(size.w / 2), y: size.h - 1 };
-      jobs.push(still(`person/${build}/${name}`, size.w, size.h, { p: "person", build, fill }, { build, fill: name, color: fill }, anchor));
+      jobs.push(
+        still(
+          `person/${build}/${name}`,
+          size.w,
+          size.h,
+          { p: "person", build, fill },
+          { build, fill: name, color: fill },
+          anchor,
+        ),
+      );
     }
   }
   return jobs;
@@ -184,7 +210,15 @@ export function facadeJobs(): Job[] {
   const jobs: Job[] = [];
   for (const side of ["left", "right"] as const) {
     for (const parity of [0, 1] as const) {
-      jobs.push(still(`facade/escape/${side}/${parity}`, ESCAPE_W, FLOOR, { p: "escape", side, parity }, { piece: "escape", side, parity }));
+      jobs.push(
+        still(
+          `facade/escape/${side}/${parity}`,
+          ESCAPE_W,
+          FLOOR,
+          { p: "escape", side, parity },
+          { piece: "escape", side, parity },
+        ),
+      );
     }
     jobs.push(still(`facade/awning/${side}`, AWNING_W, FLOOR, { p: "awning", side }, { piece: "awning", side }));
   }
@@ -212,14 +246,24 @@ export function vehicleJobs(): Job[] {
   const jobs: Job[] = STREET_CAR_SEEDS.map((seed, s) =>
     still(`vehicle/streetcar/s${s}`, 16, 8, { p: "streetCar", seed }, { vehicle: "streetcar", variant: s }),
   );
-  jobs.push(still("vehicle/garbagetruck", 68, GARBAGE_TRUCK_H, { p: "garbageTruck", w: 68 }, { vehicle: "garbagetruck" }));
+  jobs.push(
+    still("vehicle/garbagetruck", 68, GARBAGE_TRUCK_H, { p: "garbageTruck", w: 68 }, { vehicle: "garbagetruck" }),
+  );
   const metro = findViewKind("metro");
   if (!metro) throw new Error('the bound catalog lists no facility "metro"');
   const trainW = metro.width * TILE - 6;
   for (const headlight of [true, false]) {
-    jobs.push(
-      { ...still(`vehicle/metrotrain/${headlight ? "headlight" : "dark"}`, trainW, METRO_TRAIN_H, { p: "metroTrain", w: trainW, headlight }, { vehicle: "metrotrain", headlight }), layers: true, front: true },
-    );
+    jobs.push({
+      ...still(
+        `vehicle/metrotrain/${headlight ? "headlight" : "dark"}`,
+        trainW,
+        METRO_TRAIN_H,
+        { p: "metroTrain", w: trainW, headlight },
+        { vehicle: "metrotrain", headlight },
+      ),
+      layers: true,
+      front: true,
+    });
   }
   return jobs;
 }
@@ -232,8 +276,19 @@ export const SKY_COLUMNS = 96;
 
 /** The day's sky strip, the sun and moon, every cloud, and the skyline. */
 export function skyJobs(): Job[] {
-  const jobs: Job[] = [still("sky/gradient", SKY_COLUMNS, 1, { p: "skyGradient" }, { piece: "gradient", columnsPerHour: SKY_COLUMNS / 24 })];
-  for (const [name, day, r] of [["sun", true, SUN_R], ["moon", false, MOON_R]] as const) {
+  const jobs: Job[] = [
+    still(
+      "sky/gradient",
+      SKY_COLUMNS,
+      1,
+      { p: "skyGradient" },
+      { piece: "gradient", columnsPerHour: SKY_COLUMNS / 24 },
+    ),
+  ];
+  for (const [name, day, r] of [
+    ["sun", true, SUN_R],
+    ["moon", false, MOON_R],
+  ] as const) {
     const d = 2 * r + 2;
     jobs.push(still(`sky/${name}`, d, d, { p: "disc", day, r }, { piece: name }, { x: d / 2, y: d / 2 }));
   }
@@ -241,7 +296,16 @@ export function skyJobs(): Job[] {
     for (let i = 0; i < CLOUD_COUNT; i++) {
       const r = cloudRadius(cloudSeed(i));
       const o = cloudOrigin(r);
-      jobs.push(still(`sky/cloud/${weather}/${i}`, o.w, o.h, { p: "cloud", weather, r }, { piece: "cloud", weather, index: i }, { x: o.x, y: o.y }));
+      jobs.push(
+        still(
+          `sky/cloud/${weather}/${i}`,
+          o.w,
+          o.h,
+          { p: "cloud", weather, r },
+          { piece: "cloud", weather, index: i },
+          { x: o.x, y: o.y },
+        ),
+      );
     }
   }
   SKYLINE_FILLS.forEach((css, i) => {

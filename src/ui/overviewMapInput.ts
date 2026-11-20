@@ -40,7 +40,12 @@ export interface BackingSize {
  * from CSS pixels to the backing store. A box with no size reads as a scale
  * of 1, so a canvas mid-layout never yields NaN.
  */
-export function clientToMap(box: ClientBox, backing: BackingSize, clientX: number, clientY: number): { x: number; y: number } {
+export function clientToMap(
+  box: ClientBox,
+  backing: BackingSize,
+  clientX: number,
+  clientY: number,
+): { x: number; y: number } {
   const sx = box.width > 0 && backing.width > 0 ? backing.width / box.width : 1;
   const sy = box.height > 0 && backing.height > 0 ? backing.height / box.height : 1;
   return { x: (clientX - box.left) * sx, y: (clientY - box.top) * sy };
@@ -97,7 +102,19 @@ export const MAP_KEY = {
  *  map as a control, so Space never commits the build cursor from it).
  *  Everything else the game binds (building, bulldozing, the build cursor) is
  *  kept by the map, so nothing changes in the world behind it. */
-export const MAP_PASS_KEYS: ReadonlySet<string> = new Set(["+", "=", "-", "_", "0", "1", "2", "3", "Tab", " ", "Spacebar"]);
+export const MAP_PASS_KEYS: ReadonlySet<string> = new Set([
+  "+",
+  "=",
+  "-",
+  "_",
+  "0",
+  "1",
+  "2",
+  "3",
+  "Tab",
+  " ",
+  "Spacebar",
+]);
 
 /** Whether a key pressed on the focused map goes on to the game: a key the
  *  map lets through, or any shortcut held with Ctrl, Cmd or Alt (undo among

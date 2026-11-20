@@ -32,7 +32,8 @@ export const RECYCLING_CUBE_W = 6;
 export const RECYCLING_CUBES_X = RECYCLING_BALER_X - RECYCLING_CUBE_GAP - RECYCLING_CUBES * RECYCLING_CUBE_W;
 /** How many bags the pile holds when full: as many as fit before the
  *  compacted cubes, so the last bag never half covers one. */
-export const RECYCLING_PILE_SLOTS = Math.floor((RECYCLING_CUBES_X - RECYCLING_BAG_W - RECYCLING_PILE_X0) / RECYCLING_PILE_PITCH) + 1;
+export const RECYCLING_PILE_SLOTS =
+  Math.floor((RECYCLING_CUBES_X - RECYCLING_BAG_W - RECYCLING_PILE_X0) / RECYCLING_PILE_PITCH) + 1;
 /** The wall gauge's top row and its height in rows. */
 export const RECYCLING_GAUGE_TOP = 14;
 export const RECYCLING_GAUGE_ROWS = RECYCLING_DECK - 18;

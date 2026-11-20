@@ -18,7 +18,12 @@ export async function bundleBake(): Promise<string> {
       write: false,
       minify: false,
       target: "es2020",
-      lib: { entry: join(root, "src/render/atlas/browserEntry.ts"), formats: ["iife"], name: "VcAtlasBake", fileName: () => "atlas.js" },
+      lib: {
+        entry: join(root, "src/render/atlas/browserEntry.ts"),
+        formats: ["iife"],
+        name: "VcAtlasBake",
+        fileName: () => "atlas.js",
+      },
     },
   });
   const outputs = Array.isArray(out) ? out : [out];
@@ -30,4 +35,3 @@ export async function bundleBake(): Promise<string> {
   }
   throw new Error("vite produced no bundle");
 }
-

@@ -184,10 +184,21 @@ export function blockRect(layout: MapLayout, x: number, width: number, floor: nu
  * thinner than one pixel and is clamped into the map, so a narrow shaft in the
  * last column or the bottom row still shows.
  */
-export function snappedBlock(layout: MapLayout, x: number, width: number, floor: number, floors: number): MapRect | null {
+export function snappedBlock(
+  layout: MapLayout,
+  x: number,
+  width: number,
+  floor: number,
+  floors: number,
+): MapRect | null {
   // One check at a time: this runs for every mark of a rebuild, and an
   // array per call would be garbage.
-  if (!(Number.isFinite(x) && Number.isFinite(width) && Number.isFinite(floor) && Number.isFinite(floors)) || width <= 0 || floors < 1) return null;
+  if (
+    !(Number.isFinite(x) && Number.isFinite(width) && Number.isFinite(floor) && Number.isFinite(floors)) ||
+    width <= 0 ||
+    floors < 1
+  )
+    return null;
   const mapW = Math.max(1, Math.floor(layout.width));
   const mapH = Math.max(1, Math.floor(layout.height));
   const rawLeft = tileToMapX(layout, x);
@@ -247,7 +258,9 @@ function clamp(n: number, lo: number, hi: number): number {
  *  has not visibly moved. */
 export function sameRect(a: MapRect | null, b: MapRect | null, eps = 0.5): boolean {
   if (a === null || b === null) return a === b;
-  return Math.abs(a.x - b.x) <= eps && Math.abs(a.y - b.y) <= eps && Math.abs(a.w - b.w) <= eps && Math.abs(a.h - b.h) <= eps;
+  return (
+    Math.abs(a.x - b.x) <= eps && Math.abs(a.y - b.y) <= eps && Math.abs(a.w - b.w) <= eps && Math.abs(a.h - b.h) <= eps
+  );
 }
 
 // ---- map -> camera ------------------------------------------------------
@@ -301,8 +314,16 @@ export function dragCenter(
   // where it is: the result may not go further out than the start, and is not
   // pulled onto the map by a move along the other axis.
   return {
-    tile: clamp(tile0 + dx / layout.pxPerTile, Math.min(extent.leftTile, tile0), Math.max(extent.leftTile + extent.width, tile0)),
-    floor: clamp(floor0 - dy / layout.pxPerFloor, Math.min(extent.bottomLine, floor0), Math.max(extent.topLine, floor0)),
+    tile: clamp(
+      tile0 + dx / layout.pxPerTile,
+      Math.min(extent.leftTile, tile0),
+      Math.max(extent.leftTile + extent.width, tile0),
+    ),
+    floor: clamp(
+      floor0 - dy / layout.pxPerFloor,
+      Math.min(extent.bottomLine, floor0),
+      Math.max(extent.topLine, floor0),
+    ),
   };
 }
 

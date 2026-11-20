@@ -22,7 +22,13 @@ const LONG_PRESS_SLOP = 14;
 /** Arm the hold for a touch press over the given cell/entity. The captured
  *  values are used when the timer fires, so a peek reports the press point, not
  *  wherever a late event lands. No-op off touch or with no peek hook installed. */
-export function armLongPress(engine: TowerEngine, tile: number, floor: number, picked: Picked | null, touch: boolean): void {
+export function armLongPress(
+  engine: TowerEngine,
+  tile: number,
+  floor: number,
+  picked: Picked | null,
+  touch: boolean,
+): void {
   clearLongPress(engine);
   if (!touch || !engine.onLongPress) return;
   // Only a real facility peeks. Empty space and bare floor/lobby tiles raise no

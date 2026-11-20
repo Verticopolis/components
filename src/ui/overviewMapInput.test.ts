@@ -1,7 +1,26 @@
 import { describe, it, expect } from "vitest";
 import { FLOOR, TILE } from "../render/scale";
-import { fitLayout, mapPointToCenter, rectContains, tileToMapX, viewportRect, type MapCamera, type MapExtent } from "../render/overviewMap/geometry";
-import { cameraCenter, clientToMap, grabRect, isKeyboardClick, isPrimaryPress, keyTarget, MAP_KEY, MAP_KEY_STEP_SHARE, noButtonHeld, passesMapKey } from "./overviewMapInput";
+import {
+  fitLayout,
+  mapPointToCenter,
+  rectContains,
+  tileToMapX,
+  viewportRect,
+  type MapCamera,
+  type MapExtent,
+} from "../render/overviewMap/geometry";
+import {
+  cameraCenter,
+  clientToMap,
+  grabRect,
+  isKeyboardClick,
+  isPrimaryPress,
+  keyTarget,
+  MAP_KEY,
+  MAP_KEY_STEP_SHARE,
+  noButtonHeld,
+  passesMapKey,
+} from "./overviewMapInput";
 
 const EXTENT: MapExtent = { leftTile: 0, width: 375, topLine: 107, bottomLine: -11 };
 /** A camera centered on tile 100, floor 20, seeing 80 tiles by 16 floors. */
@@ -14,7 +33,10 @@ describe("overview map pointer rules", () => {
   });
 
   it("reads a canvas with no box yet as a scale of 1, never NaN", () => {
-    expect(clientToMap({ left: 0, top: 0, width: 0, height: 0 }, { width: 400, height: 576 }, 5, 6)).toEqual({ x: 5, y: 6 });
+    expect(clientToMap({ left: 0, top: 0, width: 0, height: 0 }, { width: 400, height: 576 }, 5, 6)).toEqual({
+      x: 5,
+      y: 6,
+    });
   });
 
   it("grows a small view mark to a touch target about its center", () => {
@@ -56,7 +78,8 @@ describe("overview map keys", () => {
   });
 
   it("answers no other key", () => {
-    for (const key of ["Enter", " ", "a", "PageUp", "Escape"]) expect(keyTarget(key, false, CAM, EXTENT), key).toBeNull();
+    for (const key of ["Enter", " ", "a", "PageUp", "Escape"])
+      expect(keyTarget(key, false, CAM, EXTENT), key).toBeNull();
   });
 });
 
@@ -91,7 +114,13 @@ describe("overview map input on a crop with a margin left of the lot", () => {
 
   it("grabs a view mark clipped at the map's left edge by its area in the margin", () => {
     // A view 20 tiles wide centered on tile -10 reaches 5 tiles past the map's left edge: 15 tiles of it are on the map.
-    const mark = viewportRect(layout, { posX: -10 * TILE, posY: -20 * FLOOR, zoom: 1, viewWidth: 20 * TILE, viewHeight: 4 * FLOOR });
+    const mark = viewportRect(layout, {
+      posX: -10 * TILE,
+      posY: -20 * FLOOR,
+      zoom: 1,
+      viewWidth: 20 * TILE,
+      viewHeight: 4 * FLOOR,
+    });
     expect(mark).toMatchObject({ x: 0, w: 15 });
     const area = grabRect(mark, 44);
     expect(area.x + area.w / 2).toBe(mark.x + mark.w / 2);
@@ -101,16 +130,24 @@ describe("overview map input on a crop with a margin left of the lot", () => {
 });
 
 describe("overview map pass-through keys", () => {
-  const key = (k: string, mods: Partial<KeyboardEvent> = {}) => ({ key: k, ctrlKey: false, metaKey: false, altKey: false, ...mods });
+  const key = (k: string, mods: Partial<KeyboardEvent> = {}) => ({
+    key: k,
+    ctrlKey: false,
+    metaKey: false,
+    altKey: false,
+    ...mods,
+  });
 
   it("lets zoom, the speed digits, Tab, the Space pan key and any shortcut reach the game", () => {
-    for (const k of ["+", "=", "-", "_", "0", "1", "2", "3", "Tab", " ", "Spacebar"]) expect(passesMapKey(key(k)), k).toBe(true);
+    for (const k of ["+", "=", "-", "_", "0", "1", "2", "3", "Tab", " ", "Spacebar"])
+      expect(passesMapKey(key(k)), k).toBe(true);
     expect(passesMapKey(key("z", { ctrlKey: true }))).toBe(true);
     expect(passesMapKey(key("z", { metaKey: true }))).toBe(true);
   });
 
   it("keeps the building, bulldozing and cursor keys on the map", () => {
-    for (const k of ["Enter", "Delete", "Backspace", "x", "w", "a", "c", "ArrowLeft"]) expect(passesMapKey(key(k)), k).toBe(false);
+    for (const k of ["Enter", "Delete", "Backspace", "x", "w", "a", "c", "ArrowLeft"])
+      expect(passesMapKey(key(k)), k).toBe(false);
   });
 });
 

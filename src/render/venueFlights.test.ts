@@ -2,8 +2,23 @@ import { describe, expect, it } from "vitest";
 import { besideVenue, isVenue, venueBox, windingFlights } from "./venueFlights";
 import type { TransportView } from "../simport/view";
 
-const flight = (id: number, kind: TransportView["kind"], x: number, bottom: number, top: number, width = 8): TransportView => ({
-  id, kind, x, width, bottom, top, cars: 0, carPositions: [], carDir: [],
+const flight = (
+  id: number,
+  kind: TransportView["kind"],
+  x: number,
+  bottom: number,
+  top: number,
+  width = 8,
+): TransportView => ({
+  id,
+  kind,
+  x,
+  width,
+  bottom,
+  top,
+  cars: 0,
+  carPositions: [],
+  carDir: [],
 });
 // A two-story cinema on floors 2 and 3, columns 100 to 130.
 const cinema = venueBox({ floor: 2, x: 100, width: 31 }, 2);
@@ -11,7 +26,8 @@ const cinema = venueBox({ floor: 2, x: 100, width: 31 }, 2);
 describe("which flights wind beside a venue", () => {
   it("names the venues a crowd arrives at, and not the back of house", () => {
     for (const k of ["cinema", "partyHall", "metro", "aquaticCenter"] as const) expect(isVenue(k), k).toBe(true);
-    for (const k of ["recycling", "restaurant", "office", "lobby", "weddingHall"] as const) expect(isVenue(k), k).toBe(false);
+    for (const k of ["recycling", "restaurant", "office", "lobby", "weddingHall"] as const)
+      expect(isVenue(k), k).toBe(false);
   });
 
   it("takes the venue's stories from the height it is given", () => {
@@ -32,7 +48,9 @@ describe("which flights wind beside a venue", () => {
   });
 
   it("never touches an elevator or a flight out of a tall lobby", () => {
-    expect(besideVenue(flight(1, "elevatorStandard", 92, 2, 3, 4), venueBox({ floor: 2, x: 96, width: 31 }, 2))).toBe(false);
+    expect(besideVenue(flight(1, "elevatorStandard", 92, 2, 3, 4), venueBox({ floor: 2, x: 96, width: 31 }, 2))).toBe(
+      false,
+    );
     const metro = venueBox({ floor: -2, x: 50, width: 30 }, 3);
     expect(besideVenue(flight(1, "stairs", 42, -2, 0), metro)).toBe(false);
   });

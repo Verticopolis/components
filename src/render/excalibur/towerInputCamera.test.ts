@@ -49,7 +49,10 @@ function eng(over: Record<string, any> = {}): any {
     },
     transportActors: new Map(),
     screenToWorld(sx: number, sy: number) {
-      return ex.vec((sx - e.viewWidth / 2) / e.cam.zoom + e.cam.pos.x, (sy - e.viewHeight / 2) / e.cam.zoom + e.cam.pos.y);
+      return ex.vec(
+        (sx - e.viewWidth / 2) / e.cam.zoom + e.cam.pos.x,
+        (sy - e.viewHeight / 2) / e.cam.zoom + e.cam.pos.y,
+      );
     },
     worldToScreenX(tile: number) {
       return (tile * TILE - e.cam.pos.x) * e.cam.zoom + e.viewWidth / 2;
@@ -238,7 +241,14 @@ describe("focus resolves the dominant facility in the visible band", () => {
       { kind: "shop", floor: 20, x: 120, width: 30, occupants: 0 }, // widest in-band
       { kind: "floor", floor: 20, x: 90, width: 200, occupants: 0 }, // floors never win
     ];
-    const e = eng({ sim: { tower: { highestFloor: 40, lowestFloor: 1, units }, clock: { isNight: () => false, minuteOfDay: 720 }, weather: "clear", crowd: { people: [] } } });
+    const e = eng({
+      sim: {
+        tower: { highestFloor: 40, lowestFloor: 1, units },
+        clock: { isNight: () => false, minuteOfDay: 720 },
+        weather: "clear",
+        crowd: { people: [] },
+      },
+    });
     setCamera(e, 130, 20, 1);
     const f = focus(e);
     expect(f.dominant).toBe("shop");
@@ -247,7 +257,14 @@ describe("focus resolves the dominant facility in the visible band", () => {
   });
 
   it("falls back to 'outside' at ground level with nothing in frame", () => {
-    const e = eng({ sim: { tower: { highestFloor: 40, lowestFloor: 1, units: [] }, clock: { isNight: () => true, minuteOfDay: 60 }, weather: "rain", crowd: { people: [] } } });
+    const e = eng({
+      sim: {
+        tower: { highestFloor: 40, lowestFloor: 1, units: [] },
+        clock: { isNight: () => true, minuteOfDay: 60 },
+        weather: "rain",
+        crowd: { people: [] },
+      },
+    });
     setCamera(e, 100, 0, 1); // centered at the ground/basement line (centerFloor <= 0)
     const f = focus(e);
     expect(f.dominant).toBe("outside");
@@ -257,7 +274,14 @@ describe("focus resolves the dominant facility in the visible band", () => {
 
   it("maps the lobby kind through to the 'lobby' focus label", () => {
     const units = [{ kind: "lobby", floor: 15, x: 100, width: 40, occupants: 0 }];
-    const e = eng({ sim: { tower: { highestFloor: 40, lowestFloor: 1, units }, clock: { isNight: () => false, minuteOfDay: 720 }, weather: "clear", crowd: { people: [] } } });
+    const e = eng({
+      sim: {
+        tower: { highestFloor: 40, lowestFloor: 1, units },
+        clock: { isNight: () => false, minuteOfDay: 720 },
+        weather: "clear",
+        crowd: { people: [] },
+      },
+    });
     setCamera(e, 120, 15, 1);
     expect(focus(e).dominant).toBe("lobby");
   });
@@ -268,7 +292,15 @@ describe("focus counts the crowd a lobby shows", () => {
     const now = vi.spyOn(performance, "now");
     const units = [{ kind: "lobby", floor: 15, x: 100, width: 40, occupants: 0 }];
     const people = Array.from({ length: 12 }, (_, i) => ({ floor: 15, x: 110 + i }));
-    const e = eng({ crowdCulled: false, sim: { tower: { highestFloor: 40, lowestFloor: 1, units }, clock: { isNight: () => false, minuteOfDay: 720 }, weather: "clear", crowd: { people } } });
+    const e = eng({
+      crowdCulled: false,
+      sim: {
+        tower: { highestFloor: 40, lowestFloor: 1, units },
+        clock: { isNight: () => false, minuteOfDay: 720 },
+        weather: "clear",
+        crowd: { people },
+      },
+    });
     setCamera(e, 120, 15, 1);
     now.mockReturnValue(10_000);
     expect(focus(e).crowd).toBe(0.5);
@@ -297,7 +329,14 @@ describe("pickEntityAt: transports by collider, every unit by grid lookup", () =
   it("prefers a transport whose collider contains the point over the unit beneath", () => {
     const e = eng({
       transportActors: new Map([[7, hit(1)]]),
-      sim: { tower: { highestFloor: 40, lowestFloor: 1, getTransport: () => ({ kind: "elevatorStandard" }), unitAt: () => ({ id: 3, kind: "office" }) } },
+      sim: {
+        tower: {
+          highestFloor: 40,
+          lowestFloor: 1,
+          getTransport: () => ({ kind: "elevatorStandard" }),
+          unitAt: () => ({ id: 3, kind: "office" }),
+        },
+      },
     });
     expect(pickEntityAt(e, world)).toEqual({ type: "transport", id: 7, kind: "elevatorStandard" });
   });
@@ -305,7 +344,14 @@ describe("pickEntityAt: transports by collider, every unit by grid lookup", () =
   it("resolves any unit kind by unitAt when no transport contains the point", () => {
     const e = eng({
       transportActors: new Map([[7, miss(1)]]),
-      sim: { tower: { highestFloor: 40, lowestFloor: 1, getTransport: () => undefined, unitAt: () => ({ id: 3, kind: "office" }) } },
+      sim: {
+        tower: {
+          highestFloor: 40,
+          lowestFloor: 1,
+          getTransport: () => undefined,
+          unitAt: () => ({ id: 3, kind: "office" }),
+        },
+      },
     });
     expect(pickEntityAt(e, world)).toEqual({ type: "unit", id: 3, kind: "office", cell: { floor: 3, x: 10 } });
   });
@@ -323,7 +369,14 @@ describe("pickEntityAt: transports by collider, every unit by grid lookup", () =
     // from the sim; the guard must fall through to the grid lookup.
     const stale = eng({
       transportActors: new Map([[7, hit(1)]]),
-      sim: { tower: { highestFloor: 40, lowestFloor: 1, getTransport: () => undefined, unitAt: () => ({ id: 3, kind: "office" }) } },
+      sim: {
+        tower: {
+          highestFloor: 40,
+          lowestFloor: 1,
+          getTransport: () => undefined,
+          unitAt: () => ({ id: 3, kind: "office" }),
+        },
+      },
     });
     expect(pickEntityAt(stale, world)).toEqual({ type: "unit", id: 3, kind: "office", cell: { floor: 3, x: 10 } });
 
@@ -338,7 +391,14 @@ describe("pickEntityAt: transports by collider, every unit by grid lookup", () =
         [1, hit(1)],
         [2, hit(1)],
       ]),
-      sim: { tower: { highestFloor: 40, lowestFloor: 1, getTransport: (id: number) => kinds.get(id), unitAt: () => undefined } },
+      sim: {
+        tower: {
+          highestFloor: 40,
+          lowestFloor: 1,
+          getTransport: (id: number) => kinds.get(id),
+          unitAt: () => undefined,
+        },
+      },
     });
     expect(pickEntityAt(tie, world)!.id).toBe(2);
   });

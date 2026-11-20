@@ -2,7 +2,17 @@ import { describe, it, expect } from "vitest";
 import { viewPlacement } from "./extent";
 import { fitLayout, type MapLayout } from "./geometry";
 import { FLOOR, TILE } from "../scale";
-import { GROUND_LINE, MAP_BACKDROP, VIEW_MARK, VIEW_MARK_CSS, groundShare, paintViewMark, viewMarkBand, visibleRect, type ViewMarkContext } from "./viewMark";
+import {
+  GROUND_LINE,
+  MAP_BACKDROP,
+  VIEW_MARK,
+  VIEW_MARK_CSS,
+  groundShare,
+  paintViewMark,
+  viewMarkBand,
+  visibleRect,
+  type ViewMarkContext,
+} from "./viewMark";
 
 /** A context that records what was drawn. */
 function recorder() {
@@ -51,7 +61,11 @@ describe("overview map view mark", () => {
   it("draws the outline solid over a halo, inside the view, in device pixels", () => {
     const one = recorder();
     expect(paintViewMark(one, LAYOUT, viewPlacement(LAYOUT, cam(50, 50, 20, 10)), 1)).toBe("outline");
-    expect(one.calls).toEqual(["clear 0,0,100,100", `stroke 41.5,46.5,17,7 ${VIEW_MARK.halo} 3`, `stroke 40.5,45.5,19,9 ${VIEW_MARK.ink} 1`]);
+    expect(one.calls).toEqual([
+      "clear 0,0,100,100",
+      `stroke 41.5,46.5,17,7 ${VIEW_MARK.halo} 3`,
+      `stroke 40.5,45.5,19,9 ${VIEW_MARK.ink} 1`,
+    ]);
     const ctx = recorder();
     paintViewMark(ctx, LAYOUT, viewPlacement(LAYOUT, cam(50, 50, 20, 10)), 2);
     expect(ctx.calls.filter((c) => c.startsWith("stroke"))).toEqual([
@@ -94,7 +108,12 @@ describe("overview map view mark", () => {
       expect(viewMarkBand(CROP, viewPlacement(CROP, cam(0, 60, 20, 4)), 1)).toEqual({ x: 5, y: 0, w: 20, h: 3 });
       // A view reaching past the margin's edge keeps its band on the map: only
       // 5 pixels of it are on the map, so the band takes its minimum width.
-      expect(viewMarkBand(CROP, viewPlacement(CROP, cam(-20, 60, 20, 4)), 1)).toEqual({ x: 0, y: 0, w: VIEW_MARK_CSS.bandMinWidth, h: 3 });
+      expect(viewMarkBand(CROP, viewPlacement(CROP, cam(-20, 60, 20, 4)), 1)).toEqual({
+        x: 0,
+        y: 0,
+        w: VIEW_MARK_CSS.bandMinWidth,
+        h: 3,
+      });
     });
 
     it("keeps a small view mark in the margin on the map", () => {

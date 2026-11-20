@@ -75,7 +75,9 @@
   padding: 2px;
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 0 #000, var(--bevel-in);
+  box-shadow:
+    1px 1px 0 #000,
+    var(--bevel-in);
 }
 .fd-look-item {
   display: flex;

@@ -1,7 +1,14 @@
 import type { BuildMetadataResult } from "./buildSection";
 import { compileEngineBytes, initEngineGlue } from "./engineLoad";
 import { DEV_SKIP_MARKER, ENGINE_BUILD_RECORD, ENGINE_WASM } from "./enginePackageNames";
-import { browserDigest, EnginePackageAborted, isControlled, verifyEnginePackage, type PackageUrls, type VerifyOptions } from "./enginePackageCheck";
+import {
+  browserDigest,
+  EnginePackageAborted,
+  isControlled,
+  verifyEnginePackage,
+  type PackageUrls,
+  type VerifyOptions,
+} from "./enginePackageCheck";
 import type { ExpectedEnginePackage } from "./enginePackageRecord";
 
 /**
@@ -87,7 +94,10 @@ export async function loadEngineModule(glueUrl: string, opts: LoadEngineOptions 
   // its marker line; scripts/verify-precache.ts fails the build if it stays.
   if (import.meta.env.DEV && !opts.checkInDev) {
     console.info(`[wasm] ${DEV_SKIP_MARKER}`);
-    const { mod, exports } = await (opts.initGlue ?? initEngineGlue)(glueUrl, { onBuild: opts.onBuild, wasmUrl: opts.wasmUrl });
+    const { mod, exports } = await (opts.initGlue ?? initEngineGlue)(glueUrl, {
+      onBuild: opts.onBuild,
+      wasmUrl: opts.wasmUrl,
+    });
     return { mod: mod as EngineGlue, exports: exports as LoadedEngine["exports"], verified: false };
   }
   const signal = opts.signal ?? new AbortController().signal;

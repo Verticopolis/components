@@ -29,7 +29,12 @@ export interface AmusementsLook {
   attraction: "arcade" | "vr" | "claw" | "golf";
 }
 
-export const AMUSEMENTS_DEFAULT: AmusementsLook = { wall: "#201830", floor: "#2A2038", neon: "#F04AA0", attraction: "arcade" };
+export const AMUSEMENTS_DEFAULT: AmusementsLook = {
+  wall: "#201830",
+  floor: "#2A2038",
+  neon: "#F04AA0",
+  attraction: "arcade",
+};
 export const AMUSEMENTS_LOOKS: Record<string, AmusementsLook> = {
   "Classic Arcade": { wall: "#201830", floor: "#2A2038", neon: "#F04AA0", attraction: "arcade" },
   "VR Lounge": { wall: "#101A2E", floor: "#16203A", neon: "#3AD0E0", attraction: "vr" },
@@ -74,7 +79,17 @@ function marquee(ctx: CanvasRenderingContext2D, x: number, y: number, w: number,
   return y + band;
 }
 
-function drawArcade(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, aw: number, top: number, look: AmusementsLook, occ: number, seed: number): void {
+function drawArcade(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  aw: number,
+  top: number,
+  look: AmusementsLook,
+  occ: number,
+  seed: number,
+): void {
   // A row of arcade cabinets along the back wall, each a tall box with a glowing
   // screen and a lit control panel; players stand at a share of them.
   const cabW = 11;
@@ -112,7 +127,16 @@ function drawArcade(ctx: CanvasRenderingContext2D, x: number, floorY: number, w:
   });
 }
 
-function drawVr(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: AmusementsLook, occ: number, seed: number): void {
+function drawVr(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: AmusementsLook,
+  occ: number,
+  seed: number,
+): void {
   // A sleek lounge: floor pods marked by a glowing ring, each with a standing
   // player wearing a bright headset visor. Cooler and emptier than the arcade.
   const podGap = Math.max(18, Math.round((w - 8) / 3));
@@ -137,7 +161,17 @@ function drawVr(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: num
   }
 }
 
-function drawClaw(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, aw: number, top: number, look: AmusementsLook, occ: number, seed: number): void {
+function drawClaw(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  aw: number,
+  top: number,
+  look: AmusementsLook,
+  occ: number,
+  seed: number,
+): void {
   // A bank of claw machines: glass cases lit from within, packed with colorful
   // plush prizes, a claw rail across the top. Candy-bright, kid crowd.
   const macW = 13;
@@ -178,7 +212,16 @@ function drawClaw(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: n
   });
 }
 
-function drawGolf(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, aw: number, look: AmusementsLook, occ: number, seed: number): void {
+function drawGolf(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  aw: number,
+  look: AmusementsLook,
+  occ: number,
+  seed: number,
+): void {
   // A mini-golf bay: bright turf, a couple of holes with pin flags, a windmill
   // obstacle, and a putter mid-swing. The one non-dark attraction.
   ctx.fillStyle = look.floor; // extend the turf up a little as a putting green
@@ -194,7 +237,8 @@ function drawGolf(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: n
   // leaves a positive remainder, but at a fractional width that remainder can be
   // under a pixel, and flooring it gives 0. An empty stripe is the right answer
   // there. Widening it to 1 to avoid the no-op draw would put it past the wall.
-  for (let sx = x; sx < x + w; sx += 8) ctx.fillRect(sx, floorY - 3, Math.max(0, Math.min(4, Math.floor(x + w - sx))), 1);
+  for (let sx = x; sx < x + w; sx += 8)
+    ctx.fillRect(sx, floorY - 3, Math.max(0, Math.min(4, Math.floor(x + w - sx))), 1);
   // Holes with pin flags.
   const flags = ["#F0503A", "#F0C43A"];
   let f = 0;

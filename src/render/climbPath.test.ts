@@ -5,7 +5,15 @@ import { spiralRadius } from "./sprites/spiralStair";
 import type { TransportView } from "../simport/view";
 
 const flight = (kind: "stairs" | "escalator", bottom: number, top: number): TransportView => ({
-  id: 1, kind, x: 100, width: 8, bottom, top, cars: 0, carPositions: [], carDir: [],
+  id: 1,
+  kind,
+  x: 100,
+  width: 8,
+  bottom,
+  top,
+  cars: 0,
+  carPositions: [],
+  carDir: [],
 });
 const FOOT = 100 + RUN_FOOT_PX / TILE;
 const HEAD = 108 - RUN_HEAD_PX / TILE;
@@ -87,7 +95,8 @@ describe("a climber's place on a flight", () => {
     expect(climbSpot(t, 4 + 1 / 3, true).x).toBeCloseTo(mid + r, 9);
     // The last half turn lands it on the right, as the sprite draws.
     expect(climbSpot(t, 5, true).x).toBeCloseTo(mid + r, 9);
-    for (let fy = 4; fy <= 5; fy += 0.05) expect(Math.abs(climbSpot(t, fy, true).x - mid)).toBeLessThanOrEqual(r + 1e-9);
+    for (let fy = 4; fy <= 5; fy += 0.05)
+      expect(Math.abs(climbSpot(t, fy, true).x - mid)).toBeLessThanOrEqual(r + 1e-9);
   });
 
   it("turns back at the landing halfway up a one-story escalator beside a venue", () => {

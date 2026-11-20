@@ -9,13 +9,13 @@
      diverge from the theme. */
   --bg: var(--r-desktop);
   --panel: var(--r-face);
-  --ink: var(--r-ink);       /* body text */
-  --accent: var(--r-title);  /* navy — titles & highlights */
+  --ink: var(--r-ink); /* body text */
+  --accent: var(--r-title); /* navy — titles & highlights */
   --panel-light: #d7d7d7;
-  --muted: #2f2f38;       /* secondary text — dark enough to read on gray */
+  --muted: #2f2f38; /* secondary text — dark enough to read on gray */
   --good: #15722e;
   --bad: #b01023;
-  --bad-ink: #9a0e1f;     /* danger text small enough to need AA 4.5:1 on gray chrome */
+  --bad-ink: #9a0e1f; /* danger text small enough to need AA 4.5:1 on gray chrome */
   --money: #005000; /* dark forest green: >=4.5:1 WCAG AA on the #c0c0c0 stat chip (#0a6e26 was 3.53:1, below AA) */
   --line: #7a7a7a;
   /* Win3.1 chrome tokens + the signature two-pixel bevels. Swap to re-theme. */
@@ -35,10 +35,12 @@
      window, never for the inside of the game window. */
   --r-workspace: var(--r-face);
   --r-font: "MS Sans Serif", "Tahoma", "Geneva", "Segoe UI", sans-serif;
-  --bevel-out: inset -1px -1px var(--r-dark), inset 1px 1px var(--r-hi),
-    inset -2px -2px var(--r-shadow), inset 2px 2px var(--r-light);
-  --bevel-in: inset 1px 1px var(--r-dark), inset -1px -1px var(--r-hi),
-    inset 2px 2px var(--r-shadow), inset -2px -2px var(--r-light);
+  --bevel-out:
+    inset -1px -1px var(--r-dark), inset 1px 1px var(--r-hi), inset -2px -2px var(--r-shadow),
+    inset 2px 2px var(--r-light);
+  --bevel-in:
+    inset 1px 1px var(--r-dark), inset -1px -1px var(--r-hi), inset 2px 2px var(--r-shadow),
+    inset -2px -2px var(--r-light);
   /* Floating windows cast one hard shadow. */
   --win-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
   /* The Classic rent-rung chip fills (1994's Blue/Green/Yellow/Red levels).
@@ -55,13 +57,13 @@
      the two skies never drift. The splash is box art, not Win 3.1 chrome, and
      keeps its own colors. */
   --splash-sky: linear-gradient(#161634 0%, #241f4c 34%, #5b3560 62%, #c65a63 86%, #ef8560 100%);
-  --splash-amber: #ffc94a;   /* POLIS, the primary plate, the focus ring */
+  --splash-amber: #ffc94a; /* POLIS, the primary plate, the focus ring */
   --splash-sun: radial-gradient(circle, #ffe6a0 0%, var(--splash-amber) 52%, #f18f4b 100%);
   --splash-sun-glow: rgba(255, 179, 87, 0.26);
   --splash-building: #201643;
-  --splash-cream: #e6dcc0;   /* the plates and the corner buttons' glyphs */
+  --splash-cream: #e6dcc0; /* the plates and the corner buttons' glyphs */
   --splash-plate-ink: #20204a;
-  --splash-ink: #0d0d10;     /* plate borders and the skyline's outlines */
+  --splash-ink: #0d0d10; /* plate borders and the skyline's outlines */
   --splash-wordmark: #f7f1e4; /* VERTICO */
   --splash-tagline: #ffd9a8;
   --splash-premise: #e7ddf5;

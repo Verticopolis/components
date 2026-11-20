@@ -39,7 +39,9 @@
 }
 /* An open menu's title presses in, as in Windows 95. */
 .mb-title[aria-expanded="true"] {
-  box-shadow: inset 1px 1px var(--r-shadow), inset -1px -1px var(--r-hi);
+  box-shadow:
+    inset 1px 1px var(--r-shadow),
+    inset -1px -1px var(--r-hi);
 }
 .mb-title:focus-visible,
 .mb-item:focus-visible {

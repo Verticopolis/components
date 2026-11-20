@@ -17,17 +17,29 @@ function place(dst: Image, bake: Pick<BakeResult, "images">, ref: ImageRef | nul
 /** Draw `rec`'s cycles at the steps `cycles` names. A cycle the frame does not
  *  carry draws nothing (the bake leaves out a cycle that never changes the
  *  frame); an unknown step throws. */
-function drawCycles(out: Image, bake: Pick<BakeResult, "images">, rec: BakedFrame, cycles: Record<string, number>): void {
+function drawCycles(
+  out: Image,
+  bake: Pick<BakeResult, "images">,
+  rec: BakedFrame,
+  cycles: Record<string, number>,
+): void {
   for (const [key, k] of Object.entries(cycles)) {
     const cycle = rec.cycles?.[key];
     if (!cycle) continue;
-    if (!(Number.isInteger(k) && k >= 0 && k < cycle.steps.length)) throw new Error(`${rec.name} cycle ${key} has no step ${k}`);
+    if (!(Number.isInteger(k) && k >= 0 && k < cycle.steps.length))
+      throw new Error(`${rec.name} cycle ${key} has no step ${k}`);
     place(out, bake, cycle.steps[k]);
   }
 }
 
 /** Draw `rec`'s chain steps up to `chains` and its named `overlays` onto `out`. */
-function drawRuntime(out: Image, bake: Pick<BakeResult, "images">, rec: BakedFrame, chains: Record<string, number>, overlays: readonly string[]): void {
+function drawRuntime(
+  out: Image,
+  bake: Pick<BakeResult, "images">,
+  rec: BakedFrame,
+  chains: Record<string, number>,
+  overlays: readonly string[],
+): void {
   for (const [key, n] of Object.entries(chains)) {
     const chain = rec.chains?.[key];
     if (!chain) throw new Error(`${rec.name} has no chain ${key}`);
@@ -79,7 +91,8 @@ export function composeLayered(
   for (const [key, n] of Object.entries(chains)) stepsOf(key, n, layers.chains?.[key]?.shell);
   drawCycles(out, bake, rec, cycles);
   place(out, bake, soft ? (layers.soft ?? null) : layers.furniture);
-  for (const [key, n] of Object.entries(chains)) stepsOf(key, n, soft ? layers.chains?.[key]?.soft : layers.chains?.[key]?.furniture);
+  for (const [key, n] of Object.entries(chains))
+    stepsOf(key, n, soft ? layers.chains?.[key]?.soft : layers.chains?.[key]?.furniture);
   if (layers.front !== undefined) {
     place(out, bake, layers.front);
     for (const [key, n] of Object.entries(chains)) stepsOf(key, n, layers.chains?.[key]?.front);
@@ -90,18 +103,26 @@ export function composeLayered(
 
 /** The frame a lookup names (an animation resolves to its frame `i`), and
  *  the composed pixels. */
-export function composeLookup(bake: Pick<BakeResult, "images" | "frames">, found: Lookup, frameIndex = 0): { name: string; image: Image } {
+export function composeLookup(
+  bake: Pick<BakeResult, "images" | "frames">,
+  found: Lookup,
+  frameIndex = 0,
+): { name: string; image: Image } {
   const name = "animation" in found ? `${found.animation}/${frameIndex}` : found.frame;
   const rec = bake.frames.find((f) => f.name === name);
   if (!rec) throw new Error(`no frame ${name}`);
-  const image = "animation" in found ? composeFrame(bake, rec) : composeFrame(bake, rec, found.chains, found.overlays, found.cycles);
+  const image =
+    "animation" in found
+      ? composeFrame(bake, rec)
+      : composeFrame(bake, rec, found.chains, found.overlays, found.cycles);
   return { name, image: found.stretchTo === undefined ? image : stretch(image, found.stretchTo * TILE) };
 }
 
 /** Scale a picture horizontally to `w` pixels, nearest neighbor from its left
  *  edge: the reader's `stretchTo` rule. */
 export function stretch(image: Image, w: number): Image {
-  if (!Number.isInteger(w) || w < 1 || image.w < 1) throw new Error(`cannot stretch a ${image.w} px picture to ${w} px`);
+  if (!Number.isInteger(w) || w < 1 || image.w < 1)
+    throw new Error(`cannot stretch a ${image.w} px picture to ${w} px`);
   const out: Image = { w, h: image.h, data: new Uint8ClampedArray(w * image.h * 4) };
   for (let y = 0; y < image.h; y++) {
     for (let x = 0; x < w; x++) {
@@ -113,16 +134,27 @@ export function stretch(image: Image, w: number): Image {
 }
 
 /** Count differing pixels and their bounding box. */
-export function compareImages(a: Image, b: Image): { mismatches: number; box?: { x0: number; y0: number; x1: number; y1: number } } {
+export function compareImages(
+  a: Image,
+  b: Image,
+): { mismatches: number; box?: { x0: number; y0: number; x1: number; y1: number } } {
   if (a.w !== b.w || a.h !== b.h) return { mismatches: Math.max(a.w * a.h, b.w * b.h) };
   let mismatches = 0;
   let box: { x0: number; y0: number; x1: number; y1: number } | undefined;
   for (let i = 0, p = 0; i < a.data.length; i += 4, p++) {
-    if (a.data[i] === b.data[i] && a.data[i + 1] === b.data[i + 1] && a.data[i + 2] === b.data[i + 2] && a.data[i + 3] === b.data[i + 3]) continue;
+    if (
+      a.data[i] === b.data[i] &&
+      a.data[i + 1] === b.data[i + 1] &&
+      a.data[i + 2] === b.data[i + 2] &&
+      a.data[i + 3] === b.data[i + 3]
+    )
+      continue;
     mismatches++;
     const x = p % a.w;
     const y = (p - x) / a.w;
-    box = box ? { x0: Math.min(box.x0, x), y0: Math.min(box.y0, y), x1: Math.max(box.x1, x), y1: Math.max(box.y1, y) } : { x0: x, y0: y, x1: x, y1: y };
+    box = box
+      ? { x0: Math.min(box.x0, x), y0: Math.min(box.y0, y), x1: Math.max(box.x1, x), y1: Math.max(box.y1, y) }
+      : { x0: x, y0: y, x1: x, y1: y };
   }
   return { mismatches, box };
 }

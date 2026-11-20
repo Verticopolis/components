@@ -148,7 +148,8 @@ export function stepFollow(engine: TowerEngine, nowMs: number): void {
     f.steppedAt = null;
     return;
   }
-  const elapsedMs = f.steppedAt === null ? FOLLOW_FIRST_STEP_MS : Math.min(Math.max(0, nowMs - f.steppedAt), FOLLOW_STEP_CAP_MS);
+  const elapsedMs =
+    f.steppedAt === null ? FOLLOW_FIRST_STEP_MS : Math.min(Math.max(0, nowMs - f.steppedAt), FOLLOW_STEP_CAP_MS);
   f.steppedAt = nowMs;
   const spot = focusSpot(engine);
   if (!spot) return;

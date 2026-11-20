@@ -22,7 +22,14 @@ function simFixture(over: Record<string, any> = {}): any {
     mode: "modern",
     population: 400,
     crowd: { people: [] },
-    clock: { minutes: 0, hour: 12, minuteOfDay: 12 * 60, isMorning: () => false, isEvening: () => false, isNight: () => false },
+    clock: {
+      minutes: 0,
+      hour: 12,
+      minuteOfDay: 12 * 60,
+      isMorning: () => false,
+      isEvening: () => false,
+      isNight: () => false,
+    },
     tower: { revision: 1, units: [] },
     ...over,
   };
@@ -72,8 +79,12 @@ describe("car glide wiring (GH #688, #2097)", () => {
       // Idle indicator state matching `shown`, so no cab graphic is rebaked
       // (the test DOM has no 2d canvas); the glide only reads positions.
       t: { x: 12, kind: "elevatorStandard", carPositions: [8], carLoad: [0], carDir: [0] },
-      i: 0, seed: 0, w: 4 * TILE, kind: "elevatorStandard",
-      cab: { show: vi.fn() }, shown: "0:x:e:",
+      i: 0,
+      seed: 0,
+      w: 4 * TILE,
+      kind: "elevatorStandard",
+      cab: { show: vi.fn() },
+      shown: "0:x:e:",
     };
     const e = eng({ carActors: [car] });
     updateMotion(e); // frame 1 lazily seeds AT the sim position (the rebuild snap)
@@ -91,8 +102,12 @@ describe("car glide wiring (GH #688, #2097)", () => {
     const car = {
       actor: actor(),
       t: { x: 12, kind: "elevatorStandard", carPositions: [10], bottom: 1, top: 10, carLoad: [0], carDir: [0] },
-      i: 0, seed: 0, w: 4 * TILE, kind: "elevatorStandard",
-      cab: { show: vi.fn() }, shown: "0:x:e:",
+      i: 0,
+      seed: 0,
+      w: 4 * TILE,
+      kind: "elevatorStandard",
+      cab: { show: vi.fn() },
+      shown: "0:x:e:",
     };
     const e = eng({ carActors: [car] });
     updateMotion(e); // seeds at 10 (the top)
@@ -108,10 +123,24 @@ describe("car glide wiring (GH #688, #2097)", () => {
     // stub getContext with a method-proxying no-op for this test only.
     const origGetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement) {
-      return new Proxy({ canvas: this }, { get: (t, p) => (p in t ? (t as any)[p] : () => undefined), set: () => true });
+      return new Proxy(
+        { canvas: this },
+        { get: (t, p) => (p in t ? (t as any)[p] : () => undefined), set: () => true },
+      );
     } as any;
     try {
-      const t = { id: 7, kind: "elevatorStandard", x: 12, width: 4, bottom: 1, top: 20, cars: 1, carPositions: [5], carDir: [0], carLoad: [0] };
+      const t = {
+        id: 7,
+        kind: "elevatorStandard",
+        x: 12,
+        width: 4,
+        bottom: 1,
+        top: 20,
+        cars: 1,
+        carPositions: [5],
+        carDir: [0],
+        carLoad: [0],
+      };
       const e = eng({ sim: simFixture({ tower: { revision: 1, units: [], transports: [t] } }) });
       syncMotion(e);
       expect(e.carActors.length).toBe(1);
@@ -138,10 +167,24 @@ describe("a cab's riders change with the people getting in and out (#2097)", () 
   it("waits for the drawn car to arrive, and shows a rebuilt cab's riders at once", () => {
     const origGetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement) {
-      return new Proxy({ canvas: this }, { get: (t, p) => (p in t ? (t as any)[p] : () => undefined), set: () => true });
+      return new Proxy(
+        { canvas: this },
+        { get: (t, p) => (p in t ? (t as any)[p] : () => undefined), set: () => true },
+      );
     } as any;
     try {
-      const t = { id: 7, kind: "elevatorStandard", x: 12, width: 4, bottom: 1, top: 20, cars: 1, carPositions: [5], carDir: [0], carLoad: [0] };
+      const t = {
+        id: 7,
+        kind: "elevatorStandard",
+        x: 12,
+        width: 4,
+        bottom: 1,
+        top: 20,
+        cars: 1,
+        carPositions: [5],
+        carDir: [0],
+        carLoad: [0],
+      };
       const e = eng({ sim: simFixture({ tower: { revision: 1, units: [], transports: [t] } }) });
       syncMotion(e);
       updateMotion(e, 1);
@@ -167,10 +210,24 @@ describe("a cab draws the people who boarded it, never the car's load (3.7.3)", 
   it("keeps a loaded car with nobody aboard empty, and fills it as riders board and leave", () => {
     const origGetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement) {
-      return new Proxy({ canvas: this }, { get: (t, p) => (p in t ? (t as any)[p] : () => undefined), set: () => true });
+      return new Proxy(
+        { canvas: this },
+        { get: (t, p) => (p in t ? (t as any)[p] : () => undefined), set: () => true },
+      );
     } as any;
     try {
-      const t = { id: 7, kind: "elevatorStandard", x: 12, width: 4, bottom: 1, top: 20, cars: 2, carPositions: [5, 15], carDir: [0, 0], carLoad: [0, 0] };
+      const t = {
+        id: 7,
+        kind: "elevatorStandard",
+        x: 12,
+        width: 4,
+        bottom: 1,
+        top: 20,
+        cars: 2,
+        carPositions: [5, 15],
+        carDir: [0, 0],
+        carLoad: [0, 0],
+      };
       const e = eng({ sim: simFixture({ tower: { revision: 1, units: [], transports: [t] } }) });
       syncMotion(e);
       updateMotion(e, 1);
@@ -214,7 +271,18 @@ describe("the passer-by gate walks the rooms once per hour or layout change (#20
     const sim = simFixture({ tower });
     return { sim, tower, walks: () => walks };
   }
-  const walker = () => ({ actor: actor(), gfx: gfx(), x0w: 0, x1w: 50, yw: 0, speed: 8, dir: 1, phase: 0, rank: 0.5, floor: 7 });
+  const walker = () => ({
+    actor: actor(),
+    gfx: gfx(),
+    x0w: 0,
+    x1w: 50,
+    yw: 0,
+    speed: 8,
+    dir: 1,
+    phase: 0,
+    rank: 0.5,
+    floor: 7,
+  });
 
   it("walks once over many frames, and again after the hour or the layout moves", () => {
     const { sim, tower, walks } = countedSim();
@@ -240,12 +308,30 @@ describe("the passer-by gate walks the rooms once per hour or layout change (#20
 describe("decorative passers-by (#2091)", () => {
   const mkWalker = (over: Record<string, unknown> = {}) =>
     ({
-      actor: actor(), look: 2, key: -1, x0w: 100, x1w: 200, yw: -100,
-      speed: 8, dir: 1, phase: 0.2, rank: 0.5,
-      floor: 7, ...over,
+      actor: actor(),
+      look: 2,
+      key: -1,
+      x0w: 100,
+      x1w: 200,
+      yw: -100,
+      speed: 8,
+      dir: 1,
+      phase: 0.2,
+      rank: 0.5,
+      floor: 7,
+      ...over,
     }) as any;
   /** Floor 7 holds 16 occupants (fully lively); floor 9 holds 4 (a quarter). */
-  const lively = () => simFixture({ tower: { revision: 1, units: [{ floor: 7, occupants: 16 }, { floor: 9, occupants: 4 }] } });
+  const lively = () =>
+    simFixture({
+      tower: {
+        revision: 1,
+        units: [
+          { floor: 7, occupants: 16 },
+          { floor: 9, occupants: 4 },
+        ],
+      },
+    });
 
   it("shows a figure only while its own floor has enough live occupants", () => {
     const busy = mkWalker();
@@ -254,7 +340,12 @@ describe("decorative passers-by (#2091)", () => {
     const empty = mkWalker({ floor: 12, rank: 0.01 });
     const e = eng({ walkers: [busy, quiet, firstOnQuiet, empty], d: { anim: 3 }, sim: lively() });
     updateMotion(e);
-    expect([busy, quiet, firstOnQuiet, empty].map((w) => w.actor.graphics.isVisible)).toEqual([true, false, true, false]);
+    expect([busy, quiet, firstOnQuiet, empty].map((w) => w.actor.graphics.isVisible)).toEqual([
+      true,
+      false,
+      true,
+      false,
+    ]);
     expect(e.floorLive.get(7)).toBeCloseTo(1, 6);
     expect(e.floorLive.get(9)).toBeCloseTo(0.25, 6);
   });
@@ -327,7 +418,19 @@ describe("decorative passers-by (#2091)", () => {
 
 describe("a bomb search clears the decorative passers-by and garage cars", () => {
   const walker = () =>
-    ({ actor: actor(), look: 2, key: -1, x0w: 0, x1w: 50, yw: 0, speed: 8, dir: 1, phase: 0, rank: 0.5, floor: 7 }) as any;
+    ({
+      actor: actor(),
+      look: 2,
+      key: -1,
+      x0w: 0,
+      x1w: 50,
+      yw: 0,
+      speed: 8,
+      dir: 1,
+      phase: 0,
+      rank: 0.5,
+      floor: 7,
+    }) as any;
   const garageCar = () => ({ actor: actor(), seed: 3, x0w: 0, x1w: 50, floor: 0 });
   const morning = (bombSearch: unknown) =>
     simFixture({
@@ -366,8 +469,21 @@ describe("a bomb search clears the decorative passers-by and garage cars", () =>
 describe("the metro train", () => {
   it("runs the metro train on game time: in from the left, held, then off the right", () => {
     const xs: number[] = [];
-    const train = { actor: actor(), u: { x: 20, floor: 3 }, w: 40, line: [0], stop: 0, shift: (offset: number) => xs.push(offset) };
-    const clockAt = (minute: number, night = false) => ({ hour: Math.floor(minute / 60), minuteOfDay: minute, isMorning: () => false, isEvening: () => false, isNight: () => night });
+    const train = {
+      actor: actor(),
+      u: { x: 20, floor: 3 },
+      w: 40,
+      line: [0],
+      stop: 0,
+      shift: (offset: number) => xs.push(offset),
+    };
+    const clockAt = (minute: number, night = false) => ({
+      hour: Math.floor(minute / 60),
+      minuteOfDay: minute,
+      isMorning: () => false,
+      isEvening: () => false,
+      isNight: () => night,
+    });
     const e = eng({ trainActors: [train] });
     for (const minute of [12 * 60 + 3, 12 * 60 + 10, 12 * 60 + 23]) {
       e.sim = { ...e.sim, clock: clockAt(minute) };
@@ -396,7 +512,13 @@ describe("the metro train", () => {
       shift: (offset: number) => shifts[stop].push(offset),
     });
     const e = eng({ trainActors: [station(100, 0), station(500, 1)] });
-    const clockAt = (minute: number) => ({ hour: 12, minuteOfDay: 12 * 60 + minute, isMorning: () => false, isEvening: () => false, isNight: () => false });
+    const clockAt = (minute: number) => ({
+      hour: 12,
+      minuteOfDay: 12 * 60 + minute,
+      isMorning: () => false,
+      isEvening: () => false,
+      isNight: () => false,
+    });
     for (const minute of [10, 30]) {
       e.sim = { ...e.sim, clock: clockAt(minute) };
       updateMotion(e);

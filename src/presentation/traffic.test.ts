@@ -23,7 +23,8 @@ function meterRules(): { selector: string; body: string; nested: boolean }[] {
       if (!selector.startsWith("@")) {
         const end = css.indexOf("}", i);
         if (end < 0) throw new Error(`unclosed rule after ${selector}`);
-        if (selector.includes("#traffic-glyph")) rules.push({ selector, body: css.slice(i + 1, end), nested: depth > 0 });
+        if (selector.includes("#traffic-glyph"))
+          rules.push({ selector, body: css.slice(i + 1, end), nested: depth > 0 });
         i = end;
         start = end + 1;
         continue;
@@ -45,7 +46,8 @@ function meterRules(): { selector: string; body: string; nested: boolean }[] {
 const BAR_SETTER = /--bar-[1-4]\s*:/;
 const LEVEL_SELECTOR = /\[data-level(?:="[a-z-]+")?\]|\[data-level[^\]]*\]/g;
 /** The base rule, one level, or an :is() list of levels, and nothing else. */
-const BAR_SETTER_SELECTOR = /^#traffic-glyph(?:\[data-level="[a-z-]+"\]|:is\(\[data-level="[a-z-]+"\](?:, \[data-level="[a-z-]+"\])*\))?$/;
+const BAR_SETTER_SELECTOR =
+  /^#traffic-glyph(?:\[data-level="[a-z-]+"\]|:is\(\[data-level="[a-z-]+"\](?:, \[data-level="[a-z-]+"\])*\))?$/;
 
 /** How many bars the stylesheet fills at a level: the base rule, then every
  *  rule whose selector names that level, each setting `--bar-n`. */

@@ -14,7 +14,13 @@ const GAP_PX = 4;
 
 /** Draw `text` on a plate centered at `cx`, just above a ghost whose top is at
  *  `top` (screen pixels). */
-export function drawGhostLabel(ctx: CanvasRenderingContext2D, cx: number, top: number, text: string, valid: boolean): void {
+export function drawGhostLabel(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  top: number,
+  text: string,
+  valid: boolean,
+): void {
   ctx.save();
   ctx.font = `bold ${FONT_PX}px "MS Sans Serif", Tahoma, sans-serif`;
   ctx.textBaseline = "middle";

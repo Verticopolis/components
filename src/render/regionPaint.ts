@@ -12,7 +12,15 @@ import { drawDeadParkingX } from "./sprites/facilities/garage";
 /** A settled room at (dx, dy) inside a shared canvas: clipped to its own
  *  rect (one sprite must never bleed onto a neighbor), with the dead-parking
  *  mark over an unchained space. `d.ctx` must already be the target. */
-export function paintSettledUnit(d: DrawCtx, u: UnitView, dx: number, dy: number, w: number, h: number, dead: boolean): void {
+export function paintSettledUnit(
+  d: DrawCtx,
+  u: UnitView,
+  dx: number,
+  dy: number,
+  w: number,
+  h: number,
+  dead: boolean,
+): void {
   const ctx = d.ctx;
   ctx.save();
   ctx.beginPath();

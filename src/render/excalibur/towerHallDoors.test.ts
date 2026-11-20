@@ -4,7 +4,14 @@ import type { HallDoor } from "../lobbyHalls";
 import { FLOOR, TILE } from "../scale";
 import { DOOR_RADIUS } from "../sprites/structure/revolvingDoor";
 import type { TowerEngine } from "./TowerEngine";
-import { clearHallDoors, HallDoorLayer, pushThroughDoors, relightHallDoors, syncHallDoors, turnHallDoors } from "./towerHallDoors";
+import {
+  clearHallDoors,
+  HallDoorLayer,
+  pushThroughDoors,
+  relightHallDoors,
+  syncHallDoors,
+  turnHallDoors,
+} from "./towerHallDoors";
 
 // A Node test has no 2d canvas: `ex.Canvas` is a stand-in that records its
 // options and repaints, and `ex.Actor` records its plane, graphic and kill.
@@ -39,7 +46,14 @@ function fakeEngine() {
 }
 
 type Fake = { flagDirty: ReturnType<typeof vi.fn>; options: { width: number; height: number } };
-const door = (over: Partial<HallDoor> = {}): HallDoor => ({ floor: 1, x: 20, tall: 3, short: 2, tallOnLeft: true, ...over });
+const door = (over: Partial<HallDoor> = {}): HallDoor => ({
+  floor: 1,
+  x: 20,
+  tall: 3,
+  short: 2,
+  tallOnLeft: true,
+  ...over,
+});
 const recOf = (e: TowerEngine) => [...e.hallDoors.byKey.values()][0];
 
 describe("syncHallDoors", () => {
@@ -49,7 +63,12 @@ describe("syncHallDoors", () => {
     expect(e.engine.add).toHaveBeenCalledTimes(3);
     const rec = recOf(e);
     expect(rec.actors.map((a) => a.z)).toEqual([Z.hallDoorBack, Z.hallDoorMiddle, Z.hallDoorFront]);
-    expect(Z.hallDoorBack < Z.crowdBehindDoor && Z.crowdBehindDoor < Z.hallDoorMiddle && Z.hallDoorMiddle < Z.crowd && Z.crowd < Z.hallDoorFront).toBe(true);
+    expect(
+      Z.hallDoorBack < Z.crowdBehindDoor &&
+        Z.crowdBehindDoor < Z.hallDoorMiddle &&
+        Z.hallDoorMiddle < Z.crowd &&
+        Z.crowd < Z.hallDoorFront,
+    ).toBe(true);
     expect((rec.canvases[0] as unknown as Fake).options.height).toBe(3 * FLOOR);
     // The wall stands on the right-hand hall's left edge; the actor's top is the taller hall's ceiling.
     expect(rec.wx).toBe(20 * TILE);

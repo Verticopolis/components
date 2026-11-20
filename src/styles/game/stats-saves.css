@@ -76,19 +76,60 @@
 }
 
 /* ---- Batch-pricing dialog ---- */
-.batch-modes { display: grid; gap: 8px; margin: 10px 0; }
-.batch-modes label { display: flex; align-items: center; gap: 6px; }
-.bp-amount { display: inline-flex; align-items: center; gap: 4px; margin-left: 22px; }
-.bp-amount .field { width: 8em; text-align: right; padding: 2px 4px; }
-.bp-amount .btn { min-width: 28px; }
-.bp-band { margin-left: 22px; color: var(--muted); font-size: 0.85em; }
-.bp-only { display: flex; align-items: center; gap: 6px; margin: 6px 0; }
-.bp-preview { min-height: 2.4em; color: var(--r-title); font-weight: 600; }
+.batch-modes {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+.batch-modes label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bp-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 22px;
+}
+.bp-amount .field {
+  width: 8em;
+  text-align: right;
+  padding: 2px 4px;
+}
+.bp-amount .btn {
+  min-width: 28px;
+}
+.bp-band {
+  margin-left: 22px;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.bp-only {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0;
+}
+.bp-preview {
+  min-height: 2.4em;
+  color: var(--r-title);
+  font-weight: 600;
+}
 /* Classic (ladder) batch variant: the rung picker row replaces the number
    machinery; same chip + select recipe as the editor card. */
-.bp-rung { display: flex; align-items: center; gap: 6px; margin: 6px 0 8px; }
-.bp-rung .field { flex: 1; }
-.bp-rung-lead { margin: 6px 0 0; }
+.bp-rung {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+.bp-rung .field {
+  flex: 1;
+}
+.bp-rung-lead {
+  margin: 6px 0 0;
+}
 /* The rent-rung chip: a 12px swatch in a pressed ring, decorative
    reinforcement beside the rung's NAME in the select (color never carries the
    state alone). data-rung="none" (No Rate) stays hollow: chrome face, no fill. */
@@ -100,7 +141,15 @@
   background: var(--r-face);
   box-shadow: var(--bevel-in);
 }
-.rung-chip[data-rung="0"] { background: var(--rung-vlow); }
-.rung-chip[data-rung="1"] { background: var(--rung-low); }
-.rung-chip[data-rung="2"] { background: var(--rung-avg); }
-.rung-chip[data-rung="3"] { background: var(--rung-high); }
+.rung-chip[data-rung="0"] {
+  background: var(--rung-vlow);
+}
+.rung-chip[data-rung="1"] {
+  background: var(--rung-low);
+}
+.rung-chip[data-rung="2"] {
+  background: var(--rung-avg);
+}
+.rung-chip[data-rung="3"] {
+  background: var(--rung-high);
+}

@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { CAST, castIndex } from "../pixelSprites/people";
-import { cabLoad, cabRidersOf, countCabRiders, loadFigures, riderFigure, ridersAboard, type RiderLook } from "./cabRiders";
+import {
+  cabLoad,
+  cabRidersOf,
+  countCabRiders,
+  loadFigures,
+  riderFigure,
+  ridersAboard,
+  type RiderLook,
+} from "./cabRiders";
 import { personFigure } from "./crowdFigure";
 import { figureKey, figureOf, newGlide, newStepClock, waitMood } from "./crowdLook";
 
@@ -9,7 +17,17 @@ const FLAT: RiderLook = { fedUpWait: 100, lit: false };
 
 /** A shaft in the view's shape: `x` and `width` in tiles, one floor per car. */
 function shaft(id: number, x: number, bottom: number, top: number, carPositions: number[]): any {
-  return { id, kind: "elevatorStandard", x, width: 4, bottom, top, cars: carPositions.length, carPositions, carDir: carPositions.map(() => 0) };
+  return {
+    id,
+    kind: "elevatorStandard",
+    x,
+    width: 4,
+    bottom,
+    top,
+    cars: carPositions.length,
+    carPositions,
+    carDir: carPositions.map(() => 0),
+  };
 }
 function person(id: number, state: string, x: number, fy: number, staff = false): any {
   return { id, seed: id, state, x, floor: Math.round(fy), fy, wait: 0, ...(staff ? { staff } : {}) };
@@ -20,7 +38,9 @@ describe("countCabRiders", () => {
     const a = shaft(1, 10, 1, 30, [3, 20]);
     const b = shaft(2, 30, 1, 30, [3]);
     const people = [
-      person(1, "riding", 12, 3), person(2, "riding", 12, 3.2), person(3, "riding", 12, 19.6),
+      person(1, "riding", 12, 3),
+      person(2, "riding", 12, 3.2),
+      person(3, "riding", 12, 19.6),
       person(4, "riding", 32, 3),
       person(5, "waiting", 12, 3), // on the landing, not in a cab
       person(6, "riding", 12, 3, true), // staff ride visibly, so the cab does not draw them too
@@ -36,7 +56,12 @@ describe("countCabRiders", () => {
   it("tells apart two shafts stacked in one column by their spans", () => {
     const low = shaft(1, 10, -5, 15, [10]);
     const high = shaft(2, 10, 15, 30, [20]);
-    const out = countCabRiders([person(1, "riding", 12, 10), person(2, "riding", 12, 22)], [low, high], new Map(), FLAT);
+    const out = countCabRiders(
+      [person(1, "riding", 12, 10), person(2, "riding", 12, 22)],
+      [low, high],
+      new Map(),
+      FLAT,
+    );
     expect(ridersAboard(out, 1, 0)).toBe(1);
     expect(ridersAboard(out, 2, 0)).toBe(1);
   });
@@ -103,12 +128,23 @@ describe("each rider rides as themselves", () => {
   // else. A rider's figure is the crowd's own look for them now.
   function onFoot(p: any, look: RiderLook) {
     const clock = newStepClock(0);
-    return figureOf(personFigure({ ...p, state: "walking" }, newGlide(p.x, p.fy, false), { lit: look.lit, fedUpWait: look.fedUpWait, progress: 1, clock }));
+    return figureOf(
+      personFigure({ ...p, state: "walking" }, newGlide(p.x, p.fy, false), {
+        lit: look.lit,
+        fedUpWait: look.fedUpWait,
+        progress: 1,
+        clock,
+      }),
+    );
   }
 
   it("stands each rider up in the look, mood and shading they walk in with", () => {
     const a = shaft(1, 10, 1, 30, [3]);
-    const people = [person(5, "riding", 12, 3), person(8, "riding", 12, 3), { ...person(9, "riding", 12, 3), wait: 150 }];
+    const people = [
+      person(5, "riding", 12, 3),
+      person(8, "riding", 12, 3),
+      { ...person(9, "riding", 12, 3), wait: 150 },
+    ];
     for (const look of [FLAT, { fedUpWait: 100, lit: true }]) {
       const figures = loadFigures(cabLoad(countCabRiders(people, [a], new Map(), look), 1, 0)).map(figureOf);
       expect(figures).toHaveLength(3);
@@ -126,7 +162,8 @@ describe("each rider rides as themselves", () => {
   });
 
   function figureOfMood(p: any) {
-    return figureOf(loadFigures(cabLoad(countCabRiders([p], [shaft(1, 10, 1, 30, [3])], new Map(), FLAT), 1, 0))[0]).mood;
+    return figureOf(loadFigures(cabLoad(countCabRiders([p], [shaft(1, 10, 1, 30, [3])], new Map(), FLAT), 1, 0))[0])
+      .mood;
   }
 
   it("gives every look, mood and shading the crowd's own standing figure", () => {
@@ -134,7 +171,9 @@ describe("each rider rides as themselves", () => {
       for (const wait of [0, 59.9, 60, 60.1, 99, 100, 100.5, 150]) {
         for (const lit of [false, true]) {
           const p = { ...person(1, "riding", 12, 3), seed, wait };
-          expect(riderFigure(p, { fedUpWait: 100, lit })).toBe(figureKey(castIndex(seed), "stand", 1, waitMood(wait, 100), false, lit));
+          expect(riderFigure(p, { fedUpWait: 100, lit })).toBe(
+            figureKey(castIndex(seed), "stand", 1, waitMood(wait, 100), false, lit),
+          );
         }
       }
     }

@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../tests/catalogKinds";
 import type { FacilityKind, Unit } from "../model/types";
-import { OFFSETS, crop, paintAt, paintPastSeam, parseColor, rasterCtx, tail, unitOf } from "../tests/originSeedsHarness";
+import {
+  OFFSETS,
+  crop,
+  paintAt,
+  paintPastSeam,
+  parseColor,
+  rasterCtx,
+  tail,
+  unitOf,
+} from "../tests/originSeedsHarness";
 import { skylineWindowLit } from "./pixelSprites/skyBar";
 import { FLOOR, TILE } from "./scale";
 
@@ -34,17 +43,29 @@ const CASES: ReadonlyArray<{ label: string; unit: Unit }> = [
   { label: "skyBar in the basement", unit: unitOf("skyBar", { floor: -3, x: 2 }) },
   { label: "nightclub in the basement", unit: unitOf("nightclub", { floor: -3, x: 2 }) },
   { label: "boutique (florist) in the basement", unit: unitOf("boutiqueBay", { subtype: "Florist", floor: -3, x: 2 }) },
-  { label: "boutique (record store) in the basement", unit: unitOf("boutiqueBay", { subtype: "Record Store", floor: -3, x: 2 }) },
+  {
+    label: "boutique (record store) in the basement",
+    unit: unitOf("boutiqueBay", { subtype: "Record Store", floor: -3, x: 2 }),
+  },
   { label: "boutique (gallery) in the basement", unit: unitOf("boutiqueBay", { subtype: "Gallery", floor: -3, x: 2 }) },
-  { label: "amusements (classic arcade) in the basement", unit: unitOf("amusements", { subtype: "Classic Arcade", floor: -3, x: 2 }) },
+  {
+    label: "amusements (classic arcade) in the basement",
+    unit: unitOf("amusements", { subtype: "Classic Arcade", floor: -3, x: 2 }),
+  },
   { label: "boutique (phone repair)", unit: unitOf("boutiqueBay", { subtype: "Phone Repair" }) },
   { label: "clinic (pharmacy)", unit: unitOf("clinic", { subtype: "Pharmacy" }) },
   { label: "amusements (claw parlor)", unit: unitOf("amusements", { subtype: "Claw Parlor" }) },
   // Basement placements give a negative raw seed, so a pick that goes back to a
   // plain `% length` fails here (the claw prize would index undefined).
-  { label: "boutique (phone repair) in the basement", unit: unitOf("boutiqueBay", { subtype: "Phone Repair", floor: -3, x: 2 }) },
+  {
+    label: "boutique (phone repair) in the basement",
+    unit: unitOf("boutiqueBay", { subtype: "Phone Repair", floor: -3, x: 2 }),
+  },
   { label: "clinic (pharmacy) in the basement", unit: unitOf("clinic", { subtype: "Pharmacy", floor: -3, x: 2 }) },
-  { label: "amusements (claw parlor) in the basement", unit: unitOf("amusements", { subtype: "Claw Parlor", floor: -3, x: 2 }) },
+  {
+    label: "amusements (claw parlor) in the basement",
+    unit: unitOf("amusements", { subtype: "Claw Parlor", floor: -3, x: 2 }),
+  },
 ];
 
 describe("room details follow the room wherever it is painted (#915)", () => {
@@ -58,7 +79,11 @@ describe("room details follow the room wherever it is painted (#915)", () => {
         // origin, matches the same part of the whole room.
         const w = unit.width * TILE;
         const h = kindFacts(unit.kind).floors * FLOOR;
-        for (const [dx, dy] of [[3 * TILE, 0], [TILE + 3, 0], [TILE + 3, FLOOR]] as const) {
+        for (const [dx, dy] of [
+          [3 * TILE, 0],
+          [TILE + 3, 0],
+          [TILE + 3, FLOOR],
+        ] as const) {
           if (dy >= h) continue;
           expect(paintPastSeam(unit, dx, dy, lit), `past a seam at ${dx},${dy}`).toEqual(tail(first, w, h, dx, dy));
         }
@@ -83,9 +108,13 @@ describe("room details follow the room wherever it is painted (#915)", () => {
     // varying.
     const over = (kind: FacilityKind): Partial<Unit> => (kind === "fitnessClub" ? { subtype: "Climbing Wall" } : {});
     for (const kind of ["security", "medical", "housekeeping", "skyBar", "fitnessClub"] as const) {
-      const byFloor = new Set([5, 12, 27, 43].map((floor) => paintAt(unitOf(kind, { ...over(kind), floor }), 0, 0, true).join(",")));
+      const byFloor = new Set(
+        [5, 12, 27, 43].map((floor) => paintAt(unitOf(kind, { ...over(kind), floor }), 0, 0, true).join(",")),
+      );
       expect(byFloor.size, `${kind} across floors`).toBeGreaterThan(1);
-      const byColumn = new Set([17, 64, 131, 208].map((x) => paintAt(unitOf(kind, { ...over(kind), x }), 0, 0, true).join(",")));
+      const byColumn = new Set(
+        [17, 64, 131, 208].map((x) => paintAt(unitOf(kind, { ...over(kind), x }), 0, 0, true).join(",")),
+      );
       expect(byColumn.size, `${kind} across columns`).toBeGreaterThan(1);
     }
   });
@@ -93,8 +122,13 @@ describe("room details follow the room wherever it is painted (#915)", () => {
   it("varies the moved details themselves", () => {
     // An empty climbing gym draws no figures, so the holds are the only part
     // of it that depends on the room's seed.
-    const holds = new Set([5, 12, 27, 43, 61].flatMap((floor) => [17, 64, 131].map((x) =>
-      paintAt(unitOf("fitnessClub", { subtype: "Climbing Wall", occupants: 0, floor, x }), 0, 0, true).join(","))));
+    const holds = new Set(
+      [5, 12, 27, 43, 61].flatMap((floor) =>
+        [17, 64, 131].map((x) =>
+          paintAt(unitOf("fitnessClub", { subtype: "Climbing Wall", occupants: 0, floor, x }), 0, 0, true).join(","),
+        ),
+      ),
+    );
     expect(holds.size).toBeGreaterThan(1);
     // The skyline windows: one window must light up in some rooms and not in
     // others, and one room must have both lit and dark windows.
@@ -105,9 +139,16 @@ describe("room details follow the room wherever it is painted (#915)", () => {
     expect(new Set(room).size).toBe(2);
     // The parts bins, the pharmacy shelves and the claw machine prizes, in
     // rooms with nobody in them, so no figure carries the variety instead.
-    for (const [kind, subtype] of [["boutiqueBay", "Phone Repair"], ["clinic", "Pharmacy"], ["amusements", "Claw Parlor"]] as const) {
-      const looks = new Set([5, 12, 27, 43, 61].flatMap((floor) => [17, 64, 131].map((x) =>
-        paintAt(unitOf(kind, { subtype, occupants: 0, floor, x }), 0, 0, true).join(","))));
+    for (const [kind, subtype] of [
+      ["boutiqueBay", "Phone Repair"],
+      ["clinic", "Pharmacy"],
+      ["amusements", "Claw Parlor"],
+    ] as const) {
+      const looks = new Set(
+        [5, 12, 27, 43, 61].flatMap((floor) =>
+          [17, 64, 131].map((x) => paintAt(unitOf(kind, { subtype, occupants: 0, floor, x }), 0, 0, true).join(",")),
+        ),
+      );
       expect(looks.size, `${kind}/${subtype}`).toBeGreaterThan(1);
     }
   });
@@ -158,7 +199,8 @@ describe("room details follow the room wherever it is painted (#915)", () => {
           let bh = 0;
           for (let cy = winBot - 1; cy > winTop && at(bx, cy) !== sky; cy--) bh++;
           const lit: boolean[] = [];
-          for (let wy = winBot - bh + 2; wy < winBot - 1; wy += 3) lit.push(lights.has(at(bx + 1 + (wy & 1 ? 2 : 0), wy)));
+          for (let wy = winBot - bh + 2; wy < winBot - 1; wy += 3)
+            lit.push(lights.has(at(bx + 1 + (wy & 1 ? 2 : 0), wy)));
           const slot = `${i}@${bh}`;
           windowsBySlot.set(slot, (windowsBySlot.get(slot) ?? new Set()).add(lit.join("")));
         }
@@ -197,9 +239,13 @@ describe("room details follow the room wherever it is painted (#915)", () => {
     // following the draw origin fails the comparison.
     for (const { label, unit } of CASES) {
       const base = paintAt(unit, 0, 0, true).join(",");
-      const moved = [1, 2, 3, 4].map((df) => paintAt({ ...unit, floor: unit.floor + df }, 7 * TILE, 2 * FLOOR, true).join(","));
-      expect(moved.some((m) => m !== base), label).toBe(true);
+      const moved = [1, 2, 3, 4].map((df) =>
+        paintAt({ ...unit, floor: unit.floor + df }, 7 * TILE, 2 * FLOOR, true).join(","),
+      );
+      expect(
+        moved.some((m) => m !== base),
+        label,
+      ).toBe(true);
     }
   });
 });
-

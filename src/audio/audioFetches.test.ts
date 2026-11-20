@@ -17,7 +17,8 @@ vi.mock("./lightSynth", async () => (await import("./toneRecordingMock")).lightS
 import { graph } from "./toneRecordingMock";
 import { ToneAudioEngine, type SfxName } from "./ToneAudioEngine";
 
-const focus = (over: Partial<ViewFocus>): ViewFocus => ({ centerFloor: 5, dominant: "office", night: false, zoom: 2, ...over }) as ViewFocus;
+const focus = (over: Partial<ViewFocus>): ViewFocus =>
+  ({ centerFloor: 5, dominant: "office", night: false, zoom: 2, ...over }) as ViewFocus;
 /** The scenes the engine can sit in, and every cue: a loader on a later code
  *  path (a scene change, a program swap, a cue) has to run before the
  *  comparison, or the test would not see it. */
@@ -67,12 +68,17 @@ describe("the files the audio engine fetches at run time", () => {
     for (const cue of CUES) engine.sfx(cue);
 
     const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "./";
-    const requested = graph.nodes.filter((n) => n.kind === "ToneAudioBuffer" && typeof n.args[0] === "string").map((n) => String(n.args[0]));
+    const requested = graph.nodes
+      .filter((n) => n.kind === "ToneAudioBuffer" && typeof n.args[0] === "string")
+      .map((n) => String(n.args[0]));
     expect(requested.sort()).toEqual(AUDIO_RUNTIME_FILES.map((f) => `${base}${f}`).sort());
     expect(fetchSpy, "every file goes through Tone's buffer loader").not.toHaveBeenCalled();
     expect(xhr, "no XMLHttpRequest is made").not.toHaveBeenCalled();
     expect(audioElement, "no HTMLAudioElement is created").not.toHaveBeenCalled();
-    expect(createElement.mock.calls.filter(([tag]) => /^(?:audio|video|source)$/i.test(String(tag))), "no media element is created").toEqual([]);
+    expect(
+      createElement.mock.calls.filter(([tag]) => /^(?:audio|video|source)$/i.test(String(tag))),
+      "no media element is created",
+    ).toEqual([]);
     engine.dispose();
   });
 });

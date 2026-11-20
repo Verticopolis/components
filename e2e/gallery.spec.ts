@@ -28,14 +28,18 @@ const MENUS = [
 async function openGallery(page: Page, schemeLabel: string): Promise<void> {
   await page.goto("/");
   await page.waitForFunction(() => (window as unknown as { galleryReady?: boolean }).galleryReady === true);
-  const button = page.getByRole("group", { name: "Color scheme" }).getByRole("button", { name: schemeLabel, exact: true });
+  const button = page
+    .getByRole("group", { name: "Color scheme" })
+    .getByRole("button", { name: schemeLabel, exact: true });
   await button.click();
   await expect(button).toHaveAttribute("aria-pressed", "true");
   await page.evaluate(() => document.fonts.ready);
 }
 
 function section(page: Page, title: string): Locator {
-  return page.locator("section.g-section").filter({ has: page.getByRole("heading", { level: 2, name: title, exact: true }) });
+  return page
+    .locator("section.g-section")
+    .filter({ has: page.getByRole("heading", { level: 2, name: title, exact: true }) });
 }
 
 /** The smallest page area holding every given element, for shots of an open

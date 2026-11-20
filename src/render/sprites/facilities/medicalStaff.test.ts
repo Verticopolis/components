@@ -40,7 +40,8 @@ describe("the medical center's nurse and doctor (#1117)", () => {
     // Both seeds once came from one staff seed, so each nurse always stood
     // beside the same doctor and a tower showed only five pairs.
     const doctorsByNurse = new Map<number, Set<number>>();
-    for (const { nurse, doctor } of rooms) doctorsByNurse.set(nurse, (doctorsByNurse.get(nurse) ?? new Set()).add(doctor));
+    for (const { nurse, doctor } of rooms)
+      doctorsByNurse.set(nurse, (doctorsByNurse.get(nurse) ?? new Set()).add(doctor));
     expect(Math.max(...[...doctorsByNurse.values()].map((s) => s.size))).toBeGreaterThan(1);
     expect(new Set(rooms.map(({ nurse, doctor }) => `${nurse}/${doctor}`)).size).toBeGreaterThan(5);
   });

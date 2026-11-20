@@ -45,14 +45,32 @@ function spyCtx() {
   const log: string[] = [];
   const ctx: Record<string, unknown> = {};
   for (const m of [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc",
-    "fill", "stroke", "fillRect", "strokeRect", "fillText", "translate", "scale",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "fillText",
+    "translate",
+    "scale",
   ]) {
     ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   }
   for (const p of ["fillStyle", "strokeStyle", "lineWidth", "font", "textAlign", "globalAlpha"]) {
     let v: unknown;
-    Object.defineProperty(ctx, p, { get: () => v, set: (nv) => { v = nv; log.push(`${p}=${String(nv)}`); } });
+    Object.defineProperty(ctx, p, {
+      get: () => v,
+      set: (nv) => {
+        v = nv;
+        log.push(`${p}=${String(nv)}`);
+      },
+    });
   }
   return { ctx: ctx as unknown as CanvasRenderingContext2D, log };
 }
@@ -60,8 +78,12 @@ function spyCtx() {
 /** An hour each kind is actually open. A closed venue paints its shutter and
  *  nobody at all, so measuring a bar at noon measures nothing. */
 const OPEN_HOUR: Record<string, number> = { skyBar: 20, nightclub: 22 };
-const room = (ctx: CanvasRenderingContext2D, kind?: string): RoomCtx =>
-  ({ ctx, lit: false, anim: 0, hour: OPEN_HOUR[kind ?? ""] ?? 12 });
+const room = (ctx: CanvasRenderingContext2D, kind?: string): RoomCtx => ({
+  ctx,
+  lit: false,
+  anim: 0,
+  hour: OPEN_HOUR[kind ?? ""] ?? 12,
+});
 
 /** How many finalized figures were drawn: the person builds stamp one unique
  *  contact-shadow literal per figure and nothing else does. */
@@ -74,11 +96,13 @@ const childCount = (log: string[]): number =>
   log.filter((l, i) => l === "fillStyle=#000000" && log[i + 1] === "globalAlpha=0.22").length;
 
 /** A spa guest on a massage table is a fold of shaded linen, not a figure. */
-const bedGuestCount = (log: string[]): number =>
-  log.filter((l) => l === `fillStyle=${shade("#f0ece2", -10)}`).length;
+const bedGuestCount = (log: string[]): number => log.filter((l) => l === `fillStyle=${shade("#f0ece2", -10)}`).length;
 
 /** How many times one fill color was set: the count of a single repeated prop. */
-const propCount = (color: string) => (log: string[]): number => log.filter((l) => l === `fillStyle=${color}`).length;
+const propCount =
+  (color: string) =>
+  (log: string[]): number =>
+    log.filter((l) => l === `fillStyle=${color}`).length;
 
 /** The x of the first figure drawn: its contact shadow is the first rect after
  *  the shadow fill color is set, and it starts one pixel left of the figure. */
@@ -131,7 +155,10 @@ const seatedClients = (subtype: string): number =>
 
 /** Office layout selector: `geoVariant(u, 3, 5)` picks 0-2 cubicle row, 3
  *  meeting, 4 executive. */
-const officeLayout = (n: number) => (u: Pick<Unit, "kind" | "floor" | "x">): boolean => geoVariant(u, 3, 5) === n;
+const officeLayout =
+  (n: number) =>
+  (u: Pick<Unit, "kind" | "floor" | "x">): boolean =>
+    geoVariant(u, 3, 5) === n;
 
 describe("a full room draws every occupant it has room for", () => {
   it("the 9-tile office seats 5 in its widest layout and never fewer than 3", () => {
@@ -168,7 +195,9 @@ describe("a full room draws every occupant it has room for", () => {
     // expectation never mentions a screen pixel and cannot drift with the tile.
     const table = Math.min(Math.round(tiles * ART_TILE * 0.6), 60);
     const expected = authoredSeats(table, 3 + 6, 11);
-    expect(new Set(sweep({ kind: "office", occupants: 40 }, tiles, peopleCount, officeLayout(3)))).toEqual(new Set([expected]));
+    expect(new Set(sweep({ kind: "office", occupants: 40 }, tiles, peopleCount, officeLayout(3)))).toEqual(
+      new Set([expected]),
+    );
   });
 
   it.each([6, 9, 12, 16, 20])("an office %i tiles wide staffs every cubicle in the bank", (tiles) => {
@@ -204,14 +233,18 @@ describe("a full room draws every occupant it has room for", () => {
   it("a 12-tile VR lounge fills all three pods", () => {
     // The pod row already sized itself off the room and never lost a slot. It is
     // pinned so a later change to that sizing cannot quietly break it either.
-    expect(new Set(sweep({ kind: "amusements", occupants: 25, subtype: "VR Lounge" } as Partial<Unit>, 12, peopleCount))).toEqual(new Set([3]));
+    expect(
+      new Set(sweep({ kind: "amusements", occupants: 25, subtype: "VR Lounge" } as Partial<Unit>, 12, peopleCount)),
+    ).toEqual(new Set([3]));
   });
 
   it.each([9, 12, 16, 20])("a mini golf bay %i tiles wide fills the putting green", (tiles) => {
     // One golfer plus a watcher row at an authored 12px pitch, starting 32px in
     // (clear of the golfer and the putter) and ending 7px short of the far wall.
     const expected = 1 + authoredSeats(tiles * ART_TILE, 32 + 7, 12);
-    expect(new Set(sweep({ kind: "amusements", occupants: 60, subtype: "Mini Golf" } as Partial<Unit>, tiles, peopleCount))).toEqual(new Set([expected]));
+    expect(
+      new Set(sweep({ kind: "amusements", occupants: 60, subtype: "Mini Golf" } as Partial<Unit>, tiles, peopleCount)),
+    ).toEqual(new Set([expected]));
   });
 
   it.each(Object.keys(BOUTIQUE_LOOKS))("a 12-tile %s bay fills its browsing row", (subtype) => {
@@ -221,7 +254,9 @@ describe("a full room draws every occupant it has room for", () => {
     // is one of the same customers: the row gives that seat up rather than
     // drawing the person twice.
     const expected = authoredSeats(12 * ART_TILE, 7 + 3, 7) + seatedClients(subtype);
-    expect(new Set(sweep({ kind: "boutiqueBay", occupants: 22, subtype } as Partial<Unit>, 12, peopleCount))).toEqual(new Set([expected]));
+    expect(new Set(sweep({ kind: "boutiqueBay", occupants: 22, subtype } as Partial<Unit>, 12, peopleCount))).toEqual(
+      new Set([expected]),
+    );
   });
 
   it.each([6, 8, 12, 18])("a boutique bay %i tiles wide fills its browsing row", (tiles) => {
@@ -229,28 +264,40 @@ describe("a full room draws every occupant it has room for", () => {
     // where a count taken off the pixel width parts company with one taken off
     // the room.
     const expected = authoredSeats(tiles * ART_TILE, 7 + 3, 7);
-    expect(new Set(sweep({ kind: "boutiqueBay", occupants: 60, subtype: "Florist" } as Partial<Unit>, tiles, peopleCount))).toEqual(new Set([expected]));
+    expect(
+      new Set(sweep({ kind: "boutiqueBay", occupants: 60, subtype: "Florist" } as Partial<Unit>, tiles, peopleCount)),
+    ).toEqual(new Set([expected]));
   });
 
-  it.each(Object.keys(BOUTIQUE_LOOKS))("a %s bay draws min(present, seats) and stays bounded on a forged count", (subtype) => {
-    // Moved here from `sprites.test.ts` with the rest of the bay's capacity
-    // coverage. Empty draws nobody; a part-full shop draws exactly who is in it,
-    // the barber's and the tattooist's seated client included rather than added
-    // on top of the row; a corrupt save carrying a huge `occupants` paints the
-    // row's own capacity and returns rather than spinning.
-    const W = 12 * TILE;
-    const draw = (occupants: number): string[] => {
-      const s = spyCtx();
-      drawRoom(room(s.ctx, "boutiqueBay"), unit({ kind: "boutiqueBay", width: 12, occupants, subtype } as Partial<Unit>), 0, 0, W, FLOOR);
-      return s.log;
-    };
-    expect(peopleCount(draw(0))).toBe(0);
-    for (const present of [1, 2, 5, 12]) expect(peopleCount(draw(present))).toBe(present);
-    const forged = spyCtx();
-    const huge = unit({ kind: "boutiqueBay", width: 12, occupants: 1e9, subtype } as Partial<Unit>);
-    expect(() => drawRoom(room(forged.ctx), huge, 0, 0, W, FLOOR)).not.toThrow();
-    expect(peopleCount(forged.log)).toBe(authoredSeats(12 * ART_TILE, 7 + 3, 7) + seatedClients(subtype));
-  });
+  it.each(Object.keys(BOUTIQUE_LOOKS))(
+    "a %s bay draws min(present, seats) and stays bounded on a forged count",
+    (subtype) => {
+      // Moved here from `sprites.test.ts` with the rest of the bay's capacity
+      // coverage. Empty draws nobody; a part-full shop draws exactly who is in it,
+      // the barber's and the tattooist's seated client included rather than added
+      // on top of the row; a corrupt save carrying a huge `occupants` paints the
+      // row's own capacity and returns rather than spinning.
+      const W = 12 * TILE;
+      const draw = (occupants: number): string[] => {
+        const s = spyCtx();
+        drawRoom(
+          room(s.ctx, "boutiqueBay"),
+          unit({ kind: "boutiqueBay", width: 12, occupants, subtype } as Partial<Unit>),
+          0,
+          0,
+          W,
+          FLOOR,
+        );
+        return s.log;
+      };
+      expect(peopleCount(draw(0))).toBe(0);
+      for (const present of [1, 2, 5, 12]) expect(peopleCount(draw(present))).toBe(present);
+      const forged = spyCtx();
+      const huge = unit({ kind: "boutiqueBay", width: 12, occupants: 1e9, subtype } as Partial<Unit>);
+      expect(() => drawRoom(room(forged.ctx), huge, 0, 0, W, FLOOR)).not.toThrow();
+      expect(peopleCount(forged.log)).toBe(authoredSeats(12 * ART_TILE, 7 + 3, 7) + seatedClients(subtype));
+    },
+  );
 
   it.each([
     ["Classic Arcade", shade(AMUSEMENTS_LOOKS["Classic Arcade"].wall, 26)],
@@ -265,11 +312,19 @@ describe("a full room draws every occupant it has room for", () => {
     for (const occupants of [0, 1, 2, 3, 5, 8, 13, 25]) {
       for (let x = 0; x < COLUMNS; x++) {
         const s = spyCtx();
-        drawRoom(room(s.ctx, "amusements"), unit({ kind: "amusements", width: 12, occupants, subtype, x } as Partial<Unit>), 0, 0, 12 * TILE, FLOOR);
+        drawRoom(
+          room(s.ctx, "amusements"),
+          unit({ kind: "amusements", width: 12, occupants, subtype, x } as Partial<Unit>),
+          0,
+          0,
+          12 * TILE,
+          FLOOR,
+        );
         const stations = propCount(bodyColor)(s.log);
         const players = peopleCount(s.log);
-        expect(players, `${occupants} visitors, column ${x}: ${players} players at ${stations} stations`)
-          .toBe(Math.min(occupants, stations));
+        expect(players, `${occupants} visitors, column ${x}: ${players} players at ${stations} stations`).toBe(
+          Math.min(occupants, stations),
+        );
       }
     }
   });
@@ -284,7 +339,14 @@ describe("a full room draws every occupant it has room for", () => {
     const xs: number[] = [];
     for (let x = 0; x < COLUMNS; x++) {
       const s = spyCtx();
-      drawRoom(room(s.ctx, "amusements"), unit({ kind: "amusements", width: 12, occupants: 1, subtype, x } as Partial<Unit>), 0, 0, 12 * TILE, FLOOR);
+      drawRoom(
+        room(s.ctx, "amusements"),
+        unit({ kind: "amusements", width: 12, occupants: 1, subtype, x } as Partial<Unit>),
+        0,
+        0,
+        12 * TILE,
+        FLOOR,
+      );
       const at = firstPersonX(s.log);
       expect(at, `column ${x}: a hall with a visitor drew nobody`).toBeDefined();
       xs.push(at as number);
@@ -330,22 +392,30 @@ describe("the showpiece rooms fill their own furniture too", () => {
   it.each([12, 16, 20, 24])("a %i-tile yoga studio puts a member on every mat", (tiles) => {
     // Mats at an authored 12px pitch across the room itself.
     const expected = authoredSeats(tiles * ART_TILE, 5 + 14, 12);
-    expect(new Set(sweep({ kind: "fitnessClub", occupants: 60, subtype: "Yoga Studio" } as Partial<Unit>, tiles, peopleCount)))
-      .toEqual(new Set([expected]));
+    expect(
+      new Set(
+        sweep({ kind: "fitnessClub", occupants: 60, subtype: "Yoga Studio" } as Partial<Unit>, tiles, peopleCount),
+      ),
+    ).toEqual(new Set([expected]));
   });
 
   it.each([12, 16, 20, 24])("a %i-tile spin studio puts a rider on every bike", (tiles) => {
     // Bikes at an authored 8px pitch across the room itself.
     const expected = authoredSeats(tiles * ART_TILE, 5 + 9, 8);
-    expect(new Set(sweep({ kind: "fitnessClub", occupants: 60, subtype: "Spin Studio" } as Partial<Unit>, tiles, peopleCount)))
-      .toEqual(new Set([expected]));
+    expect(
+      new Set(
+        sweep({ kind: "fitnessClub", occupants: 60, subtype: "Spin Studio" } as Partial<Unit>, tiles, peopleCount),
+      ),
+    ).toEqual(new Set([expected]));
   });
 
   it.each(["Weight Floor", "Boxing Gym", "Climbing Wall"])("a %s shows its one member", (subtype) => {
     // These three formats are built around a single piece of equipment, so their
     // capacity is one and no tile can take it away. Pinned so a later change
     // cannot quietly turn a bench, a heavy bag, or a wall into a row.
-    expect(new Set(sweep({ kind: "fitnessClub", occupants: 60, subtype } as Partial<Unit>, 16, peopleCount))).toEqual(new Set([1]));
+    expect(new Set(sweep({ kind: "fitnessClub", occupants: 60, subtype } as Partial<Unit>, 16, peopleCount))).toEqual(
+      new Set([1]),
+    );
   });
 
   it.each([12, 14, 18, 22])("a %i-tile spa fills its tub and all three tables", (tiles) => {

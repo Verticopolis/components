@@ -48,12 +48,30 @@ function setup() {
   title.setPointerCapture = vi.fn();
   const placed = vi.fn<(spot: Spot | null) => void>();
   const mover = new MovableWindow({ win, title: ".win > .win-title", within: stage, placed });
-  return { stage, win, title, close: win.querySelector("button")!, body: win.querySelector<HTMLElement>(".body")!, mover, placed };
+  return {
+    stage,
+    win,
+    title,
+    close: win.querySelector("button")!,
+    body: win.querySelector<HTMLElement>(".body")!,
+    mover,
+    placed,
+  };
 }
 
 function pointer(target: Element, type: string, x: number, y: number, init: PointerEventInit = {}): PointerEvent {
   const buttons = type === "pointerup" ? 0 : 1;
-  const e = new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 1, pointerType: "mouse", button: 0, buttons, clientX: x, clientY: y, ...init });
+  const e = new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 1,
+    pointerType: "mouse",
+    button: 0,
+    buttons,
+    clientX: x,
+    clientY: y,
+    ...init,
+  });
   target.dispatchEvent(e);
   return e;
 }
@@ -82,7 +100,13 @@ describe("MovableWindow", () => {
     const down = drag(title.querySelector("span")!, -300, -200);
     expect(down.defaultPrevented).toBe(true);
     expect(title.setPointerCapture).toHaveBeenCalledWith(1);
-    expect([win.style.left, win.style.top, win.style.right, win.style.bottom, win.style.margin]).toEqual(["200px", "200px", "auto", "auto", "0px"]);
+    expect([win.style.left, win.style.top, win.style.right, win.style.bottom, win.style.margin]).toEqual([
+      "200px",
+      "200px",
+      "auto",
+      "auto",
+      "0px",
+    ]);
     expect(mover.placedAt()).toEqual({ x: 200, y: 200 });
     expect(placed.mock.calls).toEqual([[{ x: 200, y: 200 }]]);
   });
@@ -150,7 +174,13 @@ describe("MovableWindow", () => {
     const { win, title, mover, placed } = setup();
     drag(title, -100, -100);
     title.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
-    expect([win.style.left, win.style.top, win.style.right, win.style.bottom, win.style.margin]).toEqual(["", "", "", "", ""]);
+    expect([win.style.left, win.style.top, win.style.right, win.style.bottom, win.style.margin]).toEqual([
+      "",
+      "",
+      "",
+      "",
+      "",
+    ]);
     expect(mover.isPlaced()).toBe(false);
     expect(placed).toHaveBeenLastCalledWith(null);
   });

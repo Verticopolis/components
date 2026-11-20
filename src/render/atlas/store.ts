@@ -130,7 +130,12 @@ export class AddedStore {
     const hit = this.frames.find(img, normal);
     if (hit >= 0) return { id: hit, dx: piece.x, dy: piece.y, own: false };
     const layer = this.layers.find(img, normal);
-    const ref: PendingRef = { id: layer >= 0 ? layer : this.own.add(img, normal), dx: piece.x, dy: piece.y, own: false };
+    const ref: PendingRef = {
+      id: layer >= 0 ? layer : this.own.add(img, normal),
+      dx: piece.x,
+      dy: piece.y,
+      own: false,
+    };
     this.later.push({ ref, after: layer >= 0 ? "frames" : "layers" });
     return ref;
   }

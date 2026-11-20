@@ -57,12 +57,29 @@ describe("reconcileCrowd walks real people through the revolving doors", () => {
   function withDoor() {
     const e = eng();
     const canvases = [{ flagDirty: vi.fn() }, { flagDirty: vi.fn() }, { flagDirty: vi.fn() }];
-    const door = { door: { floor: 5, x: 20, tall: 3, short: 2, tallOnLeft: true }, wx: 20 * TILE, angle: 0.5, lit: false, push: 0, actors: [], canvases };
+    const door = {
+      door: { floor: 5, x: 20, tall: 3, short: 2, tallOnLeft: true },
+      wx: 20 * TILE,
+      angle: 0.5,
+      lit: false,
+      push: 0,
+      actors: [],
+      canvases,
+    };
     e.hallDoors.byFloor.set(5, [door]);
     e.hallDoors.byKey.set("door", door);
     return { e, door, canvases };
   }
-  const walker = (id: number, x: number) => ({ id, seed: id, staff: false, state: "toDest", x, fy: 5, floor: 5, wait: 0 });
+  const walker = (id: number, x: number) => ({
+    id,
+    seed: id,
+    staff: false,
+    state: "toDest",
+    x,
+    fy: 5,
+    floor: 5,
+    wait: 0,
+  });
 
   it("draws a leftbound walker behind the center post and a rightbound one in front, each pushing", () => {
     const { e, door, canvases } = withDoor();

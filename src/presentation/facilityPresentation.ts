@@ -53,7 +53,8 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   foodHall: {
     color: "#e0965a",
-    description: "Modern: a hall of food stalls. Earns from foot traffic and satisfies many cravings from one spot, so it covers a wide reach of hungry tenants.",
+    description:
+      "Modern: a hall of food stalls. Earns from foot traffic and satisfies many cravings from one spot, so it covers a wide reach of hungry tenants.",
   },
   shop: {
     color: "#b58ad6",
@@ -69,39 +70,48 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   amusements: {
     color: "#d24a9c",
-    description: "Modern: an arcade and amusements hall (classic cabinets, VR, claw machines, mini-golf). Draws teens and families for games and earns from foot traffic, and is busier on weekends.",
+    description:
+      "Modern: an arcade and amusements hall (classic cabinets, VR, claw machines, mini-golf). Draws teens and families for games and earns from foot traffic, and is busier on weekends.",
   },
   boutiqueBay: {
     color: "#3aa88c",
-    description: "Modern: a bay of small independent trades (florist, barber, phone repair, vintage, tattoo, record store, gallery). Earns from foot traffic and offers the widest variety of any single build, busier on weekends.",
+    description:
+      "Modern: a bay of small independent trades (florist, barber, phone repair, vintage, tattoo, record store, gallery). Earns from foot traffic and offers the widest variety of any single build, busier on weekends.",
   },
   fitnessClub: {
     color: "#4a86c8",
-    description: "Modern: a members' gym (weight floor, yoga, spin, boxing, climbing). Pays a membership lease like an office, and nearby condos and apartments are happier for having it close (a bonus that fades with distance, which also lifts the ceiling a noisy or out-of-the-way home is held to).",
+    description:
+      "Modern: a members' gym (weight floor, yoga, spin, boxing, climbing). Pays a membership lease like an office, and nearby condos and apartments are happier for having it close (a bonus that fades with distance, which also lifts the ceiling a noisy or out-of-the-way home is held to).",
   },
   clinic: {
     color: "#5ab0c8",
-    description: "Modern: a small health clinic (dental, urgent care, optometry, pharmacy, physio). Pays a lease like an office: a quiet, steady tenant.",
+    description:
+      "Modern: a small health clinic (dental, urgent care, optometry, pharmacy, physio). Pays a lease like an office: a quiet, steady tenant.",
   },
   nightclub: {
     color: "#a24ad0",
-    description: "Modern: a nightclub that fills after dark, earning when the office crowd is gone. Pays a monthly DJ booking, and while it is open its noise makes homes and hotel rooms on nearby floors unhappy overnight: keep it away from condos.",
+    description:
+      "Modern: a nightclub that fills after dark, earning when the office crowd is gone. Pays a monthly DJ booking, and while it is open its noise makes homes and hotel rooms on nearby floors unhappy overnight: keep it away from condos.",
   },
   spa: {
     color: "#5cc0a0",
-    description: "Modern: a wellness spa (massage, sauna, hot tubs). Earns from foot traffic, busier on weekends, and hotel rooms on nearby floors rest better for it (a bonus that fades with distance and lifts a capped room's ceiling). It makes no noise for its neighbors.",
+    description:
+      "Modern: a wellness spa (massage, sauna, hot tubs). Earns from foot traffic, busier on weekends, and hotel rooms on nearby floors rest better for it (a bonus that fades with distance and lifts a capped room's ceiling). It makes no noise for its neighbors.",
   },
   skyBar: {
     color: "#d89050",
-    description: "Modern: a rooftop cocktail bar that fills in the evening. Earns from foot traffic, and the higher you place it the more it earns: the skyline view is the draw, so a bar up top pours far more than one down low.",
+    description:
+      "Modern: a rooftop cocktail bar that fills in the evening. Earns from foot traffic, and the higher you place it the more it earns: the skyline view is the draw, so a bar up top pours far more than one down low.",
   },
   aquaticCenter: {
     color: "#33b0c2",
-    description: "Modern: a two-story swimming pool complex. Like a cinema it earns from the crowd that comes to swim and lounge, filling with real visitors through the day, so it needs the transport to move them.",
+    description:
+      "Modern: a two-story swimming pool complex. Like a cinema it earns from the crowd that comes to swim and lounge, filling with real visitors through the day, so it needs the transport to move them.",
   },
   daycare: {
     color: "#eeb63c",
-    description: "Modern: a children's daycare. Earns from parents dropping off and collecting kids, busiest on weekdays when they are at work, and condos and apartments on nearby floors are happier for it, most of all the biggest families who lean on childcare the most (a bonus that grows with family size, fades over the next few floors and lifts a capped home's ceiling). It keeps working hours, so it makes no noise for its neighbors.",
+    description:
+      "Modern: a children's daycare. Earns from parents dropping off and collecting kids, busiest on weekdays when they are at work, and condos and apartments on nearby floors are happier for it, most of all the biggest families who lean on childcare the most (a bonus that grows with family size, fades over the next few floors and lifts a capped home's ceiling). It keeps working hours, so it makes no noise for its neighbors.",
   },
   stairs: {
     color: "#b0a890",
@@ -109,7 +119,8 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   escalator: {
     color: "#c8c0a0",
-    description: "Moves crowds between adjacent floors with no wait. Great for lobbies, shops and food courts. In Modern, people happily ride a long run of them.",
+    description:
+      "Moves crowds between adjacent floors with no wait. Great for lobbies, shops and food courts. In Modern, people happily ride a long run of them.",
   },
   elevatorStandard: {
     color: "#5a5a6a",
@@ -117,7 +128,8 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   elevatorService: {
     color: "#4a4a52",
-    description: "Staff-only: housekeepers ride it to reach hotel floors; tenants and visitors never do. Cheap way to link service floors.",
+    description:
+      "Staff-only: housekeepers ride it to reach hotel floors; tenants and visitors never do. Cheap way to link service floors.",
   },
   elevatorExpress: {
     color: "#3a3a8a",
@@ -129,7 +141,8 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   parking: {
     color: "#888888",
-    description: "Basement parking. Must connect to a Parking Ramp. One space serves ~24 office workers (one per four offices), and every hotel suite needs a space of its own (VIPs drive).",
+    description:
+      "Basement parking. Must connect to a Parking Ramp. One space serves ~24 office workers (one per four offices), and every hotel suite needs a space of its own (VIPs drive).",
   },
   security: {
     color: "#4f6f9f",
@@ -141,11 +154,13 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   housekeeping: {
     color: "#c0d0c0",
-    description: "Fields 6 maids who clean hotel rooms through the day shift so they can be rented again. Maids reach rooms by service elevator or stairs (never passenger elevators or escalators), so how many rooms they finish depends on placement and staff transport.",
+    description:
+      "Fields 6 maids who clean hotel rooms through the day shift so they can be rented again. Maids reach rooms by service elevator or stairs (never passenger elevators or escalators), so how many rooms they finish depends on placement and staff transport.",
   },
   recycling: {
     color: "#7f9f5f",
-    description: "Basement facility that fills with the tower's daily waste: one center processes ~2,500 population; build more as you grow. A garbage truck collects each morning. From 3★, too little capacity lowers tenant ratings, and 4★ requires demand met.",
+    description:
+      "Basement facility that fills with the tower's daily waste: one center processes ~2,500 population; build more as you grow. A garbage truck collects each morning. From 3★, too little capacity lowers tenant ratings, and 4★ requires demand met.",
   },
   metro: {
     color: "#9f7f5f",
@@ -159,11 +174,13 @@ export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresen
   },
   rentalStudio: {
     color: "#86c5a8",
-    description: "Modern: a small rented studio. Pays monthly rent you set; the easygoing tenant stays unless the tower gets truly bad. Modern only.",
+    description:
+      "Modern: a small rented studio. Pays monthly rent you set; the easygoing tenant stays unless the tower gets truly bad. Modern only.",
   },
   rentalApartment: {
     color: "#a8c06a",
-    description: "Modern: a rented apartment for a small household. Higher monthly rent you set, but noise, a bad commute, or over-high rent drives the tenant out. Modern only.",
+    description:
+      "Modern: a rented apartment for a small household. Higher monthly rent you set, but noise, a bad commute, or over-high rent drives the tenant out. Modern only.",
   },
 };
 
@@ -178,4 +195,3 @@ export function facilityDescription(kind: FacilityKind, world: Pick<CatalogWorld
   const description = FACILITY_PRESENTATION[kind].description;
   return typeof description === "string" ? description : description(world);
 }
-

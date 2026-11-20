@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import { drawTrafficSpotlight, spotlightAlpha, spotlightTraffic, SPOTLIGHT_MS, trafficSpotlightFloor } from "./trafficSpotlight";
+import {
+  drawTrafficSpotlight,
+  spotlightAlpha,
+  spotlightTraffic,
+  SPOTLIGHT_MS,
+  trafficSpotlightFloor,
+} from "./trafficSpotlight";
 import type { TowerEngine } from "./TowerEngine";
 import { FLOOR, TILE } from "../scale";
 

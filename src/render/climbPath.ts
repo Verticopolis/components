@@ -36,7 +36,12 @@ const HALF_TURN_LOWER = 1 - halfTurnY(0, FLOOR) / FLOOR;
  *  pole (`sprites/spiralStair.ts`), so its climber follows that helix. A
  *  one-story flight that `winds` beside a venue (`venueFlights.ts`) is a
  *  one-story spiral, or an escalator that turns back at its landing. */
-function placeOnFlight(t: Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">, fy: number, out: ClimbSpot, winds = false): ClimbSpot {
+function placeOnFlight(
+  t: Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">,
+  fy: number,
+  out: ClimbSpot,
+  winds = false,
+): ClimbSpot {
   const span = Math.max(t.top - t.bottom, 0);
   const rise = Math.min(Math.max(fy - t.bottom, 0), span);
   const windsHere = winds && span === 1;
@@ -64,7 +69,11 @@ function placeOnFlight(t: Pick<TransportView, "kind" | "x" | "width" | "bottom" 
 
 /** The point along `t`'s run at floor `fy`; `winds` when it stands beside a
  *  venue (`venueFlights.ts`). */
-export function climbSpot(t: Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">, fy: number, winds = false): ClimbSpot {
+export function climbSpot(
+  t: Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">,
+  fy: number,
+  winds = false,
+): ClimbSpot {
   return placeOnFlight(t, fy, { x: 0, rightward: true }, winds);
 }
 
@@ -76,7 +85,13 @@ export function climbSpot(t: Pick<TransportView, "kind" | "x" | "width" | "botto
  *  shared floor is on the flight that goes on the way they head
  *  (`descending`). `climbDrawX` looks again once `fy` leaves the flight it
  *  found. */
-export function climbFlight(transports: ReadonlyArray<TransportView>, x: number, floor: number, fy = floor, descending = false): TransportView | undefined {
+export function climbFlight(
+  transports: ReadonlyArray<TransportView>,
+  x: number,
+  floor: number,
+  fy = floor,
+  descending = false,
+): TransportView | undefined {
   const below = Math.floor(fy);
   const above = Math.ceil(fy);
   let holdsFloor: TransportView | undefined;

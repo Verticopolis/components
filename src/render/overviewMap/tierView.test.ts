@@ -5,7 +5,15 @@ import { extentFloors, fitLayout, mapExtent } from "./geometry";
 import { MIN_PATTERN_SIDE, type MapPaintContext, type PatternSource } from "./paint";
 import type { EvalTier, RentTier } from "../../simport/roomTiers";
 import { tiersOf } from "./tierView.fixture";
-import { EVAL_LEGEND, EVAL_VIEW_STYLE, paintTierMarks, PRICING_LEGEND, RENT_VIEW_STYLE, TierMarks, type TierRoom } from "./tierView";
+import {
+  EVAL_LEGEND,
+  EVAL_VIEW_STYLE,
+  paintTierMarks,
+  PRICING_LEGEND,
+  RENT_VIEW_STYLE,
+  TierMarks,
+  type TierRoom,
+} from "./tierView";
 
 const EXTENT = mapExtent({ lotWidth: 375, minFloor: -9, maxFloor: 100 }, SKY_HEADROOM_FLOORS);
 /** One map pixel per tile and five per floor, so a 4-tile room carries a pattern. */
@@ -14,7 +22,8 @@ const floorsOf = (_kind: FacilityKind) => 1;
 
 const room = (id: number, x = id, width = 4): TierRoom => ({ id, kind: "office", floor: 2, x, width });
 /** Place the kept rows on `rooms`, with an id index over the same rooms. */
-const placeOn = (marks: TierMarks, rooms: TierRoom[]) => marks.place(layout, rooms, (id) => rooms.find((r) => r.id === id), floorsOf);
+const placeOn = (marks: TierMarks, rooms: TierRoom[]) =>
+  marks.place(layout, rooms, (id) => rooms.find((r) => r.id === id), floorsOf);
 
 function fakeCtx(): MapPaintContext & { fills: Array<{ w: number; style: unknown }> } {
   const fills: Array<{ w: number; style: unknown }> = [];
@@ -92,7 +101,11 @@ describe("TierMarks", () => {
     );
     placeOn(marks, [room(1), room(2), room(3)]);
     expect(marks.size).toBe(3);
-    expect([0, 1, 2].map((i) => marks.styleAt(i, "eval"))).toEqual([EVAL_VIEW_STYLE.good, EVAL_VIEW_STYLE.terrible, EVAL_VIEW_STYLE.excellent]);
+    expect([0, 1, 2].map((i) => marks.styleAt(i, "eval"))).toEqual([
+      EVAL_VIEW_STYLE.good,
+      EVAL_VIEW_STYLE.terrible,
+      EVAL_VIEW_STYLE.excellent,
+    ]);
     expect(marks.evalRooms("good")).toBe(1);
   });
 
@@ -111,7 +124,12 @@ describe("TierMarks", () => {
 
   it("drops a kept row whose room now stands somewhere else", () => {
     const marks = new TierMarks();
-    marks.take(tiersOf([[1, "good", "low"], [2, "good", "low"]]));
+    marks.take(
+      tiersOf([
+        [1, "good", "low"],
+        [2, "good", "low"],
+      ]),
+    );
     placeOn(marks, [room(1), { ...room(2), x: 40 }]);
     expect(marks.size).toBe(1);
     placeOn(marks, [room(1), { ...room(2), floor: 3 }]);
@@ -152,9 +170,15 @@ describe("paintTierMarks", () => {
     const evalCtx = fakeCtx();
     expect(paintTierMarks(evalCtx, marks, "eval", tagged)).toBe(2);
     expect(marks.rectAt(1).w).toBeLessThan(MIN_PATTERN_SIDE);
-    expect(evalCtx.fills.map((f) => f.style)).toEqual([`solid|${EVAL_VIEW_STYLE.terrible!.fill}`, `solid|${EVAL_VIEW_STYLE.excellent!.fill}`]);
+    expect(evalCtx.fills.map((f) => f.style)).toEqual([
+      `solid|${EVAL_VIEW_STYLE.terrible!.fill}`,
+      `solid|${EVAL_VIEW_STYLE.excellent!.fill}`,
+    ]);
     const priceCtx = fakeCtx();
     expect(paintTierMarks(priceCtx, marks, "pricing", tagged)).toBe(2);
-    expect(priceCtx.fills.map((f) => f.style)).toEqual([`${RENT_VIEW_STYLE.high!.pattern}|${RENT_VIEW_STYLE.high!.fill}`, `solid|${RENT_VIEW_STYLE.average!.fill}`]);
+    expect(priceCtx.fills.map((f) => f.style)).toEqual([
+      `${RENT_VIEW_STYLE.high!.pattern}|${RENT_VIEW_STYLE.high!.fill}`,
+      `solid|${RENT_VIEW_STYLE.average!.fill}`,
+    ]);
   });
 });

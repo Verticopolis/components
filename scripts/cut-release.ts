@@ -41,7 +41,9 @@ try {
     shell: win,
   });
 
-  console.log(`cut-release: components ${was} -> ${version} (${arg("--version") ? "named" : tier}), changelog section dated ${date}`);
+  console.log(
+    `cut-release: components ${was} -> ${version} (${arg("--version") ? "named" : tier}), changelog section dated ${date}`,
+  );
   console.log(version);
 } catch (e) {
   console.error(`cut-release: ${e instanceof Error ? e.message : String(e)}`);

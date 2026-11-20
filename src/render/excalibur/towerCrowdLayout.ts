@@ -13,7 +13,10 @@ import type { FacilityKind } from "../../model/types";
  *  facility's floor lots, but an ambient walker placed there would stand on the
  *  facility's mid-line and float above its real floor, so `buildWalkers` drops
  *  these lots from its runs. */
-export function coveredUpperStories(units: readonly UnitView[], catalog: Catalog): Map<number, Array<[number, number]>> {
+export function coveredUpperStories(
+  units: readonly UnitView[],
+  catalog: Catalog,
+): Map<number, Array<[number, number]>> {
   const rows = new Map<number, Array<[number, number]>>();
   for (const u of units) {
     const span = catalogFacility(catalog, u.kind).floors;
@@ -77,7 +80,8 @@ export function trafficLots(
     for (let f = t.bottom; f <= t.top; f++) keep(f, t.x - margin, t.x + t.width - 1 + margin);
   }
   for (const u of units) {
-    if (catalogFacility(catalog, u.kind).commercial) keep(u.floor, u.x - SHOP_FRONT_TILES, u.x + u.width - 1 + SHOP_FRONT_TILES);
+    if (catalogFacility(catalog, u.kind).commercial)
+      keep(u.floor, u.x - SHOP_FRONT_TILES, u.x + u.width - 1 + SHOP_FRONT_TILES);
   }
   return lots;
 }

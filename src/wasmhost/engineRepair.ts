@@ -107,9 +107,12 @@ export async function repairEnginePackage(opts: RepairOptions = {}): Promise<Rep
   const digest = "digest" in opts ? opts.digest : browserDigest();
   const store = opts.caches ?? (typeof caches === "undefined" ? undefined : caches);
   const scope = opts.scope ?? (await currentScope());
-  const engineBase = opts.engineBase ?? new URL(`${import.meta.env.BASE_URL}${ENGINE_DIR}`, globalThis.location?.href ?? "http://localhost/").href;
+  const engineBase =
+    opts.engineBase ??
+    new URL(`${import.meta.env.BASE_URL}${ENGINE_DIR}`, globalThis.location?.href ?? "http://localhost/").href;
   const revisions = expected?.revisions;
-  if (!expected || !revisions || !digest || !store || !scope || FILES.some((f) => !revisions[f])) return { ok: false, reason: "unavailable" };
+  if (!expected || !revisions || !digest || !store || !scope || FILES.some((f) => !revisions[f]))
+    return { ok: false, reason: "unavailable" };
   const cacheName = `${PRECACHE_PREFIX}${scope}`;
   // Never create the precache: without the worker's own cache there is
   // nothing for a repaired entry to replace.
@@ -142,7 +145,11 @@ export async function repairEnginePackage(opts: RepairOptions = {}): Promise<Rep
 
   try {
     const cache = await store.open(cacheName);
-    for (const f of fresh) await cache.put(f.key, new Response(f.body as BufferSource, { status: 200, headers: f.type ? { "content-type": f.type } : {} }));
+    for (const f of fresh)
+      await cache.put(
+        f.key,
+        new Response(f.body as BufferSource, { status: 200, headers: f.type ? { "content-type": f.type } : {} }),
+      );
   } catch {
     return { ok: false, reason: "cache" };
   }
@@ -169,14 +176,21 @@ async function safely(f: () => Promise<boolean>): Promise<boolean> {
 }
 
 /** Whether `body` is the file this shell was built for. */
-async function fits(name: string, body: Uint8Array, expected: ExpectedEnginePackage, digest: NonNullable<VerifyOptions["digest"]>): Promise<boolean> {
+async function fits(
+  name: string,
+  body: Uint8Array,
+  expected: ExpectedEnginePackage,
+  digest: NonNullable<VerifyOptions["digest"]>,
+): Promise<boolean> {
   try {
     if (name === ENGINE_BUILD_RECORD) {
       const parsed = parseEngineRecord(new TextDecoder().decode(body));
       if (!parsed.ok || parsed.record.package !== expected.package) return false;
       // The loader recomputes the id from the entries, so repair does too:
       // a record with the right id and damaged entries would be refused again.
-      return hex(await digest(new TextEncoder().encode(canonicalFilesJson(parsed.record.files)))) === parsed.record.package;
+      return (
+        hex(await digest(new TextEncoder().encode(canonicalFilesJson(parsed.record.files)))) === parsed.record.package
+      );
     }
     const want = expected.files[name];
     return !!want && body.length === want.bytes && hex(await digest(body)) === want.sha256;

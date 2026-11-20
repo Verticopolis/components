@@ -18,7 +18,17 @@ import type { TowerEngine } from "./TowerEngine";
 import { climbDrawX, leaveFlight, type Climber } from "../climbPath";
 import { applyCrowdCull, reassertCrowdCull } from "./crowdCull";
 import { FIGURE_ANCHOR, FIGURE_H, FIGURE_W } from "./peopleGfx";
-import { advanceGlide, figureKey, newGlide, newStepClock, stepProgress, strideFrame, tickStepClock, type Glide, type StepClock } from "./crowdLook";
+import {
+  advanceGlide,
+  figureKey,
+  newGlide,
+  newStepClock,
+  stepProgress,
+  strideFrame,
+  tickStepClock,
+  type Glide,
+  type StepClock,
+} from "./crowdLook";
 import { doorPlane, personFigure, ridingHidden, waitShaftMid, walkingPlane, type CrowdLook } from "./crowdFigure";
 import { pushThroughDoors, turnHallDoors, type Pusher } from "./towerHallDoors";
 
@@ -29,7 +39,6 @@ import { pushThroughDoors, turnHallDoors, type Pusher } from "./towerHallDoors";
  * `TowerEngine.ts`; the class keeps thin delegations. Pure code move: the
  * positioning, cadence and Excalibur calls are unchanged.
  */
-
 
 /** Retained-actor reconciliation tail: kill and forget every entry the
  *  current pass didn't mark as seen. Each reconciler supplies its own
@@ -123,7 +132,13 @@ export function reconcileCrowd(engine: TowerEngine): void {
     seen.add(p.id);
     let rec = engine.crowdActors.get(p.id);
     if (!rec) {
-      const a = new ex.Actor({ pos: ex.vec(0, 0), width: FIGURE_W, height: FIGURE_H, anchor: FIGURE_ANCHOR, z: Z.crowd });
+      const a = new ex.Actor({
+        pos: ex.vec(0, 0),
+        width: FIGURE_W,
+        height: FIGURE_H,
+        anchor: FIGURE_ANCHOR,
+        z: Z.crowd,
+      });
       engine.engine.add(a);
       rec = { actor: a, glide: newGlide(p.x, p.fy, (p.seed & 1) === 1), key: -1, inCar: ridingHidden(p) };
       engine.crowdActors.set(p.id, rec);
@@ -169,7 +184,15 @@ function positionPerson(engine: TowerEngine, p: PersonView, rec: CrowdActor, loo
   }
   // A hidden rider still follows the engine, so it reappears where it gets
   // out instead of gliding there from the floor it boarded on.
-  advanceGlide(rec.glide, doorX ?? p.x, p.fy, look.clock.stepped, look.progress, wasShown && !hidden, p.state === "riding");
+  advanceGlide(
+    rec.glide,
+    doorX ?? p.x,
+    p.fy,
+    look.clock.stepped,
+    look.progress,
+    wasShown && !hidden,
+    p.state === "riding",
+  );
   // A rider leaves no trail for the doors: their next step on foot is
   // measured from where they get out, not where they got in.
   if (hidden) {
@@ -180,7 +203,10 @@ function positionPerson(engine: TowerEngine, p: PersonView, rec: CrowdActor, loo
   // Use the continuous floor (fy) so a stair/escalator climber animates
   // smoothly between floors; for every other state fy equals the floor.
   // A climber is drawn along the flight's run, not up its middle.
-  const climbX = p.state === "climbing" ? climbDrawX(rec, engine.sim.tower.transports, p.x, p.floor, g.fy, g.toFy < g.fromFy, engine.flightPass.winding) : undefined;
+  const climbX =
+    p.state === "climbing"
+      ? climbDrawX(rec, engine.sim.tower.transports, p.x, p.floor, g.fy, g.toFy < g.fromFy, engine.flightPass.winding)
+      : undefined;
   if (climbX !== undefined) g.left = rec.climbLeft === true;
   rec.actor.pos = ex.vec(engine.worldX(climbX ?? g.x), engine.worldYTop(g.fy) + FLOOR - 3);
   // Inside a revolving door between lobby halls (#2068) a walker pushes it:
@@ -247,7 +273,13 @@ export function syncMotion(engine: TowerEngine): void {
       // One graphic per car, drawn from the tower's shared cab parts; a new
       // state only points it at other parts (`cabGraphics.ts`).
       const cab = new CabGraphic({ w, kind: t.kind }, IDLE_CAR);
-      const a = new ex.Actor({ pos: ex.vec(engine.worldX(t.x), -t.carPositions[i] * FLOOR), width: w, height: FLOOR, anchor: ex.vec(0, 0), z: Z.cab });
+      const a = new ex.Actor({
+        pos: ex.vec(engine.worldX(t.x), -t.carPositions[i] * FLOOR),
+        width: w,
+        height: FLOOR,
+        anchor: ex.vec(0, 0),
+        z: Z.cab,
+      });
       a.graphics.use(cab);
       engine.engine.add(a);
       const entry = { actor: a, t, i, w, kind: t.kind, cab, shown: carKey(IDLE_CAR) };
@@ -257,14 +289,22 @@ export function syncMotion(engine: TowerEngine): void {
       engine.carActors.push(entry);
     }
   }
-  addMetros(engine, engine.sim.tower.units.filter((u) => u.kind === "metro"));
+  addMetros(
+    engine,
+    engine.sim.tower.units.filter((u) => u.kind === "metro"),
+  );
   // Garbage trucks: one per recycling center, parked off-screen until the
   // collection hour (updateMotion drives them in and out along the bottom
   // story, exactly the metro-train pattern).
   for (const u of engine.sim.tower.units) {
     if (u.kind !== "recycling") continue;
     const w = 68;
-    const cv = new ex.Canvas({ width: w, height: GARBAGE_TRUCK_H, cache: true, draw: (ctx) => drawGarbageTruck(ctx, w) });
+    const cv = new ex.Canvas({
+      width: w,
+      height: GARBAGE_TRUCK_H,
+      cache: true,
+      draw: (ctx) => drawGarbageTruck(ctx, w),
+    });
     const a = new ex.Actor({
       pos: ex.vec(engine.worldX(u.x), engine.worldYTop(u.floor) + FLOOR - GARBAGE_TRUCK_H),
       width: w,
@@ -299,7 +339,13 @@ export function syncMotion(engine: TowerEngine): void {
     if (x1w <= x0w) continue;
     const seed = (floor * 97 + r.min * 13) | 0;
     const cv = new ex.Canvas({ width: 16, height: 8, cache: true, draw: (ctx) => drawStreetCar(ctx, seed) });
-    const a = new ex.Actor({ pos: ex.vec(x0w, engine.worldYTop(floor) + FLOOR - 10), width: 16, height: 8, anchor: ex.vec(0, 0), z: Z.streetCar });
+    const a = new ex.Actor({
+      pos: ex.vec(x0w, engine.worldYTop(floor) + FLOOR - 10),
+      width: 16,
+      height: 8,
+      anchor: ex.vec(0, 0),
+      z: Z.streetCar,
+    });
     a.graphics.use(cv);
     a.graphics.isVisible = false;
     engine.engine.add(a);
@@ -310,7 +356,6 @@ export function syncMotion(engine: TowerEngine): void {
   // is culled-out, hide it again before it can flash for a frame.
   reassertCrowdCull(engine);
 }
-
 
 /** Refresh the per-floor occupancy map (0..1) when the hour or layout changes,
  *  so decorative passers-by appear only where tenants actually are. */
@@ -419,8 +464,10 @@ export function updateMotion(engine: TowerEngine, elapsedMs = 1000 / 60): void {
     const base = engine.worldX(tk.u.x);
     const uw = tk.u.width * TILE;
     let x: number;
-    if (p < 0.25) x = base - 60 + (p / 0.25) * 60; // roll in from the left
-    else if (p < 0.7) x = base; // loading at the mouth
+    if (p < 0.25)
+      x = base - 60 + (p / 0.25) * 60; // roll in from the left
+    else if (p < 0.7)
+      x = base; // loading at the mouth
     else x = base + ((p - 0.7) / 0.3) * (uw + 20); // drive off across the deck
     tk.actor.pos = ex.vec(x, engine.worldYTop(tk.u.floor) + FLOOR - GARBAGE_TRUCK_H);
   }

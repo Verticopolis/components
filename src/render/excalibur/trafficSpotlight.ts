@@ -43,7 +43,13 @@ const SHAFT_EDGE = "#ffd24a";
 
 /** Put the spotlight on the line over `span` on `floor`, waiting for the
  *  elevator over `shaft`, replacing any still up. */
-export function spotlightTraffic(engine: TowerEngine, floor: number, span: SpotSpan, shaft: SpotSpan, nowMs = performance.now()): void {
+export function spotlightTraffic(
+  engine: TowerEngine,
+  floor: number,
+  span: SpotSpan,
+  shaft: SpotSpan,
+  nowMs = performance.now(),
+): void {
   spots.set(engine, { floor, span, shaft, startMs: nowMs });
 }
 
@@ -62,7 +68,11 @@ export function spotlightAlpha(ageMs: number, reducedMotion: boolean): number {
 }
 
 /** Paint the spotlight, if one is up, and drop it once it is over. */
-export function drawTrafficSpotlight(engine: TowerEngine, ctx: CanvasRenderingContext2D, nowMs = performance.now()): void {
+export function drawTrafficSpotlight(
+  engine: TowerEngine,
+  ctx: CanvasRenderingContext2D,
+  nowMs = performance.now(),
+): void {
   const spot = spots.get(engine);
   if (!spot) return;
   const alpha = spotlightAlpha(nowMs - spot.startMs, engine.reducedMotion);

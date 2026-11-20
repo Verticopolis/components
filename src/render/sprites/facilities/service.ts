@@ -40,7 +40,14 @@ function staffSeed(u: Pick<UnitView, "kind" | "floor" | "x">): number {
 
 // ---- Security ---------------------------------------------------------------
 
-export function drawSecurity(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x">, x: number, y: number, w: number, h: number): void {
+export function drawSecurity(
+  d: DrawCtx,
+  u: Pick<UnitView, "kind" | "floor" | "x">,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): void {
   const ctx = d.ctx;
   const RW = 8 * TILE;
   const RH = FLOOR;
@@ -68,14 +75,16 @@ export function drawSecurity(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x
   // The red alarm light hangs on the wall with the key rack below it, clear of
   // the light's glow. Both sit clear of the console, the guard and the badge,
   // so drawing them first changes no pixel and keeps them on the shell.
-  const rackX = 70, rackY = 14;
+  const rackX = 70,
+    rackY = 14;
   F(rackX, rackY, 8, 5, "#5A4A36");
   for (let k = 0; k < 4; k++) Fu(rackX + 1 + k * 2, rackY + 5, 1, 2, "#D8B05A"); // key rack pins, one object repeated
   F(W - 8, 7, 4, 4, "#E85D5D");
   glow(F, W - 6, 9, "#FF6B6B");
   layerBreak(ctx); // the shell ends; the console, guard and badge follow
   // Console desk with a seated guard behind it.
-  const deskX = 53, deskW = 24;
+  const deskX = 53,
+    deskW = 24;
   box(F, deskX, fy - 8, deskW, 8, "#2A3550");
   F(deskX, fy - 8, deskW, 1, "#3E4A66");
   personSeated(ctx, sx(deskX + 8), sy(fy - 8), staffSeed(u) * 3 + 5);
@@ -90,7 +99,14 @@ export function drawSecurity(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x
 
 // ---- Medical ----------------------------------------------------------------
 
-export function drawMedical(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x">, x: number, y: number, w: number, h: number): void {
+export function drawMedical(
+  d: DrawCtx,
+  u: Pick<UnitView, "kind" | "floor" | "x">,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): void {
   const ctx = d.ctx;
   const RW = 16 * TILE;
   const RH = FLOOR;
@@ -148,7 +164,8 @@ export function drawMedical(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x"
   whiteCoat(ctx, doctorX, foot);
   // Stocked supply cabinet, sized so the five bottle columns sit flush against
   // both bevels, the same at each end.
-  const cabX = 95, cabW = 21;
+  const cabX = 95,
+    cabW = 21;
   box(F, cabX, fy - 16, cabW, 16, "#F4F4F0");
   const bottles = ["#9FD0C8", "#E8C9A0", "#5db4e8", "#F4A0A0", "#DcE8C0"];
   // Ten copies of one bottle, so they take the uniform fill: off the shipped
@@ -170,7 +187,14 @@ export function drawMedical(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x"
 
 // ---- Housekeeping -----------------------------------------------------------
 
-export function drawHousekeeping(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" | "x">, x: number, y: number, w: number, h: number): void {
+export function drawHousekeeping(
+  d: DrawCtx,
+  u: Pick<UnitView, "kind" | "floor" | "x">,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): void {
   const ctx = d.ctx;
   const RW = 8 * TILE;
   const RH = FLOOR;
@@ -182,7 +206,8 @@ export function drawHousekeeping(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" 
   layerBreak(ctx); // the shell ends; the shelf, cart, mop and housekeeper follow
   // Linen shelf. The four stacks are placed off the carcass width, so every
   // shelf keeps the same end margin and the same gap.
-  const shelfX = 4, shelfW = 27;
+  const shelfX = 4,
+    shelfW = 27;
   box(F, shelfX, 6, shelfW, fy - 8, "#9A8468");
   const linens = ["#F4F0EC", "#CFE0FF", "#F4F0EC", "#E8D8C0"];
   for (let r = 0; r < 3; r++) {
@@ -191,7 +216,8 @@ export function drawHousekeeping(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" 
   }
   // Teal supply cart with towels and spray bottles, plus its wheels. The
   // towels and bottles each keep a 1px gap, so no item hides another.
-  const cartX = 41, cartW = 18;
+  const cartX = 41,
+    cartW = 18;
   box(F, cartX, fy - 10, cartW, 8, "#3E8E8E");
   for (let k = 0; k < 2; k++) Fu(cartX + 2 + k * 5, fy - 14, 4, 4, k ? "#CFE0FF" : "#F4F0EC");
   for (let k = 0; k < 2; k++) Fu(cartX + 12 + k * 3, fy - 13, 2, 3, k ? "#5db4e8" : "#E85D5D");
@@ -206,7 +232,8 @@ export function drawHousekeeping(d: DrawCtx, u: Pick<UnitView, "kind" | "floor" 
   F(60, fy - 6, 6, 2, "#CFE0FF", 0.6);
   // Towel rack: four bars on a 3px pitch leave 2px reveals between them and
   // 2px inside each end, the carcass bevel included.
-  const rackX = W - 20, rackW = 14;
+  const rackX = W - 20,
+    rackW = 14;
   box(F, rackX, fy - 9, rackW, 9, "#B8A47E");
   for (let k = 0; k < 4; k++) Fu(rackX + 2 + k * 3, fy - 9, 1, 9, "#9A8460");
   F(rackX + 2, fy - 11, 10, 3, "#F4F0EC");

@@ -38,7 +38,12 @@ export function bakePeople(): PeopleGraphics {
               ctx.translate(FIGURE_W, 0);
               ctx.scale(-1, 1);
             }
-            drawPerson(ctx, BODY_X, FIGURE_FOOT, LOOKS[f.look], { lit: f.lit, frame: f.frame, pose: f.pose, mood: f.mood });
+            drawPerson(ctx, BODY_X, FIGURE_FOOT, LOOKS[f.look], {
+              lit: f.lit,
+              frame: f.frame,
+              pose: f.pose,
+              mood: f.mood,
+            });
             ctx.restore();
           },
         });

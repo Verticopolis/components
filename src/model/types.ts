@@ -139,7 +139,18 @@ export function isUnitState(v: unknown): v is UnitState {
  *  Modern, from 3 stars, a home without parking for its households (#1973).
  *  It holds the home at Good and never empties it. */
 export type VacateReason =
-  | "access" | "noTransport" | "congestion" | "rent" | "noise" | "transportFar" | "lobbyFar" | "unmetDemand" | "relocation" | "trash" | "parking" | "homeParking";
+  | "access"
+  | "noTransport"
+  | "congestion"
+  | "rent"
+  | "noise"
+  | "transportFar"
+  | "lobbyFar"
+  | "unmetDemand"
+  | "relocation"
+  | "trash"
+  | "parking"
+  | "homeParking";
 
 /** Player-facing phrase for each departure cause (toasts + inspector). Kept
  *  transport-neutral: a floor is "served" by any route to the lobby (elevator,
@@ -353,7 +364,10 @@ export interface Transport {
  * these as optional; `Simulation.deserialize` restores the defaults. Older saves
  * (v1/v2) always carry the full shape.
  */
-export interface SerializedUnit extends Omit<Unit, "width" | "state" | "satisfaction" | "occupants" | "everOccupied" | "pendingIncome" | "label"> {
+export interface SerializedUnit extends Omit<
+  Unit,
+  "width" | "state" | "satisfaction" | "occupants" | "everOccupied" | "pendingIncome" | "label"
+> {
   width?: number;
   state?: UnitState;
   satisfaction?: number;

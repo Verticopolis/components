@@ -6,7 +6,9 @@ import { FACILITY_PRESENTATION, facilityColor, facilityDescription } from "./fac
 describe("the facility presentation table (#921)", () => {
   it("covers exactly the kinds the catalogs list, with a hex color and a description each", () => {
     for (const mode of ["classic", "modern"] as const) {
-      const kinds = catalogFor(mode).facilities.map((f) => f.key).sort();
+      const kinds = catalogFor(mode)
+        .facilities.map((f) => f.key)
+        .sort();
       expect(Object.keys(FACILITY_PRESENTATION).sort(), mode).toEqual(kinds);
       for (const kind of kinds) {
         expect(facilityColor(kind), kind).toMatch(/^#[0-9a-f]{6}$/i);
@@ -27,7 +29,9 @@ describe("the facility presentation table (#921)", () => {
     for (const mode of ["classic", "modern"] as const) {
       const catalog = catalogFor(mode);
       const hall = catalogFacility(catalog, "weddingHall");
-      expect(facilityDescription("weddingHall", catalog.world), mode).toContain(`${hall.width} tiles wide and ${words[hall.floors]} floors tall`);
+      expect(facilityDescription("weddingHall", catalog.world), mode).toContain(
+        `${hall.width} tiles wide and ${words[hall.floors]} floors tall`,
+      );
     }
   });
 });

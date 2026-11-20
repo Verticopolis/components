@@ -71,11 +71,19 @@ function entry(label: string, band: HeatBand): HeatLegendEntry {
 }
 
 /** The Traffic legend, clearest first. It counts floors. */
-export const TRAFFIC_LEGEND: ReadonlyArray<HeatLegendEntry> = [entry("Clear", "good"), entry("Busy", "middling"), entry("Jammed", "bad")];
+export const TRAFFIC_LEGEND: ReadonlyArray<HeatLegendEntry> = [
+  entry("Clear", "good"),
+  entry("Busy", "middling"),
+  entry("Jammed", "bad"),
+];
 
 /** The Occupancy legend, fullest first. It counts floors with rooms that
  *  take tenants or guests. */
-export const OCCUPANCY_LEGEND: ReadonlyArray<HeatLegendEntry> = [entry("Mostly full", "good"), entry("Half full", "middling"), entry("Mostly empty", "bad")];
+export const OCCUPANCY_LEGEND: ReadonlyArray<HeatLegendEntry> = [
+  entry("Mostly full", "good"),
+  entry("Half full", "middling"),
+  entry("Mostly empty", "bad"),
+];
 
 /** The cell fields the views read. */
 export type HeatCellView = Pick<HeatCell, "floor" | "minX" | "maxX" | "severity">;
@@ -107,7 +115,14 @@ export class HeatMarks {
     for (let i = 0; i < n; i++) {
       const cell = cells[i];
       const band = heatBand(cell.severity);
-      if (!changed && this.floors[i] === cell.floor && this.lefts[i] === cell.minX && this.rights[i] === cell.maxX && this.bands[i] === band) continue;
+      if (
+        !changed &&
+        this.floors[i] === cell.floor &&
+        this.lefts[i] === cell.minX &&
+        this.rights[i] === cell.maxX &&
+        this.bands[i] === band
+      )
+        continue;
       changed = true;
       this.floors[i] = cell.floor;
       this.lefts[i] = cell.minX;

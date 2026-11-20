@@ -95,9 +95,7 @@ export class CrowdLayer {
       // bright survives; noise never reads as static), then the per-scene
       // murmur level.
       this.murmurGain = new Tone.Gain(0.4).connect(this.master);
-      this.murmurFilter = new Tone.Filter({ type: "lowpass", frequency: 900, rolloff: -48 }).connect(
-        this.murmurGain,
-      );
+      this.murmurFilter = new Tone.Filter({ type: "lowpass", frequency: 900, rolloff: -48 }).connect(this.murmurGain);
       this.toneGain = new Tone.Gain(0.8).connect(this.master);
       this.pingSynth = new LightPolySynth({
         oscillator: { type: "sine" },
@@ -111,9 +109,7 @@ export class CrowdLayer {
       }).connect(this.toneGain);
       this.thudSynth.volume.value = -8;
       this.thudSynth.maxPolyphony = 8;
-      this.noiseFilter = new Tone.Filter({ type: "lowpass", frequency: 900, rolloff: -48 }).connect(
-        this.toneGain,
-      );
+      this.noiseFilter = new Tone.Filter({ type: "lowpass", frequency: 900, rolloff: -48 }).connect(this.toneGain);
       this.noiseSynth = new Tone.NoiseSynth({
         noise: { type: "pink" },
         envelope: { attack: 0.004, decay: 0.1, sustain: 0 },
@@ -185,9 +181,7 @@ export class CrowdLayer {
       // perceptual volume sliders fixed. Empty stays exactly zero.
       this.rampOnChange(
         this.master.gain,
-        this.activity <= 0
-          ? 0
-          : LAYER_LEVEL * (0.38 + 0.62 * detail) * Math.sqrt(Math.min(1, this.activity)),
+        this.activity <= 0 ? 0 : LAYER_LEVEL * (0.38 + 0.62 * detail) * Math.sqrt(Math.min(1, this.activity)),
         0.5,
       );
       if (this.humGain) this.rampOnChange(this.humGain.gain, key === "outside" && this.activity > 0 ? 0.5 : 0, 1.2);
@@ -200,10 +194,7 @@ export class CrowdLayer {
         // muted every lightly-visited venue). Empty rooms still fall fully
         // silent through the activity gate above, so the honest-rooms rule
         // holds: no people, no voices.
-        const want =
-          this.activity <= 0
-            ? 0
-            : Math.max(1, Math.round(spec.murmur.maxTalkers * Math.min(1, crowd)));
+        const want = this.activity <= 0 ? 0 : Math.max(1, Math.round(spec.murmur.maxTalkers * Math.min(1, crowd)));
         for (let i = 0; i < this.slots.length; i++) {
           this.setSlotActive(i, this.activity > 0 && i < want, key);
         }
@@ -276,9 +267,7 @@ export class CrowdLayer {
       return;
     }
     const spec = CROWD_SCENES[key].murmur;
-    slot.semi =
-      spec?.semi ??
-      PITCH_MAX_SEMI + (PITCH_MIN_SEMI - PITCH_MAX_SEMI) * pseudo(this.tick++ * 40503 + i * 13);
+    slot.semi = spec?.semi ?? PITCH_MAX_SEMI + (PITCH_MIN_SEMI - PITCH_MAX_SEMI) * pseudo(this.tick++ * 40503 + i * 13);
     const loop = (): void => {
       slot.timer = null;
       // Every bail-out clears the active flag so update() can restart the
@@ -312,8 +301,7 @@ export class CrowdLayer {
       if (this.activity > 0) {
         if (el.cluster && clusterLeft <= 0) {
           clusterLeft =
-            el.cluster.min +
-            Math.floor(pseudo(this.tick++ * 40503) * (el.cluster.max - el.cluster.min + 1));
+            el.cluster.min + Math.floor(pseudo(this.tick++ * 40503) * (el.cluster.max - el.cluster.min + 1));
         }
         this.fireElement(el);
         if (el.cluster) clusterLeft--;
@@ -327,7 +315,10 @@ export class CrowdLayer {
         // Gated-off scene in view (an office at night): idle slowly instead of
         // polling at keystroke rate, and let any cluster finish later.
         clusterLeft = 0;
-        gap = Math.max(2, el.cluster ? draw(el.cluster.pauseMin, el.cluster.pauseVar, 3) : draw(el.rateMin, el.rateVar, 1));
+        gap = Math.max(
+          2,
+          el.cluster ? draw(el.cluster.pauseMin, el.cluster.pauseVar, 3) : draw(el.rateMin, el.rateVar, 1),
+        );
       }
       const timer = setTimeout(() => {
         this.elementTimers.delete(timer);
@@ -335,10 +326,13 @@ export class CrowdLayer {
       }, gap * 1000);
       this.elementTimers.add(timer);
     };
-    const first = setTimeout(() => {
-      this.elementTimers.delete(first);
-      loop();
-    }, pseudo(this.tick++ * 19349663) * 2000);
+    const first = setTimeout(
+      () => {
+        this.elementTimers.delete(first);
+        loop();
+      },
+      pseudo(this.tick++ * 19349663) * 2000,
+    );
     this.elementTimers.add(first);
   }
 
@@ -407,9 +401,19 @@ export class CrowdLayer {
     this.cinema?.dispose();
     this.metro?.dispose();
     const nodes = [
-      this.pingSynth, this.thudSynth, this.noiseSynth, this.noiseFilter,
-      this.humLow, this.humHigh, this.humLfo, this.humSwell, this.humGain,
-      this.toneGain, this.murmurFilter, this.murmurGain, this.master,
+      this.pingSynth,
+      this.thudSynth,
+      this.noiseSynth,
+      this.noiseFilter,
+      this.humLow,
+      this.humHigh,
+      this.humLfo,
+      this.humSwell,
+      this.humGain,
+      this.toneGain,
+      this.murmurFilter,
+      this.murmurGain,
+      this.master,
     ];
     for (const n of nodes) {
       try {

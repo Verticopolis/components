@@ -6,26 +6,12 @@ import { allJobs } from "./browserEntry";
 import { TILE } from "../scale";
 import { hash01, plantRect, plantSpots, sceneryPieces, skylineRects } from "../sceneryLayout";
 import { CLOUD_COUNT, cloudSeed } from "../sprites/sky";
-import {
-  FOUNTAIN_FRAMES,
-  LAMP_STEPS,
-  TREE_VARIANTS,
-  depthData,
-  sceneryData,
-  sceneryJobs,
-  skyData,
-} from "./scenery";
+import { FOUNTAIN_FRAMES, LAMP_STEPS, TREE_VARIANTS, depthData, sceneryData, sceneryJobs, skyData } from "./scenery";
 
 describe("scenery in the atlas", () => {
   const jobs = sceneryJobs();
-  const names = new Set(
-    jobs.flatMap((j) =>
-      j.type === "anim" ? j.frames.map((_, i) => `${j.name}/${i}`) : [j.name],
-    ),
-  );
-  const animations = new Set(
-    jobs.filter((j) => j.type === "anim").map((j) => j.name),
-  );
+  const names = new Set(jobs.flatMap((j) => (j.type === "anim" ? j.frames.map((_, i) => `${j.name}/${i}`) : [j.name])));
+  const animations = new Set(jobs.filter((j) => j.type === "anim").map((j) => j.name));
 
   it("bakes every piece the game draws outside the tower", () => {
     for (const n of [
@@ -41,16 +27,10 @@ describe("scenery in the atlas", () => {
       expect(names.has(`scenery/plaza-lamp/a${pct}`)).toBe(true);
       expect(names.has(`scenery/street-lamp/a${pct}`)).toBe(true);
     }
-    for (let v = 0; v < TREE_VARIANTS; v++)
-      expect(names.has(`scenery/tree/v${v}`)).toBe(true);
+    for (let v = 0; v < TREE_VARIANTS; v++) expect(names.has(`scenery/tree/v${v}`)).toBe(true);
     expect(animations.has("scenery/fountain")).toBe(true);
-    expect(
-      [...names].filter((n) => n.startsWith("scenery/fountain/")),
-    ).toHaveLength(FOUNTAIN_FRAMES);
-    expect(
-      names.has("scenery/ground/pave/plain") &&
-        names.has("scenery/ground/pave/joint"),
-    ).toBe(true);
+    expect([...names].filter((n) => n.startsWith("scenery/fountain/"))).toHaveLength(FOUNTAIN_FRAMES);
+    expect(names.has("scenery/ground/pave/plain") && names.has("scenery/ground/pave/joint")).toBe(true);
   });
 
   it("bakes a grass tile for every variant the lot shows, and maps every lot tile to one", () => {
@@ -67,21 +47,18 @@ describe("scenery in the atlas", () => {
   it("publishes the game's own placement table", () => {
     const data = sceneryData();
     expect(data.ground.runs[1]).toMatchObject(sceneryPieces(catalogFor("modern").world).roundabout);
-    expect(data.props[0]).toMatchObject({ x: sceneryPieces(catalogFor("modern").world).fountain.x, y: sceneryPieces(catalogFor("modern").world).fountain.y });
+    expect(data.props[0]).toMatchObject({
+      x: sceneryPieces(catalogFor("modern").world).fountain.x,
+      y: sceneryPieces(catalogFor("modern").world).fountain.y,
+    });
     expect(data.ground.runs[4]).toMatchObject(sceneryPieces(catalogFor("modern").world).sidewalk);
   });
 
   it("places only frames it bakes (a lamp by its steps)", () => {
     const data = sceneryData();
-    for (const r of data.ground.runs)
-      expect(names.has(r.frame), r.frame).toBe(true);
+    for (const r of data.ground.runs) expect(names.has(r.frame), r.frame).toBe(true);
     for (const p of data.props)
-      expect(
-        names.has(p.frame) ||
-          animations.has(p.frame) ||
-          names.has(`${p.frame}/a100`),
-        p.frame,
-      ).toBe(true);
+      expect(names.has(p.frame) || animations.has(p.frame) || names.has(`${p.frame}/a100`), p.frame).toBe(true);
   });
 
   it("publishes skyline and plant rules that rebuild the game's own layout from the seed", () => {
@@ -125,7 +102,10 @@ describe("scenery in the atlas", () => {
     const all = allJobs().map((j) => j.name);
     for (const p of planes)
       for (const f of p.frames)
-        expect(all.some((n) => n === f || n.startsWith(`${f}/`)), f).toBe(true);
+        expect(
+          all.some((n) => n === f || n.startsWith(`${f}/`)),
+          f,
+        ).toBe(true);
     const sky = skyData();
     expect(sky.clouds.list).toHaveLength(CLOUD_COUNT);
     expect(sky.clouds.list[1].offset).toBe(cloudSeed(1) * 53);
@@ -144,14 +124,23 @@ describe("scenery in the atlas", () => {
       draw(ctx);
       return ops;
     };
-    for (const [w, h, seed] of [[30, 68, 4400], [24, 54, 7], [36, 81, 123456]]) {
+    for (const [w, h, seed] of [
+      [30, 68, 4400],
+      [24, 54, 7],
+      [36, 81, 123456],
+    ]) {
       const T = P.tree;
       const trunkW = Math.max(T.trunk.minW, Math.round(w * T.trunk.w));
       const trunkH = Math.round(h * T.trunk.h);
       const want: unknown[] = [T.trunk.color, [Math.round(w / 2 - trunkW / 2), h - trunkH, trunkW, trunkH]];
       T.canopy.forEach((c, li) => {
         const jitter = Math.round((hash01(seed + li * T.jitterKey) - 0.5) * 2);
-        want.push(c.color, [Math.round((w * (1 - c.w)) / 2) + jitter, Math.round(h - trunkH - h * c.y), Math.round(w * c.w), Math.round(h * T.canopyH)]);
+        want.push(c.color, [
+          Math.round((w * (1 - c.w)) / 2) + jitter,
+          Math.round(h - trunkH - h * c.y),
+          Math.round(w * c.w),
+          Math.round(h * T.canopyH),
+        ]);
       });
       expect(record((ctx) => drawTree(ctx, w, h, seed))).toEqual(want);
       const B = P.bush;

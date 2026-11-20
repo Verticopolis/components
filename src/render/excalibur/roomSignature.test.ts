@@ -64,13 +64,26 @@ function spyCtx(): { ctx: CanvasRenderingContext2D; log: string[] } {
 let nextId = 1;
 function unit(kind: FacilityKind, over: Partial<Unit> = {}): Unit {
   return {
-    id: nextId++, kind, floor: 10, x: 20, width: kindFacts(kind).width, state: "occupied",
-    satisfaction: 0.8, occupants: 3, ...over,
+    id: nextId++,
+    kind,
+    floor: 10,
+    x: 20,
+    width: kindFacts(kind).width,
+    state: "occupied",
+    satisfaction: 0.8,
+    occupants: 3,
+    ...over,
   } as Unit;
 }
 
-const scene = (hour: number, over: Partial<RoomSigScene> = {}): RoomSigScene =>
-  ({ hour, lit: true, unchained: false, parkingUse: 0, recycleFill: 0, ...over });
+const scene = (hour: number, over: Partial<RoomSigScene> = {}): RoomSigScene => ({
+  hour,
+  lit: true,
+  unchained: false,
+  parkingUse: 0,
+  recycleFill: 0,
+  ...over,
+});
 
 /** The draw log for `u` at `hour` under fixed lighting, painted the way the
  *  region compositor bakes a settled room (`paintSettledUnit`, so the same
@@ -143,7 +156,11 @@ const BAKED: Record<UnitState, boolean> = {
   gutted: true,
 };
 const SETTLED = (Object.keys(BAKED) as UnitState[]).filter((s) => BAKED[s]);
-const SPOTS = [{ floor: 10, x: 20 }, { floor: 11, x: 37 }, { floor: 23, x: 58 }] as const;
+const SPOTS = [
+  { floor: 10, x: 20 },
+  { floor: 11, x: 37 },
+  { floor: 23, x: 58 },
+] as const;
 
 /** Nobody home, a full room, and a full room with two out for a meal. */
 const CROWDS: Partial<Unit>[] = [{ occupants: 0 }, { occupants: 3 }, { occupants: 3, outForMeal: 2 }];
