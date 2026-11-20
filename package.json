@@ -75,7 +75,7 @@
     "provenance": true
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p e2e/tsconfig.json && tsc --noEmit -p gallery/tsconfig.json",
     "lint": "eslint src",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
