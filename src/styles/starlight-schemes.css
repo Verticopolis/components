@@ -104,7 +104,8 @@
     background: #ffff00;
     color: #000000;
   }
-  html[data-scheme="high_contrast"] .sidebar-content .group-label .large {
+  /* [data-theme] outranks the light theme's own label color. */
+  html[data-scheme="high_contrast"][data-theme] .sidebar-content .group-label .large {
     color: #ffffff;
   }
   html[data-scheme="high_contrast"] .vc-bar-game,
