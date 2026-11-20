@@ -1,6 +1,7 @@
 /**
- * Message boxes: the package's one modal dialog (`ModalShell` from
- * `windows/uiModal`) opening sample views. The box blocks the page under its
+ * Message boxes: sample boxes (`messageBoxView` from `windows/messageBox`)
+ * opened in the package's one modal dialog (`ModalShell` from
+ * `windows/uiModal`). The box blocks the page under its
  * backdrop until it is answered, as a 1995 message box did; Esc, the ✕ and a
  * press on the backdrop close it. The dialog's look is
  * `styles/game/dialogs.css`, keyed on the dialog's `#modal` id.
@@ -8,6 +9,7 @@
 import { html, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { ModalShell, type ModalView } from "../lib/ui/uiModal.js";
+import { messageBoxView } from "../lib/ui/messageBox.js";
 
 /** The sample boxes, each opened by its own button. */
 interface Sample {
@@ -17,36 +19,47 @@ interface Sample {
   readonly notice?: string;
 }
 
-const actions = (...buttons: TemplateResult[]) => html`<div class="modal-actions modal-footer">${buttons}</div>`;
-
 const SAMPLES: readonly Sample[] = [
   {
     button: "A message…",
-    view: (close) => ({
-      title: "About Verticopolis components",
-      body: html`<p>The windows, menus, sprites and sounds of Verticopolis, in one package.</p>
-        ${actions(html`<button type="button" class="btn primary" @click=${close}>OK</button>`)}`,
-    }),
+    view: (close) =>
+      messageBoxView({
+        title: "About Verticopolis components",
+        text: "The windows, menus, sprites and sounds of Verticopolis, in one package.",
+        buttons: [{ label: "OK", primary: true, onPress: close }],
+      }),
   },
   {
     button: "A question…",
-    view: (close) => ({
-      title: "Sample Tower",
-      body: html`<p>Save the changes to Sample Tower before closing it?</p>
-        ${actions(
-          html`<button type="button" class="btn primary" @click=${close}>Save</button>`,
-          html`<button type="button" class="btn" @click=${close}>Don't Save</button>`,
-          html`<button type="button" class="btn" @click=${close}>Cancel</button>`,
-        )}`,
-    }),
+    view: (close) =>
+      messageBoxView({
+        title: "Sample Tower",
+        text: "Save the changes to Sample Tower before closing it?",
+        buttons: [
+          { label: "Save", primary: true, onPress: close },
+          { label: "Don't Save", onPress: close },
+          { label: "Cancel", onPress: close },
+        ],
+      }),
+  },
+  {
+    button: "A warning…",
+    view: (close) =>
+      messageBoxView({
+        title: "Sample Tower",
+        icon: "warning",
+        text: ["Sample Tower could not be saved.", "This browser's storage is full."],
+        buttons: [{ label: "OK", primary: true, onPress: close }],
+      }),
   },
   {
     button: "A notice…",
-    view: (close) => ({
-      title: "Open",
-      body: html`<p>Pick a tower file to open.</p>
-        ${actions(html`<button type="button" class="btn" @click=${close}>Close</button>`)}`,
-    }),
+    view: (close) =>
+      messageBoxView({
+        title: "Open",
+        text: "Pick a tower file to open.",
+        buttons: [{ label: "Close", onPress: close }],
+      }),
     notice: "That file is not a tower. Pick another one.",
   },
 ];
