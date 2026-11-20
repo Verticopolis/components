@@ -39,7 +39,7 @@ export interface HelpWindow extends DeskFrame {
 }
 
 const barTemplate = (a: HelpWindowActions, nav: HelpNav): TemplateResult =>
-  html`<div class="desk-help-bar" role="toolbar" aria-label="Help"><button type="button" class="btn" @click=${a.contents}>Contents</button><button type="button" class="btn" ?disabled=${!nav.back} @click=${a.back}>Back</button><button type="button" class="btn" ?disabled=${!nav.forward} @click=${a.forward}>Forward</button><button type="button" class="btn" @click=${a.openInBrowser}>Open in Browser</button></div>`;
+  html`<div class="desk-help-bar" role="group" aria-label="Help"><button type="button" class="btn" @click=${a.contents}>Contents</button><button type="button" class="btn" ?disabled=${!nav.back} @click=${a.back}>Back</button><button type="button" class="btn" ?disabled=${!nav.forward} @click=${a.forward}>Forward</button><button type="button" class="btn" @click=${a.openInBrowser}>Open in Browser</button></div>`;
 
 /** Draw the Help window titled `title`, its frame empty until the game sets
  *  its page. `icon` is the title bar's icon. */

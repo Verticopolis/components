@@ -67,9 +67,10 @@ export const TOOLS_WIDTH = 184;
 /** Where every window opens the first time on a desk of `deskW` x `deskH`:
  *  Tools down the left, Info as a strip across the top (SimTower's, owner
  *  2026-11-15) with the tower under it, the Map, the Bulletin and Tower
- *  Info down the right, and Help in the middle of the desk. `infoH` and `mapH` are the heights Info and the Map
- *  really have once measured. Fixed-size windows take their own size, so
- *  only their corner counts, and Info its width. */
+ *  Info down the right, and Help in the middle of the desk. `infoH` and
+ *  `mapH` are the heights Info and the Map really have once measured.
+ *  Fixed-size windows take their own size, so only their corner counts, and
+ *  Info its width. */
 export function defaultLayout(
   deskW: number,
   deskH: number,

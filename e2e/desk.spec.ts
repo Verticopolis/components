@@ -93,6 +93,37 @@ test("the tower closes with its ✕ and opens again from the Verticopolis menu",
   await expect(task(page, "Sample Tower")).toHaveAttribute("aria-pressed", "true");
 });
 
+test("the Help window opens from the Help menu, follows its pages and comes to the front from inside", async ({
+  page,
+}) => {
+  await openPage(page, DESK);
+  const help = page.locator("#desk-win-help");
+  await expect(help).toBeHidden();
+  await page.locator("#g-desk-tower").getByRole("button", { name: "Help" }).click();
+  await page.getByRole("menuitem", { name: "Player's Manual" }).click();
+  await expect(help).toBeVisible();
+  await expect(help).toHaveClass(/desk-active/);
+  const bar = help.getByRole("group", { name: "Help" });
+  await expect(bar.getByRole("button", { name: "Back" })).toBeDisabled();
+
+  const manual = page.frameLocator("#desk-win-help iframe");
+  await manual.getByRole("link", { name: "Elevators" }).click();
+  await expect(help.locator(".desk-title-text")).toHaveText("Elevators - Player's Manual");
+  await expect(bar.getByRole("button", { name: "Back" })).toBeEnabled();
+  await expect(desk(page)).toHaveScreenshot("desk-help.png");
+
+  await bar.getByRole("button", { name: "Back" }).click();
+  await expect(help.locator(".desk-title-text")).toHaveText("Player's Manual");
+  await expect(bar.getByRole("button", { name: "Forward" })).toBeEnabled();
+
+  // A press inside the manual's frame never reaches the desk, yet it gives
+  // Help the focus back.
+  await page.locator("#g-desk-info .win-title .desk-title-text").click();
+  await expect(help).not.toHaveClass(/desk-active/);
+  await manual.getByRole("heading", { name: "Contents" }).click();
+  await expect(help).toHaveClass(/desk-active/);
+});
+
 test("a window minimizes to the taskbar and comes back", async ({ page }) => {
   await openPage(page, DESK);
   const info = page.locator("#g-desk-info");

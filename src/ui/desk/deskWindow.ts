@@ -196,6 +196,9 @@ export class DeskWindow<Id extends string = DeskWindowId> {
     }
     // On the game's window, which no template of ours owns.
     el.addEventListener("pointerdown", this.onPress, true);
+    // A press or Tab into a frame in the window (the Help window's manual)
+    // never reaches this document; the page only loses focus to the frame.
+    doc.defaultView?.addEventListener("blur", this.onPageBlur);
   }
 
   /** Minimize, and maximize (or restore) where the window may maximize. */
@@ -217,6 +220,17 @@ export class DeskWindow<Id extends string = DeskWindowId> {
   }
 
   private readonly onPress = () => this.spec.pressed();
+
+  /** The page lost focus: once it settles, a frame in this window holding
+   *  the focus counts as a press on the window. */
+  private readonly onPageBlur = (): void => {
+    this.spec.el.ownerDocument.defaultView?.setTimeout(this.focusMoved, 0);
+  };
+
+  private readonly focusMoved = (): void => {
+    const active = this.spec.el.ownerDocument.activeElement;
+    if (active?.tagName === "IFRAME" && this.spec.el.contains(active)) this.spec.pressed();
+  };
 
   /** The window's place and size now, in desk pixels. */
   rect(): DeskRect {
@@ -280,6 +294,7 @@ export class DeskWindow<Id extends string = DeskWindowId> {
     const el = this.spec.el;
     this.endResize(false);
     el.removeEventListener("pointerdown", this.onPress, true);
+    el.ownerDocument.defaultView?.removeEventListener("blur", this.onPageBlur);
     for (const a of this.added) a.remove();
     this.ownMover?.dispose();
     this.unhear?.();

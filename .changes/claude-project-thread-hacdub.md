@@ -11,3 +11,9 @@ package: minor
   Player's Manual in a page frame under Contents, Back, Forward and Open in
   Browser (`setNav` turns Back and Forward on and off), styled in
   `styles/game/desk.css`.
+- `windows/desk/deskWindow`: a window counts as pressed when the focus moves
+  into a frame inside it (a press or Tab into the Help window's manual, which
+  never reaches the game's page), so it comes to the front and lights its
+  title bar.
+- The gallery's sample desk has the Help window, opened from Help > Player's
+  Manual or the Verticopolis menu, with a sample manual in its frame.
