@@ -30,6 +30,7 @@ import { deskDemo } from "./desk.js";
 import { deskLayouts } from "./deskLayout.js";
 import { messageBoxes } from "./messageBoxes.js";
 import { appearanceDemo } from "./appearance.js";
+import { fileDialogDemo } from "./fileDialog.js";
 
 /** Room cell size in CSS px. */
 const CELL_W = 260;
@@ -178,6 +179,7 @@ export const DEMOS = {
   "menu-bar": shows(sampleMenu),
   "message-boxes": shows(messageBoxes),
   appearance: shows(appearanceDemo),
+  "file-dialog": shows(fileDialogDemo),
   desk: (holder) => deskDemo(holder, towerFacts().facts),
   "desk-layout": shows(deskLayouts),
   icons: shows(icons),
