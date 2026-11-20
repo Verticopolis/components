@@ -7,6 +7,12 @@ and so can any other game. The components know nothing about the
 simulation: they draw a render model (`render/renderModel`) that the game
 fills.
 
+[ARCHITECTURE.md](ARCHITECTURE.md) is a tour of the package in diagrams: the
+render model, a frame, input, the sprites and atlas, the windows and styles,
+audio, and the build and release. The deeper pages are in `docs/`: the
+[sprite atlas](docs/atlas.md), the [design system](docs/design-system.md)
+and the [audio layer](docs/audio.md).
+
 ## The Verticopolis repositories
 
 | Repository | What it holds |
