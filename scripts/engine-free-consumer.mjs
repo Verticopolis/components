@@ -4,6 +4,7 @@
 // happy-dom standing in for the browser), and writes consumer.ts, which
 // imports each one's declarations for the type check that follows.
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { register } from "node:module";
 import { join, posix } from "node:path";
 import { Window } from "happy-dom";
 import { SHIM_FOLDERS, SHIM_MODELS } from "./engineShims.mjs";
@@ -39,6 +40,15 @@ const entries = [...served].flatMap(([folder, subpath]) =>
     .map((path) => `${PKG}/${subpath}/${path.slice(folder.length + 1)}`),
 );
 if (entries.length < 100) throw new Error(`only ${entries.length} entries found under ${dir}`);
+
+// A window module imports its stylesheet, which a bundler handles; Node has no
+// loader for .css, so each one loads here as an empty module.
+register(
+  "data:text/javascript," +
+    encodeURIComponent(
+      'export async function load(url, context, next) { return url.endsWith(".css") ? { format: "module", source: "", shortCircuit: true } : next(url, context); }',
+    ),
+);
 
 // The browser the modules expect at load time.
 const window = new Window({ url: "https://localhost/" });
