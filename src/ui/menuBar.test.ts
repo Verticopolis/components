@@ -1,30 +1,43 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MenuBar, type MenuBarOptions } from "./menuBar";
+import { MenuBar, type MenuBarModel, type MenuBarOptions } from "./menuBar";
 
-/** Two menus, the second with a grayed and a hidden item, the way index.html
- *  lays out `#menubar`. */
+/** The bar below as a model, for the bar that renders itself. */
+const MODEL: MenuBarModel = {
+  id: "menubar",
+  label: "Test menu",
+  menus: [
+    {
+      id: "t-file",
+      popupId: "m-file",
+      label: "File",
+      mnemonic: 0,
+      items: [
+        { id: "i-new", label: "New" },
+        { id: "i-save", label: "Save" },
+      ],
+    },
+    {
+      id: "t-edit",
+      popupId: "m-edit",
+      label: "Edit",
+      mnemonic: 0,
+      items: [
+        { id: "i-undo", label: "Undo", disabled: true },
+        { id: "i-gone", label: "Gone", hidden: true },
+        { id: "i-redo", label: "Redo" },
+      ],
+    },
+  ],
+};
+
+/** Two menus, the second with a grayed and a hidden item, drawn from
+ *  {@link MODEL}, with a place outside the bar to press. */
 function setup(onOpen = vi.fn(), more: MenuBarOptions = {}) {
-  document.body.innerHTML = `
-    <nav id="menubar">
-      <div class="mb-menu">
-        <button class="mb-title" id="t-file" aria-expanded="false" aria-controls="m-file"><u>F</u>ile</button>
-        <div class="mb-pop" id="m-file" role="menu" hidden>
-          <button class="mb-item" id="i-new" role="menuitem">New</button>
-          <button class="mb-item" id="i-save" role="menuitem">Save</button>
-        </div>
-      </div>
-      <div class="mb-menu">
-        <button class="mb-title" id="t-edit" aria-expanded="false" aria-controls="m-edit"><u>E</u>dit</button>
-        <div class="mb-pop" id="m-edit" role="menu" hidden>
-          <button class="mb-item" id="i-undo" role="menuitem" aria-disabled="true">Undo</button>
-          <button class="mb-item" id="i-gone" role="menuitem" hidden>Gone</button>
-          <button class="mb-item" id="i-redo" role="menuitem">Redo</button>
-        </div>
-      </div>
-    </nav>
-    <div id="outside"></div>`;
-  const root = document.getElementById("menubar")!;
-  const bar = new MenuBar(root, { ...more, onOpen });
+  document.body.innerHTML = `<div id="host"></div><div id="outside"></div>`;
+  return finish(new MenuBar(document.getElementById("host")!, MODEL, { ...more, onOpen }), onOpen);
+}
+
+function finish(bar: MenuBar, onOpen: ReturnType<typeof vi.fn>) {
   bars.push(bar);
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
   const key = (el: Element, k: string, init: KeyboardEventInit = {}) =>

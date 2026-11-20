@@ -170,6 +170,25 @@ layer under `vc`, so a page's own unlayered rule always wins and the pieces
 keep their order. [docs/design-system.md](docs/design-system.md) is the
 contract for the tokens, the components and the window grammar.
 
+The DOM is drawn with lit-html templates, and an element's events are bound
+in its template (`@click`, `@keydown`). A page hands a component a model and
+writes no markup of its own. The menu bar draws itself from a `MenuBarModel`
+(`menuBarTemplate.ts`); a page re-renders it with a changed model (fresh
+check marks as a menu opens), and lit touches only what changed. Listeners
+stay imperative only where no template owns the element: the window and the
+document (the menu bar's outside press and Alt keys), and a window the game
+draws that a module moves (`movableWindow.ts`).
+
+```mermaid
+flowchart LR
+    Page["a page's model<br/>(MenuBarModel)"] --> Bar["MenuBar<br/>menuBar.ts"]
+    Bar -->|"render(model)"| Tpl["menuBarTemplate<br/>lit html + @event bindings"]
+    Tpl --> Dom["nav.menubar<br/>titles, menus, items"]
+    Dom -->|"clicks, keys, pointing"| Bar
+    Bar -->|"onOpen, onTrip, onDismiss"| Page
+    Dom -->|"an item's onPick"| Page
+```
+
 ```mermaid
 flowchart TD
     Tokens["vc.tokens<br/>retro-tokens.css"] --> Base["vc.base<br/>game/base.css"]

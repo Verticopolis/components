@@ -86,6 +86,17 @@ internal types (`render/scale`'s `FLOOR` and `TILE`, `PinchTracker`,
 `FlightPass` and others), so a game that mounts it pins an exact version.
 
 For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"`.
+A component draws itself from a model with lit-html, so a page writes no
+markup for it:
+
+```ts
+import { MenuBar } from "@verticopolis/components/windows/menuBar";
+
+const bar = new MenuBar(host, {
+  label: "Game menu",
+  menus: [{ id: "mb-file", label: "File", mnemonic: 0, items: [{ label: "New…", onPick: newTower }] }],
+});
+```
 
 ### The render model
 
