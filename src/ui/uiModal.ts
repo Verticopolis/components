@@ -24,9 +24,9 @@ export const MODAL_TITLE_ID = "verticopolis-modal-title";
 /** What a dialog shows. */
 export interface ModalView {
   /** The title bar's text: a string, or a template (an icon and words). */
-  readonly title: unknown;
+  readonly title: string | TemplateResult;
   /** Everything under the title bar. */
-  readonly body: unknown;
+  readonly body: TemplateResult;
 }
 
 /** What the shell needs from the page around it. */
