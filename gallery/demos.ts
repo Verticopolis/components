@@ -15,7 +15,8 @@ import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
 import type { DrawCtx } from "../lib/render/sprites.js";
 import { MenuBar, type MenuBarModel } from "../lib/ui/menuBar.js";
-import { ICON_NAMES, iconElement } from "../lib/ui/icons.js";
+import { html, render, type TemplateResult } from "lit-html";
+import { ICON_NAMES, iconTemplate, type IconName } from "../lib/ui/icons.js";
 import { GALLERY_HOUR, roomCells, type RoomCell } from "./rooms.js";
 import { paintScene, sceneSize, type Scene } from "./scene.js";
 import { elevatorScenes, lobbyScenes, stairScenes } from "./scenes.js";
@@ -112,18 +113,17 @@ const SAMPLE_MENU: MenuBarModel = {
   ],
 };
 
-function icons(): HTMLElement {
-  const grid = document.createElement("div");
-  grid.className = "g-icons";
-  for (const name of ICON_NAMES) {
-    const fig = document.createElement("figure");
-    const cap = document.createElement("figcaption");
-    cap.textContent = name;
-    fig.append(iconElement(name, { size: 24 }), cap);
-    grid.append(fig);
-  }
-  return grid;
+/** Draw a one-shot lit template and hand back its top-level element. */
+function fromTemplate(template: TemplateResult): HTMLElement {
+  const frag = document.createDocumentFragment();
+  render(template, frag);
+  return frag.firstElementChild as HTMLElement;
 }
+
+const icon = (name: IconName) =>
+  html`<figure>${iconTemplate(name, { size: 24 })}<figcaption>${name}</figcaption></figure>`;
+
+const icons = (): HTMLElement => fromTemplate(html`<div class="g-icons">${ICON_NAMES.map(icon)}</div>`);
 
 /** A still evening frame, the look the game's own sprite gallery used. */
 function frame(ctx: CanvasRenderingContext2D, hour: number): DrawCtx {

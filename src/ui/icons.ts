@@ -144,8 +144,6 @@ const ICONS: Record<IconName, IconPath[]> = {
  *  walk the whole set. */
 export const ICON_NAMES = Object.keys(ICONS) as IconName[];
 
-const SVG_NS = "http://www.w3.org/2000/svg";
-
 export interface IconOpts {
   /** Square px size (default 16, the toolbar button glyph size). */
   size?: number;
@@ -154,37 +152,11 @@ export interface IconOpts {
 }
 
 /**
- * A trusted `<svg>` ELEMENT, built with `createElementNS` (never innerHTML), for
- * imperative renderers: the bulletin log, the boot-time toolbar injection, the
- * audio toggle. The icon is `aria-hidden`; its meaning comes from the sibling
- * text or the button's `aria-label`.
- */
-export function iconElement(name: IconName, opts: IconOpts = {}): SVGSVGElement {
-  const el = document.createElementNS(SVG_NS, "svg");
-  const size = String(opts.size ?? 16);
-  el.setAttribute("viewBox", "0 0 24 24");
-  el.setAttribute("width", size);
-  el.setAttribute("height", size);
-  el.setAttribute("fill", "currentColor");
-  el.setAttribute("aria-hidden", "true");
-  el.setAttribute("focusable", "false");
-  el.setAttribute("data-icon", name);
-  el.setAttribute("class", opts.className ? `vc-icon ${opts.className}` : "vc-icon");
-  for (const p of ICONS[name]) {
-    const path = document.createElementNS(SVG_NS, "path");
-    path.setAttribute("d", p.d);
-    if (p.evenodd) path.setAttribute("fill-rule", "evenodd");
-    if (p.fill) path.setAttribute("fill", p.fill); // accent path opts out of currentColor
-    el.appendChild(path);
-  }
-  return el;
-}
-
-/**
- * The same icon as a lit `svg` template, for lit-rendered templates (the tool
- * palette, the congrats and stats panels, the event dialog). `d` is bound as an
- * ATTRIBUTE, so lit escapes it: no `unsafeHTML`/`unsafeSVG` (which this codebase
- * avoids) and no injection surface, since the data is a module constant anyway.
+ * An icon as a lit `svg` template, the one way a page draws one (the toolbar,
+ * the bulletin log, the tool palette, the dialogs). The icon is `aria-hidden`;
+ * its meaning comes from the sibling text or the button's `aria-label`. `d` is
+ * bound as an ATTRIBUTE, so lit escapes it: no `unsafeHTML`/`unsafeSVG` and no
+ * injection surface, since the data is a module constant anyway.
  */
 export function iconTemplate(name: IconName, opts: IconOpts = {}): SVGTemplateResult {
   const size = opts.size ?? 16;
@@ -198,7 +170,7 @@ export function iconTemplate(name: IconName, opts: IconOpts = {}): SVGTemplateRe
 /**
  * The bulletin/event emoji that get swapped for an icon when a message string is
  * rendered. Keys are the base code points; a trailing U+FE0F variation selector
- * is consumed by {@link appendMessageWithIcons}. Only these are mapped; every
+ * is consumed by {@link messageWithIcons}. Only these are mapped; every
  * other character (including emoji sitting mid-sentence in prose) is left as
  * text.
  */
@@ -232,33 +204,15 @@ const LEADING_EMOJI_RE = new RegExp(
 );
 
 /**
- * Append `message` to `el`. If it starts with a mapped bulletin emoji (leading
- * whitespace allowed, and consumed along with the marker), that leading marker
- * becomes a trusted icon element and the rest stays a TEXT NODE;
- * otherwise the whole message is one text node. The text is never set as
- * innerHTML, so a simulation string (or a tower name inside it) can never inject
- * markup, and any mapped emoji NOT at the start survives as text (so an
- * aria-hidden icon never swallows a character mid-sentence). The icon inherits
- * `el`'s color, which the bulletin log sets per severity. Returns whether an
- * icon was inserted.
- */
-export function appendMessageWithIcons(el: HTMLElement, message: string): boolean {
-  const m = LEADING_EMOJI_RE.exec(message);
-  if (!m) {
-    el.appendChild(document.createTextNode(message));
-    return false;
-  }
-  el.appendChild(iconElement(EMOJI_ICONS[m[1]], { size: 14, className: "vc-icon-inline" }));
-  const rest = message.slice(m[0].length);
-  if (rest) el.appendChild(document.createTextNode(rest));
-  return true;
-}
-
-/**
- * The lit-template form of {@link appendMessageWithIcons}, for a message shown
- * inside a lit template (the event-choice dialog). Returns the message split
- * into text runs and icon templates; lit renders the mix directly. The text runs
- * are plain strings, so lit escapes them like any text binding.
+ * A message for a lit template (a bulletin line, the event-choice dialog). If
+ * it starts with a mapped bulletin emoji (leading whitespace allowed, and
+ * consumed along with the marker), that marker becomes an icon template and the
+ * rest stays a text run; otherwise the whole message is one text run. The runs
+ * are plain strings, so lit binds them as text and a simulation string (or a
+ * tower name inside it) can never inject markup. A mapped emoji NOT at the start
+ * survives as text, so an aria-hidden icon never swallows a character
+ * mid-sentence. The icon inherits its line's color, which the bulletin log sets
+ * per severity.
  */
 export function messageWithIcons(message: string): Array<string | SVGTemplateResult> {
   const m = LEADING_EMOJI_RE.exec(message);
