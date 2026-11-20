@@ -21,6 +21,87 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 0.3.0 (2026-11-20)
+
+- **major**: the renderer, presentation, UI and audio import nothing from the engine
+  (engine#89). `render/renderModel` declares what they read (`RenderSim`,
+  `RenderTower`, `RenderCatalog`, `RenderRules` and the frame shapes), and a
+  game fills it from the engine's frame reader and catalog with no copy.
+  `render/towerSource` replaces the per-tower catalog handle:
+  `useTowerSource(tower, { catalog, rules })` sets a tower's catalog and the
+  engine's rules (`isPresent`, `isOperational`, the zoom limits), and
+  `useFallbackSource` the one a hand-built tower reads.
+  `render/catalogIndex` holds `findCatalogFacility`, `catalogFacility` and
+  `catalogOpenAt` over a `RenderCatalog`.
+- **major**: `TowerEngine` takes no view reader: it reads the camera, the clock and the
+  tower from its `RenderSim`. Its zoom limits come from the tower's rules, so
+  `towerInputCamera` no longer exports `MIN_ZOOM` and `MAX_ZOOM`.
+  `RenderTower.tallLobbies()` is now `lobbyHeights()`, the engine's raw
+  heights, and the renderer works out the halls itself. `shadesRoom` takes the
+  rules' `isPresent`.
+- **major**: `presentation/clockOf` takes the header's date fields and the engine's
+  clock (`clockOf(header, sim.clock)`) and reads them once.
+  `presentation/catalogCheck` is the boot check a game hands the engine as
+  `checkCatalogs`.
+- **major**: the engine's own code is gone from this package. `catalog/*`, `binding/*`,
+  `port/*`, `host/*`, `events/*` and the engine's `model/*` modules now
+  re-export `@verticopolis/engine` (1.60.0 or later) under their old paths and
+  go in 1.0; `catalog/towerCatalog`, `port/headerClock`,
+  `port/portRenderSim` and `host/catalogCheck` wrap or alias their new homes.
+  The engine becomes an optional peer, and `fixtures/*` serves the installed
+  engine's fixtures.
+- **major**: every stylesheet puts its rules in a cascade layer under `vc`
+  (`@layer vc.tokens, vc.base, vc.components, vc.page;`), and each
+  component's sheet in its own layer inside `vc.components`. A page's own
+  unlayered CSS now beats every components rule whatever its specificity and
+  wherever the bundler puts it; a `!important` inside a `vc` layer beats an
+  unlayered one. A page that layers its own CSS orders it against `vc`
+  (README, "Cascade layers"). The game's stylesheet keeps every rule's
+  winner, so the game draws the same. On a page that loads `retro-page.css`
+  in a dark OS theme, the dark teal ground now applies only when no color
+  scheme is set (`html[data-scheme]`), so Skyline and High Contrast keep their
+  own ground; the components gallery, which never showed the dark ground
+  before, now shows it in Standard, as the game's own standalone pages do.
+- **major**: the window modules import their own stylesheet: `windows/menuBar` imports
+  `styles/menu-bar.css`, and `windows/uiModal` and `windows/movableWindow`
+  (so `windows/desk/deskWindow` too) import `styles/window.css`. A page that
+  uses only those modules no longer needs a stylesheet import for them. They
+  now need a bundler that loads CSS imported from JavaScript (Vite does);
+  plain Node can no longer import them. Their declarations do not carry the
+  CSS imports.
+- **major**: a Starlight site declares `@layer starlight, vc;` through Starlight's `head`
+  option rather than a first `customCss` entry: Astro puts the menu bar's CSS,
+  which the `windows/menuBar` module now imports, ahead of `customCss`.
+- **minor**: `styles/starlight.css` dresses a Starlight docs site in the game's look:
+  the tokens, `styles/starlight-theme.css` (the How to Play window's title
+  bar, sidebar and reading well, and the title screen for a page with a hero)
+  and `styles/title-bar.css` (the docs title bar's `.vc-bar` markup). These
+  are the stylesheets the engine docs and the help site each kept a copy of.
+  Both new sheets sit in `vc.page`; a Starlight site loads a file holding
+  `@layer starlight, vc;` first (README, "Styles").
+- **minor**: `src/shared/` is now `src/model/`, exported as `model/*`: the
+  tower model types and the small helpers over them. `shared/*` stays as an
+  alias for the same files until 1.0, so existing imports keep working; move
+  them to `model/*`.
+- **patch**: the declarations resolve under `nodenext`. Every relative import in the
+  shipped `.d.ts` files now names its `.js` file (or `/index.js`), so a
+  project that resolves modules the way Node does follows them instead of
+  failing, or reading every imported type as `any` with `skipLibCheck` on.
+  The packed package's `engines` is `node >=22` in place of `26.x`, so an
+  install on Node 22 or 24 no longer warns; the package runs on both. The
+  repository's own tooling stays on Node 26.
+- **patch**: the renderer's context-loss handler stops the Excalibur engine
+  with its public `stop()`, which also stops the texture collector and pauses
+  the browser listeners, instead of stopping only the clock. The rebuild's
+  teardown (`render/excalibur/engineTeardown`) still stops the collector for
+  a context lost while the screen saver held the frames, and a test against
+  the real Excalibur now fails if an upgrade moves that private field.
+- **patch**: On a phone held sideways, the Getting Started card no longer covers the top
+  bar. Its top follows the bar's bottom edge (CSS anchor positioning), so it
+  clears the bar however many lines the bar wraps to. A browser without
+  anchoring uses a top measured for each width tier. The card used to sit
+  21px over the stat chips from 540 to 819px wide.
+
 ## 0.2.2 (2026-11-19)
 
 - **patch**: the shared chrome is split into one stylesheet per component
