@@ -4,6 +4,7 @@
  * it. The pages and anchors are the manual's own; a link to a page that moves
  * there goes stale here, so `manualLink` keeps them all in one place.
  */
+import { html, type TemplateResult } from "lit-html";
 import type { FacilityKind } from "../lib/render/renderModel.js";
 
 const MANUAL = "https://help.verticopolis.com/";
@@ -14,13 +15,8 @@ export function manualHref(path: string): string {
 }
 
 /** A small "In the manual" link to a manual page, for a figure's caption. */
-export function manualLink(path: string): HTMLAnchorElement {
-  const a = document.createElement("a");
-  a.className = "g-manual";
-  a.href = manualHref(path);
-  a.textContent = "In the manual";
-  return a;
-}
+export const manualLink = (path: string): TemplateResult =>
+  html`<a class="g-manual" href=${manualHref(path)}>In the manual</a>`;
 
 /** Where the manual covers each room the Rooms page shows. */
 export const ROOM_MANUAL: Partial<Record<FacilityKind, string>> = {

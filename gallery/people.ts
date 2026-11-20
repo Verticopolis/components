@@ -20,7 +20,8 @@ import {
   type Pose,
 } from "../lib/render/pixelSprites/people.js";
 import { personHiVis, personSeated, personStanding, personWalker, sleeper } from "../lib/render/pixelSprites/common.js";
-import { canvasFor, figure } from "./canvas.js";
+import { html, nothing, type TemplateResult } from "lit-html";
+import { canvasTemplate, figure, type Paint } from "./canvas.js";
 import { manualLink } from "./manual.js";
 
 /** Magnification, a whole multiple so world pixels stay square blocks. */
@@ -34,12 +35,19 @@ const FOOT = 33;
 const FLOOR = "#2A2E38";
 const FLOOR_EDGE = "#3A3E48";
 
-/** A canvas at its own size: the page shrinks it only to fit a narrow screen. */
-function stripCanvas(w: number, label: string): [HTMLCanvasElement, CanvasRenderingContext2D] {
-  const [canvas, ctx] = canvasFor(w * MAG, STRIP_H * MAG, label);
-  canvas.style.width = `${w * MAG}px`;
-  ctx.scale(MAG, MAG);
-  return [canvas, ctx];
+/** A canvas at its own size: the page shrinks it only to fit a narrow screen.
+ *  `paint` draws in world pixels. */
+function stripCanvas(w: number, label: string, paint: Paint): TemplateResult {
+  return canvasTemplate(
+    w * MAG,
+    STRIP_H * MAG,
+    label,
+    (ctx) => {
+      ctx.scale(MAG, MAG);
+      paint(ctx);
+    },
+    `${w * MAG}px`,
+  );
 }
 
 /** One drawing in a strip: a look and how to draw it. */
@@ -49,16 +57,17 @@ interface Shot {
 }
 
 /** A strip of figures standing on one floor: the lit shots, a gap, then the flat ones. */
-function strip(title: string, caption: string, lit: readonly Shot[], flat: readonly Shot[]): HTMLElement {
+function strip(title: string, caption: string, lit: readonly Shot[], flat: readonly Shot[]): TemplateResult {
   const gap = lit.length > 0 && flat.length > 0 ? GAP : 0;
   const w = (lit.length + flat.length) * SLOT + gap;
-  const [canvas, ctx] = stripCanvas(w, `${title}: ${caption}`);
-  ctx.fillStyle = FLOOR_EDGE;
-  ctx.fillRect(0, FOOT + 1, w, 1);
-  ctx.fillStyle = FLOOR;
-  ctx.fillRect(0, FOOT + 2, w, STRIP_H - FOOT - 2);
-  lit.forEach((s, i) => drawPerson(ctx, i * SLOT + 7, FOOT, s.look, s.o));
-  flat.forEach((s, i) => drawPerson(ctx, (lit.length + i) * SLOT + gap + 7, FOOT, s.look, s.o));
+  const canvas = stripCanvas(w, `${title}: ${caption}`, (ctx) => {
+    ctx.fillStyle = FLOOR_EDGE;
+    ctx.fillRect(0, FOOT + 1, w, 1);
+    ctx.fillStyle = FLOOR;
+    ctx.fillRect(0, FOOT + 2, w, STRIP_H - FOOT - 2);
+    lit.forEach((s, i) => drawPerson(ctx, i * SLOT + 7, FOOT, s.look, s.o));
+    flat.forEach((s, i) => drawPerson(ctx, (lit.length + i) * SLOT + gap + 7, FOOT, s.look, s.o));
+  });
   return figure(canvas, title, caption);
 }
 
@@ -117,22 +126,12 @@ function describe(look: Look): string {
   return `${top}, ${HAIR[look.hairStyle]}, ${CARRY[look.carry]}`;
 }
 
-function section(heading: string, note: string, items: HTMLElement[], manual?: string): HTMLElement {
-  const wrap = document.createElement("section");
-  wrap.className = "g-people-section";
-  const h = document.createElement("h3");
-  h.textContent = heading;
-  const p = document.createElement("p");
-  p.textContent = note;
-  if (manual) p.append(" ", manualLink(manual));
-  const grid = document.createElement("div");
-  grid.className = "g-people";
-  grid.append(...items);
-  wrap.append(h, p, grid);
-  return wrap;
+function section(heading: string, note: string, items: TemplateResult[], manual?: string): TemplateResult {
+  const link = manual ? html` ${manualLink(manual)}` : nothing;
+  return html`<section class="g-people-section"><h3>${heading}</h3><p>${note}${link}</p><div class="g-people">${items}</div></section>`;
 }
 
-function tenants(): HTMLElement {
+function tenants(): TemplateResult {
   const items = CAST.map((look, i) => strip(`Visitor ${i + 1}`, describe(look), ...walkCycle(look)));
   return section(
     "Tenants and visitors",
@@ -142,7 +141,7 @@ function tenants(): HTMLElement {
   );
 }
 
-function crew(): HTMLElement {
+function crew(): TemplateResult {
   const faces = LOOK.housekeeperCleaning - LOOK.housekeeper;
   const items = Array.from({ length: faces }, (_, i) => {
     const withCart = LOOKS[LOOK.housekeeper + i];
@@ -168,7 +167,7 @@ function crew(): HTMLElement {
   );
 }
 
-function staff(): HTMLElement {
+function staff(): TemplateResult {
   const guard = STAFF_LOOK.security;
   const fixer = STAFF_LOOK.maintenance;
   const thief = STAFF_LOOK.thief;
@@ -201,7 +200,7 @@ const POSES: readonly { pose: Pose; title: string; caption: string }[] = [
   { pose: "caught", title: "Caught", caption: "hands up" },
 ];
 
-function poses(): HTMLElement {
+function poses(): TemplateResult {
   const look = CAST[2];
   const items = POSES.map((p) => strip(p.title, p.caption, ...both(look, { pose: p.pose, frame: 0, empty: true })));
   return section(
@@ -218,7 +217,7 @@ const MOODS: readonly { mood: Mood; pose: Pose; title: string; caption: string }
   { mood: "fedUp", pose: "armsUp", title: "Fed up", caption: "a red top, arms thrown up" },
 ];
 
-function moods(): HTMLElement {
+function moods(): TemplateResult {
   const items = MOODS.map((m) => {
     const lit = CAST.slice(0, 3).map((look) => ({ look, o: { lit: true, pose: m.pose, mood: m.mood } }));
     const flat = CAST.slice(0, 3).map((look) => ({ look, o: { lit: false, pose: m.pose, mood: m.mood } }));
@@ -233,47 +232,47 @@ function moods(): HTMLElement {
 }
 
 /** The room builds, drawn the way the rooms draw their guests. */
-function rooms(): HTMLElement {
+function rooms(): TemplateResult {
   const w = 5 * SLOT;
-  const items: HTMLElement[] = [];
   const builds: readonly [string, string, (ctx: CanvasRenderingContext2D, x: number, seed: number) => void][] = [
     ["Seated", "at a table or a desk", (ctx, x, seed) => personSeated(ctx, x, FOOT - 6, seed)],
     ["Standing", "at a counter", (ctx, x, seed) => personStanding(ctx, x, FOOT, seed)],
     ["Walking", "across a room", (ctx, x, seed) => personWalker(ctx, x, FOOT, seed)],
     ["Tradesperson", "hard hat and stripe", (ctx, x, seed) => personHiVis(ctx, x, FOOT, seed)],
   ];
-  for (const [title, caption, draw] of builds) {
-    const [canvas, ctx] = stripCanvas(w, `${title}: ${caption}`);
-    ctx.fillStyle = FLOOR;
-    ctx.fillRect(0, FOOT + 2, w, STRIP_H - FOOT - 2);
-    for (let i = 0; i < 5; i++) {
-      if (title === "Seated") {
-        ctx.fillStyle = "#6E4A30"; // a plain bench to sit on
-        ctx.fillRect(i * SLOT + 4, FOOT - 6, 14, 2);
-        ctx.fillRect(i * SLOT + 5, FOOT - 4, 1, 6);
-        ctx.fillRect(i * SLOT + 16, FOOT - 4, 1, 6);
-      }
-      draw(ctx, i * SLOT + 7, i);
+  const items = builds.map(([title, caption, draw]) =>
+    figure(
+      stripCanvas(w, `${title}: ${caption}`, (ctx) => {
+        ctx.fillStyle = FLOOR;
+        ctx.fillRect(0, FOOT + 2, w, STRIP_H - FOOT - 2);
+        for (let i = 0; i < 5; i++) {
+          if (title === "Seated") {
+            ctx.fillStyle = "#6E4A30"; // a plain bench to sit on
+            ctx.fillRect(i * SLOT + 4, FOOT - 6, 14, 2);
+            ctx.fillRect(i * SLOT + 5, FOOT - 4, 1, 6);
+            ctx.fillRect(i * SLOT + 16, FOOT - 4, 1, 6);
+          }
+          draw(ctx, i * SLOT + 7, i);
+        }
+      }),
+      title,
+      caption,
+    ),
+  );
+  const asleep = stripCanvas(w, "Asleep: a guest in bed at night", (ctx) => {
+    for (let i = 0; i < 3; i++) {
+      const x = i * 42 + 3;
+      ctx.fillStyle = "#5A4030"; // the bed frame, then the pillow under the head
+      ctx.fillRect(x, FOOT - 4, 38, 6);
+      ctx.fillStyle = "#E8E4DA";
+      ctx.fillRect(x + 1, FOOT - 7, 8, 3);
+      sleeper(ctx, x + 2, FOOT - 10, 30, ["#5A6E8C", "#8C4A5A", "#4A7A5A"][i], i);
     }
-    items.push(figure(canvas, title, caption));
-  }
-  const [canvas, ctx] = stripCanvas(w, "Asleep: a guest in bed at night");
-  for (let i = 0; i < 3; i++) {
-    const x = i * 42 + 3;
-    ctx.fillStyle = "#5A4030"; // the bed frame, then the pillow under the head
-    ctx.fillRect(x, FOOT - 4, 38, 6);
-    ctx.fillStyle = "#E8E4DA";
-    ctx.fillRect(x + 1, FOOT - 7, 8, 3);
-    sleeper(ctx, x + 2, FOOT - 10, 30, ["#5A6E8C", "#8C4A5A", "#4A7A5A"][i], i);
-  }
-  items.push(figure(canvas, "Asleep", "a guest in bed at night"));
+  });
+  items.push(figure(asleep, "Asleep", "a guest in bed at night"));
   return section("In rooms", "The builds the rooms draw their guests in, and a sleeper.", items);
 }
 
 /** The people page's demo. */
-export function people(): HTMLElement {
-  const holder = document.createElement("div");
-  holder.className = "g-people-page";
-  holder.append(tenants(), crew(), staff(), poses(), moods(), rooms());
-  return holder;
-}
+export const people = (): TemplateResult =>
+  html`<div class="g-people-page">${[tenants(), crew(), staff(), poses(), moods(), rooms()]}</div>`;

@@ -2,7 +2,7 @@
  * The gallery's demos: every reusable piece of the package, built from lib/
  * the way a consumer would, each mounted where a site page asks for it by
  * name (`site/src/components/Demo.astro`). The chrome (windows, buttons,
- * wells, key-value rows, a sample menu bar and the icons) is plain markup
+ * wells, key-value rows, a sample menu bar and the icons) is lit templates
  * over the package's stylesheets. The rooms and the tower scenes are painted
  * by the package's own painters from the components' hand-written render
  * catalog (`src/tests/catalogFixture.ts`), the stand-in for the catalog a
@@ -14,14 +14,15 @@ import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/
 import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
 import type { DrawCtx } from "../lib/render/sprites.js";
+import { html, nothing, render, type TemplateResult } from "lit-html";
+import { ref } from "lit-html/directives/ref.js";
 import { MenuBar, type MenuBarModel } from "../lib/ui/menuBar.js";
-import { html, render, type TemplateResult } from "lit-html";
 import { ICON_NAMES, iconTemplate, type IconName } from "../lib/ui/icons.js";
 import { GALLERY_HOUR, roomCells, type RoomCell } from "./rooms.js";
 import { paintScene, sceneSize, type Scene } from "./scene.js";
 import { elevatorScenes, lobbyScenes, stairScenes } from "./scenes.js";
 import { soundBoard } from "./sounds.js";
-import { canvasFor, figure } from "./canvas.js";
+import { canvasTemplate, figure } from "./canvas.js";
 import { ROOM_MANUAL, manualLink } from "./manual.js";
 import { people } from "./people.js";
 
@@ -32,14 +33,7 @@ const CELL_H = 200;
 /** Scene magnification, a whole multiple so world pixels stay square blocks. */
 const SCENE_MAG = 2;
 
-function fromMarkup(markup: string): HTMLElement {
-  const holder = document.createElement("div");
-  holder.innerHTML = markup.trim();
-  return holder.firstElementChild as HTMLElement;
-}
-
-const BUTTONS = `
-<div class="g-row">
+const BUTTONS = html`<div class="g-row">
   <button type="button" class="btn">Button</button>
   <button type="button" class="btn primary">Primary</button>
   <button type="button" class="btn danger">Danger</button>
@@ -48,8 +42,7 @@ const BUTTONS = `
   <a class="btn" href="#">Link button</a>
 </div>`;
 
-const WINDOWS = `
-<div class="g-row">
+const WINDOWS = html`<div class="g-row">
   <div class="win g-win">
     <div class="win-title">Window</div>
     <div class="g-pad">A window with a title bar.</div>
@@ -64,8 +57,7 @@ const WINDOWS = `
   </div>
 </div>`;
 
-const WELLS = `
-<div class="g-row">
+const WELLS = html`<div class="g-row">
   <div class="win g-win">
     <div class="win-title">Tower Info</div>
     <div class="g-pad">
@@ -113,54 +105,35 @@ const SAMPLE_MENU: MenuBarModel = {
   ],
 };
 
-/** Draw a one-shot lit template and hand back its top-level element. */
-function fromTemplate(template: TemplateResult): HTMLElement {
-  const frag = document.createDocumentFragment();
-  render(template, frag);
-  return frag.firstElementChild as HTMLElement;
-}
-
 const icon = (name: IconName) =>
   html`<figure>${iconTemplate(name, { size: 24 })}<figcaption>${name}</figcaption></figure>`;
 
-const icons = (): HTMLElement => fromTemplate(html`<div class="g-icons">${ICON_NAMES.map(icon)}</div>`);
+const icons = () => html`<div class="g-icons">${ICON_NAMES.map(icon)}</div>`;
 
 /** A still evening frame, the look the game's own sprite gallery used. */
 function frame(ctx: CanvasRenderingContext2D, hour: number): DrawCtx {
   return { ctx, lit: true, anim: 0, hour, parkingUse: 0.7, recycleFill: 0.66 };
 }
 
-function roomGrid(cells: RoomCell[]): HTMLElement {
-  const grid = document.createElement("div");
-  grid.className = "g-sprites";
-  for (const c of cells) {
-    const [canvas, ctx] = canvasFor(CELL_W, CELL_H, c.label);
-    c.draw(frame(ctx, c.hour), CELL_W, CELL_H);
-    const fig = document.createElement("figure");
-    const cap = document.createElement("figcaption");
-    const name = document.createElement("span");
-    name.className = "g-name";
-    name.textContent = c.label;
-    cap.append(name);
-    const page = ROOM_MANUAL[c.kind];
-    if (page) cap.append(" ", manualLink(page));
-    fig.append(canvas, cap);
-    grid.append(fig);
-  }
-  return grid;
+function roomCell(c: RoomCell): TemplateResult {
+  const canvas = canvasTemplate(CELL_W, CELL_H, c.label, (ctx) => c.draw(frame(ctx, c.hour), CELL_W, CELL_H));
+  const page = ROOM_MANUAL[c.kind];
+  const link = page ? html` ${manualLink(page)}` : nothing;
+  return html`<figure>${canvas}<figcaption><span class="g-name">${c.label}</span>${link}</figcaption></figure>`;
 }
 
-function sceneGrid(scenes: Scene[], facts: (kind: FacilityKind) => RenderFacility): HTMLElement {
-  const grid = document.createElement("div");
-  grid.className = "g-scenes";
-  for (const scene of scenes) {
+const roomGrid = (cells: RoomCell[]) => html`<div class="g-sprites">${cells.map(roomCell)}</div>`;
+
+function sceneGrid(scenes: Scene[], facts: (kind: FacilityKind) => RenderFacility): TemplateResult {
+  const shown = scenes.map((scene) => {
     const { w, h } = sceneSize(scene);
-    const [canvas, ctx] = canvasFor(w * SCENE_MAG, h * SCENE_MAG, scene.title);
-    ctx.scale(SCENE_MAG, SCENE_MAG);
-    paintScene(frame(ctx, GALLERY_HOUR), scene, facts);
-    grid.append(figure(canvas, scene.title, scene.caption, scene.manual ? manualLink(scene.manual) : undefined));
-  }
-  return grid;
+    const canvas = canvasTemplate(w * SCENE_MAG, h * SCENE_MAG, scene.title, (ctx) => {
+      ctx.scale(SCENE_MAG, SCENE_MAG);
+      paintScene(frame(ctx, GALLERY_HOUR), scene, facts);
+    });
+    return figure(canvas, scene.title, scene.caption, scene.manual ? manualLink(scene.manual) : undefined);
+  });
+  return html`<div class="g-scenes">${shown}</div>`;
 }
 
 /** The Modern render catalog, which holds every kind and variety the art
@@ -180,36 +153,41 @@ function towerFacts(): { cat: RenderCatalog; facts: (kind: FacilityKind) => Rend
 
 /** The sample bar. Its Alt keys are off, so Alt and a letter open the
  *  site's own bar and never this one too. */
-function sampleMenu(): HTMLElement {
-  const holder = document.createElement("div");
-  holder.className = "g-menu-sample";
-  new MenuBar(holder, SAMPLE_MENU, { altKeys: false });
-  return holder;
-}
+const sampleMenu = () =>
+  html`<div class="g-menu-sample" ${ref((el) => el && new MenuBar(el as HTMLElement, SAMPLE_MENU, { altKeys: false }))}></div>`;
+
+/** A demo draws itself into the holder the page gives it. */
+type Demo = (holder: HTMLElement) => void;
+
+/** A demo that is one template, drawn once. */
+const shows =
+  (template: () => TemplateResult): Demo =>
+  (holder) =>
+    render(template(), holder);
 
 /** Every demo a page can show, by the name its `Demo` component passes. */
 export const DEMOS = {
-  buttons: () => fromMarkup(BUTTONS),
-  windows: () => fromMarkup(WINDOWS),
-  wells: () => fromMarkup(WELLS),
-  "menu-bar": sampleMenu,
-  icons,
+  buttons: shows(() => BUTTONS),
+  windows: shows(() => WINDOWS),
+  wells: shows(() => WELLS),
+  "menu-bar": shows(sampleMenu),
+  icons: shows(icons),
   sounds: soundBoard,
-  people,
-  lobbies: () => {
+  people: shows(people),
+  lobbies: shows(() => {
     const { facts } = towerFacts();
     return sceneGrid(lobbyScenes(facts), facts);
-  },
-  stairs: () => {
+  }),
+  stairs: shows(() => {
     const { facts } = towerFacts();
     return sceneGrid(stairScenes(facts), facts);
-  },
-  elevators: () => {
+  }),
+  elevators: shows(() => {
     const { facts } = towerFacts();
     return sceneGrid(elevatorScenes(facts), facts);
-  },
-  rooms: () => roomGrid(roomCells(towerFacts().cat.facilities)),
-} satisfies Record<string, () => HTMLElement>;
+  }),
+  rooms: shows(() => roomGrid(roomCells(towerFacts().cat.facilities))),
+} satisfies Record<string, Demo>;
 
 export type DemoName = keyof typeof DEMOS;
 
@@ -220,7 +198,7 @@ export function mountDemos(root: ParentNode = document): void {
     const name = holder.dataset.demo as DemoName;
     const make = DEMOS[name];
     if (!make) throw new Error(`The gallery has no demo named ${name}.`);
-    holder.replaceChildren(make());
+    make(holder);
   }
   (window as unknown as { galleryReady: boolean }).galleryReady = true;
 }

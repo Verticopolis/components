@@ -7,6 +7,7 @@
 import { AudioEngine, type ProgramKind, type SfxName } from "../lib/audio/Audio.js";
 import { watchAway } from "../lib/audio/awayWatch.js";
 import type { ViewFocus } from "../lib/render/excalibur/towerInputCamera.js";
+import { html, nothing, render } from "lit-html";
 
 const EFFECTS: ReadonlyArray<{ name: SfxName; label: string }> = [
   { name: "click", label: "Click" },
@@ -53,42 +54,22 @@ const BASE_FOCUS: ViewFocus = {
  *  as the game does every frame. */
 const FOCUS_EVERY_MS = 250;
 
-function button(label: string, onPress: () => void): HTMLButtonElement {
-  const b = document.createElement("button");
-  b.type = "button";
-  b.className = "btn";
-  b.textContent = label;
-  b.addEventListener("click", onPress);
-  return b;
+/** A button on the board; `pressed` is set only on a button that stays pressed
+ *  while its sound plays. */
+interface Key {
+  readonly label: string;
+  readonly onPress: () => void;
+  readonly pressed?: boolean;
 }
 
-/** A button that stays pressed while its sound plays, unpressed at first. */
-function toggle(label: string, onPress: () => void): HTMLButtonElement {
-  const b = button(label, onPress);
-  b.setAttribute("aria-pressed", "false");
-  return b;
-}
+const keyTemplate = (k: Key) =>
+  html`<button type="button" class="btn" aria-pressed=${k.pressed === undefined ? nothing : String(k.pressed)} @click=${k.onPress}>${k.label}</button>`;
 
-function row(title: string, buttons: HTMLElement[]): HTMLElement {
-  const wrap = document.createElement("div");
-  wrap.className = "g-sound-row";
-  const h = document.createElement("h3");
-  h.textContent = title;
-  const r = document.createElement("div");
-  r.className = "g-row";
-  r.setAttribute("role", "group");
-  r.setAttribute("aria-label", title);
-  r.append(...buttons);
-  wrap.append(h, r);
-  return wrap;
-}
+const rowTemplate = (title: string, keys: readonly Key[]) =>
+  html`<div class="g-sound-row"><h3>${title}</h3><div class="g-row" role="group" aria-label=${title}>${keys.map(keyTemplate)}</div></div>`;
 
-/** Mark `on` as the pressed button of `group` (or none). */
-function press(group: HTMLButtonElement[], on: HTMLButtonElement | null): void {
-  for (const b of group) b.setAttribute("aria-pressed", String(b === on));
-}
-
-export function soundBoard(): HTMLElement {
+/** The sound board, drawn into `holder` and redrawn as its buttons press. */
+export function soundBoard(holder: HTMLElement): void {
   const audio = new AudioEngine();
   // Fall silent while the page is hidden or out of focus, as the game does.
   watchAway({ win: window, doc: document }, (away) => audio.setAway(away));
@@ -96,59 +77,75 @@ export function soundBoard(): HTMLElement {
   let ambience = 0;
   let focus: ViewFocus = BASE_FOCUS;
   let timer: ReturnType<typeof setInterval> | null = null;
+  /** The label of the pressed music and place buttons, if any. */
+  let musicOn: string | null = null;
+  let placeOn: string | null = null;
   const apply = (): void => {
     audio.start();
     audio.setVolumes(music, ambience, 1);
   };
 
-  const effects = EFFECTS.map(({ name, label }) =>
-    button(label, () => {
+  const effects: Key[] = EFFECTS.map(({ name, label }) => ({
+    label,
+    onPress: () => {
       apply();
       audio.sfx(name);
-    }),
-  );
-
-  const musicButtons: HTMLButtonElement[] = [];
-  for (const { program, label } of MUSIC) {
-    const b = toggle(label, () => {
+    },
+  }));
+  const tracks = MUSIC.map(({ program, label }) => ({
+    label,
+    onPress: () => {
       music = 1;
       audio.setProgram(program);
       apply();
-      press(musicButtons, b);
-    });
-    musicButtons.push(b);
-  }
-  const stopMusic = button("Stop music", () => {
-    music = 0;
-    apply();
-    press(musicButtons, null);
-  });
-
-  const placeButtons: HTMLButtonElement[] = [];
-  for (const { label, focus: f } of PLACES) {
-    const b = toggle(label, () => {
+      musicOn = label;
+      draw();
+    },
+  }));
+  const stopMusic: Key = {
+    label: "Stop music",
+    onPress: () => {
+      music = 0;
+      apply();
+      musicOn = null;
+      draw();
+    },
+  };
+  const places = PLACES.map(({ label, focus: f }) => ({
+    label,
+    onPress: () => {
       ambience = 1;
       focus = { ...BASE_FOCUS, ...f };
       apply();
       audio.update(focus);
       timer ??= setInterval(() => audio.update(focus), FOCUS_EVERY_MS);
-      press(placeButtons, b);
-    });
-    placeButtons.push(b);
-  }
-  const stopPlace = button("Stop ambience", () => {
-    ambience = 0;
-    apply();
-    if (timer !== null) clearInterval(timer);
-    timer = null;
-    press(placeButtons, null);
-  });
+      placeOn = label;
+      draw();
+    },
+  }));
+  const stopPlace: Key = {
+    label: "Stop ambience",
+    onPress: () => {
+      ambience = 0;
+      apply();
+      if (timer !== null) clearInterval(timer);
+      timer = null;
+      placeOn = null;
+      draw();
+    },
+  };
 
-  const board = document.createElement("div");
-  board.append(
-    row("Effects", effects),
-    row("Music", [...musicButtons, stopMusic]),
-    row("Places", [...placeButtons, stopPlace]),
-  );
-  return board;
+  function draw(): void {
+    const musicKeys = tracks.map((k) => ({ ...k, pressed: k.label === musicOn }));
+    const placeKeys = places.map((k) => ({ ...k, pressed: k.label === placeOn }));
+    render(
+      html`<div>${[
+        rowTemplate("Effects", effects),
+        rowTemplate("Music", [...musicKeys, stopMusic]),
+        rowTemplate("Places", [...placeKeys, stopPlace]),
+      ]}</div>`,
+      holder,
+    );
+  }
+  draw();
 }
