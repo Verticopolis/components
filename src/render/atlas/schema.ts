@@ -159,6 +159,8 @@ export interface AnimationRecord {
 
 export interface AtlasManifest {
   schema: number;
+  /** The @verticopolis/components version and commit the atlas was baked
+   *  from (named `game` from when the art lived in the game's repository). */
   game: { version: string; commit: string };
   license: { name: string; url: string; attribution: string };
   tile: { w: number; h: number };
