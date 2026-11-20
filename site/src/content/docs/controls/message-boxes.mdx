@@ -1,10 +1,10 @@
 ---
 title: Message boxes
-description: The modal message box, with a message, a question and a notice.
+description: The modal message box, with a message, a question, a warning and a notice.
 ---
 
 import Demo from "../../../components/Demo.astro";
 
-Every message box opens in one modal dialog (`ModalShell` from `windows/uiModal`). It blocks the page until it is answered, as a 1995 message box did. Esc, the ✕ and a press on the backdrop close it. A notice under the title bar says what went wrong without closing the box.
+A message box (`messageBoxView` from `windows/messageBox`) is a title, an optional icon before it, a paragraph or two and a row of buttons. Every message box opens in one modal dialog (`ModalShell` from `windows/uiModal`). It blocks the page until it is answered, as a 1995 message box did. Esc, the ✕ and a press on the backdrop close it. A notice under the title bar says what went wrong without closing the box.
 
 <Demo name="message-boxes" />

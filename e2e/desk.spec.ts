@@ -124,6 +124,7 @@ test("message boxes", async ({ page }) => {
   await openPage(page, "controls/message-boxes/");
   for (const [button, title, slug] of [
     ["A message…", "About Verticopolis components", "message"],
+    ["A warning…", "Sample Tower", "warning"],
     ["A notice…", "Open", "notice"],
   ] as const) {
     await page.getByRole("button", { name: button }).click();
