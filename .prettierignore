@@ -14,5 +14,8 @@ e2e/__screenshots__/
 history/
 assets/
 
-# Prose stays as written
+# Prose and data keep their own layout, as in the game and the engine:
+# Markdown is prose, JSON is mostly generated (fixtures, catalogs, the lockfile)
 *.md
+*.json
+*.jsonc
