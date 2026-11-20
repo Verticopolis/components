@@ -176,7 +176,31 @@ bundle to one copy of each.
   `customCss` entry comes too late for that, since Astro puts the CSS a
   page's scripts import (the menu bar's, from `windows/menuBar`) ahead of
   `customCss`, and that CSS would set `vc` first.
-  The title screen's skyline is `/splash-skyline.svg`, which the site serves.
+  The title screen's skyline is `styles/splash-skyline.svg`, which the build
+  writes beside the stylesheet, so a site serves nothing of its own for it.
+- `astro/TitleBar.astro` and `astro/TitleScreen.astro` are the docs title bar
+  and the title screen as [Astro](https://astro.build) components, for a
+  Starlight site's `Header` and `Hero` overrides. Each takes everything it
+  shows as props (the site's name, logo, links and buttons) and reads nothing
+  from Starlight; the title bar takes Starlight's `Search` and `ThemeSelect`
+  in its `search` and `theme` slots. The package lists the `astro-component`
+  keyword, so Astro compiles them from `node_modules`. The gallery's
+  [Docs sites](https://components.verticopolis.com/docs-sites/) page shows
+  both:
+
+  ```astro
+  ---
+  import TitleBar from "@verticopolis/components/astro/TitleBar.astro";
+  import Search from "@astrojs/starlight/components/Search.astro";
+  import ThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
+  import logo from "../assets/logo.png";
+  const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
+  ---
+  <TitleBar logo={logo} title={siteTitle} short="Help" href={siteTitleHref} github="https://github.com/Verticopolis/web">
+    <Search slot="search" />
+    <ThemeSelect slot="theme" />
+  </TitleBar>
+  ```
 - `styles/starlight-schemes.css` gives a Starlight docs site's chrome the
   game's color schemes (the header, the selected row, the buttons and, in
   High Contrast, Starlight's own colors). Like the game's scheme files, each

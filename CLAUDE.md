@@ -46,8 +46,10 @@ repositories is in CONTRIBUTING.md, "The BMAD setup".
   listeners on `window`, `document` or an element the game owns, and the
   canvas the renderer and the atlas bake draw on. Some older UI still
   builds DOM by hand while it moves onto lit; a change to one of those
-  pieces moves it onto lit and leaves no old API beside it. See
-  [CONTRIBUTING.md](CONTRIBUTING.md).
+  pieces moves it onto lit and leaves no old API beside it. The one
+  exception is `src/astro/` (owner, 2026-11-20): the Astro components a docs
+  site builds its title bar and title screen with, which put no DOM on the
+  page at run time. See [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Design sign-off.** New art, a new look or a new sound needs the owner's
   explicit OK before merge. A party or roundtable verdict is not that OK.
 - **Change notes, never a version edit.** A PR that changes what the package

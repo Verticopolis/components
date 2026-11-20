@@ -1,0 +1,41 @@
+---
+// The package's TitleScreen.astro as a docs site's front page draws it, on a
+// page of its own so the docs-sites page can show it in a frame
+// (Frame.astro). It loads the same stylesheet a docs site does.
+import TitleScreen from "../../../../lib/astro/TitleScreen.astro";
+import "../../../../lib/styles/starlight.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Title screen</title>
+    <style is:global>
+      body {
+        margin: 0;
+        background: var(--splash-sky);
+      }
+      /* On a site the screen spans the page with 100vw. A phone's browser
+         measures vw in a frame from the outer screen, so here it spans the
+         frame instead. */
+      .title-screen {
+        width: auto;
+        margin-inline: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <TitleScreen
+      label="Verticopolis components"
+      caption="THE COMPONENT GALLERY"
+      premise="Every window, menu, sound and room of the game, drawn from the package."
+      trademark
+      actions={[
+        { text: "Browse the Gallery", href: "#", primary: true },
+        { text: "Play the Game", href: "https://verticopolis.com/", gameLink: true },
+      ]}
+    />
+  </body>
+</html>

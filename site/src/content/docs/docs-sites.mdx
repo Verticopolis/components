@@ -1,0 +1,36 @@
+---
+title: Docs sites
+description: The title bar and title screen a Verticopolis docs site builds with, as Astro components.
+---
+
+import Frame from "../../components/Frame.astro";
+
+The player's manual, the engine docs and this gallery are Starlight sites in the game's look. Two of their pieces are drawn when the site is built, so the package ships them as Astro components in `astro/`, beside the stylesheet that dresses a whole site, `styles/starlight.css`. They are the only part of the package that is not drawn with lit-html, since they put no DOM on the page at run time.
+
+## The title bar
+
+`astro/TitleBar.astro` is the bar at the top of this page: the logo and the site's name, the site's search, the button to the game, the GitHub mark and the theme switch. A site uses it as its Starlight `Header` override and hands it everything it shows:
+
+- `logo`: an imported image, or anything with its `src`, `width` and `height`.
+- `title` and `href`: the site's name and front page, from `Astro.locals.starlightRoute`.
+- `short`: the name a phone shows, such as "Help". The full name stays for screen readers, and so does the button's full label.
+- `github`: the site's source. `game` is where the game button goes, verticopolis.com unless given.
+- Starlight's `Search` and `ThemeSelect` go in the `search` and `theme` slots.
+
+The game button carries `data-game-link`, so a site can turn it into Back to game in a tab the game opened.
+
+## The title screen
+
+`astro/TitleScreen.astro` is a site's front page drawn as the game's title screen: the dusk sky, the setting sun, the skyline, and the VERTICO/POLIS wordmark as the page's title. A site uses it as its Starlight `Hero` override and passes the page's `hero` front matter:
+
+- `label`: the wordmark's name for screen readers, such as "Verticopolis engine".
+- `caption`: the small capitals under the wordmark.
+- `premise`: the line under the caption, left out when not given.
+- `actions`: the buttons, each a `text` and an `href`, with `primary` for the one amber button and `gameLink` for one that starts the game.
+- `trademark`: adds the ™ after the wordmark.
+
+The skyline is `styles/splash-skyline.svg`, which the package's build writes from the shapes the game's own title screen draws, and `styles/starlight-theme.css` tiles it across the foot of the screen. A site serves nothing of its own for it.
+
+The title screen fills the width of the page it is on, so here it sits on a page of its own, in a frame.
+
+<Frame page="title-screen" title="A docs site's title screen" />

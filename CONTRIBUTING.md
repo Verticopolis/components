@@ -76,6 +76,12 @@ one of those pieces moves it onto lit, and leaves no old function or option
 beside the new one: the game and the other consumers move to the new API
 when they raise the pin.
 
+The one exception is the Astro components in `src/astro/` (owner,
+2026-11-20): the title bar and title screen a docs site draws when it is
+built. They are `.astro` files that ship as written, put no DOM on the page
+at run time, and are compiled by the site's own Astro. Anything that runs in
+the browser stays a lit template.
+
 `npm run lint` runs [eslint-plugin-lit](https://github.com/43081j/eslint-plugin-lit)
 over the templates (bindings in valid positions, no duplicate attributes,
 well-formed markup).

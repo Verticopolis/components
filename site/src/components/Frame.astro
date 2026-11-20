@@ -1,0 +1,15 @@
+---
+// A page of its own (src/pages/frames/) shown in a frame, for a piece that
+// fills the screen it is on, such as a docs site's title screen: the frame is
+// that screen, so the piece's own widths and media queries apply to it.
+interface Props {
+  /** The page's name under src/pages/frames/. */
+  page: string;
+  /** What the frame shows, for screen readers. */
+  title: string;
+}
+const { page, title } = Astro.props;
+const src = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/frames/${page}/`;
+---
+
+<iframe class="g-frame not-content" src={src} title={title} data-frame={page}></iframe>
