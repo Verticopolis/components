@@ -1,15 +1,25 @@
 ---
 // A page of its own (src/pages/frames/) shown in a frame, for a piece that
 // fills the screen it is on, such as a docs site's title screen: the frame is
-// that screen, so the piece's own widths and media queries apply to it.
+// that screen, so the piece's own widths and media queries apply to it. A
+// piece that needs the game's whole stylesheet uses one too, so the rest of
+// the gallery keeps its own styles.
 interface Props {
   /** The page's name under src/pages/frames/. */
   page: string;
   /** What the frame shows, for screen readers. */
   title: string;
+  /** A fixed height in CSS px, for a piece shorter than a screen. Without
+   *  one the frame has the shape of a screen. */
+  height?: number;
 }
-const { page, title } = Astro.props;
+const { page, title, height } = Astro.props;
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/frames/${page}/`;
 ---
 
-<iframe class="g-frame not-content" src={src} title={title} data-frame={page}></iframe>
+<iframe
+  class:list={["g-frame", "not-content", { "g-frame-fixed": height !== undefined }]}
+  src={src}
+  title={title}
+  data-frame={page}
+  style={height !== undefined ? `height: ${height}px` : undefined}></iframe>

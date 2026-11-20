@@ -347,4 +347,11 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
+
+  /* A frame with its own height (Frame.astro's height) spans the column at
+     that height, on a phone too. */
+  .g-frame.g-frame-fixed {
+    max-width: none;
+    aspect-ratio: auto;
+  }
 }

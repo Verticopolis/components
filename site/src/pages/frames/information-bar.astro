@@ -1,0 +1,64 @@
+---
+// The package's Information bar and status bar (gallery/bars.ts) over the
+// parts of the game's stylesheet that draw them on a desktop, in the order
+// the game's styles.css imports them, on a page of its own so the rest of
+// the gallery keeps its own styles. The phone and desk sizes come from the
+// media sheets and the desk's, which are left out, since a frame narrower
+// than a phone's breakpoint would take them. The Information bar page shows
+// it in a frame (Frame.astro).
+import "../../../../lib/styles/retro-tokens.css";
+import "../../../../lib/styles/retro-components.css";
+import "../../../../lib/styles/game/base.css";
+import "../../../../lib/styles/game/components.css";
+import "../../../../lib/styles/game/topbar.css";
+import "../../../../lib/styles/menu-bar.css";
+import "../../../../lib/styles/game/menubar.css";
+import "../../../../lib/styles/schemes/skyline.css";
+import "../../../../lib/styles/schemes/high-contrast.css";
+import { SCHEME_BOOT } from "../../../site.mjs";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Information bar</title>
+    <script is:inline set:html={SCHEME_BOOT} />
+    <style is:global>
+      /* The game's base sheet holds the page still; here the bars keep the
+         width they have on a desktop and the frame scrolls on a narrow one. */
+      body {
+        overflow: auto;
+        user-select: auto;
+      }
+      .g-bars {
+        display: flex;
+        flex-direction: column;
+        width: 1200px;
+        background: var(--r-face);
+      }
+      .g-bars-stage {
+        height: 64px;
+        background: linear-gradient(#3d5f9e, #9cb8de);
+        box-shadow: var(--bevel-in);
+      }
+      #g-bars-said {
+        margin: 8px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="g-bars" id="g-bars">
+      <header id="topbar"></header>
+      <div class="g-bars-stage"></div>
+      <footer id="statusbar" class="statusbar"></footer>
+    </div>
+    <p id="g-bars-said" role="status"></p>
+    <script>
+      import { mountBars } from "../../../../gallery/bars";
+      mountBars();
+    </script>
+  </body>
+</html>

@@ -283,6 +283,13 @@ bundle to one copy of each.
 - `windows/notFoundDesk` is the "page not found" desk
   (`notFoundDeskTemplate(view)`, with `trayClock` and `msToNextMinute`) that
   a site's 404 page renders into its `#app` with `styles/not-found.css`.
+- `windows/bars/topBar` is the game's Information bar (the badge, the six
+  meters and the speed, history, save and sound buttons) and
+  `windows/bars/statusBar` the status bar under the tower:
+  `topBarTemplate(view, actions)` and `statusBarTemplate(view)` render into
+  the game's own `<header id="topbar">` and `<footer id="statusbar">`, keep
+  the ids the stylesheets name, and take every text ready to show. Their look
+  is `styles/game/topbar.css` and `styles/game/menubar.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -370,6 +377,7 @@ built package from `lib/` the way a consumer would:
 | Fireworks | `windows/fireworks` behind a sample welcome box; a still frame with reduced motion |
 | Page not found | `windows/notFoundDesk`, the 404 desk, in a frame |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
+| Information bar and status bar | the game's top bar of meters and buttons and its status bar, in a frame over the game's desktop stylesheet |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
 | Sounds | each action effect, both music tracks and the ambience of each part of a tower |

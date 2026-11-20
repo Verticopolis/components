@@ -113,7 +113,9 @@ item, gray for a disabled one, and etched separators. Behavior follows the
 WAI-ARIA menubar pattern (`src/ui/menuBar.ts`), and the bar draws itself
 from a model with lit-html (`src/ui/menuBarTemplate.ts`). The status bar
 (`#statusbar`) is a row of sunken cells (`inset` shadow pair) on the face;
-an empty cell hides itself. On a phone the menu bar grows to 14px with
+an empty cell hides itself. Its cells, and the Information bar's meters and
+buttons above the tower (`#topbar`, `src/styles/game/topbar.css`), are drawn
+with lit-html by `src/ui/bars/statusBar.ts` and `src/ui/bars/topBar.ts`. On a phone the menu bar grows to 14px with
 finger-sized rows and keeps a navy logo badge at its left, and the status
 bar is left out.
 
