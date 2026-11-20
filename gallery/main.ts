@@ -18,6 +18,7 @@ import { ICON_NAMES, iconElement } from "../lib/ui/icons.js";
 import { GALLERY_HOUR, roomCells, type RoomCell } from "./rooms.js";
 import { paintScene, sceneSize, type Scene } from "./scene.js";
 import { elevatorScenes, lobbyScenes, stairScenes } from "./scenes.js";
+import { soundBoard } from "./sounds.js";
 
 /** The color schemes, by the value each sets on `html[data-scheme]` (none for
  *  the classic look). */
@@ -260,6 +261,7 @@ function start(): void {
     section("Wells, fields and key-value rows", fromMarkup(WELLS)),
     section("Menu bar", menuNote),
     section("Icons", icons()),
+    section("Sounds", soundBoard()),
     ...towerSections(),
   );
   // The menu bar sits above the page window, outside any window body, the

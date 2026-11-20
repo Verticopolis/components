@@ -101,3 +101,13 @@
   font-size: 12px;
   padding: 2px 0;
 }
+.g-sound-row {
+  margin: 0 0 0.75em;
+}
+.g-sound-row > h3 {
+  margin: 0 0 0.35em;
+  font-size: 0.95em;
+}
+.g-sound-row .btn[aria-pressed="true"] {
+  font-weight: bold;
+}

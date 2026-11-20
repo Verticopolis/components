@@ -233,14 +233,16 @@ push to `main` packs the tarball as a workflow artifact.
 
 The component gallery is one page with every reusable piece in each color
 scheme: the buttons, windows, wells and key-value rows, the menu bar, the
-icons, tower scenes and the room sprites. It loads the built package from
-`lib/` the way a consumer would. The scenes are hand-written slices of a
-tower across several floors: ground and sky lobbies one to three stories
-tall, halls of two heights, stairs, escalators and elevators. Each room is
-drawn at an hour it is open, with a share of its capacity inside so its
-furniture shows. The scenes and rooms are painted from the components' own
-render catalog (`src/tests/catalogFixture.ts`). The overview map is not on
-it, since it draws a running tower.
+icons, a sound board, tower scenes and the room sprites. It loads the built
+package from `lib/` the way a consumer would. The sound board plays each
+action effect, both music tracks and the ambience of each part of a tower.
+The scenes are hand-written slices of a tower across several floors: ground
+and sky lobbies one to three stories tall, halls of two heights, stairs,
+escalators and elevators. Each room is drawn at an hour it is open, with a
+share of its capacity inside so its furniture shows. The scenes and rooms
+are painted from the components' own render catalog
+(`src/tests/catalogFixture.ts`). The overview map is not on it, since it
+draws a running tower.
 
 ```sh
 npm run build           # the gallery reads lib/
@@ -254,11 +256,11 @@ and publishes it to GitHub Pages from `main`.
 ## Screenshot tests
 
 The Screenshots workflow drives the gallery in Chromium and compares each
-piece with the images in `e2e/__screenshots__`: the page window, the buttons,
-windows, wells, the menu bar closed and with each menu open, and the icons in
-every color scheme, plus each tower scene and room sprite once, on a desktop
-and a phone screen. A change that moves a pixel fails the check, and the run
-keeps the diffs as an artifact.
+piece with the images in `e2e/__screenshots__`: the page window, the
+buttons, windows, wells, the menu bar closed and with each menu open, the
+icons and the sound board in every color scheme, plus each tower scene and
+room sprite once, on a desktop and a phone screen. A change that moves a
+pixel fails the check, and the run keeps the diffs as an artifact.
 
 The baselines come only from the pinned Playwright image
 (`mcr.microsoft.com/playwright:v<version>-jammy`, the version in

@@ -1,8 +1,9 @@
 /**
  * Screenshot tests over the component gallery: each section of chrome (the
  * page window, buttons, windows, wells, the menu bar closed and open, the
- * icons) in each color scheme, and every tower scene and room sprite once.
- * The projects in playwright.config.ts run it on a desktop and a phone screen.
+ * icons, the sound board) in each color scheme, and every tower scene and
+ * room sprite once. The projects in
+ * playwright.config.ts run it on a desktop and a phone screen.
  */
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
@@ -17,6 +18,7 @@ const SECTIONS = [
   { title: "Windows", slug: "windows" },
   { title: "Wells, fields and key-value rows", slug: "wells" },
   { title: "Icons", slug: "icons" },
+  { title: "Sounds", slug: "sounds" },
 ] as const;
 
 const MENUS = [
