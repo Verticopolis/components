@@ -1,5 +1,5 @@
+import { catalogFacility } from "../render/catalogIndex";
 import { describe, expect, it } from "vitest";
-import { catalogFacility } from "../catalog/catalogTypes";
 import { catalogFor } from "../tests/catalogFixture";
 import { FACILITY_PRESENTATION, facilityColor, facilityDescription } from "./facilityPresentation";
 

@@ -98,8 +98,8 @@ jobs:
           ver=$(node -e "const l=require('./package-lock.json');const p=l.packages&&l.packages['node_modules/playwright'];process.stdout.write((p&&p.version)||require('./package.json').devDependencies.playwright.replace(/[^0-9.]/g,''))")
           echo "image=mcr.microsoft.com/playwright:v${ver}-jammy" >> "$GITHUB_OUTPUT"
 
-  # The bake draws with the engine's own catalog, from the @verticopolis/engine
-  # package npm ci installs (scripts/atlas-catalog.ts), so nothing is compiled.
+  # The bake draws with the components' own Modern render catalog
+  # (scripts/atlas-catalog.ts), so nothing is compiled.
   build:
     needs: resolve
     runs-on: ubuntu-latest

@@ -5,7 +5,7 @@ const deps = (stopped = false): ModalDeps => ({
   titleBarClose: () => document.createElement("button"),
   closeModal: vi.fn(),
   drainNotice: vi.fn(),
-  engineStopped: vi.fn(() => stopped),
+  gameStopped: vi.fn(() => stopped),
 });
 
 describe("finishModal", () => {
@@ -20,12 +20,12 @@ describe("finishModal", () => {
     expect(dialog.open).toBe(true);
   });
 
-  it("never opens behind a wasm-only engine-failure message, whose Reload button the top layer would cover", () => {
+  it("never opens behind a game-failure message, whose Reload button the top layer would cover", () => {
     document.body.innerHTML = `<dialog id="modal"><div class="box"><h2>Import report</h2></div></dialog>`;
     const dialog = document.getElementById("modal") as HTMLDialogElement;
     const stopped = deps(true);
     finishModal(dialog, dialog.querySelector(".box") as HTMLElement, stopped);
-    expect(stopped.engineStopped).toHaveBeenCalled();
+    expect(stopped.gameStopped).toHaveBeenCalled();
     expect(dialog.open).toBe(false);
   });
 });

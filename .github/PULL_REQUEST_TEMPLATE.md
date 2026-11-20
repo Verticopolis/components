@@ -1,7 +1,7 @@
 <!--
 Thanks for contributing to the Verticopolis components! Fill in the sections
-below. Keep every rule of the simulation in the engine (Verticopolis/engine):
-this package draws, plays and binds, and decides nothing about how the game
+below. Every rule of the simulation lives in Verticopolis/engine:
+this package draws and plays, and decides nothing about how the game
 plays. Use American English and write no em-dashes.
 Keep every ## heading and write something under each one: "None" or
 "n/a: <reason>" where a section does not apply. The PR template check
@@ -50,7 +50,7 @@ changelog entries (.changes/README.md).
 ## Complexity
 
 <!--
-A change to a hot path (rendering, the frame loop, the WASM binding and host,
+A change to a hot path (rendering, the frame loop,
 UI, audio and the other surfaces in section 1 of
 https://github.com/Verticopolis/web/blob/main/docs/performance/hot-path-review.md)
 fills in the note from section 5 of that page: hot paths and callers, sizes,

@@ -1,6 +1,6 @@
+import type { FacilityKind, RenderUnit } from "../../renderModel";
 import { describe, it, expect, vi } from "vitest";
 import { kindFacts } from "../../../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../../../model/types";
 import type { DrawCtx } from "../common";
 import { TILE, FLOOR } from "../../scale";
 import { refMap } from "./serviceKit";
@@ -70,7 +70,15 @@ function recorder() {
 }
 
 const dc = (ctx: CanvasRenderingContext2D): DrawCtx => ({ ctx, lit: false, anim: 0, hour: 12 });
-const UNIT = { id: 7, kind: "parking", x: 0, floor: 1, width: 4, state: "occupied", occupants: 0 } as unknown as Unit;
+const UNIT = {
+  id: 7,
+  kind: "parking",
+  x: 0,
+  floor: 1,
+  width: 4,
+  state: "occupied",
+  occupants: 0,
+} as unknown as RenderUnit;
 
 /** The six sprites, each with the tile footprint its reference was authored for.
  *  Signatures differ, so each carries its own caller. */
@@ -240,12 +248,12 @@ describe("service sprites on the grid they are authored for", () => {
   );
 
   it.each(SPRITES.map((s) => [s.name, s] as const))(
-    "%s is authored on its own grid, and every refMap call resamples it to the footprint the engine gives its kind",
+    "%s is authored on its own grid, and every refMap call resamples it to the footprint the simulation gives its kind",
     (name, sp) => {
       // The bounds guard cannot see a sprite whose own RW/RH drifted from its
       // room: a wrong pair still stays in bounds, keeps its rect count and just
       // resamples. So read the pair each painter hands refMap. The reference is
-      // the grid the art was drawn on (`tiles`); the box is the engine's own
+      // the grid the art was drawn on (`tiles`); the box is the simulation's own
       // facility data, which the SimTower widths made wider than the art for
       // security, medical, housekeeping and recycling. The map stretches the art
       // uniformly to that box until it is redrawn.

@@ -1,5 +1,5 @@
+import type { RenderFireResponse } from "../renderModel";
 import { describe, expect, it, vi } from "vitest";
-import type { FireResponseView } from "../../simport/view";
 import { FLOOR } from "../scale";
 import { STAFF_LOOK } from "../pixelSprites/people";
 import {
@@ -18,7 +18,7 @@ vi.mock("../towerSource", async (real) => ({
 
 /** A fire in the room at tiles 170 to 178 on floor 6, a guard who climbed
  *  from floor 2 and stands at tile 174, and the helicopter called at 100. */
-function answer(o: Partial<FireResponseView> = {}): FireResponseView {
+function answer(o: Partial<RenderFireResponse> = {}): RenderFireResponse {
   return {
     floor: 6,
     x: 170,
@@ -39,7 +39,6 @@ function answer(o: Partial<FireResponseView> = {}): FireResponseView {
       },
     ],
     helicopter: { called: 100, arrive: 130, sprayEnd: 150, leave: 165 },
-    out: false,
     seq: 3,
     ...o,
   };
@@ -105,7 +104,7 @@ describe("drawing the answer to a fire", () => {
     return { ctx, fills, strokes: () => strokes };
   }
 
-  function engine(fire: FireResponseView | null, minutes: number) {
+  function engine(fire: RenderFireResponse | null, minutes: number) {
     return {
       cam: { zoom: 1 },
       d: { anim: 0 },

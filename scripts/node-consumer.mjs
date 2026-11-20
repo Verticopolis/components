@@ -1,13 +1,12 @@
-// The Node half of scripts/engine-free-consumer.sh: run in the consumer project,
-// with the components installed and the engine not. It lists every module
-// the exports map serves outside the deprecated shims, imports each one (with
-// happy-dom standing in for the browser), and writes consumer.ts, which
-// imports each one's declarations for the type check that follows.
+// The Node half of scripts/node-consumer.sh: run in the consumer project, with
+// the components and their peers installed. It lists every module the exports
+// map serves, imports each one (with happy-dom standing in for the browser),
+// and writes consumer.ts, which imports each one's declarations for the type
+// check that follows.
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { register } from "node:module";
 import { join, posix } from "node:path";
 import { Window } from "happy-dom";
-import { SHIM_FOLDERS, SHIM_MODELS } from "./engineShims.mjs";
 
 const PKG = "@verticopolis/components";
 const dir = join("node_modules", PKG);
@@ -21,11 +20,6 @@ for (const [key, target] of Object.entries(pkg.exports)) {
   if (m && key.endsWith("/*") && !served.has(m[1])) served.set(m[1], key.slice(2, -2));
 }
 
-const isShim = (path) => {
-  const [top, ...rest] = path.split("/");
-  return SHIM_FOLDERS.includes(top) || (top === "model" && rest.length === 1 && SHIM_MODELS.includes(rest[0]));
-};
-
 function walk(sub) {
   return readdirSync(join(dir, "lib", sub), { withFileTypes: true }).flatMap((e) => {
     const path = posix.join(sub, e.name);
@@ -35,9 +29,7 @@ function walk(sub) {
 }
 
 const entries = [...served].flatMap(([folder, subpath]) =>
-  walk(folder)
-    .filter((path) => !isShim(path))
-    .map((path) => `${PKG}/${subpath}/${path.slice(folder.length + 1)}`),
+  walk(folder).map((path) => `${PKG}/${subpath}/${path.slice(folder.length + 1)}`),
 );
 if (entries.length < 100) throw new Error(`only ${entries.length} entries found under ${dir}`);
 
@@ -64,7 +56,7 @@ for (const spec of entries) {
     await import(spec);
   } catch (e) {
     failed++;
-    console.error(`::error::${spec} does not load without the engine: ${e instanceof Error ? e.message : e}`);
+    console.error(`::error::${spec} does not load: ${e instanceof Error ? e.message : e}`);
   }
 }
 writeFileSync(
@@ -72,4 +64,4 @@ writeFileSync(
   entries.map((spec, i) => `import type * as m${i} from "${spec}";\nexport type T${i} = typeof m${i};\n`).join(""),
 );
 if (failed > 0) process.exit(1);
-console.log(`${entries.length} modules load without the engine.`);
+console.log(`${entries.length} modules load.`);

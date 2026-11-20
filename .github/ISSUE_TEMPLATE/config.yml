@@ -5,7 +5,7 @@ contact_links:
     about: Something wrong while playing at verticopolis.com. Not sure which repository it belongs to? Start there.
   - name: ⚙️ Report a problem in the simulation
     url: https://github.com/Verticopolis/engine/issues/new/choose
-    about: A rule, price, cap, save or event the engine gets wrong, or a difference from the 1994 original.
+    about: A rule, price, cap, save or event the game's simulation gets wrong, or a difference from the 1994 original.
   - name: 🔎 Search existing issues
     url: https://github.com/Verticopolis/components/issues?q=is%3Aissue
     about: Check whether your bug or idea has already been reported.

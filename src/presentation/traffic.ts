@@ -4,7 +4,7 @@
  *
  * The readout follows the tower's worst waiting line right now (owner,
  * 2026-11-17): of every elevator landing where people stand waiting (the
- * engine's `queueView`, the same lines the renderer draws), the one with the
+ * simulation's `queueView`, the same lines the renderer draws), the one with the
  * most pressure. It names that line's floor, and a tap zooms to that landing,
  * so what the readout says is something the player can see on screen.
  *
@@ -20,8 +20,7 @@
 export type TrafficTier = 0 | 1 | 2 | 3;
 
 /** The wait tiers a landing's line carries (`QueueLanding.tier`): the
- *  engine's worst wait among its riders. Impatient is half the stress wait,
- *  fed up the whole of it (`wait_tier`, `engine-rs/src/render_reads.rs`). */
+ *  game's worst wait among its riders: content, impatient or fed up. */
 export const LINE_WAIT = { content: 0, impatient: 1, fedUp: 2 } as const;
 export type LineWaitTier = (typeof LINE_WAIT)[keyof typeof LINE_WAIT];
 

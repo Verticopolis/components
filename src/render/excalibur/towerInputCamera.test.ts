@@ -4,7 +4,9 @@ import * as ex from "excalibur";
 import { catalogFor } from "../../tests/catalogFixture";
 import { FLOOR, TILE } from "../scale";
 import { mapSideMarginTiles } from "../overviewMap/extent";
-import { VIEW_ZOOM_MAX as MAX_ZOOM, VIEW_ZOOM_MIN as MIN_ZOOM } from "../../model/viewZoom";
+import { TEST_ZOOM } from "../../tests/renderRules";
+
+const { min: MIN_ZOOM, max: MAX_ZOOM } = TEST_ZOOM;
 import {
   pan,
   zoomAt,
@@ -30,7 +32,7 @@ import {
  * the transport-over-unit precedence, not merely that a hit was found.
  */
 
-/** The lot's width in tiles, from the engine's catalog. */
+/** The lot's width in tiles, from the game's catalog. */
 const LOT_WIDTH = catalogFor("classic").world.lotWidth;
 
 /** A fake TowerEngine carrying just the fields the camera/coord functions read,
@@ -404,8 +406,8 @@ describe("pickEntityAt: transports by collider, every unit by grid lookup", () =
 
   it("resolves rooms through the tower's cell lookup with zero render actors, at exact pixel edges", () => {
     // Picking reads only the sim's tile index (unitAt), never the room actor
-    // layer. That the index covers every story of a tall room is the engine's,
-    // checked on the Rust engine in src/tests/integration/towerPick.integration.test.ts.
+    // layer. That the index covers every story of a tall room is the game's to
+    // check.
     const cells = new Map<string, { id: number; kind: string }>();
     for (let x = 140; x < 149; x++) cells.set(`2:${x}`, { id: 7, kind: "office" });
     cells.set("2:149", { id: 0, kind: "floor" });

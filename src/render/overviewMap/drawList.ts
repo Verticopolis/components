@@ -32,10 +32,10 @@ export interface MapMark {
 }
 
 /** What the draw list reads from the view. `floorsOf` is the kind's height in
- *  floors, read from the engine's catalog by the caller through
+ *  floors, read from the game's catalog by the caller through
  *  `findViewKind(kind)?.floors` in `src/presentation/viewKinds.ts` (the map
  *  holds no facility table of its own). It is asked once per kind per build.
- *  `tallLobbies` is the engine's lobby halls taller than one story
+ *  `tallLobbies` is the simulation's lobby halls taller than one story
  *  (`lobbyHalls(RenderTower.lobbyHeights()).runs`), asked once per build. */
 export interface MapSource {
   readonly structure: ReadonlyArray<Pick<RenderStructureRun, "kind" | "floor" | "x" | "width" | "count">>;

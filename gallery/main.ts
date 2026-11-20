@@ -3,14 +3,13 @@
  * scheme, built from lib/ the way a consumer would. The chrome (windows,
  * buttons, wells, key-value rows, the menu bar and the icons) is plain markup
  * over the package's stylesheets; the room sprites are painted by the
- * package's own portrait painters with the engine's Modern catalog. The
- * overview map is left out: it draws a running tower, and the gallery has
- * none.
+ * package's own portrait painters from the components' hand-written Modern
+ * render catalog (`src/tests/catalogFixture.ts`), the stand-in for the one a
+ * game hands the renderer. The overview map is left out: it draws a running
+ * tower, and the gallery has none.
  */
-import initEngine, { catalog as engineCatalog } from "@verticopolis/engine/web/verticopolis_engine.js";
-import { readCatalog } from "../lib/engineBinding/catalog.js";
-import type { Catalog, CatalogFacility } from "../lib/catalog/catalogTypes.js";
-import type { FacilityKind } from "../lib/model/types.js";
+import { catalogFor } from "../src/tests/catalogFixture.js";
+import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/renderModel.js";
 import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
 import { drawRoomPortrait, drawTransportPortrait } from "../lib/render/roomPortrait.js";
@@ -163,18 +162,21 @@ interface Sprite {
   draw(d: DrawCtx, w: number, h: number): void;
 }
 
+/** Transport drawn over one fixed flight; the rest are drawn over three floors. */
+const FIXED_SPAN = new Set<FacilityKind>(["stairs", "escalator"]);
+
 /** One cell per catalog kind, plus one per named variant (the canon shop,
  *  restaurant and venue names), in the catalog's own order. */
-function sprites(cat: Catalog): Sprite[] {
-  const facts = (kind: FacilityKind): CatalogFacility => {
+function sprites(cat: RenderCatalog): Sprite[] {
+  const facts = (kind: FacilityKind): RenderFacility => {
     const f = cat.facilities.find((e) => e.key === kind);
-    if (!f) throw new Error(`The engine's catalog has no ${kind}.`);
+    if (!f) throw new Error(`The gallery's catalog has no ${kind}.`);
     return f;
   };
   return cat.facilities.flatMap((f): Sprite[] => {
     const kind = f.key;
     if (f.transport) {
-      const span = f.fixedSpan ? 1 : 3;
+      const span = FIXED_SPAN.has(kind) ? 1 : 3;
       return [
         { label: f.name, draw: (d, w, h) => drawTransportPortrait(d, facts, kind, span, 0, 0, w, h, CAPTION_H, MAG) },
       ];
@@ -228,7 +230,6 @@ async function start(): Promise<void> {
   <p class="sub">Every reusable piece of the package, drawn from its own stylesheets and painters. Pick a color scheme to see each one in it.</p>
 </div>`);
   const spritesHolder = document.createElement("div");
-  spritesHolder.textContent = "Loading the engine's catalog…";
   const menu = fromMarkup(MENU);
   const menuNote = document.createElement("p");
   menuNote.textContent =
@@ -248,16 +249,10 @@ async function start(): Promise<void> {
   app.replaceChildren(menu, win);
   new MenuBar(menu);
 
-  try {
-    await initEngine();
-    const cat = readCatalog({ catalog: engineCatalog }, "modern");
-    bindViewWorld(cat.world);
-    bindViewKinds(cat);
-    spritesHolder.replaceChildren(spriteGrid(sprites(cat)));
-  } catch (e) {
-    console.error("Component gallery: the engine's catalog did not load.", e);
-    spritesHolder.textContent = "The room sprites need the engine, and it did not load. Reload the page to try again.";
-  }
+  const cat = catalogFor("modern");
+  bindViewWorld(cat.world);
+  bindViewKinds(cat);
+  spritesHolder.replaceChildren(spriteGrid(sprites(cat)));
   (window as unknown as { galleryReady: boolean }).galleryReady = true;
 }
 

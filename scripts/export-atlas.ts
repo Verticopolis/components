@@ -1,8 +1,8 @@
 /**
  * Export the game's procedural sprite art as a scaled texture atlas any
- * frontend on the open engine can load (issue #909). Usage:
+ * frontend can load (issue #909). Usage:
  *
- *   npm run atlas -- [--out dist-atlas] [--filter room/office] [--label <tag>]
+ *   npm run atlas -- [--out dist-atlas] [--filter room/office] [--label <tag>] [--catalog <file>]
  *
  * The art is baked ONCE at the canonical size in a real Chromium, then scaled
  * to 2x and 4x by nearest neighbor (the draw routines are not scale-faithful,
@@ -25,8 +25,8 @@
  * Nothing it writes is committed. The archive layout and manifest schema are
  * documented in docs/atlas.md.
  *
- * The sizes and kind facts the art is drawn with come from the engine's own
- * catalog, read from the installed `@verticopolis/engine` package (see
+ * The sizes and kind facts the art is drawn with come from the components'
+ * own Modern render catalog, or from a game's with `--catalog <file>` (see
  * `scripts/atlas-catalog.ts`).
  */
 import { execFileSync } from "node:child_process";
@@ -52,7 +52,7 @@ import type { Image } from "../src/render/atlas/pixels";
 
 const root = resolve(import.meta.dirname, "..");
 
-const FLAGS = new Set(["--out", "--filter", "--label"]);
+const FLAGS = new Set(["--out", "--filter", "--label", "--catalog"]);
 
 /** The app icon for other frontends: the mark's SVG (full bleed and inside the
  *  maskable safe zone) and the PNGs the web app ships, kept in assets/app-icon. */
@@ -143,9 +143,9 @@ async function main(): Promise<void> {
   if (label !== undefined && filter !== undefined)
     throw new Error("--label names a release archive; a --filter run is a preview");
   const t0 = Date.now();
-  // The page draws with the engine's catalog, and the archive builder binds
-  // the same one in Node (ArchiveInfo.catalog).
-  const catalog = await atlasCatalog(root);
+  // The page draws with the render catalog, and the archive builder binds the
+  // same one in Node (ArchiveInfo.catalog).
+  const catalog = atlasCatalog(root, arg("catalog"));
   const code = await bundleBake();
   console.log(`bundled the bake (${(code.length / 1024).toFixed(0)} KiB)`);
   const browser = await chromium.launch({ executablePath: process.env.PW_CHROME || undefined });

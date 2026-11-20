@@ -55,9 +55,9 @@ export interface DrawCtx {
    *  garbage piles up through the day until the morning truck collection. */
   recycleFill?: number;
   /** Read-only elevator queue + car-fill projection, memoized once per sim step
-   *  by the engine ({@link ElevatorQueueView}) and set once per frame by the
+   *  by the simulation ({@link ElevatorQueueView}) and set once per frame by the
    *  frame prelude. A VIEW of tracked crowd state, so the transport render path can
-   *  read landing queues and cab fill without a draw routine calling the engine.
+   *  read landing queues and cab fill without a draw routine calling the simulation.
    *  Populated by TowerEngine; the queue render that consumes it is a follow-up. */
   elevatorQueue?: RenderQueue;
 }

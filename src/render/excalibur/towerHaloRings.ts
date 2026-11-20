@@ -4,7 +4,7 @@ import { FLOOR, TILE } from "../scale";
 /**
  * The range rings a venue paints while it is being placed (#1980): one band
  * across the lot for every floor its halo reaches, the venue's own stories
- * included, as strong as the engine makes it there (`max * (1 - d / floors)`,
+ * included, as strong as the simulation makes it there (`max * (1 - d / floors)`,
  * from the catalog's halo, with `d` counted from the venue's nearer story),
  * then a dashed outline around the whole reach. A
  * lift paints green, a drain violet. Classic venues have no halo, so nothing
@@ -32,13 +32,13 @@ const DRAIN_COLOR = "#a46ad8";
 const BAND_ALPHA = 0.3;
 
 /** How strong `halo` is `d` floors from its venue, from 1 on its own floor
- *  to 0 at its reach, as the engine fades it. */
+ *  to 0 at its reach, as the simulation fades it. */
 export function haloStrength(halo: RenderHalo, d: number): number {
   return d < 0 || d >= halo.floors ? 0 : 1 - d / halo.floors;
 }
 
 /** How many floors `f` is from a venue whose lowest story is `floor` and
- *  that fills `stories`: 0 on any story it fills, as the engine counts it. */
+ *  that fills `stories`: 0 on any story it fills, as the simulation counts it. */
 export function storyDistance(f: number, floor: number, stories: number): number {
   return Math.max(floor - f, f - (floor + stories - 1), 0);
 }

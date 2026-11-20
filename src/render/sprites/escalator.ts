@@ -95,7 +95,7 @@ function drawTurnPlatform(
  *  legible amber step edges, a glass side balustrade with a dark moving handrail,
  *  and comb-plate landings top and bottom. Confined to the band
  *  `[bandTop, bandBottom)` like the stair flight and drawn strictly inside
- *  `[sx, sx + w]`. Structure only, NO baked rider: the engine's routed sims ride
+ *  `[sx, sx + w]`. Structure only, NO baked rider: the simulation's routed sims ride
  *  over it, so an empty tower shows a bare, unoccupied run. Integer coordinates. */
 export function drawEscalatorRun(
   ctx: CanvasRenderingContext2D,

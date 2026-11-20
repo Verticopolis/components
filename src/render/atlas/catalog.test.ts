@@ -1,8 +1,8 @@
+import type { FacilityKind } from "../renderModel";
+import { catalogFacility } from "../catalogIndex";
 import { describe, expect, it } from "vitest";
 import { kindFacts, keepsHours, openAt } from "../../tests/catalogKinds";
-import { catalogFacility } from "../../catalog/catalogTypes";
 import { catalogFor } from "../../tests/catalogFixture";
-import type { FacilityKind } from "../../model/types";
 import { FLOOR, TILE } from "../scale";
 import { allJobs } from "./browserEntry";
 import { UNIT_STATES, hourFor, occupantCap, roomJobs, roomKinds, variantPlacements, type StillJob } from "./catalog";
@@ -62,7 +62,7 @@ describe("room catalog", () => {
     expect(roomKinds()).not.toContain("lobby");
     expect(roomKinds()).not.toContain("elevatorStandard");
   });
-  it("names frames from the engine's kind and state strings, uniquely", () => {
+  it("names frames from the simulation's kind and state strings, uniquely", () => {
     const names = allJobs().map((j) => j.name);
     expect(new Set(names).size).toBe(names.length);
     expect(names).toContain("room/office/occupied/-/w9/unlit/always/any/v0/home");
@@ -150,7 +150,7 @@ describe("paint", () => {
   it("rejects an unknown spec", () => {
     expect(() => paint(sinkCtx(), { p: "nope" } as unknown as PaintSpec, 1, 1)).toThrow(/unknown paint spec/);
   });
-  it("builds engine-shaped units and cloud canvases that hold every puff", () => {
+  it("builds render-model units and cloud canvases that hold every puff", () => {
     expect(
       unitOf({
         p: "unit",

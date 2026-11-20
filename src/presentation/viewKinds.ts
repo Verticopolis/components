@@ -2,11 +2,11 @@ import { catalogOpenAt } from "../render/catalogIndex";
 import type { RenderCatalog, RenderFacility, FacilityKind } from "../render/renderModel";
 
 /**
- * What the view knows about each kind, read from the engine's catalog: which
+ * What the view knows about each kind, read from the game's catalog: which
  * kinds are commercial, hotel rooms, lease amenities, demand tenants or
  * elevators, and which keep business hours and when they are open. The view
  * asks these here instead of keeping kind lists of its own, so a kind the
- * engine adds lands on the right side of every check with no frontend edit.
+ * simulation adds lands on the right side of every check with no frontend edit.
  *
  * The facts are the same in both modes, so a catalog of either one binds them.
  * Like the view's world, they must be bound before anything draws: all lookups
@@ -88,7 +88,7 @@ export function kindFloors(kind: FacilityKind): number {
   return entry(kind).floors;
 }
 
-/** Whether the kind is open in `hour`, read as the engines read it (a fraction
+/** Whether the kind is open in `hour`, read as a simulation reads it (a fraction
  *  or 24 wraps onto its hour); a kind with no posted hours is always open. */
 export function isOpenAt(kind: FacilityKind, hour: number): boolean {
   return catalogOpenAt(entry(kind), hour);

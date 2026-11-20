@@ -1,10 +1,10 @@
 /**
- * Where a person on a stairway or escalator is drawn. The engine keeps a
+ * Where a person on a stairway or escalator is drawn. The simulation keeps a
  * climber at the flight's middle and moves only their floor, which drew them
  * rising straight up the middle of the flight. A flight is drawn as a run from
  * a lower landing on one side to an upper landing on the other
  * (`sprites/transport.ts`), so a climber is drawn along that run instead: the
- * engine's floor still says how far up they are, and this only says where
+ * simulation's floor still says how far up they are, and this only says where
  * along the run that height falls. Nothing here changes the simulation.
  */
 import type { RenderTransport } from "./renderModel";
@@ -130,7 +130,7 @@ export interface Climber {
 }
 
 /** The drawn x of a climber this frame, or `undefined` when no flight
- *  matches (the engine's x stands). Sets `climbLeft` to face the way they go
+ *  matches (the simulation's x stands). Sets `climbLeft` to face the way they go
  *  along the run. `fy` is their drawn floor, `descending` whether they are on
  *  their way down, `winding` the ids of the flights that wind beside a venue
  *  (`venueFlights.ts`), read when the flight is found. The flight is found

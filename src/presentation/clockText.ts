@@ -1,11 +1,11 @@
 /**
- * The words for a date. The engine reports the numbers (day of the week,
+ * The words for a date. The simulation reports the numbers (day of the week,
  * weekend flag, quarter, year, the calendar's week and weekend lengths); this
  * file only turns them into the names the header strip and the stats panel
  * show. It does no date arithmetic.
  */
 
-/** What the engine reports about one moment of the game clock. */
+/** What the simulation reports about one moment of the game clock. */
 export interface DateReading {
   /** 0-based day of the week on the tower's calendar. */
   readonly dayOfWeek: number;

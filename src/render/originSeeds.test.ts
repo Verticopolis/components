@@ -1,6 +1,6 @@
+import type { FacilityKind, RenderUnit } from "./renderModel";
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../model/types";
 import {
   OFFSETS,
   crop,
@@ -28,7 +28,7 @@ import { FLOOR, TILE } from "./scale";
  * integration test `originSeedsSweep.integration.test.ts`.
  */
 
-const CASES: ReadonlyArray<{ label: string; unit: Unit }> = [
+const CASES: ReadonlyArray<{ label: string; unit: RenderUnit }> = [
   { label: "security", unit: unitOf("security") },
   { label: "medical", unit: unitOf("medical") },
   { label: "housekeeping", unit: unitOf("housekeeping") },
@@ -106,7 +106,8 @@ describe("room details follow the room wherever it is painted (#915)", () => {
     // variety (or one axis of it). The three staff rooms read the unit only
     // for the staff seed, so for them the whole room varying is the shirts
     // varying.
-    const over = (kind: FacilityKind): Partial<Unit> => (kind === "fitnessClub" ? { subtype: "Climbing Wall" } : {});
+    const over = (kind: FacilityKind): Partial<RenderUnit> =>
+      kind === "fitnessClub" ? { subtype: "Climbing Wall" } : {};
     for (const kind of ["security", "medical", "housekeeping", "skyBar", "fitnessClub"] as const) {
       const byFloor = new Set(
         [5, 12, 27, 43].map((floor) => paintAt(unitOf(kind, { ...over(kind), floor }), 0, 0, true).join(",")),

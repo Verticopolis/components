@@ -13,7 +13,7 @@
  * except where one is too dark for the map's backdrop (`MAP_ROOM_FILL`). A
  * kind with no group is a compile error (`KIND_GROUP` is an exhaustive record).
  * A kind the table has never heard of at run time (a forged save, a newer
- * engine) paints as a loud placeholder.
+ * simulation) paints as a loud placeholder.
  */
 import type { FacilityKind } from "../renderModel";
 import { FACILITY_PRESENTATION } from "../../presentation/facilityPresentation";

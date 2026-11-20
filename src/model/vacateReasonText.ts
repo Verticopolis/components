@@ -1,9 +1,7 @@
 /**
- * Engine-neutral copy shared by simulation logs, notifications and the UI.
- * This module contains text only, with no gameplay or engine imports.
- * Keep in sync with the engine's VacateReason union: the deprecated
- * src/model/types.ts path types this as Record<VacateReason, string> against
- * it, so a reason the engine adds fails the compiler.
+ * Copy shared by simulation logs, notifications and the UI: text only, with
+ * no gameplay imports. One line per reason a tenant moves out; a game that
+ * reports a reason with no line here shows its key.
  */
 export const VACATE_REASON_TEXT = {
   access: "no route to the lobby",

@@ -1,10 +1,10 @@
+import type { RenderTransport } from "./renderModel";
 import { describe, expect, it } from "vitest";
 import { RUN_FOOT_PX, RUN_HEAD_PX, climbDrawX, climbFlight, climbSpot, leaveFlight, type Climber } from "./climbPath";
 import { FLOOR, TILE } from "./scale";
 import { spiralRadius } from "./sprites/spiralStair";
-import type { TransportView } from "../simport/view";
 
-const flight = (kind: "stairs" | "escalator", bottom: number, top: number): TransportView => ({
+const flight = (kind: "stairs" | "escalator", bottom: number, top: number): RenderTransport => ({
   id: 1,
   kind,
   x: 100,
@@ -58,7 +58,7 @@ describe("a climber's place on a flight", () => {
 
   it("finds the flight a climber stands in the middle of, and nothing else", () => {
     const stairs = flight("stairs", 4, 5);
-    const lift: TransportView = { ...flight("stairs", 4, 5), id: 2, kind: "elevatorStandard" };
+    const lift: RenderTransport = { ...flight("stairs", 4, 5), id: 2, kind: "elevatorStandard" };
     expect(climbFlight([lift, stairs], 104, 4)).toBe(stairs);
     expect(climbFlight([stairs], 104, 7)).toBeUndefined();
     expect(climbFlight([stairs], 103, 4)).toBeUndefined();
@@ -148,7 +148,7 @@ describe("a climber's place on a flight", () => {
     expect(c.flightWinds).toBe(true);
   });
 
-  it("draws a climber with no matching flight where the engine puts them", () => {
+  it("draws a climber with no matching flight where the simulation puts them", () => {
     const c: Climber = {};
     expect(climbDrawX(c, [], 104, 4, 4.5, false)).toBeUndefined();
   });

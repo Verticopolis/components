@@ -1,10 +1,10 @@
+import type { RenderMetroTrain } from "./renderModel";
 import { describe, it, expect } from "vitest";
-import type { CatalogMetroTrain } from "../catalog/catalogTypes";
 import { metroLineTimes, metroTrainAt } from "./metroTrainSchedule";
 
-/** The catalog's `world.metroTrain` as the engine publishes it, the canned
+/** The catalog's `world.metroTrain` as the simulation publishes it, the canned
  *  answer these pure functions read. */
-const TIMETABLE: CatalogMetroTrain = { firstHour: 6, lastHour: 20, legMinutes: 6, dwellMinutes: 14, runMinutes: 54 };
+const TIMETABLE: RenderMetroTrain = { firstHour: 6, lastHour: 20, legMinutes: 6, dwellMinutes: 14, runMinutes: 54 };
 const SPAN = 100;
 
 describe("metroTrainAt: one station", () => {
@@ -39,7 +39,7 @@ describe("metroTrainAt: one station", () => {
   });
 
   it("follows the timetable it is given", () => {
-    const late: CatalogMetroTrain = { ...TIMETABLE, firstHour: 8, legMinutes: 4, dwellMinutes: 10 };
+    const late: RenderMetroTrain = { ...TIMETABLE, firstHour: 8, legMinutes: 4, dwellMinutes: 10 };
     expect(metroTrainAt(7 * 60 + 10, [0], SPAN, late)).toBe(-SPAN);
     expect(metroTrainAt(8 * 60 + 4, [0], SPAN, late)).toBe(0);
     expect(metroTrainAt(8 * 60 + 16, [0], SPAN, late)).toBeCloseTo(SPAN / 2, 6);

@@ -43,7 +43,7 @@ export function beginFrame(engine: TowerEngine, elapsedMs: number): void {
   // so it lands once, aligned with the room repaint (towerSyncSchedule).
   if (engine.craneGfx && animating) engine.craneGfx.flagDirty();
   // Read-only queue + car-fill projection for the transport render path.
-  // Memoized on the (step, revision) key in the engine, so this per-frame read
+  // Memoized on the (step, revision) key in the simulation, so this per-frame read
   // returns the cached snapshot without re-scanning the crowd, except on the
   // first call after the sim steps or the tower structure changes (for example
   // a paused structural edit), which rebuilds once. The queue render that draws

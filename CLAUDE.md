@@ -2,8 +2,9 @@
 
 This repository is the Verticopolis components package
 (`@verticopolis/components`): the renderer and Excalibur scene, the Win95
-windows and menus, the procedural sprites and audio, and the code a
-frontend uses to drive the engine. [README.md](README.md) has the layout, the
+windows and menus, and the procedural sprites and audio. They read a render
+model each game fills from its simulation, and depend on no simulation
+package. [README.md](README.md) has the layout, the
 checks, the gallery, the screenshot tests and releasing. Read it.
 
 ## Load the game's repository too
@@ -14,15 +15,19 @@ skills (`/gds-code-review`, `/bmad-code-review`), the hot-path checklist
 `_bmad-output/project-context.md`) live in
 [Verticopolis/web](https://github.com/Verticopolis/web). Load it in the same
 session, and run its review skill on every non-trivial change here:
-`/gds-code-review` for the renderer, input, audio and the engine seam,
+`/gds-code-review` for the renderer, input, audio and the render model,
 `/bmad-code-review` for CI, packaging and tooling. Rendering, the frame
 loop, UI and audio are hot paths and also get the hot-path checklist.
 
 ## Non-negotiables
 
-- **No simulation rules.** Prices, sizes, caps and every other rule come
-  from the engine's catalog and commands; a rule change lands in
-  [Verticopolis/engine](https://github.com/Verticopolis/engine).
+- **No simulation rules, code or data.** Prices, sizes, caps and every
+  other rule come from the game, through the render model's catalog and
+  rules; a rule change lands in
+  [Verticopolis/engine](https://github.com/Verticopolis/engine). Nothing
+  here imports `@verticopolis/engine` (lint refuses it), and the tests, the
+  gallery and the atlas bake use hand-written fixtures, never a copy of the
+  engine's catalog.
 - **Design sign-off.** New art, a new look or a new sound needs the owner's
   explicit OK before merge. A party or roundtable verdict is not that OK.
 - **Change notes, never a version edit.** A PR that changes what the package
@@ -32,8 +37,10 @@ loop, UI and audio are hot paths and also get the hot-path checklist.
 - **Quality gates before pushing:** `npm run typecheck`, `npm run lint`,
   `npm run icons:check`, `npm run format:check`, `npm test`, `npm run build`.
   Prettier owns code layout; run `npm run format` before committing.
-- **Unit tests mock the engine** (`vi.fn` spies with the JSON fixtures in
-  `src/simport/fixtures` as canned answers) and assert what they name.
+- **Unit tests use render-model fakes** (the hand-written catalogs in
+  `src/tests/catalogFixture.ts`, the rules in `src/tests/renderRules.ts`, and
+  `vi.fn` spies) and assert what they name. A test that needs a real
+  simulation belongs in the game that runs one.
 - **No guard tests.** Never add a test that reads source, CSS, workflow
   or configuration files. Check workflows with actionlint and real CI runs.
 - **A 500-line ceiling per source file.** Test files and generated files

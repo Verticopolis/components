@@ -42,7 +42,7 @@ export function cabFit(cabWidth: number): number {
 /**
  * Map an elevator car's live state to its cab indicators.
  * @param dir  −1 descending, 0 idle, +1 ascending
- * @param load the engine's car load (the traffic model's head count), for FULL
+ * @param load the simulation's car load (the traffic model's head count), for FULL
  * @param cap  car capacity
  * @param fit  rider figures the cab has room for (`cabFit`)
  * @param aboard people the crowd shows boarding this car (`countCabRiders`)

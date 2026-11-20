@@ -1,6 +1,6 @@
+import type { FacilityKind, RenderUnit } from "../renderModel";
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { lookupRoom, type LiveScene } from "../atlas/lookup";
 import { occupantCap } from "../atlas/catalog";
@@ -26,14 +26,9 @@ import { FLOOR, TILE } from "../scale";
 
 const DAY: LiveScene = { hour: 12, lit: false, parkingUse: 0, recycleFill: 0, dead: false };
 
-/**
- * The rule is the engine's (`Unit::visible_occupants` in
- * `engine-rs/src/tower_query_state.rs`: occupants minus the ones out for a
- * meal, never below zero). These are the whole-number rows its own test
- * holds, so the drawing copy and the engine cannot drift. Keep the two
- * tables identical.
- */
-const ENGINE_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number | undefined, shown: number]> = [
+/** The people a room shows: occupants minus the ones out for a meal, never
+ *  below zero. */
+const SHOWN_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number | undefined, shown: number]> = [
   [0, undefined, 0],
   [4, undefined, 4],
   [4, 0, 4],
@@ -44,8 +39,8 @@ const ENGINE_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number
   [1, 1, 0],
 ];
 
-describe("roomOccupants matches the engine's visible_occupants", () => {
-  it.each(ENGINE_ROWS)("occupants %s, out %s shows %s", (occupants, outForMeal, shown) => {
+describe("roomOccupants matches the people a simulation shows", () => {
+  it.each(SHOWN_ROWS)("occupants %s, out %s shows %s", (occupants, outForMeal, shown) => {
     expect(roomOccupants({ occupants, outForMeal })).toBe(shown);
   });
 });
@@ -71,7 +66,7 @@ describe("roomOccupants agrees with the atlas reader", () => {
 });
 
 /** Every fillRect a room makes, as a multiset keyed by call and color. */
-function draws(u: Unit, hour: number): Map<string, number> {
+function draws(u: RenderUnit, hour: number): Map<string, number> {
   const seen = new Map<string, number>();
   let fill = "";
   const ctx: Record<string, unknown> = {};
@@ -138,9 +133,9 @@ describe("a rewired room's crowd only grows", () => {
         width: kindFacts(kind).width,
         satisfaction: 0.8,
       };
-      let prev = draws({ ...base, occupants: 1 } as Unit, hour);
+      let prev = draws({ ...base, occupants: 1 } as RenderUnit, hour);
       for (let n = 2; n <= cap; n++) {
-        const next = draws({ ...base, occupants: n } as Unit, hour);
+        const next = draws({ ...base, occupants: n } as RenderUnit, hour);
         for (const [k, c] of prev) {
           expect(
             next.get(k) ?? 0,
@@ -171,9 +166,9 @@ describe("a rewired room draws a fractional occupancy as the whole people the at
       satisfaction: 0.8,
     };
     for (const k of [1, 2, 3, 5].filter((n) => n <= cap)) {
-      const whole = draws({ ...base, occupants: k } as Unit, hour);
+      const whole = draws({ ...base, occupants: k } as RenderUnit, hour);
       for (const frac of [k - 0.5, k - 0.01]) {
-        const part = draws({ ...base, occupants: frac } as Unit, hour);
+        const part = draws({ ...base, occupants: frac } as RenderUnit, hour);
         expect([...part], `${kind} ${subtype ?? ""} at ${frac} people`).toEqual([...whole]);
       }
     }

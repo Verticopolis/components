@@ -7,7 +7,7 @@ import { VENDORED_ICON_PATHS } from "./iconPaths.generated";
  * color-emoji font (bare Linux, containers, WSL) and look materially different
  * across Windows, macOS, and Android. Decorative emoji inside running prose stay
  * as text; the in-game bulletin emoji are swapped at the RENDER layer only, so
- * `src/engine` keeps emitting plain strings and stays DOM/render-free.
+ * The simulation keeps emitting plain strings and stays DOM/render-free.
  *
  * Icons are single-color pixel shapes on a 24x24 grid, filled with
  * `currentColor` so each takes the color of its context: ink on the gray chrome,
@@ -219,7 +219,7 @@ export const EMOJI_ICONS: Record<string, IconName> = {
 
 const EMOJI_KEYS = Object.keys(EMOJI_ICONS);
 /** Matches ONLY a mapped bulletin emoji at the head of a message (the leading
- *  severity marker the engine emits), plus a trailing VS16. Leading whitespace
+ *  severity marker the simulation emits), plus a trailing VS16. Leading whitespace
  *  is tolerated and consumed with the marker (issue #743), so a stray space
  *  before the emoji cannot silently turn the icon back into tofu text. Still
  *  anchored past that: a mapped emoji after any non-whitespace prefix (a tower
@@ -237,7 +237,7 @@ const LEADING_EMOJI_RE = new RegExp(
  * whitespace allowed, and consumed along with the marker), that leading marker
  * becomes a trusted icon element and the rest stays a TEXT NODE;
  * otherwise the whole message is one text node. The text is never set as
- * innerHTML, so an engine string (or a tower name inside it) can never inject
+ * innerHTML, so a simulation string (or a tower name inside it) can never inject
  * markup, and any mapped emoji NOT at the start survives as text (so an
  * aria-hidden icon never swallows a character mid-sentence). The icon inherits
  * `el`'s color, which the bulletin log sets per severity. Returns whether an

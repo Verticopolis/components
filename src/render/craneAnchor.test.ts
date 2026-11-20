@@ -1,9 +1,9 @@
+import type { FacilityKind, RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { CRANE_REACH_LEFT_TILES, CRANE_REACH_RIGHT_TILES, craneAnchorTile, craneMastTile, craneRoof } from "./sprites";
 import { facadeGeometry } from "./facadeGeometry";
 import { lobbyHalls } from "./lobbyHalls";
 import { catalogFor } from "../tests/catalogFixture";
-import type { FacilityKind, Unit } from "../model/types";
 
 const MODERN = catalogFor("modern");
 
@@ -108,8 +108,8 @@ describe("facadeGeometry → crane anchor (integration)", () => {
 });
 
 describe("facadeGeometry and the wedding hall's garden crown", () => {
-  // The Rust catalog the game draws from has the hall five stories tall (floors
-  // 100 to 104); the TypeScript table keeps it at one.
+  // The test catalog has the hall five stories tall (floors
+  // 100 to 104), where the wedding hall is drawn as one.
   const withTallHall = {
     ...MODERN,
     facilities: MODERN.facilities.map((f) => (f.key === "weddingHall" ? { ...f, floors: 5 } : f)),
@@ -129,7 +129,7 @@ describe("facadeGeometry and the wedding hall's garden crown", () => {
 });
 
 describe("facadeGeometry and a tall lobby hall on the top floor", () => {
-  // The engine's highest floor is the hall's own floor (30); its raised
+  // The simulation's highest floor is the hall's own floor (30); its raised
   // stories rise to 32, so the crane stands on the hall's roof.
   it("moves the crane up to the top story of the hall", () => {
     const units = [...tiles(29, 100, 139), ...tiles(30, 110, 129, "lobby")];
@@ -156,9 +156,9 @@ function range(lo: number, hi: number): number[] {
 /** One unit per tile across [lo, hi] on `floor` (default a 1×1 floor tile), or
  *  a single `width`-wide room when `width > 1`. Only the fields facadeGeometry
  *  reads are set; the rest are irrelevant to silhouette geometry. */
-function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor", width = 1): Unit[] {
-  if (width > 1) return [{ floor, x: lo, width, kind } as unknown as Unit];
-  return range(lo, hi).map((x) => ({ floor, x, width: 1, kind }) as unknown as Unit);
+function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor", width = 1): RenderUnit[] {
+  if (width > 1) return [{ floor, x: lo, width, kind } as unknown as RenderUnit];
+  return range(lo, hi).map((x) => ({ floor, x, width: 1, kind }) as unknown as RenderUnit);
 }
 
 /**

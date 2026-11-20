@@ -192,7 +192,7 @@ export function floorFigureScale(zoom: number): number {
 }
 
 /** The bomb search: each guard climbing the emergency stairs or walking a
- *  floor's rooms (where the engine's timing says it is), the time left
+ *  floor's rooms (where the simulation's timing says it is), the time left
  *  before the deadline, and a red glow beating at the screen's edges. Under
  *  reduced motion the glow holds still. */
 function renderBombSearch(engine: TowerEngine, ctx: CanvasRenderingContext2D): void {
@@ -202,7 +202,7 @@ function renderBombSearch(engine: TowerEngine, ctx: CanvasRenderingContext2D): v
   const lit = towerCatalog(engine.sim).rules.shadedLook;
   const clockMs = engine.d.anim * 1000;
   search.sweeping.forEach((g, i) => {
-    // Where the engine's timing puts the guard says what it is doing:
+    // Where the simulation's timing puts the guard says what it is doing:
     // climbing the emergency stairs, or walking the floor's rooms.
     const at = guardPosition(g, engine.sim.clock.minutes);
     const x = engine.worldToScreenX(at.x);

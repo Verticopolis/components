@@ -40,8 +40,8 @@ export function lotCovered(rows: Map<number, Array<[number, number]>>, floor: nu
 }
 
 /** How many tiles either side of an elevator shaft stay clear of decorative
- *  passers-by on every floor it serves: the landing, where the engine's
- *  waiting riders queue (#2091). About six riders at the engine's queue
+ *  passers-by on every floor it serves: the landing, where the simulation's
+ *  waiting riders queue (#2091). About six riders at the simulation's queue
  *  spacing. */
 export const ELEVATOR_LANDING_TILES = 6;
 /** Tiles either side of a stair or escalator footprint that stay clear. */
@@ -61,7 +61,7 @@ interface TrafficTransport {
 /** The lots, keyed by floor, where a player reads real traffic: every elevator
  *  landing, stair and escalator landing, and commercial front (#2091). A
  *  decorative passer-by must never stand on one, since it would look like a
- *  person the engine knows about, waiting where real queues form. */
+ *  person the simulation knows about, waiting where real queues form. */
 export function trafficLots(
   transports: readonly TrafficTransport[],
   units: readonly RenderUnit[],

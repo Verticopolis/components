@@ -6,7 +6,7 @@ import { defineConfig, type Plugin } from "vite";
 // The package build (`npm run build`): every source module compiled to one
 // ES module in lib/, at the same path, so a game's bundler drops whatever it
 // does not import, the way it would with the sources. Nothing is bundled
-// together and nothing is minified. Every bare import (the engine, Excalibur,
+// together and nothing is minified. Every bare import (Excalibur,
 // lit-html, Tone, fflate, Node's own modules) stays an import for the game to
 // resolve. The build constants (`__APP_VERSION__` and the rest, src/env.d.ts)
 // and `import.meta.env` stay as written: the game's bundler defines them.

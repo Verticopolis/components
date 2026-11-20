@@ -4,7 +4,7 @@ import type { RenderWorld } from "../render/renderModel";
  * The world geometry the view is built for: the lot width and the floor range
  * that size the tile maps, the region grid, the scenery and the cursor clamps
  * (#921). It comes from the tower's catalog when the scene is built, so the
- * view reads the engine's world rather than the TypeScript tables.
+ * view reads the game's world.
  *
  * The ground, the scenery and the region grid are built once for the lot's
  * width and basement, so a later bind must state the same ones: a different

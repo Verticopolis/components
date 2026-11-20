@@ -51,7 +51,7 @@ export function roadStart(world: ViewWorld = viewWorld()): number {
 }
 
 /** Deterministic unit-interval hash. Integer bit-mixing only (no trig, no
- *  floating-point transcendentals), so every engine renders identical pixels:
+ *  floating-point transcendentals), so every frontend renders identical pixels:
  *  the pinned screenshot container's byte-compare determinism guard depends on
  *  it. Fractional input is truncated; callers pass integer keys. */
 export function hash01(n: number): number {

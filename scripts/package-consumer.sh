@@ -25,14 +25,13 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 peer() { node -p "require('./package.json').peerDependencies['$1']"; }
-engine=$(peer @verticopolis/engine)
 excalibur=$(peer excalibur)
 lit=$(peer lit-html)
 tone=$(peer tone)
 
 cd "$work"
 echo '{ "name": "components-consumer", "private": true, "type": "module" }' > package.json
-npm install --silent --no-audit --no-fund "$tarball" "@verticopolis/engine@$engine" "excalibur@$excalibur" "lit-html@$lit" "tone@$tone" "@types/node@22"
+npm install --silent --no-audit --no-fund "$tarball" "excalibur@$excalibur" "lit-html@$lit" "tone@$tone" "@types/node@22"
 node "$repo/scripts/package-consumer/entries.mjs"
 
 check() {

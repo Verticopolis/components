@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { describe, it, expect } from "vitest";
-import type { Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { geoVariant, shade, type RoomCtx } from "./common";
 import { ART_TILE } from "./artScale";
@@ -113,8 +113,8 @@ function firstPersonX(log: string[]): number | undefined {
   return rect === undefined ? undefined : (JSON.parse(rect.slice("fillRect:".length)) as number[])[0] + 1;
 }
 
-function unit(over: Partial<Unit>): Unit {
-  return { id: 1, floor: 10, x: 20, state: "occupied", satisfaction: 0.8, ...over } as Unit;
+function unit(over: Partial<RenderUnit>): RenderUnit {
+  return { id: 1, floor: 10, x: 20, state: "occupied", satisfaction: 0.8, ...over } as RenderUnit;
 }
 
 /** Enough columns to reach every geo-seeded variant: the seed is the unit's
@@ -125,10 +125,10 @@ const COLUMNS = 200;
 /** One measurement per column for a room kind at a given tile width, optionally
  *  narrowed to the columns that draw a particular office layout. */
 function sweep(
-  over: Partial<Unit>,
+  over: Partial<RenderUnit>,
   tiles: number,
   measure: (log: string[]) => number,
-  only?: (u: Pick<Unit, "kind" | "floor" | "x">) => boolean,
+  only?: (u: Pick<RenderUnit, "kind" | "floor" | "x">) => boolean,
 ): number[] {
   const out: number[] = [];
   for (let x = 0; x < COLUMNS; x++) {
@@ -157,7 +157,7 @@ const seatedClients = (subtype: string): number =>
  *  meeting, 4 executive. */
 const officeLayout =
   (n: number) =>
-  (u: Pick<Unit, "kind" | "floor" | "x">): boolean =>
+  (u: Pick<RenderUnit, "kind" | "floor" | "x">): boolean =>
     geoVariant(u, 3, 5) === n;
 
 describe("a full room draws every occupant it has room for", () => {
@@ -224,7 +224,9 @@ describe("a full room draws every occupant it has room for", () => {
     for (const tiles of [6, 9, 12, 16, 20]) {
       const expected = authoredSeats(tiles * ART_TILE, 3 + 5 + itemW, itemW + 4);
       expect(
-        new Set(sweep({ kind: "amusements", occupants: 25, subtype } as Partial<Unit>, tiles, propCount(bodyColor))),
+        new Set(
+          sweep({ kind: "amusements", occupants: 25, subtype } as Partial<RenderUnit>, tiles, propCount(bodyColor)),
+        ),
         `${tiles} tiles`,
       ).toEqual(new Set([expected]));
     }
@@ -234,7 +236,9 @@ describe("a full room draws every occupant it has room for", () => {
     // The pod row already sized itself off the room and never lost a slot. It is
     // pinned so a later change to that sizing cannot quietly break it either.
     expect(
-      new Set(sweep({ kind: "amusements", occupants: 25, subtype: "VR Lounge" } as Partial<Unit>, 12, peopleCount)),
+      new Set(
+        sweep({ kind: "amusements", occupants: 25, subtype: "VR Lounge" } as Partial<RenderUnit>, 12, peopleCount),
+      ),
     ).toEqual(new Set([3]));
   });
 
@@ -243,7 +247,9 @@ describe("a full room draws every occupant it has room for", () => {
     // (clear of the golfer and the putter) and ending 7px short of the far wall.
     const expected = 1 + authoredSeats(tiles * ART_TILE, 32 + 7, 12);
     expect(
-      new Set(sweep({ kind: "amusements", occupants: 60, subtype: "Mini Golf" } as Partial<Unit>, tiles, peopleCount)),
+      new Set(
+        sweep({ kind: "amusements", occupants: 60, subtype: "Mini Golf" } as Partial<RenderUnit>, tiles, peopleCount),
+      ),
     ).toEqual(new Set([expected]));
   });
 
@@ -254,9 +260,9 @@ describe("a full room draws every occupant it has room for", () => {
     // is one of the same customers: the row gives that seat up rather than
     // drawing the person twice.
     const expected = authoredSeats(12 * ART_TILE, 7 + 3, 7) + seatedClients(subtype);
-    expect(new Set(sweep({ kind: "boutiqueBay", occupants: 22, subtype } as Partial<Unit>, 12, peopleCount))).toEqual(
-      new Set([expected]),
-    );
+    expect(
+      new Set(sweep({ kind: "boutiqueBay", occupants: 22, subtype } as Partial<RenderUnit>, 12, peopleCount)),
+    ).toEqual(new Set([expected]));
   });
 
   it.each([6, 8, 12, 18])("a boutique bay %i tiles wide fills its browsing row", (tiles) => {
@@ -265,7 +271,9 @@ describe("a full room draws every occupant it has room for", () => {
     // the room.
     const expected = authoredSeats(tiles * ART_TILE, 7 + 3, 7);
     expect(
-      new Set(sweep({ kind: "boutiqueBay", occupants: 60, subtype: "Florist" } as Partial<Unit>, tiles, peopleCount)),
+      new Set(
+        sweep({ kind: "boutiqueBay", occupants: 60, subtype: "Florist" } as Partial<RenderUnit>, tiles, peopleCount),
+      ),
     ).toEqual(new Set([expected]));
   });
 
@@ -282,7 +290,7 @@ describe("a full room draws every occupant it has room for", () => {
         const s = spyCtx();
         drawRoom(
           room(s.ctx, "boutiqueBay"),
-          unit({ kind: "boutiqueBay", width: 12, occupants, subtype } as Partial<Unit>),
+          unit({ kind: "boutiqueBay", width: 12, occupants, subtype } as Partial<RenderUnit>),
           0,
           0,
           W,
@@ -293,7 +301,7 @@ describe("a full room draws every occupant it has room for", () => {
       expect(peopleCount(draw(0))).toBe(0);
       for (const present of [1, 2, 5, 12]) expect(peopleCount(draw(present))).toBe(present);
       const forged = spyCtx();
-      const huge = unit({ kind: "boutiqueBay", width: 12, occupants: 1e9, subtype } as Partial<Unit>);
+      const huge = unit({ kind: "boutiqueBay", width: 12, occupants: 1e9, subtype } as Partial<RenderUnit>);
       expect(() => drawRoom(room(forged.ctx), huge, 0, 0, W, FLOOR)).not.toThrow();
       expect(peopleCount(forged.log)).toBe(authoredSeats(12 * ART_TILE, 7 + 3, 7) + seatedClients(subtype));
     },
@@ -314,7 +322,7 @@ describe("a full room draws every occupant it has room for", () => {
         const s = spyCtx();
         drawRoom(
           room(s.ctx, "amusements"),
-          unit({ kind: "amusements", width: 12, occupants, subtype, x } as Partial<Unit>),
+          unit({ kind: "amusements", width: 12, occupants, subtype, x } as Partial<RenderUnit>),
           0,
           0,
           12 * TILE,
@@ -341,7 +349,7 @@ describe("a full room draws every occupant it has room for", () => {
       const s = spyCtx();
       drawRoom(
         room(s.ctx, "amusements"),
-        unit({ kind: "amusements", width: 12, occupants: 1, subtype, x } as Partial<Unit>),
+        unit({ kind: "amusements", width: 12, occupants: 1, subtype, x } as Partial<RenderUnit>),
         0,
         0,
         12 * TILE,
@@ -394,7 +402,11 @@ describe("the showpiece rooms fill their own furniture too", () => {
     const expected = authoredSeats(tiles * ART_TILE, 5 + 14, 12);
     expect(
       new Set(
-        sweep({ kind: "fitnessClub", occupants: 60, subtype: "Yoga Studio" } as Partial<Unit>, tiles, peopleCount),
+        sweep(
+          { kind: "fitnessClub", occupants: 60, subtype: "Yoga Studio" } as Partial<RenderUnit>,
+          tiles,
+          peopleCount,
+        ),
       ),
     ).toEqual(new Set([expected]));
   });
@@ -404,7 +416,11 @@ describe("the showpiece rooms fill their own furniture too", () => {
     const expected = authoredSeats(tiles * ART_TILE, 5 + 9, 8);
     expect(
       new Set(
-        sweep({ kind: "fitnessClub", occupants: 60, subtype: "Spin Studio" } as Partial<Unit>, tiles, peopleCount),
+        sweep(
+          { kind: "fitnessClub", occupants: 60, subtype: "Spin Studio" } as Partial<RenderUnit>,
+          tiles,
+          peopleCount,
+        ),
       ),
     ).toEqual(new Set([expected]));
   });
@@ -413,9 +429,9 @@ describe("the showpiece rooms fill their own furniture too", () => {
     // These three formats are built around a single piece of equipment, so their
     // capacity is one and no tile can take it away. Pinned so a later change
     // cannot quietly turn a bench, a heavy bag, or a wall into a row.
-    expect(new Set(sweep({ kind: "fitnessClub", occupants: 60, subtype } as Partial<Unit>, 16, peopleCount))).toEqual(
-      new Set([1]),
-    );
+    expect(
+      new Set(sweep({ kind: "fitnessClub", occupants: 60, subtype } as Partial<RenderUnit>, 16, peopleCount)),
+    ).toEqual(new Set([1]));
   });
 
   it.each([12, 14, 18, 22])("a %i-tile spa fills its tub and all three tables", (tiles) => {
@@ -463,7 +479,7 @@ describe("the showpiece rooms draw their crowd honestly", () => {
     ["weight floor", { kind: "fitnessClub", subtype: "Weight Floor" }, 16, peopleCount, 0, 1],
     ["boxing gym", { kind: "fitnessClub", subtype: "Boxing Gym" }, 16, peopleCount, 0, 1],
     ["climbing wall", { kind: "fitnessClub", subtype: "Climbing Wall" }, 16, peopleCount, 0, 1],
-  ] as [string, Partial<Unit>, number, (log: string[]) => number, number, number?][])(
+  ] as [string, Partial<RenderUnit>, number, (log: string[]) => number, number, number?][])(
     "a %s draws min(visitors, seats), plus its staff",
     (_label, over, tiles, measure, staff, seats) => {
       const cap = seats ?? Infinity;
@@ -512,7 +528,7 @@ describe("the catalog widths hold the counts measured off the pre-fix art", () =
     // with a bike missing.
     ["spin studio", { kind: "fitnessClub", occupants: 60, subtype: "Spin Studio" }, 16, 21, Math.max],
     ["spa", { kind: "spa", occupants: 18 }, 14, 1, Math.max],
-  ] as [string, Partial<Unit>, number, number, (...n: number[]) => number][])(
+  ] as [string, Partial<RenderUnit>, number, number, (...n: number[]) => number][])(
     "%s draws %i people at its catalog width",
     (_label, over, tiles, expected, pick) => {
       expect(pick(...sweep(over, tiles, peopleCount))).toBe(expected);

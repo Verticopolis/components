@@ -1,6 +1,6 @@
+import type { RenderUnit } from "./renderModel";
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../tests/catalogKinds";
-import type { Unit } from "../model/types";
 import { OFFSETS, paintAt, paintPastSeam, tail, unitOf } from "../tests/originSeedsHarness";
 import { roomKinds, variantPlacements } from "./atlas/catalog";
 import { FLOOR, TILE } from "./scale";
@@ -22,7 +22,7 @@ import type { DrawCtx } from "./sprites";
  *  only applies to parking). The on-notice ribbon (`vacating`) fills a triangle the raster does not
  *  model; it is drawn from the room's own corner. */
 type Look = {
-  state: Unit["state"];
+  state: RenderUnit["state"];
   lit: boolean;
   hour: number;
   occ?: number;

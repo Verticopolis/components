@@ -2,8 +2,8 @@
  * The overview MAP window's views (#343 S6 to S9), in the View dropdown's
  * order: the original's four (Edit, Eval, Pricing, Hotel), then Traffic and
  * Occupancy. Edit is today's map, Hotel marks the rooms that need
- * housekeeping (S6), Eval and Pricing color the rooms by the tiers the engine
- * gives (S8), and Traffic and Occupancy color each floor by the engine's
+ * housekeeping (S6), Eval and Pricing color the rooms by the tiers the simulation
+ * gives (S8), and Traffic and Occupancy color each floor by the simulation's
  * congestion and occupancy (S9), the two Floor heatmap modes the Map took
  * over from the sidebar. A view is one entry here plus its painter, so the
  * dropdown needs no change. Every view shows in both game modes (owner,

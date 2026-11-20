@@ -1,18 +1,18 @@
 /**
  * What the renderer reads from a simulation, declared by the components and
- * by nothing else (engine#89, option C). The renderer, the scene modules and
- * the presentation code are typed by these shapes, so the compiler lists the
- * read surface, and the package imports no engine type.
+ * by nothing else. The renderer, the scene modules and the presentation code
+ * are typed by these shapes, so the compiler lists the read surface, and the
+ * package imports no simulation type.
  *
- * An app hands the engine's own objects in with no copy: each shape here is a
- * subset of what the engine's frame reader and catalog produce, and the app's
- * `engineRender.ts` checks that on every build (assignability plus a key
- * check, so a member the engine drops or renames fails the app's typecheck).
+ * A game can hand its simulation's own objects in with no copy when each shape
+ * here is a subset of what its frame reader and catalog produce; the game
+ * checks that on its own build (assignability plus a key check, so a member
+ * its simulation drops or renames fails its typecheck).
  *
  * Function members are written as properties (`readonly f: (x) => T`), so
- * the compiler compares their parameters strictly. A member the engine always
- * fills is required here; it is optional only where the engine's own shape
- * leaves it out on some frames.
+ * the compiler compares their parameters strictly. A member a simulation
+ * always fills is required here; it is optional only where it may be left out
+ * on some frames.
  */
 
 // The vocabulary the renderer draws.
@@ -162,7 +162,7 @@ export interface RenderQueue {
 /** The crowd the renderer draws, and its elevator queue projection. */
 export interface RenderCrowd {
   readonly people: ReadonlyArray<RenderPerson>;
-  /** Memoized by the engine's reader; cheap per frame. */
+  /** Memoized by the simulation's reader; cheap per frame. */
   readonly queueView: () => RenderQueue;
 }
 
@@ -233,7 +233,7 @@ export interface RenderTower {
   readonly skyBridges?: () => readonly RenderSkyBridge[];
   /** Working garage spaces by unit id. */
   readonly functionalParkingSet: () => ReadonlySet<number>;
-  /** The engine's lobby heights record (`lobbyHalls` reads it). Read once per
+  /** The simulation's lobby heights record (`lobbyHalls` reads it). Read once per
    *  structure pass, never per frame. */
   readonly lobbyHeights: () => ArrayLike<number>;
 }
@@ -256,9 +256,9 @@ export interface RenderClock {
  * Reads are grouped by how often they happen:
  *
  * - Per frame, cheap: `clock`, `tower.revision`, the effect counters, `weather`.
- * - Per frame, memoized by the engine: `crowd.queueView`.
+ * - Per frame, memoized by the simulation: `crowd.queueView`.
  * - Never per frame: `congestion`. Its answer moves with every step, so the
- *   engine's memo misses on each running frame. Tests and tools read it.
+ *   simulation's memo misses on each running frame. Tests and tools read it.
  * - Per step or per HUD tick: `population`.
  * - Per scene sync or hourly: `floorHeatmap`, `peakCongestion`, `parkingUsage`,
  *   `recyclingFill`, `positionReachable`.
@@ -378,7 +378,7 @@ export interface RenderCatalog {
   readonly facilities: readonly RenderFacility[];
 }
 
-/** The engine's rules the renderer applies, built once by the app. */
+/** The simulation's rules the renderer applies, built once by the app. */
 export interface RenderRules {
   /** Whether a unit's tenants or guests are in it now. */
   readonly isPresent: (unit: { readonly state: UnitState }) => boolean;

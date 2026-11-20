@@ -16,7 +16,7 @@ import type { TowerEngine } from "./TowerEngine";
 interface Focus {
   id: number;
   follow: boolean;
-  /** Where the engine last placed them (tile, floor), for when the view does
+  /** Where the simulation last placed them (tile, floor), for when the view does
    *  not carry them: the camera is far off and their figure is not drawn. */
   at: { x: number; floor: number } | null;
   /** Where the follow last left the camera, so a move by anything else (a
@@ -79,7 +79,7 @@ export function focusPerson(engine: TowerEngine, id: number): void {
   focus.set(engine, { id, follow: false, at: null, cam: null, steppedAt: null });
 }
 
-/** The engine's own word on where the picked person is, from their card. */
+/** The simulation's own word on where the picked person is, from their card. */
 export function notePersonPlace(engine: TowerEngine, x: number, floor: number): void {
   const f = focus.get(engine);
   if (f) f.at = { x, floor };
@@ -103,9 +103,9 @@ export function setFollow(engine: TowerEngine, on: boolean): void {
 }
 
 /** The picked person's drawn spot in world pixels (their feet): their figure,
- *  else the view's record, else the engine's last word from the card; null
+ *  else the view's record, else the simulation's last word from the card; null
  *  before any. A rider hidden in a car still has a spot: their glide follows
- *  the engine. */
+ *  the simulation. */
 export function focusSpot(engine: TowerEngine): ex.Vector | null {
   const f = focus.get(engine);
   if (!f) return null;
@@ -136,7 +136,7 @@ function movedByPlayer(engine: TowerEngine, f: Focus): boolean {
  *  back to the player; otherwise the camera glides toward the person.
  *
  *  `nowMs` is the page's clock (`performance.now()`), and the glide runs on
- *  the time since the last step. The engine's frame time is not used: the
+ *  the time since the last step. The simulation's frame time is not used: the
  *  render clock turns any frame over 200 ms into 1 ms, so on a device that
  *  draws slower than five frames a second the camera would barely move. */
 export function stepFollow(engine: TowerEngine, nowMs: number): void {

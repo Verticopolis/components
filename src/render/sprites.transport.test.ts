@@ -1,5 +1,5 @@
+import type { RenderTransport, RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
-import type { Unit, Transport } from "../model/types";
 import {
   drawUnit,
   drawTransport,
@@ -23,7 +23,7 @@ const WEDDING_HALL_W = 28 * TILE;
 const WEDDING_HALL_H = 5 * FLOOR;
 
 /**
- * Transport, crane, moving-vehicle, and event sprite coverage split out of
+ * RenderTransport, crane, moving-vehicle, and event sprite coverage split out of
  * sprites.test.ts to keep each file under the size ceiling. These tests drive
  * the real draw code against a recording spy context, proving each sprite/state
  * actually paints and that state-driven branches produce a genuinely different
@@ -93,7 +93,7 @@ function spyCtx() {
   };
 }
 
-function unit(over: Partial<Unit> = {}): Unit {
+function unit(over: Partial<RenderUnit> = {}): RenderUnit {
   return {
     id: 1,
     kind: "office",
@@ -104,14 +104,14 @@ function unit(over: Partial<Unit> = {}): Unit {
     satisfaction: 1,
     occupants: 2,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
   return { ctx, lit: true, anim: 0.5, hour: 20, ...over };
 }
 
 describe("transport, crane & event sprites paint", () => {
-  function transport(over: Partial<Transport> = {}): Transport {
+  function transport(over: Partial<RenderTransport> = {}): RenderTransport {
     return {
       id: 1,
       kind: "elevatorStandard",
@@ -125,7 +125,7 @@ describe("transport, crane & event sprites paint", () => {
       carLoad: [3, 0],
       load: 3,
       ...over,
-    } as Transport;
+    } as RenderTransport;
   }
 
   it("drawTransport paints a shaft, honoring skip floors", () => {
@@ -205,7 +205,7 @@ describe("transport, crane & event sprites paint", () => {
   it("stairs and escalator each draw one flight rising to a second-floor landing", () => {
     // A two-floor stairway/escalator draws exactly one flight (the top band is
     // the arrival landing) and the two kinds render as different sprites. The
-    // sprite bakes no rider; climbers are separate engine-driven actors.
+    // sprite bakes no rider; climbers are separate simulation-driven actors.
     const stair = spyCtx();
     const esc = spyCtx();
     drawTransport(stair.ctx, transport({ kind: "stairs", bottom: 1, top: 2, width: 8 }), 0, 0, 88, 44);
@@ -215,7 +215,7 @@ describe("transport, crane & event sprites paint", () => {
     // Warm tan treads vs metallic steps: the two transport kinds are distinct.
     expect(stair.sig()).not.toBe(esc.sig());
     // The stairs paint their warm-tan tread color; the routed climbers that ride
-    // the flight are engine-driven actors, not baked into this static sprite.
+    // the flight are simulation-driven actors, not baked into this static sprite.
     expect(stair.log.some((l) => l.includes("#EDE6D2"))).toBe(true);
   });
 
@@ -365,18 +365,14 @@ describe("transport, crane & event sprites paint", () => {
     const service = bake((c) => drawLobbyEntrance({ ...ctx(true, 0), ctx: c }, "service", 0, 0, 11, 34));
     const grandDay = bake((c) => drawLobbyEntrance({ ...ctx(false, 0), ctx: c }, "grand-right", 0, 0, 11, 34));
     // Draw a normal variant-0 lobby tile via drawUnit for comparison.
-    const lobbyUnit: Unit = {
+    const lobbyUnit: RenderUnit = {
       id: -1,
       kind: "lobby",
       floor: 1,
       x: 0,
       width: 1,
       state: "occupied",
-      satisfaction: 1,
       occupants: 0,
-      everOccupied: false,
-      pendingIncome: 0,
-      label: "",
     };
     const normal = bake((c) => drawUnit({ ...ctx(true, 0), ctx: c }, lobbyUnit, 0, 0, 11, 34));
     // Both entrance tiles paint, and they don't collapse to the same sprite.

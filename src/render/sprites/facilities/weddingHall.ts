@@ -407,7 +407,7 @@ function drawWeddingGarden(d: DrawCtx, x: number, y: number, w: number, h: numbe
  * story per floor.
  */
 export function drawWeddingHall(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number) {
-  // The TypeScript engine's catalog still holds the one-story hall: draw the nave alone.
+  // A one-story hall (an older catalog's): draw the nave alone.
   const stories = Math.round(h / FLOOR);
   if (stories < 2) return drawWeddingNave(d, u, x, y, w, h);
   const story = Math.max(1, Math.round(h / stories));

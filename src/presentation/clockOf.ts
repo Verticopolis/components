@@ -2,9 +2,9 @@ import type { RenderClock } from "../render/renderModel";
 import { dayName, formatClock, formatRetroDate, type DateReading } from "./clockText";
 
 /**
- * What a panel derives from the view's header and the engine's clock instead
+ * What a panel derives from the view's header and the simulation's clock instead
  * of reading it off a `Simulation` (facade slice 4, #1211): the clock's day,
- * hour and names. The engine reports the date numbers in the header (day, day
+ * hour and names. The simulation reports the date numbers in the header (day, day
  * of the week, weekend flag, quarter, year, the calendar's week lengths) and
  * the time of day on its clock (`RenderSim.clock`); the names come from
  * `presentation/clockText.ts`. The mode's rules a panel shows come from the
@@ -37,7 +37,7 @@ export interface ClockView {
 }
 
 /** The clock at `time`'s minute, on the tower's calendar the header `h`
- *  describes. `time` is the engine's clock at the same minute. The reading is
+ *  describes. `time` is the simulation's clock at the same minute. The reading is
  *  taken once: a live clock that moves on afterward does not change it. */
 export function clockOf(h: ClockDate, time: RenderClock): ClockView {
   const { minutes, minuteOfDay, hour, minute } = time;

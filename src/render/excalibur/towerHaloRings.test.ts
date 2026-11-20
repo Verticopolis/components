@@ -1,40 +1,25 @@
+import type { RenderHalo } from "../renderModel";
 import { describe, expect, it, vi } from "vitest";
-import type { CatalogHalo } from "../../catalog/catalogTypes";
 import { FLOOR, TILE } from "../scale";
 import { drawHaloRings, haloStrength, storyDistance, type RingView } from "./towerHaloRings";
 
 /**
  * The placement range rings (#1980), painted against a recording context: one
- * band per floor the halo reaches, faded as the engine fades it, inside the
+ * band per floor the halo reaches, faded as the simulation fades it, inside the
  * lot and the tower's floor range, then one dashed outline.
  */
 
-const GYM: CatalogHalo = {
+const GYM: RenderHalo = {
   effect: "lift",
   floors: 5,
-  max: 0.03,
-  capLift: 0.15,
-  feltBy: ["condo"],
-  openHoursOnly: false,
-  familyScaled: false,
 };
-const CLUB: CatalogHalo = {
+const CLUB: RenderHalo = {
   effect: "drain",
   floors: 4,
-  max: 0.12,
-  capLift: null,
-  feltBy: ["condo"],
-  openHoursOnly: true,
-  familyScaled: false,
 };
-const POOL: CatalogHalo = {
+const POOL: RenderHalo = {
   effect: "lift",
   floors: 6,
-  max: 0.035,
-  capLift: 0.15,
-  feltBy: ["condo"],
-  openHoursOnly: false,
-  familyScaled: false,
 };
 const WORLD = { lotWidth: 375, minFloor: -9, maxFloor: 100 };
 

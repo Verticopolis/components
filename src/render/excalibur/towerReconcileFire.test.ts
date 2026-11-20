@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { UnitView } from "../../simport/view";
 import type { TowerEngine } from "./TowerEngine";
 import { syncScene } from "./towerReconcile";
 import { markRegionUnit } from "./towerRegions";
@@ -45,12 +45,12 @@ vi.mock("./towerCrowd", () => ({
   },
 }));
 vi.mock("./towerRegions", () => ({
-  markRegionUnit: vi.fn((engine: TowerEngine, u: UnitView) => void engine.regionUnits.set(u.id, [1])),
+  markRegionUnit: vi.fn((engine: TowerEngine, u: RenderUnit) => void engine.regionUnits.set(u.id, [1])),
   dropRegionUnit: vi.fn((engine: TowerEngine, id: number) => void engine.regionUnits.delete(id)),
 }));
 
-function office(state: UnitView["state"]): UnitView {
-  return { id: 7, kind: "office", floor: 3, x: 4, width: 6, state, occupants: 0 } as unknown as UnitView;
+function office(state: RenderUnit["state"]): RenderUnit {
+  return { id: 7, kind: "office", floor: 3, x: 4, width: 6, state, occupants: 0 } as unknown as RenderUnit;
 }
 
 /** Just the engine surface `syncScene` reads for a tower of one office. The
@@ -58,7 +58,7 @@ function office(state: UnitView["state"]): UnitView {
  *  the room in place, as the view does with a frame (no revision move). So
  *  every sync after the first takes the kept-rooms path, the one a running
  *  tower takes. */
-function fakeEngine(unit: UnitView): TowerEngine {
+function fakeEngine(unit: RenderUnit): TowerEngine {
   const add = vi.fn();
   const units = [unit];
   return {
@@ -66,7 +66,7 @@ function fakeEngine(unit: UnitView): TowerEngine {
       tower: {
         units,
         revision: 1,
-        getUnit(id: number): UnitView | undefined {
+        getUnit(id: number): RenderUnit | undefined {
           return this.units.find((u) => u.id === id);
         },
         transports: [],
@@ -105,7 +105,7 @@ describe("a burning room leaves its region for a private actor and returns when 
     expect(engine.animatedRooms.has(7)).toBe(false);
     const pass = engine.structPass;
 
-    (unit as { state: UnitView["state"] }).state = "fire";
+    (unit as { state: RenderUnit["state"] }).state = "fire";
     syncScene(engine);
     // A full pass writes a new record; the kept-rooms path leaves this one.
     expect(engine.structPass).toBe(pass);
@@ -133,7 +133,7 @@ describe("a burning room leaves its region for a private actor and returns when 
     const actor = engine.animatedRooms.get(7);
     const kill = actor!.kill as unknown as ReturnType<typeof vi.fn>;
 
-    (unit as { state: UnitView["state"] }).state = "occupied";
+    (unit as { state: RenderUnit["state"] }).state = "occupied";
     syncScene(engine);
     expect(kill).toHaveBeenCalledTimes(1);
     expect(engine.animatedRooms.has(7)).toBe(false);
@@ -162,7 +162,7 @@ describe("an animated room through an undo or redo step", () => {
     Object.assign(engine.sim.tower, { units: [after], revision: 2 });
     syncScene(engine);
     expect(engine.animatedRooms.get(7), "the same actor").toBe(actor);
-    (after as { state: UnitView["state"] }).state = "occupied"; // the build finishes between syncs
+    (after as { state: RenderUnit["state"] }).state = "occupied"; // the build finishes between syncs
     canvas.options.draw({});
     const paints = vi.mocked(paintAnimatedUnit).mock.calls;
     expect(paints[paints.length - 1]?.[1], "the live room").toBe(after);
@@ -181,7 +181,7 @@ describe("a settled room that comes back after the initial bake", () => {
     return marks;
   };
   /** A new unit list and revision, as the view hands over after an edit or a step. */
-  const layout = (engine: TowerEngine, units: UnitView[], revision: number): void => {
+  const layout = (engine: TowerEngine, units: RenderUnit[], revision: number): void => {
     Object.assign(engine.sim.tower, { units, revision });
   };
 

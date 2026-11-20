@@ -1,3 +1,4 @@
+import type { RenderUnit } from "../renderModel";
 import { describe, it, expect } from "vitest";
 import {
   coveredUpperStories,
@@ -7,7 +8,6 @@ import {
   SHOP_FRONT_TILES,
   trafficLots,
 } from "./towerCrowdLayout";
-import type { Unit } from "../../model/types";
 import { catalogFor } from "../../tests/catalogFixture";
 
 const MODERN = catalogFor("modern");
@@ -19,7 +19,8 @@ const MODERN = catalogFor("modern");
  * take plain values, so unlike buildWalkers they run without a canvas bake.
  */
 
-const unit = (kind: string, floor: number, x: number, width: number) => ({ kind, floor, x, width }) as unknown as Unit;
+const unit = (kind: string, floor: number, x: number, width: number) =>
+  ({ kind, floor, x, width }) as unknown as RenderUnit;
 
 describe("coveredUpperStories marks the upper floors of multi-floor facilities", () => {
   it("returns no rows when every unit is single-story", () => {

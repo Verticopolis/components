@@ -1,6 +1,6 @@
 /**
  * The sprite atlas archive's contract: its constants and the manifest shape
- * any frontend on the open engine reads. Bump {@link ATLAS_SCHEMA_VERSION} on
+ * any frontend reads. Bump {@link ATLAS_SCHEMA_VERSION} on
  * any change a reader could notice (a renamed frame, a moved field, a new
  * meaning); adding frames or optional fields keeps the version.
  *
@@ -57,7 +57,7 @@ export interface Placed {
  *  lands on a transparent pixel, so the blend reproduces the web's bake. */
 export type LayerRef = Placed | null;
 
-/** A run of layers indexed by an engine number (occupants, fill steps). To
+/** A run of layers indexed by a simulation number (occupants, fill steps). To
  *  show input `n`, draw the base frame then layers `1..min(n, max)` in order;
  *  a `null` entry draws nothing. `steps[0]` is always null (the base). */
 export interface LayerChain {

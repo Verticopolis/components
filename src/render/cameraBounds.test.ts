@@ -8,15 +8,15 @@ import {
   SKY_HEADROOM_FLOORS,
   WEDDING_HALL_RISE_FLOORS,
 } from "./cameraBounds";
-import { VIEW_ZOOM_MIN } from "../model/types";
 import { catalogFor } from "../tests/catalogFixture";
+import { TEST_ZOOM } from "../tests/renderRules";
 import { CRANE_H } from "./sprites/structure/rooftop";
-// Pull the buildable bounds from the engine catalog and FLOOR from the pure
+// Pull the buildable bounds from the game's catalog and FLOOR from the pure
 // render/scale module so the test can't drift if the tower geometry or the
 // render scale changes (the helper itself is parameterized by floorPx).
 import { FLOOR } from "./scale";
 
-/** The lot's geometry, from the Rust engine's catalog (`engine-rs/src/catalog.rs` world). */
+/** The lot's geometry, from the test catalog's world. */
 const WORLD = catalogFor("classic").world;
 const GRID = { width: WORLD.lotWidth, minFloor: WORLD.minFloor, maxFloor: WORLD.maxFloor };
 const MIN_FLOOR = GRID.minFloor; // deepest buildable (B10)
@@ -104,7 +104,7 @@ describe("clampCameraY", () => {
 });
 
 describe("fitZoom (tower-aware zoom-out floor)", () => {
-  const HARD = VIEW_ZOOM_MIN;
+  const HARD = TEST_ZOOM.min;
   const fit = (viewH: number, span: number) => fitZoom(viewH, span, FLOOR, HARD);
   // How many floors (plus sky) a given zoom frames in a viewport of viewH px.
   const framedFloors = (viewH: number, zoom: number) => viewH / (FLOOR * zoom);

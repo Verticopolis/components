@@ -1,15 +1,15 @@
+import type { RenderTransport } from "./renderModel";
 import { describe, expect, it } from "vitest";
 import { besideVenue, isVenue, venueBox, windingFlights } from "./venueFlights";
-import type { TransportView } from "../simport/view";
 
 const flight = (
   id: number,
-  kind: TransportView["kind"],
+  kind: RenderTransport["kind"],
   x: number,
   bottom: number,
   top: number,
   width = 8,
-): TransportView => ({
+): RenderTransport => ({
   id,
   kind,
   x,

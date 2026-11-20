@@ -1,6 +1,6 @@
+import type { RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { subtypesOf } from "../tests/catalogKinds";
-import type { Unit } from "../model/types";
 import { drawUnit, drawLobbyEntrance, type EntranceKind, type DrawCtx } from "./sprites";
 import { FLOOR, TILE } from "./scale";
 
@@ -74,7 +74,7 @@ function spyCtx() {
   return { ctx: ctx as CanvasRenderingContext2D, log };
 }
 
-function unit(over: Partial<Unit> = {}): Unit {
+function unit(over: Partial<RenderUnit> = {}): RenderUnit {
   return {
     id: 1,
     kind: "office",
@@ -85,7 +85,7 @@ function unit(over: Partial<Unit> = {}): Unit {
     satisfaction: 1,
     occupants: 2,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
   return { ctx, lit: true, anim: 0.5, hour: 20, ...over };
@@ -97,7 +97,7 @@ function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
 const FIGURE = "fillStyle=rgba(0,0,0,0.24)";
 
 describe("venue figures are gated on real occupancy (#552)", () => {
-  // The wedding hall used to take no Unit at all, so it painted the couple and
+  // The wedding hall used to take no unit at all, so it painted the couple and
   // two full rows of guests into every hall, tenanted or not.
   it("a wedding hall with no attendees draws its chairs but nobody in them", () => {
     const s = spyCtx();

@@ -18,7 +18,7 @@ import {
 /**
  * What one routed person shows this frame (#2097): the bake, the plane it is
  * drawn on, and whether it is hidden inside a car. Pure functions of the
- * engine's state and the glide, used by the crowd pass in `towerCrowd.ts`.
+ * simulation's state and the glide, used by the crowd pass in `towerCrowd.ts`.
  */
 
 /** A tenant riding a car is inside it: the cab's own rider count shows them,
@@ -50,10 +50,10 @@ export function walkingPlane(p: RenderPerson): number {
 }
 
 /** The bake (`figureKey`: look, pose, frame, mood, facing) a person shows,
- *  from the engine's state: see `crowdLook.ts` for which state drives which
+ *  from the simulation's state: see `crowdLook.ts` for which state drives which
  *  animation. It returns the number itself, so the per-person pass allocates
  *  nothing. */
-/** The middle of the elevator shaft a person waits at (#2097). The engine
+/** The middle of the elevator shaft a person waits at (#2097). The simulation
  *  walks a rider to the middle of their shaft, starts the wait there, and
  *  then lines them up on one side of it, so the first waiting position is
  *  the shaft itself. A person first seen already in line (a loaded save, or
@@ -108,7 +108,7 @@ export function personFigure(
     );
   }
   if (p.staff) {
-    // A housekeeper dwelling at a room is cleaning it (the engine's 8-minute
+    // A housekeeper dwelling at a room is cleaning it (the simulation's 8-minute
     // clean); walking, it pushes its cart; riding, it stands in the car.
     if (p.state === "dwelling")
       return figureKey(crewIndex(p.seed, true), "push", beatFrame(t, offset), "content", g.left, look.lit);

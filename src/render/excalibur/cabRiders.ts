@@ -17,13 +17,13 @@ export interface CabSource {
 /**
  * Who stands inside each elevator cab. The cab draws one figure for each
  * person the crowd hides while they ride: the people who walked into the
- * car from its line and walk off at their floor. The engine's car load is a
+ * car from its line and walk off at their floor. The simulation's car load is a
  * different number, the traffic model's head count, which boards from a
  * tally, falls by part at each stop and resets when the car parks, so it is
  * never drawn as people (3.7.3).
  *
  * A rider stands at the middle of their shaft at their car's floor (the
- * engine's `Riding` step), so a rider belongs to the shaft whose middle they
+ * simulation's `Riding` step), so a rider belongs to the shaft whose middle they
  * stand at and whose span holds them, in the car nearest their floor.
  *
  * Each rider is drawn as themselves: the cab stands up the figure the crowd

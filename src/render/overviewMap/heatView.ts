@@ -1,14 +1,14 @@
 /**
  * The overview MAP window's Traffic and Occupancy views (#343 S9, #1727):
  * each floor paints over the Edit map in the color of its band, from the
- * engine's congestion or occupancy (`floorHeatmap`, the cells the sidebar's
+ * simulation's congestion or occupancy (`floorHeatmap`, the cells the sidebar's
  * Floor heatmap drew over the main view before the Map took it over). The
- * engine decides every severity, 0 good to 1 bad; this file only sorts each
+ * simulation decides every severity, 0 good to 1 bad; this file only sorts each
  * floor into one of three bands, places it and paints it.
  *
  * The bands split the severity in thirds, the way the old tint's ramp did
  * (green, amber at two thirds, red). On the Traffic view two thirds is where
- * the engine puts its churn point, the congestion where tenants start to
+ * the simulation puts its churn point, the congestion where tenants start to
  * leave (`CONGESTION_AMBER_SEVERITY`), so a "Jammed" floor is one past it.
  * Color is not the only cue: the bands differ in pattern too, a floor row big
  * enough to carry a pattern gets it, and the legend counts the floors in
@@ -28,7 +28,7 @@ import type { MapKindStyle } from "./style";
 /** The views this file paints. */
 export type HeatViewId = "traffic" | "occupancy";
 
-/** The engine's heat mode each view paints. */
+/** The simulation's heat mode each view paints. */
 export const HEAT_MODE_OF_VIEW: Readonly<Record<HeatViewId, HeatmapMode>> = {
   traffic: "congestion",
   occupancy: "occupancy",
@@ -38,7 +38,7 @@ export const HEAT_MODE_OF_VIEW: Readonly<Record<HeatViewId, HeatmapMode>> = {
 export type HeatBand = "good" | "middling" | "bad";
 
 /** The severity a floor reads as middling from, and as bad from. On the
- *  Traffic view the bad line is the engine's churn point. */
+ *  Traffic view the bad line is the simulation's churn point. */
 export const HEAT_MIDDLING_FROM = 1 / 3;
 export const HEAT_BAD_FROM = 2 / 3;
 

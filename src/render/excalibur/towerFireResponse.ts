@@ -59,7 +59,7 @@ export function roofOverFire(engine: TowerEngine, fire: RenderFireResponse): num
 }
 
 /** The answer to a fire: Security's guards climbing the emergency stairs
- *  and fighting it from the burning room (where the engine's timing puts
+ *  and fighting it from the burning room (where the simulation's timing puts
  *  them), and the rescue helicopter flying in, spraying and flying off.
  *  Under reduced motion the rotor and the water hold still. */
 export function renderFireResponse(engine: TowerEngine, ctx: CanvasRenderingContext2D): void {

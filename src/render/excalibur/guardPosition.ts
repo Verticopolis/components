@@ -8,7 +8,7 @@ export const ON_THE_ESCAPE = ESCAPE_W / 2 / TILE;
 
 /** Where a guard is at minute `now`: on the emergency stairs until
  *  `arrive`, then walking the rooms left to right until `done`. On the
- *  stairs it follows the engine's `route` corner to corner, so a guard
+ *  stairs it follows the simulation's `route` corner to corner, so a guard
  *  crossing to another tower walks to a floor they share and over instead
  *  of climbing through the sky between them. The stairs time is split by
  *  floors; crossing a shared floor takes none. `floor` may be fractional on

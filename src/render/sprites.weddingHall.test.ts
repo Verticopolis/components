@@ -1,5 +1,5 @@
+import type { RenderUnit } from "./renderModel";
 import { describe, expect, it } from "vitest";
-import type { Unit } from "../model/types";
 import { drawUnit, type DrawCtx } from "./sprites";
 import { FLOOR } from "./scale";
 
@@ -28,7 +28,7 @@ const hall = {
   state: "occupied",
   satisfaction: 1,
   occupants: 2,
-} as Unit;
+} as RenderUnit;
 
 describe("the five story wedding hall sprite", () => {
   it("paints its garden crown at any x, including left of the sprite origin", () => {

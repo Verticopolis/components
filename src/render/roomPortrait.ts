@@ -6,7 +6,7 @@ import { drawCar, drawTransport, drawUnit, type DrawCtx } from "./sprites";
 /**
  * One room or shaft drawn on its own, as the game draws it, for the pages that
  * show the art outside a tower: the sprite gallery (`gallery.ts`) and the Help
- * site's room pages. Both read the engine's catalog for every size and name, so
+ * site's room pages. Both read the game's catalog for every size and name, so
  * this module takes the catalog's facts through `facts` rather than carrying a
  * table of its own.
  */

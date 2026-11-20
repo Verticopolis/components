@@ -47,7 +47,7 @@ describe("riders getting on and off an elevator", () => {
     frame(e, 16);
     frame(e, 484);
     const rec = e.crowdActors.get(1);
-    // The engine puts them in the car on this step; the drawn car is still
+    // The simulation puts them in the car on this step; the drawn car is still
     // gliding to the landing, so they wait there in sight.
     Object.assign(person, { state: "riding" });
     e.sim.clock = { ...e.sim.clock, minutes: 1 };
@@ -79,7 +79,7 @@ describe("riders getting on and off an elevator", () => {
     }
     const rec = e.crowdActors.get(1);
     expect(rec.actor.pos.x).toBeCloseTo(6 * TILE, 6);
-    // The engine puts them in the car on this step, still standing in line.
+    // The simulation puts them in the car on this step, still standing in line.
     Object.assign(person, { state: "riding" });
     e.sim.clock = { ...e.sim.clock, minutes: 4 };
     frame(e, 250);

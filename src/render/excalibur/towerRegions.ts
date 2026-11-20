@@ -90,7 +90,7 @@ function materialize(engine: TowerEngine, key: number): RegionRec {
 /** Ensure the unit is a member of its footprint's regions (idempotent) and
  *  schedule a repaint: queued by default, immediate when `sameFrame` (an
  *  extinguished fire must not leave a one-frame hole). Membership recomputes
- *  from the live footprint on every call: no engine path moves or resizes a
+ *  from the live footprint on every call: no simulation path moves or resizes a
  *  placed unit today, but a footprint that silently outgrew its cached
  *  regions would render a permanent hole, so the four divisions are cheap
  *  insurance (the old per-unit bake kept a width guard for the same reason). */

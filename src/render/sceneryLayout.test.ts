@@ -1,6 +1,6 @@
+import type { RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
-import type { Unit } from "../model/types";
 import {
   APRON_PAD_TILES,
   FORECOURT_TILES,
@@ -18,13 +18,13 @@ import {
   skylineRects,
 } from "./sceneryLayout";
 
-/** The lot's geometry, from the Rust engine's catalog (`engine-rs/src/catalog.rs` world). */
+/** The lot's geometry, from the test catalog's world. */
 const WORLD = catalogFor("classic").world;
 const GRID = { width: WORLD.lotWidth, minFloor: WORLD.minFloor, maxFloor: WORLD.maxFloor };
 
 /** A minimal ground-floor unit for apron math; only floor/x/width are read. */
-function u(x: number, width: number, floor = 1): Unit {
-  return { x, width, floor } as Unit;
+function u(x: number, width: number, floor = 1): RenderUnit {
+  return { x, width, floor } as RenderUnit;
 }
 
 describe("sceneryLayout", () => {

@@ -100,7 +100,7 @@ export function syncStructureTiles(engine: TowerEngine): readonly RenderUnit[] {
   const rules = towerCatalog(engine.sim).rules;
   const buildings: number[] | null = rules.frontDoorPerTower ? [] : null;
   // The sky bridge tiles in a drawn look (Modern), read once per full pass.
-  // Classic has no bridges (no skyBridge rule), so it skips the engine read.
+  // Classic has no bridges (no skyBridge rule), so it skips the read.
   const bridgeLooks = rules.skyBridge
     ? bridgeLookCells(tower.skyBridges?.() ?? [], rules.skyBridge.looks)
     : NO_BRIDGE_LOOKS;

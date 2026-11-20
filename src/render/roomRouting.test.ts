@@ -1,6 +1,6 @@
+import type { RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { kindFacts, kindKeys } from "../tests/catalogKinds";
-import type { Unit } from "../model/types";
 import { drawUnit, type DrawCtx } from "./sprites";
 import { facilityColor } from "../presentation/facilityPresentation";
 
@@ -70,7 +70,7 @@ function spyCtx() {
   }
   return { ctx: ctx as unknown as CanvasRenderingContext2D, log };
 }
-function unit(over: Partial<Unit>): Unit {
+function unit(over: Partial<RenderUnit>): RenderUnit {
   return {
     id: 7,
     kind: "office",
@@ -81,7 +81,7 @@ function unit(over: Partial<Unit>): Unit {
     satisfaction: 1,
     occupants: 2,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 const draw = (ctx: CanvasRenderingContext2D): DrawCtx => ({ ctx, lit: true, anim: 0.5, hour: 14 });
 const fillColorSets = (log: string[]) => log.filter((l) => l.startsWith("fillStyle=")).length;

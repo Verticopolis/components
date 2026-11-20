@@ -2,7 +2,7 @@
 
 Verticopolis draws all of its art in code, and that art is CC BY 4.0
 ([ASSETS-LICENSE.md](../ASSETS-LICENSE.md)). The sprite atlas packs it into
-texture pages and a JSON manifest so any frontend on the open engine can use the
+texture pages and a JSON manifest so any frontend can use the
 same art without porting the drawing code.
 
 ## Getting it
@@ -41,10 +41,14 @@ For maintainers:
 To build it yourself:
 
 ```bash
-npm ci                                       # installs @verticopolis/engine, whose catalog the bake reads
+npm ci
 npm run atlas -- --out dist-atlas            # whole catalog
 npm run atlas -- --out dist-atlas --filter room/office   # a slice, written as verticopolis-atlas-preview.zip
+npm run atlas -- --out dist-atlas --catalog my-catalog.json   # cut to a game's own Modern render catalog
 ```
+
+The bake draws with the components' own Modern render catalog
+(`src/tests/catalogFixture.ts`) unless `--catalog` names a game's.
 
 The release copy is baked inside the pinned Playwright image (the same
 `mcr.microsoft.com/playwright:v<lockfile playwright version>-jammy` the
@@ -122,7 +126,7 @@ bumps it. New frames or optional fields do not.
   column slices). `parts` is empty for a fully transparent frame. A room frame
   can also carry `layers`, the same room split for depth (see
   [Depth layers](#depth-layers)).
-- `chains`: composed layers indexed by an engine number. To show input `n`, draw
+- `chains`: composed layers indexed by a simulation number. To show input `n`, draw
   the frame, then steps `1..min(n, max)` in order with ordinary source-over
   blending; a `null` step draws nothing. A chain with `alternativeTo` is drawn
   instead of the chain it names, never with it (the recycling center's
@@ -156,8 +160,8 @@ the point the game positions them by.
 
 ### Frame names
 
-Names follow the engine's own strings: the facility keys from
-`engine-rs/src/facilities.rs` and the `UnitState` names.
+Names follow the render model's strings: the `FacilityKind` keys and the
+`UnitState` names (`render/renderModel.ts`).
 
 | Family | Name |
 | --- | --- |
@@ -188,7 +192,7 @@ reader is `src/render/atlas/lookup.ts`; in short:
 
 1. A burning or unbuilt room plays `fire/<kind>` or `construction/<kind>`.
 2. Otherwise build the frame name from the kind, state, subtype (a subtype
-   the engine does not list for the kind uses `-`), the kind's catalog width
+   the simulation does not list for the kind uses `-`), the kind's catalog width
    (a room at another width is drawn stretched, below), the lighting, the
    business hours at the current hour, the late night (23:00 to 06:00) of a
    condo, studio or apartment, and the variant you picked for that room.
@@ -520,7 +524,7 @@ that draws with depth can set each at its own distance.
 ### Seeded by the tower
 
 The skyline and the plants are a pure function of the tower's founding seed
-(the engine's initial RNG seed, fixed for the tower's life), through this
+(the simulation's initial RNG seed, fixed for the tower's life), through this
 hash, where `int32`, `imul32`, `^` and `>>>` are as in
 `signature.rules.parkingRoll`:
 
@@ -583,7 +587,7 @@ world, in this order:
    from rise to set, or the night from set to rise) the disc's center (the
    frame's `anchor`) is at x
    `p * viewW` and y `viewH * baseY - sin(p * PI) * viewH * lift`.
-3. The clouds, on cloudy and rainy days: `clouds.weathers` maps the engine's
+3. The clouds, on cloudy and rainy days: `clouds.weathers` maps the simulation's
    weather (`cloudy` or `rain`) to its frames, `sky/cloud/<frames>/<i>`, one
    per entry in `clouds.list`. At `t` seconds of the game's animation clock
    (never negative), cloud `i`'s frame `anchor` is at x `((offset %
@@ -612,7 +616,7 @@ the shafts and stairs, the cabs, the commuting crowd and the overlays (the
 rain draws there, in front of everything). Things
 on one plane draw in the order the game adds them. People appear on two
 planes: the walkers pacing the floors and lobby, and the crowd in front of
-them, which is every commuter the engine moves, the people waiting at an
+them, which is every commuter the simulation moves, the people waiting at an
 elevator on the lobby floor among them. A crowd figure is the
 `person/walker/...` frame: `shirt<i>` with i = |seed| mod the shirt count,
 `staff` for staff, and `fedUp` once a tenant (never staff) has waited more

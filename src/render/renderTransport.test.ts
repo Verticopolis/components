@@ -1,6 +1,6 @@
+import type { RenderTransport } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { drawTransport } from "./sprites";
-import type { Transport } from "../model/types";
 
 /**
  * Regression tests for the stairway/escalator flight geometry: a transport
@@ -36,7 +36,7 @@ function recordingCtx() {
   return { ctx, rects, lines, texts };
 }
 
-function transport(kind: Transport["kind"], bottom: number, top: number): Transport {
+function transport(kind: RenderTransport["kind"], bottom: number, top: number): RenderTransport {
   return {
     id: 1,
     kind,
@@ -48,7 +48,7 @@ function transport(kind: Transport["kind"], bottom: number, top: number): Transp
     carPositions: [],
     carDir: [],
     carLoad: [],
-  } as unknown as Transport;
+  } as unknown as RenderTransport;
 }
 
 describe("transport sprite geometry", () => {

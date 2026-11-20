@@ -65,7 +65,7 @@ export function facadeGeometry(
   const edges = new Map<number, FloorEdge>();
   const spans = new Map<number, FloorEdge[]>();
   const topTiles = new Set<number>();
-  // The engine's highest floor counts each unit's base floor, so a tall hall
+  // The simulation's highest floor counts each unit's base floor, so a tall hall
   // or a two-story room on the top floor rises past it; the crane follows
   // the highest row actually seen.
   let topFloor = highestFloor;

@@ -1,6 +1,7 @@
+import type { FacilityKind } from "../render/renderModel";
+import { catalogFacility } from "../render/catalogIndex";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
-import { catalogFacility } from "../catalog/catalogTypes";
 import {
   bindViewKinds,
   hasBusinessHours,
@@ -15,15 +16,13 @@ import {
   resetViewKindsForTests,
   viewKindKeys,
 } from "./viewKinds";
-import type { FacilityKind } from "../model/types";
 
 describe("the view's kind facts", () => {
   beforeEach(() => bindViewKinds(catalogFor("modern")));
   afterEach(() => bindViewKinds(catalogFor("modern")));
 
-  // The kind sets and posted hours the Rust engine states (`engine-rs/src/facilities.rs`:
-  // the kind predicates and `Kind::is_open_at`), pinned so a catalog that moved a
-  // kind across a line, or a binding that read the wrong field, fails here.
+  // The kind sets and posted hours the test catalog states, pinned so a
+  // binding that read the wrong field fails here.
   const SETS: Record<
     string,
     { readonly ask: (kind: FacilityKind) => boolean; readonly kinds: readonly FacilityKind[] }
@@ -90,7 +89,7 @@ describe("the view's kind facts", () => {
     daycare: span(7, 19),
   };
 
-  it("sort the kinds as the engine does, in both modes", () => {
+  it("sort the kinds as the simulation does, in both modes", () => {
     for (const mode of ["classic", "modern"] as const) {
       bindViewKinds(catalogFor(mode));
       for (const [name, { ask, kinds }] of Object.entries(SETS)) {
@@ -99,7 +98,7 @@ describe("the view's kind facts", () => {
     }
   });
 
-  it("open each kind in the engine's posted hours, reading a fraction or 24 onto its hour", () => {
+  it("open each kind in the simulation's posted hours, reading a fraction or 24 onto its hour", () => {
     for (const mode of ["classic", "modern"] as const) {
       bindViewKinds(catalogFor(mode));
       for (const kind of viewKindKeys()) {

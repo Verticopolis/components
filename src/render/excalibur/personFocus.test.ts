@@ -94,7 +94,7 @@ describe("the follow", () => {
     const gap = () => spot.x - e.cam.pos.x;
     // Three frames a second: each step covers its whole 333 ms, up to the
     // 250 ms cap (0.02 ** 0.25 of the gap stays), never the 1 ms a slow
-    // frame's engine time arrives as.
+    // frame's simulation time arrives as.
     const before = gap();
     stepFollow(e, after(333));
     expect(gap()).toBeCloseTo(before * Math.pow(0.02, 0.25), 3);

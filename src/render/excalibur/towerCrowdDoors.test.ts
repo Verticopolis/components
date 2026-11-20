@@ -42,7 +42,7 @@ function eng(): any {
   };
 }
 
-/** One engine step to `people`: the step's frame, then a frame long enough
+/** One simulation step to `people`: the step's frame, then a frame long enough
  *  for every figure to finish its glide there. */
 function step(e: any, people: unknown[]): void {
   e.sim.crowd.people = people;

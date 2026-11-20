@@ -298,7 +298,7 @@ export function skyData() {
     sun: { ...SUN_ARC, day: "sky/sun", night: "sky/moon" },
     clouds: {
       ...CLOUD_DRIFT,
-      // The engine's weather to the cloud frames it shows (clear shows none).
+      // The simulation's weather to the cloud frames it shows (clear shows none).
       weathers: { cloudy: "overcast", rain: "rain" } satisfies Record<
         Exclude<WeatherKind, "clear">,
         Extract<PaintSpec, { p: "cloud" }>["weather"]

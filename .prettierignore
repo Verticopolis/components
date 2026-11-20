@@ -7,14 +7,13 @@ test-results/
 playwright-report/
 package-lock.json
 
-# Written by the engine or by a generator, not by hand
-src/simport/fixtures/
+# Written by a generator, not by hand
 **/*.generated.ts
 e2e/__screenshots__/
 history/
 assets/
 
-# Prose and data keep their own layout, as in the game and the engine:
+# Prose and data keep their own layout, as in the game:
 # Markdown is prose, JSON is mostly generated (fixtures, catalogs, the lockfile)
 *.md
 *.json

@@ -125,7 +125,7 @@
     color: var(--muted);
   }
 
-  /* Engine diagnostics in About this game (#963): a compact label and value
+  /* Diagnostics in About this game (#963): a compact label and value
    list the player can read and copy. */
   .help-diagnostics {
     margin: 8px 0;

@@ -1,5 +1,5 @@
 /**
- * Lobby halls (#308, #2068): the engine's `lobbyHeights()` quads as the
+ * Lobby halls (#308, #2068): the simulation's `lobbyHeights()` quads as the
  * renderer reads them. A hall is a row of lobby tiles of one height on one
  * floor. Each tall hall is one `[floor, x0, x1, height]` run, `x1` its last
  * column; a one-story hall is in none. In Modern two halls of different
