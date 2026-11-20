@@ -21,8 +21,17 @@ export const SCHEMES = [
 /** Where the picked scheme is kept between pages. */
 export const SCHEME_KEY = "vc-components-scheme";
 
+/** A value as a JavaScript literal that is safe inside an inline <script>:
+ *  the characters that could close the tag or end a line are escaped. */
+function scriptLiteral(value) {
+  return JSON.stringify(value).replace(
+    /[<>/\u2028\u2029]/g,
+    (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`,
+  );
+}
+
 /** Sets the scheme picked last on <html> before the page paints. */
-export const SCHEME_BOOT = `(function(){try{var s=localStorage.getItem(${JSON.stringify(SCHEME_KEY)});if(${JSON.stringify(
+export const SCHEME_BOOT = `(function(){try{var s=localStorage.getItem(${scriptLiteral(SCHEME_KEY)});if(${scriptLiteral(
   SCHEMES.map((s) => s.value).filter((v) => v !== "classic"),
 )}.indexOf(s)>=0)document.documentElement.setAttribute("data-scheme",s)}catch(e){}})();`;
 
