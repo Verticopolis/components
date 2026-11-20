@@ -121,7 +121,7 @@ function gitCommit(): string {
   try {
     return execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
   } catch (e) {
-    if (process.env.CI) throw new Error(`cannot read the commit from git: ${String(e)}`);
+    if (process.env.CI) throw new Error(`cannot read the commit from git: ${String(e)}`, { cause: e });
     return "unknown";
   }
 }
