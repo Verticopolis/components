@@ -300,6 +300,25 @@
   .g-title-said {
     font-size: 12px;
   }
+  /* The Control Panel (gallery/controlPanel.ts) on a patch of desk. */
+  .g-control {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 170px;
+    padding: 16px;
+    background: var(--r-desktop);
+  }
+  /* The desk hides a closed window under body.desk; this patch is no desk. */
+  .g-control > .desk-win[hidden] {
+    display: none;
+  }
+  .g-control-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+  }
   /* A page of its own in a frame (Frame.astro), as wide as the column. */
   .g-frame {
     display: block;

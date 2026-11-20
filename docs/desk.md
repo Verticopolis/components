@@ -18,6 +18,7 @@ Verticopolis menu holds and does. The component gallery shows
 | `windows/desk/deskWindow` | `DeskWindow`, one window on the desk: minimize, maximize and restore, the size grip, the focus, and a move by the title bar. `buildFrame` draws a frame for content that has no window of its own. |
 | `windows/desk/deskTaskbar` | `DeskTaskbar`, the taskbar: the Verticopolis button and its menu, a button per open window, and the tray (the Control Panel's monitor, the speaker and the clock). `shownItems` and `trayClock` are the pure parts it draws from. |
 | `windows/desk/deskPocket` | `deskMode` (which desk a screen gets), `pocketBody` (the grid inside the pocket tower window), the body classes `DESK_TOUCH_CLASS` and `DESK_POCKET_CLASS`, `POCKET_BODY_CLASS`, and the media queries `TOUCH_MQ` and `TOUCH_DESK_MQ`. |
+| `windows/desk/deskControlPanel` | `ControlPanel`, the Control Panel's window: the large icons the game picks from the four the package draws (`ControlIcon`), their names and tooltips, an object count, and a ✕. Each press goes to the game; `setLabel` renames an icon, such as "Sounds: Off". |
 | `windows/desk/deskWindowMenu` | `WindowMenu`, the menu a right-click on a title bar or a taskbar button opens (Restore, Minimize, Maximize, Close), with `windowMenuState` and `runWindowCommand`. |
 | `windows/desk/deskGeometry` | Pure functions over plain numbers: `defaultLayout` (where each window opens the first time), `fitRect` (a saved place kept on a smaller screen), `resizedTo` (a resize held to its limits) and `parseLayout` (a saved layout read back safely), with the size limits and the layout constants. |
 | `windows/movableWindow` | `MovableWindow`, the drag by the title bar that every movable window uses, the desk's included. |
@@ -27,7 +28,8 @@ Verticopolis menu holds and does. The component gallery shows
 
 The taskbar, its Verticopolis menu and the tray are drawn here
 (`DeskTaskbar`); the game names the menu's items and decides what each press
-does. The Control Panel is the game's own window, styled here.
+does. The Control Panel's window is drawn here too (`ControlPanel`); the game
+names its icons and decides what each one opens.
 
 ```mermaid
 flowchart LR
