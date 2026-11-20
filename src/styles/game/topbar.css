@@ -26,6 +26,8 @@
       0 3px 0 var(--r-dark);
     gap: 6px;
     padding: 4px 8px;
+    /* The phone's Getting Started card sits under the bar (onboarding.css). */
+    anchor-name: --vc-topbar;
   }
   .brand {
     background: var(--r-title);

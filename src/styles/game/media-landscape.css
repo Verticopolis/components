@@ -264,26 +264,16 @@
      and tappable and most of the world view stays clear, and on a very short
      screen its step list scrolls under the title bar, which stays put. */
     /* The stage starts at 180px (the column and its margins), so the card
-     sits 2px inside it and keeps 8px clear on the right. Its top sits 2px
-     inside the stage too: where the browser can anchor, 8px under the top
-     bar (the bar's 6px gap to the stage, then 2px), however many lines the
-     bar wraps to. Elsewhere `--ob-top` is the stage's measured top plus 2px
-     (the bar is 97 to 98px tall under 820px wide, by font, and 76 to 77px
-     from 820px, where the block below keeps the stat chips on one row). */
-    #topbar {
-      anchor-name: --vc-topbar;
-    }
+     sits 2px inside it and keeps 8px clear on the right. Its top follows
+     the top bar as on a portrait phone (onboarding.css). Without anchoring,
+     `--ob-top` is the stage's measured top plus 2px here: the bar is 97 to
+     98px tall under 820px wide, by font, and 76 to 77px from 820px, where
+     the block below keeps the stat chips on one row. */
     #onboard.onboard--mobile {
       --ob-top: 106px;
       left: calc(182px + env(safe-area-inset-left, 0px));
       right: auto;
       width: min(300px, calc(100vw - 190px - env(safe-area-inset-left, 0px)));
-      top: var(--ob-top);
-    }
-    @supports (anchor-name: --a) {
-      #onboard.onboard--mobile {
-        top: calc(anchor(--vc-topbar bottom, calc(var(--ob-top) - 8px)) + 8px);
-      }
     }
     /* The card would otherwise cover the title bar and close button of an
      editor or inspector card opened under it, so those and the toasts paint
