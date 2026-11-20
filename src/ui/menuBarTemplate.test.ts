@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MenuBar, type MenuBarModel } from "./menuBar";
+import { markupOf } from "./testing/litTestUtils";
 
 const bars: MenuBar[] = [];
 
@@ -82,7 +83,7 @@ describe("menuBarTemplate", () => {
     expect(title.getAttribute("aria-haspopup")).toBe("menu");
     expect(title.getAttribute("aria-expanded")).toBe("false");
     expect(title.getAttribute("aria-controls")).toBe("mb-file-menu");
-    expect(title.innerHTML.replace(/<!--.*?-->/g, "")).toBe("<u>F</u>ile");
+    expect(markupOf(title, "inner")).toBe("<u>F</u>ile");
 
     const pop = $("mb-file-menu");
     expect(pop.className).toBe("mb-pop");
