@@ -1,0 +1,20 @@
+{
+  "name": "verticopolis-components-site",
+  "private": true,
+  "description": "The component gallery at the components site: a Starlight site that shows every reusable piece of the package, built from lib/ the way a consumer would",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.42.7",
+    "astro": "7.4.12"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "typescript": "5.9.3"
+  }
+}

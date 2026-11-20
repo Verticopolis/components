@@ -60,8 +60,9 @@
     "build": "sh scripts/build-lib.sh",
     "prepack": "sh scripts/build-lib.sh",
     "pack": "sh scripts/pack-components.sh",
-    "gallery": "vite -c gallery/vite.config.ts",
-    "gallery:build": "vite build -c gallery/vite.config.ts",
+    "gallery": "npm run --prefix site dev",
+    "gallery:build": "npm run --prefix site build",
+    "gallery:install": "npm ci --prefix site",
     "atlas": "tsx scripts/export-atlas.ts",
     "screenshots": "playwright test",
     "screenshots:update": "playwright test --update-snapshots"

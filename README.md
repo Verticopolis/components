@@ -237,39 +237,63 @@ push to `main` packs the tarball as a workflow artifact.
 
 ## Gallery
 
-The component gallery is one page with every reusable piece in each color
-scheme: the buttons, windows, wells and key-value rows, the menu bar, the
-icons, a sound board, tower scenes and the room sprites. It loads the built
-package from `lib/` the way a consumer would. The sound board plays each
-action effect, both music tracks and the ambience of each part of a tower.
-The scenes are hand-written slices of a tower across several floors: ground
-and sky lobbies one to three stories tall, halls of two heights, stairs,
-escalators and elevators. Each room is drawn at an hour it is open, with a
-share of its capacity inside so its furniture shows. The scenes and rooms
-are painted from the components' own render catalog
-(`src/tests/catalogFixture.ts`). The overview map is not on it, since it
-draws a running tower.
+The component gallery is an Astro and Starlight site in `site/`, built on the
+same shell as the player's manual and the engine docs: the package's
+Starlight stylesheet, a title bar, and a working menu bar across the top.
+Its File menu opens the game, the package on npm and the source, and prints
+the page; Edit finds and copies a link; Options picks light, dark or the
+device's look and a color scheme (Classic, Skyline, High Contrast); Help
+links to the manual, the engine docs and the issue form.
+
+Each page mounts demos from `gallery/` (`gallery/demos.ts`), which load the
+built package from `lib/` the way a consumer would:
+
+| Page | What it shows |
+| --- | --- |
+| Buttons, Windows, Wells | the chrome, in the scheme Options picks |
+| Menu bar | a sample menu bar, the same component the site's own bar uses |
+| Icons | every icon |
+| Sounds | each action effect, both music tracks and the ambience of each part of a tower |
+| Lobbies, Stairs and escalators, Elevators | hand-written slices of a tower: ground and sky lobbies one to three stories tall, halls of two heights, stairs, escalators and elevators |
+| Rooms | every room and variant at an hour it is open, with a share of its capacity inside so its furniture shows |
+| People | every look a figure wears (the visitors, the housekeeping crew, the staff and the thief), each walk frame, pose and mood, and the room builds |
+
+```mermaid
+flowchart LR
+  lib["lib/ (npm run build)"] --> demos["gallery/demos.ts"]
+  fixture["src/tests/catalogFixture.ts"] --> demos
+  demos --> pages["site/src/content/docs/*.mdx"]
+  pages --> dist["site/dist/"]
+```
+
+The scenes, rooms and people are painted from the components' own render
+catalog (`src/tests/catalogFixture.ts`). The overview map is not on it, since
+it draws a running tower.
 
 ```sh
 npm run build           # the gallery reads lib/
-npm run gallery         # a local server with the page
-npm run gallery:build   # writes dist-gallery/
+npm run gallery:install # the site's own packages (site/package-lock.json)
+npm run gallery         # a local server with the site
+npm run gallery:build   # writes site/dist/
 ```
 
 The Gallery workflow builds it on every pull request that touches the source,
-and publishes it to GitHub Pages from `main`. Each open pull request that
-changes the gallery gets a preview at `pr-preview/pr-<number>/` under the
-same site, linked in a comment on the pull request; the preview goes away
-with the next deploy after the pull request closes.
+the demos or the site, and publishes it to GitHub Pages from `main`
+(components.verticopolis.com). Each open pull request that changes the
+gallery gets a preview at `pr-preview/pr-<number>/` under the same site,
+linked in a comment on the pull request; the preview goes away with the next
+deploy after the pull request closes. `GALLERY_BASE` sets the folder a build
+is served from.
 
 ## Screenshot tests
 
-The Screenshots workflow drives the gallery in Chromium and compares each
-piece with the images in `e2e/__screenshots__`: the page window, the
-buttons, windows, wells, the menu bar closed and with each menu open, the
-icons and the sound board in every color scheme, plus each tower scene and
-room sprite once, on a desktop and a phone screen. A change that moves a
-pixel fails the check, and the run keeps the diffs as an artifact.
+The Screenshots workflow drives the gallery site in Chromium and compares
+each piece with the images in `e2e/__screenshots__`: the site's header and
+each menu of its menu bar open, the buttons, windows, wells, icons, the sound
+board and the sample menu bar closed and with each menu open in every color
+scheme, plus each tower scene, room sprite and people figure once, on a
+desktop and a phone screen. A change that moves a pixel fails the check, and
+the run keeps the diffs as an artifact.
 
 The baselines come only from the pinned Playwright image
 (`mcr.microsoft.com/playwright:v<version>-jammy`, the version in
@@ -281,7 +305,7 @@ tab on `main`, it opens a pull request with the images instead of pushing to
 `main`. Review that commit's images like code. The same image works locally:
 
 ```sh
-npm ci
+npm ci && npm run gallery:install
 docker run --rm --ipc=host -v "$PWD":/work -w /work \
   mcr.microsoft.com/playwright:v<version>-jammy \
   sh -c 'CI=1 npx playwright test --update-snapshots'

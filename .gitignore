@@ -3,6 +3,7 @@ dist/
 coverage/
 *.tgz
 lib/
-dist-gallery/
+site/dist/
+site/.astro/
 test-results/
 playwright-report/

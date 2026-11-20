@@ -1,0 +1,16 @@
+---
+// One demo from gallery/demos.ts, built in the browser where the page puts
+// this component. Every demo on a page mounts from one script.
+interface Props {
+  /** The demo's name in gallery/demos.ts (DEMOS). */
+  name: string;
+}
+const { name } = Astro.props;
+---
+
+<div class="g-demo not-content" data-demo={name}></div>
+
+<script>
+  import { mountDemos } from "../../../gallery/demos";
+  mountDemos();
+</script>

@@ -1,0 +1,151 @@
+/* The gallery's own layout for the demos on each page. The package's
+   stylesheets come in through astro.config.mjs (customCss), from lib/ the way
+   a consumer would load them. */
+@layer vc.page {
+  /* The site's menu bar (MenuBar.astro) as the top row of the fixed header,
+     above the navy title bar, as the player's manual draws it: the header
+     grows by the bar's height, and the title bar and the phone's menu button
+     keep their size and move down under it. */
+  :root {
+    --vc-menubar-h: 24px;
+    --sl-nav-height: calc(3.5rem + var(--vc-menubar-h));
+  }
+  @media (min-width: 50rem) {
+    :root {
+      --sl-nav-height: calc(4rem + var(--vc-menubar-h));
+    }
+  }
+  .header {
+    padding-top: calc(var(--sl-nav-pad-y) + var(--vc-menubar-h));
+  }
+  .vc-bar-title img {
+    height: calc(var(--sl-nav-height) - var(--vc-menubar-h) - 2 * var(--sl-nav-pad-y));
+  }
+  .sl-menu-button {
+    top: calc(var(--vc-menubar-h) + (var(--sl-nav-height) - var(--vc-menubar-h) - var(--sl-menu-button-size)) / 2);
+  }
+  .site-menubar {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: var(--vc-menubar-h);
+    box-sizing: border-box;
+  }
+  .header .vc-bar-game {
+    font-weight: 400;
+  }
+
+  .g-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .g-win {
+    max-width: 320px;
+  }
+  .g-win .g-pad {
+    padding: 8px;
+  }
+  .g-icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 6px;
+  }
+  .g-icons figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+  }
+  .g-icons .vc-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .g-well {
+    padding: 4px 6px;
+    margin: 0 0 6px;
+    font-size: 12px;
+  }
+  .g-field {
+    display: block;
+    width: 100%;
+    padding: 2px 4px;
+    margin: 0 0 8px;
+  }
+  .g-sprites {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 8px;
+  }
+  .g-sprites figure {
+    margin: 0;
+  }
+  .g-sprites canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #12151d;
+    image-rendering: pixelated;
+  }
+  .g-sprites figcaption {
+    font-size: 12px;
+    padding: 2px 0;
+  }
+  .g-people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    align-items: start;
+  }
+  .g-people figure {
+    margin: 0;
+    max-width: 100%;
+  }
+  .g-people canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    background: #12151d;
+    image-rendering: pixelated;
+  }
+  .g-people figcaption {
+    font-size: 12px;
+    padding: 2px 0;
+  }
+  .g-people-section + .g-people-section {
+    margin-top: 1.5em;
+  }
+  .g-scenes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+  .g-scenes figure {
+    margin: 0;
+  }
+  .g-scenes canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #12151d;
+    image-rendering: pixelated;
+  }
+  .g-scenes figcaption {
+    font-size: 12px;
+    padding: 2px 0;
+  }
+  .g-sound-row {
+    margin: 0 0 0.75em;
+  }
+  .g-sound-row > h3 {
+    margin: 0 0 0.35em;
+    font-size: 0.95em;
+  }
+  .g-sound-row .btn[aria-pressed="true"] {
+    font-weight: bold;
+  }
+}
