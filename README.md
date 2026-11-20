@@ -178,8 +178,9 @@ The baselines come only from the pinned Playwright image
 `package-lock.json`), since glyph and canvas rasterization differ across
 Chromium builds. To refresh them, push a commit whose message contains
 `[update-screenshots]`; the Update screenshots workflow renders them in that
-image and pushes them back as a commit on the branch. Review that commit's
-images like code. The same image works locally:
+image and pushes them back as a commit on the branch. Run from the Actions
+tab on `main`, it opens a pull request with the images instead of pushing to
+`main`. Review that commit's images like code. The same image works locally:
 
 ```sh
 npm ci
