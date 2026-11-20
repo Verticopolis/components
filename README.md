@@ -290,6 +290,13 @@ bundle to one copy of each.
   the game's own `<header id="topbar">` and `<footer id="statusbar">`, keep
   the ids the stylesheets name, and take every text ready to show. Their look
   is `styles/game/topbar.css` and `styles/game/menubar.css`.
+- `windows/palette/toolPalette` is the game's Tools window: `ToolPalette`
+  draws the pinned tools and a section per category into the game's
+  `.palette-scroll`, and the phone's category tabs into its `.palette-tabs`.
+  The game hands in each tool's name, price, swatch and description and which
+  are locked, out of reach of the funds or picked (`update(view)`); the window
+  keeps the open tab, the "new" pips and the folds (stored under a key the
+  game names). Its look is `styles/game/tools-stage.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -378,6 +385,7 @@ built package from `lib/` the way a consumer would:
 | Page not found | `windows/notFoundDesk`, the 404 desk, in a frame |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Information bar and status bar | the game's top bar of meters and buttons and its status bar, in a frame over the game's desktop stylesheet |
+| Tools window | the game's Tools window with made-up tools: stars lock and unlock them, low funds dim them, and a category folds |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
 | Sounds | each action effect, both music tracks and the ambience of each part of a tower |

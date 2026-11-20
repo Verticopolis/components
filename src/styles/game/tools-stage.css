@@ -102,6 +102,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  /* Inspect's and Bulldoze's icon before the name, on the text line with a
+   small gap, as the game's other inline icons sit (topbar.css). */
+  .pal-name .pal-ic {
+    display: inline-block;
+    vertical-align: -2px;
+    margin-right: 5px;
+  }
   .pal-cost {
     font-size: 10px;
     font-variant-numeric: tabular-nums;

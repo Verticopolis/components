@@ -51,6 +51,7 @@ export const sidebar = [
     items: [
       { label: "The desk", link: "/desktop/desk/" },
       { label: "Information bar and status bar", link: "/desktop/information-bar/" },
+      { label: "Tools window", link: "/desktop/tools/" },
       { label: "Where windows open", link: "/desktop/layout/" },
       { label: "Control Panel", link: "/desktop/control-panel/" },
       { label: "Title screen", link: "/desktop/title-screen/" },
