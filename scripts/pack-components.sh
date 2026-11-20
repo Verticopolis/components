@@ -28,6 +28,10 @@ node -e '
   const [file, version] = process.argv.slice(1);
   const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
   pkg.version = version;
+  // The repository pins its own tooling to Node 26 (package.json, .nvmrc);
+  // the package itself runs on any Node from 22, the oldest the engine
+  // package supports too.
+  pkg.engines = { node: ">=22" };
   delete pkg.scripts;
   delete pkg.devDependencies;
   fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n");

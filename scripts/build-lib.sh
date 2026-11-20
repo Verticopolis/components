@@ -3,8 +3,9 @@
 # module (vite.lib.config.ts), the TypeScript declarations beside them
 # (tsconfig.build.json), and the files that ship as written: the stylesheets,
 # the engine-written JSON fixtures and the declaration-only modules (the
-# engine binding's and the gameplay events' types). Run from the repository
-# root.
+# engine binding's and the gameplay events' types), with `.js` on every
+# relative import in the declarations (scripts/dts-extensions.ts). Run from
+# the repository root.
 set -eu
 
 npx vite build -c vite.lib.config.ts --logLevel warn
@@ -17,4 +18,7 @@ npx tsc -p tsconfig.build.json
   mkdir -p "lib/$(dirname "$f")"
   cp "src/$f" "lib/$f"
 done
+# The declarations import without extensions, as the sources do; give each
+# relative import its .js so nodenext resolution follows them too.
+node scripts/dts-extensions.ts lib
 echo "Built lib/ ($(find lib -name '*.js' | wc -l | tr -d ' ') modules)."
