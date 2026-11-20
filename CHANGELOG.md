@@ -21,6 +21,60 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.0.0 (2026-11-20)
+
+- **major**: `windows/desk/deskWindow` draws the desk's pieces with lit-html: the
+  frame, its title bar's icon and buttons, the size grip and the resize
+  outline, with their events bound in the templates. `buildFrame(doc, id,
+  title, close?)` takes the frame's ✕ (`{ label, onClick }`) and returns
+  `{ root, body, setTitle }`; `setTitle` renames the window in place, and
+  `titleText` is gone. `titleButton` is gone: a frame's ✕ comes from
+  `buildFrame`. `deskFrameTemplate` is the frame's template.
+- **major**: `windows/desk/deskWindowMenu`'s `WindowMenu` draws its menu with lit-html
+  and re-renders the grayed items each time it opens. Its API is unchanged.
+- **major**: `windows/icons` draws icons only through lit: `iconTemplate(name, opts)` for an icon and
+  `messageWithIcons(message)` for a bulletin line with its leading emoji swapped for an icon.
+  `iconElement` and `appendMessageWithIcons` are removed; render `iconTemplate` or
+  `messageWithIcons` in a lit template instead.
+- **major**: `windows/escape` (`escapeHtml`) is removed. Nothing in the package builds HTML strings
+  anymore, and a lit template escapes every binding.
+- **major**: `windows/uiModal` draws the modal with lit. `ModalShell(dialog, { gameStopped, toast })`
+  takes the shared `<dialog>`; `open({ title, body }, opts)` draws the window grammar
+  (the box, the title bar with its title span and ✕, the notice line, the body), opens
+  the dialog and returns its box, `render(view)` redraws an open dialog in place,
+  `close()` clears it, and `say(text, again, kind)` puts a notice under the title, holds
+  it for the next dialog mid-replace, or toasts. `noticeTemplate(text, kind)` is the
+  notice line on its own.
+- **major**: Removed: `finishModal` and `ModalDeps` from `windows/uiModal`, and `routeNotice`,
+  `mountNotice` and `ModalPrecedence.drainNotice` from the precedence module. A caller
+  builds its body as a lit template and hands it to `ModalShell.open` instead of
+  building the box itself. `ModalPrecedence.takeNotice()` hands back a held notice
+  (`{ text, kind }` or null) for the shell to draw.
+- **major**: `windows/menuBar`'s `MenuBar` draws the bar itself with lit-html from a
+  `MenuBarModel` (titles with their underlined letter, items with a shortcut,
+  a check, a radio group, grayed, hidden, a link, `data-*` attributes or an
+  `onPick`, separators and submenus), and binds its handlers in the template.
+  The constructor is now `new MenuBar(host, model, options)`, and
+  `bar.render(model)` redraws it with a changed model. A page no longer
+  writes the bar's markup or wires its items' clicks; the constructor that
+  wired hand-written markup is gone. The model types are exported from
+  `windows/menuBar`, and `windows/menuBarTemplate` holds the template.
+- **minor**: `styles/starlight.css` now also wears the game's color schemes, through the
+  new `styles/starlight-schemes.css`: under `html[data-scheme="skyline"]` or
+  `html[data-scheme="high_contrast"]`, a Starlight site's header, selected
+  row, buttons and title-screen buttons take the scheme's shapes, and High
+  Contrast sets Starlight's own colors to white on black. Nothing changes on
+  a page without `data-scheme`.
+- **minor**: New `styles/starlight-menu-bar.css`: the game's menu bar across the top of a
+  Starlight site, above the title bar. A site with the bar adds it after
+  `starlight.css`; see the README's Styles section.
+- **minor**: `styles.css` adds `desk-pocket.css`, the desk on touchscreens: `body.desk-touch` gives the desk a 44 px taskbar, 44 px menu rows and 44 px touch areas on title-bar buttons, and `body.desk-pocket` lays out the pocket desk, a full-screen tower window whose `.desk-pocket-body` grid holds Info, Tools and the tower, with the Map floating over the tower at the size it has on phones.
+- **minor**: `windows/desk/deskPocket` exports the pocket desk's pieces for a game: the classes (`DESK_TOUCH_CLASS`, `DESK_POCKET_CLASS`, `POCKET_BODY_CLASS`), the media queries (`TOUCH_MQ`, `TOUCH_DESK_MQ`), `deskMode` (which desk a screen gets: the full desk, the pocket desk or none) and `pocketBody` (the grid, drawn with lit-html).
+- **patch**: `windows/uiModal`'s `ModalView` types its `title` as `string | TemplateResult` and its `body` as
+  `TemplateResult`, so typecheck catches a caller handing it an element or a node list.
+- **patch**: `windows/detached`'s `renderDetached` throws on top-level text (which is never placed) and when an
+  update changes a top-level value into text, as it already did for new elements.
+
 ## 1.0.0 (2026-11-20)
 
 - **major**: the package depends on no simulation. The deprecated subpaths that
