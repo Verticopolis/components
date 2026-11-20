@@ -94,6 +94,9 @@
     font-size: 12px;
     padding: 2px 0;
   }
+  .g-key {
+    text-decoration: underline;
+  }
   .g-people {
     display: flex;
     flex-wrap: wrap;

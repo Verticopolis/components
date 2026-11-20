@@ -4,8 +4,11 @@ updates:
   # without affecting security updates, which have their own limit. The group
   # rolls every npm security fix into one PR per run, so fixes land together
   # instead of as separate lockfile PRs that conflict with each other.
+  # The gallery site (site/) keeps its own lockfile, so it is watched too.
   - package-ecosystem: npm
-    directory: /
+    directories:
+      - /
+      - /site
     schedule:
       interval: weekly
     open-pull-requests-limit: 0

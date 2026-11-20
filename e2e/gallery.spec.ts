@@ -102,12 +102,18 @@ for (const scheme of SCHEMES) {
       const bar = page.getByRole("navigation", { name: "Sample menu" });
       await expect(bar).toHaveScreenshot(`${scheme.slug}-menu-closed.png`);
       for (const m of SAMPLE_MENUS) {
-        await bar.getByRole("button", { name: m.title, exact: true }).click();
+        const title = bar.getByRole("button", { name: m.title, exact: true });
+        await title.click();
         const list = bar.getByRole("menu", { name: m.title });
         await expect(list).toBeVisible();
         await expect(page).toHaveScreenshot(`${scheme.slug}-menu-${m.slug}.png`, { clip: await unionClip(bar, list) });
+        // The keys work inside the open menu: Down moves into it, Escape
+        // closes it and hands the focus back to its title.
+        await page.keyboard.press("ArrowDown");
+        await expect(list.locator(":focus")).toHaveCount(1);
         await page.keyboard.press("Escape");
         await expect(list).toBeHidden();
+        await expect(title).toBeFocused();
       }
     });
   });

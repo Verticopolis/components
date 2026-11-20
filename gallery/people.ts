@@ -11,6 +11,7 @@ import {
   STAFF_LOOK,
   WALK_FRAMES,
   drawPerson,
+  walkFrame,
   type Carry,
   type DrawOptions,
   type HairStyle,
@@ -60,10 +61,13 @@ function strip(title: string, caption: string, lit: readonly Shot[], flat: reado
   return figure(canvas, title, caption);
 }
 
-/** The walk cycle: every lit frame, then the flat look's two. */
+/** The walk cycle: every lit frame, then the flat look's. */
 function walkCycle(look: Look, pose: Pose = "walk"): [Shot[], Shot[]] {
   const lit = Array.from({ length: WALK_FRAMES.lit }, (_, frame) => ({ look, o: { lit: true, frame, pose } }));
-  const flat = [0, 2].map((frame) => ({ look, o: { lit: false, frame, pose } }));
+  const flat = Array.from({ length: WALK_FRAMES.flat }, (_, i) => ({
+    look,
+    o: { lit: false, frame: walkFrame(false, i), pose },
+  }));
   return [lit, flat];
 }
 
