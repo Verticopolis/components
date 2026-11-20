@@ -21,6 +21,39 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 1.0.0 (2026-11-20)
+
+- **major**: the package depends on no simulation. The deprecated subpaths that
+  re-exported `@verticopolis/engine` are gone: `catalog/*`, `binding/*`,
+  `port/*`, `host/*`, `events/*` and `fixtures/*`, and `model/types`,
+  `model/engineTypes`, `model/unitState`, `model/viewZoom`,
+  `model/floorRuns` and `model/serializedGame`. Import those from
+  `@verticopolis/engine` itself. The engine is no longer a peer dependency.
+- **major**: `presentation/catalogCheck`'s errors name the catalog by its mode ("the
+  classic catalog"), without the engine.
+- **major**: `npm run atlas` takes `--catalog <file>` to bake against a game's own
+  Modern render catalog; without it the bake uses the components' own.
+- **major**: `ui/uiModal`'s `ModalDeps.engineStopped()` is now `gameStopped()`: a modal
+  still never opens over a game-failure message. Rename the member where the
+  game passes its deps.
+- **major**: The sprite atlas manifest's notes say "the simulation" where they said
+  "the engine". No frame, field or schema version changes.
+- **major**: The `shared/*` subpath is gone. It was the old name of `model/*`, kept as
+  an alias after the folder's rename: import
+  `@verticopolis/components/model/*` instead (the files are the same).
+- **major**: Semver now covers the stable subpaths: `windows/*`, `styles.css`,
+  `styles/*`, `model/*`, `render/renderModel` and `render/towerSource`. The
+  rest of `render/*` (the scene in `render/excalibur/*` included),
+  `presentation/*` and `audio/*` are internal: a game may import them pinned
+  to an exact version, but they can change in a minor version (README, "Use
+  it").
+- **patch**: On a portrait phone, the Getting Started card no longer covers the top
+  bar's stat chips. It sits just under the bar (CSS anchor positioning), as
+  it now does on a phone held sideways, with a measured top for each width
+  tier in a browser without anchoring. It used to sit at 58px, over all of
+  the chips. On a short phone its step list scrolls instead of reaching the
+  tool palette.
+
 ## 0.3.0 (2026-11-20)
 
 - **major**: the renderer, presentation, UI and audio import nothing from the engine
