@@ -5,6 +5,9 @@
  * keep their own.
  */
 
+/** The class on a folded category's `.pal-group` section. */
+export const PALETTE_FOLDED_CLASS = "pal-folded";
+
 /** The categories folded under `key`, by title. */
 export function loadFolded(key: string, storage: Pick<Storage, "getItem"> | null): Set<string> {
   try {

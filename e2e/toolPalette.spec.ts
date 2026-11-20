@@ -14,11 +14,13 @@ function tool(page: Page, kind: string) {
   return page.locator(`.pal-item[data-kind="${kind}"]`);
 }
 
-/** The page's folds start empty, whatever an earlier test kept, unless the
+/** The page's folds and the window's fold start empty, whatever an earlier test kept, unless the
  *  test marked a reload that keeps them. */
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    if (!sessionStorage.getItem("keep-folds")) localStorage.removeItem("vc-gallery-tools-folded");
+    if (sessionStorage.getItem("keep-folds")) return;
+    localStorage.removeItem("vc-gallery-tools-folded");
+    localStorage.removeItem("vc-gallery-tools-collapsed");
   });
 });
 
@@ -79,4 +81,36 @@ test("a fold keeps the picked tool in view and is kept on the next visit", async
   await page.reload();
   await page.waitForFunction(() => (window as unknown as { galleryReady?: boolean }).galleryReady === true);
   await expect(page.locator('.pal-group[data-group="Structure"]')).toHaveClass(/pal-folded/);
+});
+
+test("with every tool unlocked the window fits them in two columns, and folds into a strip", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "the fit and the fold button are desktop controls");
+  await openPage(page, TOOLS);
+  const win = page.locator("#palette");
+  await expect(win).not.toHaveClass(/pal-fit-/);
+  await page.getByRole("button", { name: "5 stars" }).click();
+  await expect(win).toHaveClass(/pal-fit-columns/);
+  await page.mouse.move(0, 0);
+  await expect(win).toHaveScreenshot("tools-fit-columns.png");
+
+  await page.getByRole("button", { name: "Hide the Tools" }).click();
+  await expect(win).toHaveClass(/pal-collapsed/);
+  await expect(page.locator(".g-palette-said")).toHaveText("The Tools window is folded.");
+  await expect(win).toHaveScreenshot("tools-collapsed.png");
+  await page.evaluate(() => sessionStorage.setItem("keep-folds", "1"));
+  await page.reload();
+  await page.waitForFunction(() => (window as unknown as { galleryReady?: boolean }).galleryReady === true);
+  await expect(win).toHaveClass(/pal-collapsed/);
+  await page.getByRole("button", { name: "Show the Tools" }).click();
+  await expect(win).not.toHaveClass(/pal-collapsed/);
+});
+
+test("a phone shows no fold button and no fit", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "phone", "the phone layout");
+  await openPage(page, TOOLS);
+  await page.getByRole("button", { name: "5 stars" }).click();
+  await expect(page.locator("#palette")).not.toHaveClass(/pal-fit-/);
+  await expect(page.locator("#btn-palette-collapse")).toBeHidden();
 });

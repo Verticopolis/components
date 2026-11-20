@@ -5,14 +5,16 @@ description: The game's Tools window, with the pinned tools and a section per bu
 
 import Demo from "../../../components/Demo.astro";
 
-The Tools window holds what a player builds with: Inspect and Bulldoze pinned at the top, then one section per category, each tool a swatch, its name and its price. It comes from `windows/palette/toolPalette` and its look from `styles/game/tools-stage.css`.
+The Tools window holds what a player builds with: Inspect and Bulldoze pinned at the top, then one section per category, each tool a swatch, its name and its price. It comes from `windows/palette/toolPalette`, its fit from `windows/palette/paletteFit` and its fold button from `windows/palette/paletteCollapse`, and its look from `styles/game/tools-stage.css`.
 
 - The game hands in the tools as they stand: their names and prices, which are still locked, which the funds cannot reach, and which is picked. A locked tool is hidden, as in the 1994 game, so the window grows as the tower earns stars; one the funds cannot reach shows dimmed and can still be picked.
 - A category with no tool unlocked drops out, and a category's Modern band shows once one of its Modern tools unlocks.
 - A click, Enter, or a Space press and release on a tool picks it. While the mouse pointer or the focus rests on a tool, the game can show what it does on its status bar.
 - On a desktop a category folds from its header, and the window remembers the folds between visits.
+- On a desktop the window fits every tool it shows without a scrollbar: it tries compact rows, then two columns, then both. It fits again when tools show or hide, a category folds, or the window's height changes.
+- The button on a desktop window's title bar folds the whole window into a strip that gives the tower more room, and the window remembers that choice too.
 - On a phone a tab bar shows one category at a time. A tab whose category just gained tools carries a pip until it is opened, and the arrow keys, Home and End step through the tabs.
 
-Here the star buttons lock and unlock the sample tools, the funds button dims what the funds cannot reach, and the line under the window shows the hint the game would put on its status bar. The tools, names and prices are made up.
+Here the window has a fixed height. The star buttons lock and unlock the sample tools (with every tool unlocked the window takes two columns), the funds button dims what the funds cannot reach, and the line under the window shows the hint the game would put on its status bar. The tools, names and prices are made up.
 
 <Demo name="palette" />
