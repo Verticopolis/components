@@ -2,14 +2,15 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { rewrite } from "./dts-extensions.ts";
+import { rewrite } from "./dtsExtensions.ts";
 
-describe("dts-extensions rewrite", () => {
+describe("dtsExtensions rewrite", () => {
   let dir: string;
   beforeEach(() => {
     dir = mkdtempSync(join(tmpdir(), "dts-ext-"));
     mkdirSync(join(dir, "sub"));
-    for (const f of ["a.d.ts", "b.d.ts", "sub/index.d.ts", "sub/c.d.ts"]) writeFileSync(join(dir, f), "export {};\n");
+    for (const f of ["index.d.ts", "a.d.ts", "b.d.ts", "sub/index.d.ts", "sub/c.d.ts"])
+      writeFileSync(join(dir, f), "export {};\n");
   });
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
@@ -38,6 +39,13 @@ describe("dts-extensions rewrite", () => {
         `import { q } from "excalibur";`,
       ].join("\n"),
     );
+  });
+
+  it("gives a bare . or .. its /index.js", () => {
+    const missing: string[] = [];
+    const out = rewrite(join(dir, "sub", "c.d.ts"), `export * from "..";\nexport * from ".";`, missing);
+    expect(missing).toEqual([]);
+    expect(out).toBe(`export * from "../index.js";\nexport * from "./index.js";`);
   });
 
   it("leaves an import written in a comment alone", () => {

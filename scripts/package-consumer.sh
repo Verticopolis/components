@@ -7,10 +7,14 @@
 #
 #   scripts/package-consumer.sh dist/verticopolis-components-<version>.tgz
 #
-# Under nodenext, excalibur's own declarations do not resolve (its
-# excalibur.d.ts re-exports './index' without an extension), so its namespace
-# reads as empty there. Those errors, which name excalibur's files, are
-# excalibur's to fix and are reported but not counted; any other error fails.
+# Excalibur's own declarations do not resolve under nodenext (every relative
+# import in them lacks an extension, from excalibur.d.ts's `export * from
+# './index'` down), so its namespace reads as empty there and every excalibur
+# type in our declarations would fail with it. Before the nodenext check the
+# script gives excalibur's declarations in the throwaway project their `.js`
+# with scripts/dts-extensions.ts, the same rewrite lib/ gets, so the check
+# sees excalibur's real types. Errors reported in excalibur's own files are
+# then not counted; an error in any other file, ours included, fails.
 # Run from the repository root, after npm ci (it uses the repository's tsc).
 set -eu
 
@@ -43,12 +47,14 @@ if [ -s tsc-bundler.log ]; then
 fi
 echo "bundler: every entry type-checks"
 
+node "$repo/scripts/dts-extensions.ts" node_modules/excalibur/build/esm
 check nodenext nodenext
-# Keep only the first line of each error (tsc indents the rest).
-own=$(grep -E '^[^ ].*error TS' tsc-nodenext.log | grep -v 'node_modules/excalibur/' || true)
+# The first line of each error names the file it is reported in; tsc indents
+# the rest. Only errors reported in excalibur's own files are excused.
+own=$(grep -E '^[^ ].*error TS' tsc-nodenext.log | grep -vE '^node_modules/excalibur/' || true)
 if [ -n "$own" ]; then
   echo "$own"
   echo "the declarations do not type-check under nodenext resolution" >&2
   exit 1
 fi
-echo "nodenext: every entry type-checks ($(grep -c 'error TS' tsc-nodenext.log || true) errors from excalibur's own declarations not counted)"
+echo "nodenext: every entry type-checks ($(grep -cE '^node_modules/excalibur/.*error TS' tsc-nodenext.log || true) errors in excalibur's own declarations not counted)"
