@@ -131,7 +131,10 @@ cannot load a module that does.
   The title screen's skyline is `/splash-skyline.svg`, which the site serves.
 - `styles/title-bar.css` is the docs title bar on its own: the `.vc-bar`
   markup a docs site draws in its header, and that a page outside Starlight
-  (such as `cargo doc` output) can draw on a navy bar of its own.
+  (such as `cargo doc` output) can draw on a navy bar of its own. Such a page
+  takes the rules out of their `vc.page` layer (and drops the `@import`)
+  when it inlines the file: rustdoc's own stylesheets are unlayered, so they
+  beat a layered rule, and the bar's links come out navy on navy.
 - `styles/schemes/skyline.css` and `styles/schemes/high-contrast.css` are the
   optional color schemes. Each applies only under `html[data-scheme="skyline"]`
   or `html[data-scheme="high_contrast"]`, and goes last.
