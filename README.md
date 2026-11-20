@@ -10,8 +10,8 @@ fills.
 [ARCHITECTURE.md](ARCHITECTURE.md) is a tour of the package in diagrams: the
 render model, a frame, input, the sprites and atlas, the windows and styles,
 audio, and the build and release. The deeper pages are in `docs/`: the
-[sprite atlas](docs/atlas.md), the [design system](docs/design-system.md)
-and the [audio layer](docs/audio.md).
+[sprite atlas](docs/atlas.md), the [design system](docs/design-system.md),
+[the desk](docs/desk.md) and the [audio layer](docs/audio.md).
 
 ## The Verticopolis repositories
 
@@ -276,6 +276,9 @@ built package from `lib/` the way a consumer would:
 | --- | --- |
 | Buttons, Windows, Wells | the chrome, in the scheme Options picks |
 | Menu bar | a sample menu bar, the same component the site's own bar uses |
+| Message boxes | the modal message box with a message, a question and a notice |
+| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
+| Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
 | Sounds | each action effect, both music tracks and the ambience of each part of a tower |
 | Lobbies, Stairs and escalators, Elevators | hand-written slices of a tower: ground and sky lobbies one to three stories tall, halls of two heights, stairs, escalators and elevators |
@@ -325,8 +328,10 @@ is served from.
 The Screenshots workflow drives the gallery site in Chromium and compares
 each piece with the images in `e2e/__screenshots__`: the site's header and
 each menu of its menu bar open, the buttons, windows, wells, icons, the sound
-board and the sample menu bar closed and with each menu open in every color
-scheme, plus each tower scene, room sprite and people figure once, on a
+board, the sample menu bar closed and with each menu open, each message box,
+and the desk with its Verticopolis menu, its window menu and a maximized and
+a minimized window in every color scheme, plus the desk layouts, each tower
+scene, room sprite and people figure once, on a
 desktop and a phone screen. A change that moves a pixel fails the check, and
 the run keeps the diffs as an artifact.
 

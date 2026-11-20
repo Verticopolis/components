@@ -56,6 +56,13 @@ describe("buildFrame", () => {
     expect(root.querySelector(".desk-btn-close")).toBeNull();
   });
 
+  it("draws the icon the page names", () => {
+    const { root, setTitle } = buildFrame(document, "desk-win-info", "Info", undefined, "/app/icon.png");
+    document.body.appendChild(root);
+    setTitle("Info 2");
+    expect(root.querySelector(".desk-title-icon")!.getAttribute("src")).toBe("/app/icon.png");
+  });
+
   it("draws a labeled close button with its glyph that runs its click", () => {
     const onClick = vi.fn();
     const { root } = buildFrame(document, "desk-win-control", "Control Panel", {
@@ -264,9 +271,20 @@ describe("DeskWindow", () => {
     el.innerHTML = `<div class="win-title">Map<button class="btn xs">x</button></div>`;
     document.body.appendChild(el);
     const win = new DeskWindow(spec(el, { layer: "tool" }));
-    expect(el.querySelector(".win-title")!.firstElementChild!.className).toBe("desk-title-icon");
+    const icon = el.querySelector(".win-title")!.firstElementChild!;
+    expect(icon.className).toBe("desk-title-icon");
+    expect(icon.getAttribute("src")).toBe("./favicon.png");
     win.dispose();
     expect(el.querySelector(".desk-title-icon")).toBeNull();
+  });
+
+  it("gives a window the game drew the icon its spec names", () => {
+    const el = document.createElement("section");
+    el.id = "bulletin";
+    el.innerHTML = `<div class="win-title">Bulletin</div>`;
+    document.body.appendChild(el);
+    new DeskWindow(spec(el, { layer: "tool", icon: "/app/icon.png" }));
+    expect(el.querySelector(".desk-title-icon")!.getAttribute("src")).toBe("/app/icon.png");
   });
 
   it("keeps a desk frame to the one icon it was built with", () => {

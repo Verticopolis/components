@@ -20,7 +20,7 @@ export default defineConfig({
     starlight({
       title: "Verticopolis components",
       description:
-        "Every reusable piece of @verticopolis/components: windows, buttons, wells, the menu bar, icons, sounds, the tower's lobbies, stairs, elevators and rooms.",
+        "Every reusable piece of @verticopolis/components: windows, buttons, wells, the menu bar, message boxes, the desk, icons, sounds, the tower's lobbies, stairs, elevators and rooms.",
       logo: { src: "../assets/app-icon/pwa-192x192.png", alt: "Verticopolis" },
       favicon: "/favicon.png",
       components: { Header: "./src/components/Header.astro" },
@@ -38,6 +38,8 @@ export default defineConfig({
         "../lib/styles/starlight.css",
         "../lib/styles/retro-components.css",
         "../lib/styles/menu-bar.css",
+        "../lib/styles/game/dialogs.css",
+        "../lib/styles/game/desk.css",
         "../lib/styles/schemes/skyline.css",
         "../lib/styles/schemes/high-contrast.css",
         "./src/styles/gallery.css",

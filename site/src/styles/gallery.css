@@ -156,6 +156,106 @@
   .g-sound-row .btn[aria-pressed="true"] {
     font-weight: bold;
   }
+  /* The sample desk (gallery/desk.ts): a fixed-size desk that scrolls on a
+     narrow screen, so the demo is the same everywhere. */
+  .g-desk-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .g-desk {
+    position: relative;
+    overflow: hidden;
+    background: var(--r-desktop);
+    font-family: var(--r-font);
+    font-size: 11px;
+    color: var(--r-ink);
+    line-height: normal;
+  }
+  .g-desk-bar {
+    display: contents;
+  }
+  .g-desk .desk-win {
+    max-width: none;
+  }
+  .g-desk-stage {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(#3d5f9e, #9cb8de);
+    box-shadow: var(--bevel-in);
+  }
+  .g-desk-stage canvas {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    image-rendering: pixelated;
+  }
+  .g-desk-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    padding: 4px 6px;
+  }
+  .g-desk-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 3px;
+    overflow-y: auto;
+  }
+  .g-desk-bulletin {
+    width: 204px;
+  }
+  #modal .modal-box {
+    font-family: var(--r-font);
+    font-size: 12px;
+  }
+  .g-desk-news {
+    margin: 4px;
+    padding: 4px 6px;
+  }
+  /* Where windows open (gallery/deskLayout.ts): each desk drawn to scale. */
+  .g-layouts {
+    display: grid;
+    gap: 16px;
+  }
+  .g-layout {
+    margin: 0;
+  }
+  .g-layout svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: var(--r-font);
+  }
+  .g-layout-desk {
+    fill: var(--r-desktop);
+  }
+  .g-layout rect:not(.g-layout-desk) {
+    fill: var(--r-face);
+    stroke: var(--r-ink);
+    stroke-width: 2px;
+    vector-effect: non-scaling-stroke;
+  }
+  .g-layout-tower rect {
+    fill: var(--r-hi);
+  }
+  /* The labels scale with the desk (--g-layout-text, set per drawing), so
+     every drawing's labels read the same size on the page. */
+  .g-layout text {
+    fill: var(--r-ink);
+    font-size: var(--g-layout-text);
+    font-weight: 700;
+  }
+  .g-layout text.g-layout-size {
+    font-size: calc(var(--g-layout-text) * 0.8);
+    font-weight: 400;
+  }
+  .g-layout figcaption {
+    font-size: 12px;
+    padding: 2px 0;
+  }
   /* A docs page's diagrams (Mermaid.astro): no code-block frame, and a wide
      one scrolls instead of squeezing. */
   .sl-markdown-content pre.mermaid {

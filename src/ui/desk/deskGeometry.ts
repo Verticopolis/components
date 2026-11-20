@@ -2,8 +2,8 @@
  * The 1994 desk's geometry: where each window opens the first time, how a
  * saved place is kept on a smaller screen, and the size limits of the windows
  * the player can resize. Pure functions over plain numbers, so the rules are
- * tested without a page (deskGeometry.test.ts). The per-window rules table in
- * docs/ui/desk-windows.md is the spec these numbers come from.
+ * tested without a page (deskGeometry.test.ts). docs/desk.md describes them,
+ * with a table of where each window opens.
  */
 
 /** A window's place and size on the desk, in CSS px from the desk's top left. */

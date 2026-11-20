@@ -8,7 +8,8 @@ layer, and how the package is built and released.
 The diagrams are [Mermaid](https://mermaid.js.org/); GitHub renders them
 inline. The [README](README.md) lists every subpath and its semver promise,
 and the deeper pages are in [`docs/`](docs/): the [sprite atlas](docs/atlas.md),
-the [design system](docs/design-system.md) and the [audio layer](docs/audio.md).
+the [design system](docs/design-system.md), [the desk](docs/desk.md) and the
+[audio layer](docs/audio.md).
 
 ## The package at a glance
 
@@ -163,7 +164,7 @@ flowchart LR
 
 The Win95 chrome is DOM: the menu bar
 (`src/ui/menuBar.ts`), modal message boxes (`ModalShell` in `uiModal.ts`), movable windows
-(`movableWindow.ts`), the 1994 desk's windows and its touchscreen modes
+(`movableWindow.ts`), the 1994 desk's windows, taskbar and touchscreen modes
 (`src/ui/desk/`, `deskPocket.ts` for phones and tablets), the overview
 map's input and the icons. Each window module imports the stylesheet it needs.
 `styles.css` is the whole look in one import; every sheet sits in a cascade
@@ -232,6 +233,8 @@ baselines and releasing in full.
   test, the gallery, screenshot tests and releasing.
 - [docs/design-system.md](docs/design-system.md): tokens, components and the
   window grammar.
+- [docs/desk.md](docs/desk.md): the 1994 desk's windows, window menu, layout
+  and stylesheet.
 - [docs/audio.md](docs/audio.md): the audio layer.
 - [docs/atlas.md](docs/atlas.md): the sprite atlas.
 - [CHANGELOG.md](CHANGELOG.md) and [`.changes/`](.changes/README.md).

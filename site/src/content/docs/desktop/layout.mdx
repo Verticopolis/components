@@ -1,0 +1,10 @@
+---
+title: Where windows open
+description: The desk's first layout on three screen sizes, from defaultLayout.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+The first time the desk comes up, `defaultLayout` (`windows/desk/deskGeometry`) places every window: Tools down the left, Info as a strip across the top with the tower under it, and the Map and the Bulletin down a 300 pixel column on the right. On a desk too short for the Bulletin under the Map, the Bulletin opens over the tower's sky instead. Each drawing is the real function's answer for that screen, less the 28 pixel taskbar. A saved place that no longer fits is pulled back with `fitRect`.
+
+<Demo name="desk-layout" />
