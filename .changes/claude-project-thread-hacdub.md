@@ -7,3 +7,7 @@ package: minor
   holds its smallest size, and `parseLayout` reads its saved place.
   `DESK_WINDOW_IDS` lists every desk window in the order the desk builds and
   saves them.
+- `windows/desk/deskHelp` exports `buildHelpWindow`, the Help window: the
+  Player's Manual in a page frame under Contents, Back, Forward and Open in
+  Browser (`setNav` turns Back and Forward on and off), styled in
+  `styles/game/desk.css`.

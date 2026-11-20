@@ -173,6 +173,22 @@
     flex: 1;
     margin: 2px 0;
   }
+  /* The Help window (deskHelp.ts): its row of buttons, then the manual's
+   page on a sunken white well filling the rest. */
+  #desk-win-help .desk-help-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 2px 0 4px;
+  }
+  #desk-win-help .desk-help-page {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    border: 0;
+    box-shadow: var(--bevel-in);
+    background: #fff;
+  }
   #desk-win-tower .menubar-brand {
     display: none;
   }
