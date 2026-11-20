@@ -144,12 +144,21 @@ inlines each file once, in the order of its first `@import`:
 @import "@verticopolis/components/styles/overview-map-views.css"; /* its View row (with the map) */
 ```
 
-Import the pieces from one CSS file rather than one JS `import` each: every
-JS import is its own stylesheet, so each one carries its own copy of the
-tokens. A minified build drops the repeats but keeps the last copy, which
-changes the cascade order, so a token a page overrides between two imports
-is reset by the later copy. No module imports its own CSS, because Node
-cannot load a module that does.
+The window modules bring their own stylesheet. `windows/menuBar` imports
+`menu-bar.css`, and `windows/uiModal` and `windows/movableWindow` (so
+`windows/desk/deskWindow` too) import `window.css`, so a page that uses only
+those modules needs no stylesheet import for them. That needs a bundler that
+loads CSS imported from JavaScript, as Vite does: plain Node has no loader
+for `.css` and cannot import those modules, while a test runner built on a
+bundler (Vitest) can. Their declarations do not carry the CSS imports.
+
+When a module and a page's stylesheet bring the same sheet, the bundle may
+hold two copies of it. That changes nothing on screen: each piece sits in a
+cascade layer of its own and the tokens in theirs (see "Cascade layers"), so
+a copy cannot move one piece ahead of another, and a page's own rules, a
+token override on `:root` included, beat every copy. Importing the other
+pieces from one CSS file rather than one JS `import` each still keeps the
+bundle to one copy of each.
 
 - `styles/retro-tokens.css` holds the colors, bevels and fonts every piece is
   skinned from. Every piece imports it, so a page imports it on its own only
@@ -164,9 +173,13 @@ cannot load a module that does.
 - `styles/starlight.css` dresses a [Starlight](https://starlight.astro.build)
   docs site in the game's look: the tokens, `styles/starlight-theme.css` (the
   How to Play window's title bar, sidebar and well, and the title screen for a
-  page with a hero) and `styles/title-bar.css`, in that order. Starlight puts
-  its own CSS in the `starlight` layer, so the site's first `customCss` entry
-  is a file holding `@layer starlight, vc;`, and `starlight.css` comes next.
+  page with a hero) and `styles/title-bar.css`, in that order (a `customCss`
+  entry). Starlight puts its own CSS in the `starlight` layer, so the site
+  declares `@layer starlight, vc;` in a `<style>` through Starlight's `head`
+  option: `head: [{ tag: "style", content: "@layer starlight, vc;" }]`. A
+  `customCss` entry comes too late for that, since Astro puts the CSS a
+  page's scripts import (the menu bar's, from `windows/menuBar`) ahead of
+  `customCss`, and that CSS would set `vc` first.
   The title screen's skyline is `/splash-skyline.svg`, which the site serves.
 - `styles/title-bar.css` is the docs title bar on its own: the `.vc-bar`
   markup a docs site draws in its header, and that a page outside Starlight
@@ -210,6 +223,9 @@ a `!important` inside a `vc` layer beats an unlayered `!important`, and a page
 that puts its own CSS in layers orders them against `vc` with a statement of
 its own before it loads the components (for example `@layer vc, app;`, or
 `@layer starlight, vc;` on a Starlight site so the menu bar keeps its look).
+That statement has to come before the first components CSS on the page,
+including the sheet a window module imports, which a bundler may put ahead of
+the page's own stylesheets.
 
 Every stylesheet counts as a side effect, so a bundler keeps a CSS import even
 though nothing names what it exports.

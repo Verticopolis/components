@@ -5,6 +5,8 @@
  * as one thing rather than as a private method halfway down a 500-line class.
  */
 
+import "../styles/window.css"; // the window frame and title bar (with its ✕ button) a modal wears
+
 /** Id stamped on the shared modal's title-TEXT span so `#modal` can point
  *  `aria-labelledby` at it. It lives on a span wrapping only the title text,
  *  never on the h2 itself: the h2 also holds the ✕ as a sibling, and labeling

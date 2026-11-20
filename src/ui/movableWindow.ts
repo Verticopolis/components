@@ -1,3 +1,4 @@
+import "../styles/window.css"; // the window frame, with the movable title bar's cursor
 import { isPrimaryPress, noButtonHeld } from "./overviewMapInput";
 
 /**

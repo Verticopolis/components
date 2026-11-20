@@ -101,8 +101,12 @@ export default defineConfig({
     lib: { entry: entries, formats: ["es"] },
     rollupOptions: {
       // Bare specifiers are dependencies; relative and absolute paths are ours.
+      // A stylesheet a module imports stays an import of the copy that
+      // scripts/build-lib.sh puts at the same path in lib/, for the game's
+      // bundler to load.
       external: (id) =>
-        !id.startsWith(".") && !id.startsWith("/") && !/^[A-Za-z]:[\\/]/.test(id) && !id.startsWith("\0"),
+        id.endsWith(".css") ||
+        (!id.startsWith(".") && !id.startsWith("/") && !/^[A-Za-z]:[\\/]/.test(id) && !id.startsWith("\0")),
       output: {
         preserveModules: true,
         preserveModulesRoot: SRC,
