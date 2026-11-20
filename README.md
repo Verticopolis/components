@@ -165,7 +165,7 @@ though nothing names what it exports.
 
 ```sh
 npm ci
-npm run typecheck
+npm run typecheck        # the library, then its tests, scripts/ and e2e/ (gallery/ reads lib/, so the Gallery workflow checks it after building)
 npm run lint
 npm run icons:check      # the pixelarticons paths match the package; `npm run icons` rewrites them
 npm run format:check     # Prettier; `npm run format` rewrites the files
