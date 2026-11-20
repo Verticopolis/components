@@ -3,9 +3,9 @@
 The TypeScript pieces of [Verticopolis](https://verticopolis.com) that a
 frontend builds on: the renderer and Excalibur scene, the Win95 windows and
 menus, and the procedural sprites and audio. The web game is built from them,
-and so can any other game that runs the Verticopolis engine. The components
-import nothing from the engine: they read a render model
-(`render/renderModel`) that the game fills from the engine's frame reader.
+and so can any other game. The components know nothing about the
+simulation: they draw a render model (`render/renderModel`) that the game
+fills.
 
 ## The Verticopolis repositories
 
@@ -15,10 +15,9 @@ import nothing from the engine: they read a render model
 | **[Verticopolis/components](https://github.com/Verticopolis/components)** (this one) | The renderer, windows and menus, and audio |
 | [Verticopolis/web](https://github.com/Verticopolis/web) | The web game at [verticopolis.com](https://verticopolis.com) and its player's manual |
 
-The game depends on the engine and the components, and joins them: it loads
-the engine (its `host/*` and `port/*` subpaths), and hands the engine's frame
-reader and catalog to the renderer as the render model. The components do not
-depend on the engine.
+The web game depends on both and joins them: it runs the engine and hands
+what the engine reports to the renderer as the render model. The components
+do not depend on the engine.
 
 ## Use it
 
@@ -27,16 +26,12 @@ npm install @verticopolis/components excalibur tone lit-html
 ```
 
 Excalibur, Tone.js and lit-html are peer dependencies, so the game installs
-its own copy of each beside the components. The engine is an optional peer:
-only the deprecated subpaths below need it.
+its own copy of each beside the components.
 
 The one direct dependency is fflate, which the sprite atlas bake
 (`render/atlas/archive`, `render/atlas/png`) uses to write PNG and zip files.
 No module a game draws with imports it, so a game that uses fflate itself
-(the web game reads and writes saves with it) installs one copy for both. The
-engine's WebAssembly does not use this copy: it carries its own Rust port of
-fflate's level-1 deflate, so the engine writes `.vctower` bytes identical to
-the web game's.
+(the web game reads and writes saves with it) installs one copy for both.
 
 Each release on GitHub (tagged `v<version>`, or `components-v<version>` up
 to 0.2.1) carries the same tarball npm serves, with its SHA-256 checksum,
@@ -48,19 +43,41 @@ module, with `.d.ts` types and source maps). The types are written for a
 bundler (`"moduleResolution": "bundler"` in a game's tsconfig). Only the CSS files count as side
 effects, so a bundler drops every module a game does not import.
 
-The version stays below 1.0 while every module is reachable as a subpath:
-any subpath may change in a minor version, so pin a minor (`"@verticopolis/components": "~0.2.1"`). 1.0
-waits for a curated public surface. Each folder is a subpath export:
+Each folder is a subpath export, and each subpath is either **stable** or
+**internal**:
 
-| Import | Folder | What it is |
-| --- | --- | --- |
-| `@verticopolis/components/render/*` | `src/render/` | The Excalibur scene, the tower renderer and the procedural sprites |
-| `@verticopolis/components/presentation/*` | `src/presentation/` | What the view shows for each kind of room |
-| `@verticopolis/components/model/*` | `src/model/` | Input events and the vacate reasons' wording. The rest of the folder is deprecated (below) |
-| `@verticopolis/components/audio/*` | `src/audio/` | The procedural music and ambience on Tone.js |
-| `@verticopolis/components/windows/*` | `src/ui/` | The Win95 windows, menus and message boxes |
-| `@verticopolis/components/styles.css` | `src/styles.css` | The styles the windows use |
-| `@verticopolis/components/styles/*` | `src/styles/` | The stylesheets `styles.css` imports, one by one |
+- **Stable** subpaths follow semver. A breaking change to one (a removed or
+  renamed export, a narrower type, a selector a page styles against) waits
+  for the next major version, so a game can depend on a range
+  (`"@verticopolis/components": "^1.0.0"`).
+- **Internal** subpaths are the parts the stable ones are built from. A game
+  may import them, but they can change in any minor version, so a game that
+  does pins an exact version. Members marked `@internal` in a stable module
+  are internal too.
+
+| Import | Folder | What it is | Promise |
+| --- | --- | --- | --- |
+| `@verticopolis/components/windows/*` | `src/ui/` | The Win95 windows, menus and message boxes | Stable |
+| `@verticopolis/components/styles.css` | `src/styles.css` | The styles the windows use | Stable |
+| `@verticopolis/components/styles/*` | `src/styles/` | The stylesheets `styles.css` imports, one by one | Stable |
+| `@verticopolis/components/model/*` | `src/model/` | Input events, the vacate reasons' wording and `wellFormed` (a string with a lone surrogate repaired) | Stable |
+| `@verticopolis/components/render/renderModel` | `src/render/renderModel.ts` | What the renderer reads (below) | Stable |
+| `@verticopolis/components/render/towerSource` | `src/render/towerSource.ts` | How a game gives each tower its catalog and rules | Stable |
+| `@verticopolis/components/render/excalibur/*` | `src/render/excalibur/` | The Excalibur scene a game mounts (`TowerEngine`) and the modules it is built from | Internal |
+| `@verticopolis/components/render/*` (the rest) | `src/render/` | The tower renderer's geometry, the procedural sprites, the overview map and the atlas bake | Internal |
+| `@verticopolis/components/presentation/*` | `src/presentation/` | What the view shows for each kind of room | Internal |
+| `@verticopolis/components/audio/*` | `src/audio/` | The procedural music and ambience on Tone.js | Internal |
+
+One stable module names types from an internal one, and those types share
+the stable promise: `MapCamera`, `MapCameraCenter`, `MapExtent`, `MapLayout`
+and `MapRect` from `render/overviewMap/geometry`, which
+`windows/overviewMapInput` takes and returns. No other stable declaration
+imports an internal module.
+
+The scene is internal for now: `TowerEngine`'s public members mix what a game
+calls with what the scene's own modules share, and its declarations name
+internal types (`render/scale`'s `FLOOR` and `TILE`, `PinchTracker`,
+`FlightPass` and others), so a game that mounts it pins an exact version.
 
 For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"`.
 
@@ -68,55 +85,17 @@ For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"
 
 `render/renderModel` declares everything the renderer reads: `RenderSim` (the
 clock, the tower, the crowd and the effects of one frame), `RenderCatalog`
-(the catalog fields it draws from) and `RenderRules` (the engine's
-`isPresent`, `isOperational` and zoom limits). Each is a subset of what the
-engine produces, so a game passes the engine's own objects through with no
-copy:
+(the catalog fields it draws from) and `RenderRules` (whether a room is
+present and operating, and the zoom limits). A game fills them from its own
+simulation; the types are plain interfaces, so a game whose objects already
+have those fields passes them through with no copy, and its typecheck fails
+when one of them drops or retypes a field the renderer reads.
 
-```ts
-import type { FrameReader } from "@verticopolis/engine/port/frameReader";
-import type { Catalog } from "@verticopolis/engine/catalog/catalogTypes";
-import { isOperational, isPresent } from "@verticopolis/engine/model/unitState";
-import { VIEW_ZOOM_MAX, VIEW_ZOOM_MIN } from "@verticopolis/engine/model/viewZoom";
-import type { RenderCatalog, RenderRules, RenderSim } from "@verticopolis/components/render/renderModel";
-
-export const toRenderSim = (reader: FrameReader): RenderSim => reader;
-export const toRenderCatalog = (catalog: Catalog): RenderCatalog => catalog;
-export const renderRules: RenderRules = {
-  isPresent,
-  isOperational,
-  viewZoom: { min: VIEW_ZOOM_MIN, max: VIEW_ZOOM_MAX },
-};
-```
-
-The game's typecheck then fails when the engine drops or retypes a field the
-renderer reads. Each tower's catalog and rules are set with
-`useTowerSource(tower, { catalog, rules })` from `render/towerSource`. The
-game passes `presentation/catalogCheck`'s `refuseForeignCatalogs` to the
-engine's boot as `checkCatalogs`, so a catalog with a kind this build has no
-art for is refused at boot. `presentation/clockOf` words the header's date
-and the engine's clock for the panels.
-
-### Deprecated subpaths
-
-These re-export the engine (`@verticopolis/engine`) under their old paths, so
-a game can switch one import at a time. They need the engine installed and
-go in 1.0:
-
-| Import | Now in the engine (or here) |
-| --- | --- |
-| `catalog/*` | `@verticopolis/engine/catalog/*`; `catalog/towerCatalog` wraps `render/towerSource` with the engine's rules |
-| `model/types`, `engineTypes`, `serializedGame`, `unitState`, `floorRuns`, `viewZoom` | `@verticopolis/engine/model/*` |
-| `binding/*` | `@verticopolis/engine/binding/*` |
-| `port/*` | `@verticopolis/engine/port/*` (`port/portRenderSim` is `port/frameReader`); `port/headerClock` wraps `presentation/clockOf` |
-| `host/*` | `@verticopolis/engine/host/*`; `host/catalogCheck` is `presentation/catalogCheck`. The web game's own boot files (`engineBoot`, `engineChoice`, `engineDiagnostics`, `engineLabel`, `engineRepair`, `slotPopulation`) stay here until 1.0 |
-| `events/*` | `@verticopolis/engine/events/*` |
-| `fixtures/*` | `@verticopolis/engine/fixtures/*`, copied in at build time |
-
-CI checks the boundary three ways: lint refuses an engine import outside the
-shims, `scripts/engine-free.ts` checks the built `lib/` the same way, and
-`scripts/engine-free-consumer.sh` installs the packed tarball without the engine,
-loads every other module and type-checks its declarations.
+Each tower's catalog and rules are set with
+`useTowerSource(tower, { catalog, rules })` from `render/towerSource`.
+`presentation/catalogCheck`'s `refuseForeignCatalogs` lets a game refuse a
+catalog with a kind this build has no art for, and `presentation/clockOf`
+words the header's date and the clock for the panels.
 
 ### Styles
 
@@ -243,8 +222,11 @@ npm run build                 # compiles src/ into lib/, what the package ships
 npm run pack -- 0.0.0-local   # writes dist/verticopolis-components-0.0.0-local.tgz
 ```
 
-The unit tests mock the engine and read its catalog from the engine
-package's JSON fixtures, so they need no engine build. Every pull request and
+The unit tests and the sprite atlas bake draw from hand-written render
+catalogs (`src/tests/catalogFixture.ts`, one per mode) and render rules
+(`src/tests/renderRules.ts`), so they need no simulation. A game bakes the
+atlas from its own Modern catalog with
+`npm run atlas -- --catalog <file>` ([docs/atlas.md](docs/atlas.md)). Every pull request and
 push to `main` packs the tarball as a workflow artifact.
 
 ## Gallery
@@ -252,8 +234,8 @@ push to `main` packs the tarball as a workflow artifact.
 The component gallery is one page with every reusable piece in each color
 scheme: the buttons, windows, wells and key-value rows, the menu bar, the
 icons and the room sprites. It loads the built package from `lib/` the way a
-consumer would, and paints the sprites with the engine's Modern catalog. The
-overview map is not on it, since it draws a running tower.
+consumer would, and paints the sprites with the hand-written Modern render
+catalog (`src/tests/catalogFixture.ts`). The overview map is not on it, since it draws a running tower.
 
 ```sh
 npm run build           # the gallery reads lib/
@@ -297,9 +279,9 @@ pixel comparison (`PW_VISUAL=1` compares anyway).
 A pull request that changes what the package ships adds a change note under
 [`.changes/`](.changes/README.md), named after its branch, with its level
 and its [`CHANGELOG.md`](CHANGELOG.md) entries: **major** for a breaking
-change to an export or a stylesheet's selectors, **minor** for a new export,
-component or look, **patch** for a fix, and `none` for a change that ships
-nothing new. Notes keep two open pull requests from editing the
+change to a stable subpath's exports or a stylesheet's selectors, **minor**
+for a new export, component or look, or any change to an internal subpath,
+**patch** for a fix, and `none` for a change that ships nothing new. Notes keep two open pull requests from editing the
 same changelog lines. The **Change notes** check requires one when a pull
 request changes what the package ships (the paths are in
 [`.changes/README.md`](.changes/README.md)), and refuses a feature pull
@@ -330,7 +312,7 @@ tarball and its checksum, and then publishes that same tarball to npm and
 bakes the sprite atlas onto the release ([docs/atlas.md](docs/atlas.md)). It
 refuses a version with no changelog section, before it tags anything. Only the npm publish waits on the
 `registry` environment, which only the owner approves, so a release takes
-one approval, as in the engine. npm publishing uses
+one approval. npm publishing uses
 trusted publishing, so no npm token is stored anywhere and each version
 carries an npm provenance statement.
 
@@ -342,7 +324,7 @@ from the Actions tab on `main` finishes what a failed run started.
 
 The components came out of the game's repository, and its rules came with
 them: American English, no em-dashes in prose, a 500-line ceiling per source
-file, and unit tests that stand in for the engine with spies.
+file, and unit tests that assert what they name, with hand-written fakes.
 
 Pull requests and issues for the components open here. The game takes a
 change when a pull request in Verticopolis/web raises its
