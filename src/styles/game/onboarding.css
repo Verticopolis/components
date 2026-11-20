@@ -14,12 +14,44 @@
     width: 260px;
     font-size: 13px;
   }
+  /* On a phone the card spans the stage's width and sits 8px under the top
+   bar (the bar's 6px gap to the stage, then 2px), however many lines the
+   bar wraps to, so it never covers the stat chips. A browser that can't
+   anchor uses `--ob-top`, the stage's measured top plus 2px: the bar is
+   about 138px tall on a portrait phone, 172px on a 320px one, where the
+   chips wrap to a third row, and 104px from about 576px wide. The landscape
+   block (media-landscape.css) sets its own `--ob-top`. */
   #onboard.onboard--mobile {
+    --ob-top: 147px;
     left: 8px;
     right: 8px;
     width: auto;
-    top: 58px;
+    top: var(--ob-top);
     bottom: auto;
+  }
+  @media (max-width: 340px) {
+    #onboard.onboard--mobile {
+      --ob-top: 181px;
+    }
+  }
+  @media (min-width: 600px) {
+    #onboard.onboard--mobile {
+      --ob-top: 113px;
+    }
+  }
+  @supports (anchor-name: --a) {
+    #onboard.onboard--mobile {
+      top: calc(anchor(--vc-topbar bottom, calc(var(--ob-top) - 8px)) + 8px);
+    }
+  }
+  /* On a short phone the step list scrolls instead of reaching the tool
+   palette: 170px is the palette (about 118px), the card's title bar and
+   frame, and a margin. A taller phone never reaches the cap. */
+  #onboard.onboard--mobile .ob-list {
+    max-height: calc(100vh - var(--ob-top) - 170px);
+    max-height: calc(100dvh - var(--ob-top) - 170px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .ob-list {
     list-style: none;
