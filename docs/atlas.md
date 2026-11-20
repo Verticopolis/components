@@ -25,9 +25,10 @@ For maintainers:
   never holds a release back.
 - To attach the atlas, run the "Sprite atlas" workflow from the Actions tab
   with "Use workflow from" set to the release tag. It runs only from a plain
-  `v<x.y.z>` tag (or a `components-v<x.y.z>` tag, which versions up to 0.2.1
-  used), checks out that tag and nothing else, bakes the atlas and attaches
-  the zip, then the checksum. It only adds assets, so it relies on releases
+  `v<x.y.z>` tag, checks out that tag and nothing else, bakes the atlas and
+  attaches the zip, then the checksum. v0.2.2 is the first release that can
+  carry an atlas: the `components-v<x.y.z>` tags up to 0.2.1 predate the
+  restored `atlas` script, so a bake on one fails. It only adds assets, so it relies on releases
   staying mutable (GitHub's immutable releases setting is off).
 - When both files are already attached, a run is an audit: it checks the
   attached zip against the attached checksum and re-bakes, passing only when
