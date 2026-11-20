@@ -200,8 +200,14 @@ describe("overview map window: frames (CAP-6)", () => {
   it("reads the tower and the camera only, and does no work on an unchanged frame", () => {
     const r = rig();
     const summary = document.getElementById(MAP_DOM_ID.summary)!;
+    // Nothing in the window or its button changes on a steady frame, and the
+    // template is not even drawn again.
+    const watch = { subtree: true, childList: true, characterData: true, attributes: true };
     const writes = new MutationObserver(() => {});
-    writes.observe(summary, { subtree: true, characterData: true, childList: true });
+    writes.observe(rootEl(), watch);
+    writes.observe(document.getElementById(MAP_DOM_ID.toggle)!, watch);
+    const elements = (r.win as unknown as { elements: { update(...a: unknown[]): void } }).elements;
+    const draws = vi.spyOn(elements, "update");
     const source = vi.fn(() => r.source);
     (r.win as unknown as { deps: OverviewMapDeps }).deps.source = source;
     const model = (r.win as unknown as { model: { sync(...a: unknown[]): boolean } }).model;
@@ -211,11 +217,15 @@ describe("overview map window: frames (CAP-6)", () => {
     expect(source).toHaveBeenCalledTimes(2);
     expect(sync.mock.results.map((x) => x.value)).toEqual([false, false]);
     expect(writes.takeRecords()).toHaveLength(0);
+    expect(draws).not.toHaveBeenCalled();
     // The same watch sees a real change: a new floor rewrites the summary once.
     r.cam.posY = -5 * FLOOR;
     r.win.frame();
     r.win.frame();
-    expect(writes.takeRecords()).toHaveLength(1);
+    const records = writes.takeRecords();
+    expect(records).toHaveLength(1);
+    expect(summary.contains(records[0].target)).toBe(true);
+    expect(draws).toHaveBeenCalledTimes(1);
     writes.disconnect();
   });
 

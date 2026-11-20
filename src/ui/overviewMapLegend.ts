@@ -9,7 +9,6 @@
  */
 import { html, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
-import { styleMap } from "lit-html/directives/style-map.js";
 import type { MapViewId } from "../render/overviewMap/views";
 import type { MapKindStyle } from "../render/overviewMap/style";
 
@@ -47,7 +46,7 @@ export class MapLegend {
           ><span
             class="overview-map-swatch"
             data-pattern=${entry.style.pattern}
-            style=${styleMap({ backgroundColor: entry.style.fill })}
+            style="background-color: ${entry.style.fill}"
             aria-hidden="true"
           ></span
           ><span>${entry.label}: </span><span class="overview-map-legend-count">${this.written[i]}</span></span

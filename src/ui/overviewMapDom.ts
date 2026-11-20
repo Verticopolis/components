@@ -1,6 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map.js";
-import { styleMap } from "lit-html/directives/style-map.js";
 import { iconTemplate } from "./icons";
 import { WORLD_PRESS_CLASS } from "./overviewMapWorldPress";
 
@@ -26,7 +25,8 @@ export interface MapWindowView {
   readonly drawn: boolean;
   /** A world press is held: the window and its button let pointers through. */
   readonly worldPress: boolean;
-  /** The body's sky and ground backdrop, or "" before the first paint. */
+  /** The body's sky and ground backdrop, or "" before the first paint. An
+   *  attribute binding, so a draw that keeps it writes nothing. */
   readonly backdrop: string;
   readonly summary: string;
   /** The summary is heard only while the map has focus. */
@@ -79,7 +79,7 @@ export function mapWindowTemplate(view: MapWindowView, on: MapWindowHandlers): T
         ><button type="button" class="btn xs overview-map-close" aria-label="Close the map" @click=${on.close}>✕</button>
       </div>
       ${view.picker}
-      <div class="overview-map-body" style=${styleMap({ background: view.backdrop || undefined })}>
+      <div class="overview-map-body" style=${view.backdrop ? `background: ${view.backdrop}` : nothing}>
         <canvas
           class="overview-map-tower"
           aria-hidden="true"
