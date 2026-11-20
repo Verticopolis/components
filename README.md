@@ -129,6 +129,35 @@ cannot load a module that does.
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
 
+#### Cascade layers
+
+Every rule the components ship sits in a cascade layer under `vc`, declared
+in this order at the top of every stylesheet:
+
+```css
+@layer vc.tokens, vc.base, vc.components, vc.page;
+```
+
+- `vc.tokens`: `retro-tokens.css`, the custom properties.
+- `vc.base`: `game/base.css`, the reset and the document.
+- `vc.components`: the button, window, well, key/value grid and menu bar,
+  each in a layer of its own in that order (`vc.components.button` through
+  `vc.components.menu-bar`, declared in a second statement), so a second copy
+  of a sheet cannot change their order.
+- `vc.page`: the overview map (`overview-map.css`, `overview-map-views.css`,
+  which lay out the game's stage around the map), the game's layout
+  (`styles/game/*`), the color schemes and the standalone pages
+  (`retro-page.css`, `not-found.css`), in the order `styles.css` imports them.
+
+A later layer beats an earlier one whatever the selectors, and a rule a page
+writes outside any layer beats every `vc` rule, wherever the bundler puts the
+two stylesheets. So a page restyles a piece with an ordinary rule, and a
+token override on `:root` always wins. Two things work the other way round:
+a `!important` inside a `vc` layer beats an unlayered `!important`, and a page
+that puts its own CSS in layers orders them against `vc` with a statement of
+its own before it loads the components (for example `@layer vc, app;`, or
+`@layer starlight, vc;` on a Starlight site so the menu bar keeps its look).
+
 Every stylesheet counts as a side effect, so a bundler keeps a CSS import even
 though nothing names what it exports.
 

@@ -5,13 +5,18 @@
    resolution canvas scaled up without smoothing gives the chunky 1990s pixel.
    Part of the game's stylesheet: src/styles.css imports the parts in order. */
 
-#modal > .launch-fireworks-sky {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+
+@layer vc.page {
+  #modal > .launch-fireworks-sky {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
 }

@@ -3,71 +3,75 @@
    on its own. Import the pieces from one stylesheet: there a bundler inlines
    each file once, while separate JS imports each carry their own copy (see the
    README's Styles section). */
+@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-tokens.css";
 
-/* .btn — THE button. Gray face, bevel out; press = bevel in. No hover
+@layer vc.components.button {
+  /* .btn — THE button. Gray face, bevel out; press = bevel in. No hover
    state on purpose (period chrome gives press feedback only). */
-.btn {
-  background: var(--r-face);
-  color: var(--r-ink);
-  border: 0;
-  border-radius: 0;
-  box-shadow: var(--bevel-out);
-  padding: 3px 9px;
-  font-family: var(--r-font);
-  font-size: 12px;
-  cursor: pointer;
-}
-.btn:active {
-  background: var(--r-face);
-  box-shadow: var(--bevel-in);
-}
-/* A .btn on an <a> (the Help "Report an issue" link, the app's only outbound
+  .btn {
+    background: var(--r-face);
+    color: var(--r-ink);
+    border: 0;
+    border-radius: 0;
+    box-shadow: var(--bevel-out);
+    padding: 3px 9px;
+    font-family: var(--r-font);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn:active {
+    background: var(--r-face);
+    box-shadow: var(--bevel-in);
+  }
+  /* A .btn on an <a> (the Help "Report an issue" link, the app's only outbound
    link): anchors are inline, so normalize them to a button box — drop the link
    underline and use inline-flex so a page's coarse-pointer min-height lands. */
-a.btn {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-/* Primary = the classic Win-style DEFAULT BUTTON: same gray face, an extra
+  a.btn {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  /* Primary = the classic Win-style DEFAULT BUTTON: same gray face, an extra
    dark ring around the bevel, bold label. One primary per dialog; its DOM
    position encodes default focus — first when it should own focus (emergency
    Pay), last when the safe action must be reached first (destructive
    confirms). */
-.btn.primary {
-  box-shadow:
-    0 0 0 1px var(--r-dark),
-    var(--bevel-out);
-  font-weight: 700;
-}
-.btn.primary:active {
-  box-shadow:
-    0 0 0 1px var(--r-dark),
-    var(--bevel-in);
-}
-/* Danger = red bold label on the SAME chrome (editor Sell/Bulldoze,
+  .btn.primary {
+    box-shadow:
+      0 0 0 1px var(--r-dark),
+      var(--bevel-out);
+    font-weight: 700;
+  }
+  .btn.primary:active {
+    box-shadow:
+      0 0 0 1px var(--r-dark),
+      var(--bevel-in);
+  }
+  /* Danger = red bold label on the SAME chrome (editor Sell/Bulldoze,
    saves-slot delete, any future destructive action). */
-.btn.danger {
-  color: var(--bad-ink);
-  font-weight: 700;
-}
-/* Disabled = classic GrayText on the same raised chrome (never a hover/
+  .btn.danger {
+    color: var(--bad-ink);
+    font-weight: 700;
+  }
+  /* Disabled = classic GrayText on the same raised chrome (never a hover/
    pointer affordance). The browser already suppresses :active. Undo and Redo
    gray out with aria-disabled instead, so they keep the keyboard focus; they
    stay raised when pressed. */
-.btn:disabled,
-.btn[aria-disabled="true"] {
-  color: var(--r-shadow);
-  cursor: default;
-}
-.btn[aria-disabled="true"]:active {
-  box-shadow: var(--bevel-out);
-}
-/* Title-bar size: the ✕ on every dismissible surface, the coach's Skip. */
-.btn.xs {
-  min-width: 18px;
-  padding: 1px 4px;
-  font-size: 10px;
-  line-height: 1.3;
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    color: var(--r-shadow);
+    cursor: default;
+  }
+  .btn[aria-disabled="true"]:active {
+    box-shadow: var(--bevel-out);
+  }
+  /* Title-bar size: the ✕ on every dismissible surface, the coach's Skip. */
+  .btn.xs {
+    min-width: 18px;
+    padding: 1px 4px;
+    font-size: 10px;
+    line-height: 1.3;
+  }
 }
