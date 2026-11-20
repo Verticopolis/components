@@ -206,7 +206,8 @@ When it merges, **Release components**
 (`.github/workflows/components-release.yml`) packs that commit, tags
 `v<version>` on it, publishes the GitHub release (named after the tag, and
 Latest unless it is a prerelease) with the version's changelog section, the
-tarball and its checksum, and then publishes that same tarball to npm. It
+tarball and its checksum, and then publishes that same tarball to npm and
+bakes the sprite atlas onto the release ([docs/atlas.md](docs/atlas.md)). It
 refuses a version with no changelog section, before it tags anything. Only the npm publish waits on the
 `registry` environment, which only the owner approves, so a release takes
 one approval, as in the engine. npm publishing uses

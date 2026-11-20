@@ -4,10 +4,10 @@ name: Release components
 # package.json (README, "Releasing"). A release PR raises it; this workflow
 # then packs that commit (scripts/pack-components.sh), tags v<version> on it,
 # publishes the GitHub release with the version's CHANGELOG.md section, the
-# tarball and its checksum, and then
-# publishes that same tarball to npm. A maintainer can also run it from the
-# Actions tab on main to finish a run that failed; it releases the version
-# package.json names on main.
+# tarball and its checksum, and then publishes that same tarball to npm and
+# bakes the sprite atlas onto the release (sprite-atlas.yml). A maintainer
+# can also run it from the Actions tab on main to finish a run that failed;
+# it releases the version package.json names on main.
 #
 # The check job reads package.json and the existing tags and releases, with
 # no credential and no approval, so a push that leaves the version alone ends
@@ -173,6 +173,19 @@ jobs:
           # shellcheck disable=SC2086
           gh release edit "$tag" --draft=false $kind
           echo "Published $tag with $(ls dist | tr '\n' ' ')"
+
+  # Bakes the sprite atlas for the release and attaches it (docs/atlas.md).
+  # It runs beside the npm job and nothing waits on it, so a slow or failed
+  # bake never holds the release or the npm publish back; run Sprite atlas by
+  # hand from the tag to retry it.
+  atlas:
+    name: Sprite atlas
+    needs: [check, release]
+    permissions:
+      contents: write
+    uses: ./.github/workflows/sprite-atlas.yml
+    with:
+      tag: v${{ needs.check.outputs.version }}
 
   npm:
     name: Publish to npm
