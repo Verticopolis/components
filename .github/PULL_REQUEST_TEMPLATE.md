@@ -31,6 +31,7 @@ Closes #
 
 - [ ] `npm run typecheck`
 - [ ] `npm run lint`
+- [ ] `npm run format:check` (`npm run format` fixes it)
 
 ## Versioning
 
