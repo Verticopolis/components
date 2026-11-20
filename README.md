@@ -251,7 +251,10 @@ npm run gallery:build   # writes dist-gallery/
 ```
 
 The Gallery workflow builds it on every pull request that touches the source,
-and publishes it to GitHub Pages from `main`.
+and publishes it to GitHub Pages from `main`. Each open pull request that
+changes the gallery gets a preview at `pr-preview/pr-<number>/` under the
+same site, linked in a comment on the pull request; the preview goes away
+with the next deploy after the pull request closes.
 
 ## Screenshot tests
 

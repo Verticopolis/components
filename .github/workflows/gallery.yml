@@ -2,9 +2,11 @@ name: Gallery
 
 # The component gallery (gallery/): every reusable piece of the package in
 # each color scheme, built from lib/ the way a consumer would. A pull request
-# builds it and keeps the Pages artifact, so a broken gallery fails before
-# merge; a push to main also publishes it to GitHub Pages. No pull request
-# gets a preview deployment.
+# builds it and keeps the page as the gallery-site artifact, so a broken
+# gallery fails before merge, and Gallery preview (gallery-preview.yml)
+# publishes that page as the pull request's preview. A push to main stores the
+# live gallery and publishes the site to GitHub Pages
+# (gallery-pages-publish.yml).
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -77,27 +79,27 @@ jobs:
       - name: Build the gallery
         if: ${{ steps.scope.outputs.run == 'true' }}
         run: npm run gallery:build
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+      - name: Keep the built page
         if: ${{ steps.scope.outputs.run == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          name: gallery-site
           path: dist-gallery
+          retention-days: 7
+          if-no-files-found: error
 
-  deploy:
+  publish:
     name: Publish to GitHub Pages
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    concurrency:
-      group: gallery-pages-deploy
-      cancel-in-progress: false
+    uses: ./.github/workflows/gallery-pages-publish.yml
+    with:
+      slot: site
+      artifact: gallery-site
+      run-id: ${{ github.run_id }}
     permissions:
+      contents: write
+      actions: read
+      pull-requests: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deploy
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
