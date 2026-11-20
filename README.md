@@ -383,6 +383,9 @@ from the Actions tab on `main` finishes what a failed run started.
 The components came out of the game's repository, and its rules came with
 them: American English, no em-dashes in prose, a 500-line ceiling per source
 file, and unit tests that assert what they name, with hand-written fakes.
+Every piece of UI is drawn with lit-html templates and `@event` bindings;
+markup strings and hand-built DOM are not allowed.
+[CONTRIBUTING.md](CONTRIBUTING.md) has the rules in full.
 
 Pull requests and issues for the components open here. The game takes a
 change when a pull request in Verticopolis/web raises its
