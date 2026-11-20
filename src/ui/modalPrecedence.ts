@@ -130,11 +130,11 @@ export class ModalPrecedence {
     this.pendingNotice = { text, kind };
   }
 
-  /** Mount any held line into a dialog body that has just been built. */
-  drainNotice(box: HTMLElement): void {
+  /** Take the held line, if any, for a dialog that is being built. */
+  takeNotice(): { readonly text: string; readonly kind: NoticeKind } | null {
     const notice = this.pendingNotice;
     this.pendingNotice = null;
-    if (notice) mountNotice(box, notice.text, notice.kind);
+    return notice;
   }
 
   private breakLeash(reason: BrokenReason): void {
@@ -144,58 +144,5 @@ export class ModalPrecedence {
   }
 }
 
-/** Route a line to wherever the player can actually read it right now.
- *
- *  A toast cannot carry a message raised while a dialog is up: the `<dialog>`
- *  top layer paints over the rail at any z-index, which is the defect itself.
- *  So it goes into the live dialog body, or is held for the next one to mount
- *  when the shared dialog is mid-replace and has no body, and only falls back
- *  to the caller's toast when nothing is on screen and a toast is visible. */
-export function routeNotice(
-  dialog: HTMLDialogElement,
-  precedence: ModalPrecedence,
-  text: string,
-  toast: (text: string) => void,
-  again = true,
-  kind: NoticeKind = "bad",
-): void {
-  if (!dialog.open) {
-    toast(text);
-    return;
-  }
-  // A caller that asks every frame (an emergency waiting behind the dialog)
-  // passes `again` false. It never rebuilds a line already on screen, which
-  // would announce it anew each time, and never replaces another one: that
-  // could be a failure the player has yet to read, gone a frame after it
-  // landed. It is not held for a later body either, since that body could be
-  // the very dialog the caller was waiting for; the next ask finds the new one.
-  const box = dialog.querySelector<HTMLElement>(".modal-box");
-  if (!box) {
-    if (again) precedence.deferNotice(text, kind);
-    return;
-  }
-  if (!again && box.querySelector(":scope > .modal-notice")) return;
-  mountNotice(box, text, kind);
-}
-
 /** What a notice says about the game: a failure, or plain or good news. */
 export type NoticeKind = "bad" | "info" | "good";
-
-/** Put a notice at the top of a dialog body, under the title bar where the eye
- *  lands first. A failure is drawn in danger ink with `role="alert"`, so it
- *  interrupts; plain and good news use ordinary ink and `role="status"`, so a
- *  late "it finished after all" is neither shown nor announced as an error
- *  (#785). */
-export function mountNotice(box: HTMLElement, text: string, kind: NoticeKind = "bad"): void {
-  // One notice per body: a second would stack under the first and the two can
-  // disagree, which is worse than either alone.
-  box.querySelector(":scope > .modal-notice")?.remove();
-  const p = document.createElement("p");
-  const bad = kind === "bad";
-  p.className = bad ? "modal-notice" : "modal-notice modal-notice-calm";
-  p.setAttribute("role", bad ? "alert" : "status");
-  p.textContent = text;
-  const title = box.querySelector(":scope > h2");
-  if (title) title.after(p);
-  else box.prepend(p);
-}
