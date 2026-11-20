@@ -58,6 +58,14 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: sh scripts/pack-components.sh "$VERSION" dist
 
+      # Install the tarball into an empty project with its peers and
+      # type-check every exported declaration under bundler and nodenext
+      # resolution, with skipLibCheck off.
+      - name: Use the packed tarball as a game would
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: sh scripts/package-consumer.sh "dist/verticopolis-components-$VERSION.tgz"
+
       - name: Upload the tarball
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
