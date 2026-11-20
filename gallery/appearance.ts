@@ -1,14 +1,15 @@
 /**
  * The Appearance dialog (`windows/appearance`) opened in the package's modal
  * (`ModalShell`). OK dresses this page in the picked scheme
- * (`windows/schemes`), as the game dresses itself; the site's Options menu
- * then shows the same pick and keeps it between pages.
+ * (`windows/schemes`) and keeps the pick under the site's key, as the
+ * Options menu does, so the next page opens in it too.
  */
 import { html, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { ModalShell } from "../lib/ui/uiModal.js";
 import { openAppearanceDialog } from "../lib/ui/appearance.js";
-import { applyScheme, schemeOf } from "../lib/ui/schemes.js";
+import { applyScheme, saveScheme, schemeOf } from "../lib/ui/schemes.js";
+import { SCHEME_KEY } from "../site/schemeKey.mjs";
 
 /** The button that opens the dialog, and the dialog it opens in. */
 export function appearanceDemo(): TemplateResult {
@@ -20,7 +21,10 @@ export function appearanceDemo(): TemplateResult {
   const open = () => {
     if (!shell) return;
     const root = document.documentElement;
-    openAppearanceDialog(shell, schemeOf(root), (id) => applyScheme(id, root));
+    openAppearanceDialog(shell, schemeOf(root), (id) => {
+      applyScheme(id, root);
+      saveScheme(SCHEME_KEY, id);
+    });
   };
   return html`<div class="g-row">
       <button type="button" class="btn" @click=${open}>Appearance…</button>

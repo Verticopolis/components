@@ -2,6 +2,7 @@
 // color schemes the Options menu offers.
 
 import { DEFAULT_SCHEME, SCHEMES as SCHEME_IDS, SCHEME_NAMES } from "../lib/ui/schemes.js";
+import { SCHEME_KEY } from "./schemeKey.mjs";
 
 export const SITE_ORIGIN = "https://components.verticopolis.com";
 
@@ -17,7 +18,7 @@ export const PLAYER_HELP = "https://help.verticopolis.com/";
 export const SCHEMES = SCHEME_IDS.map((value) => ({ label: SCHEME_NAMES[value], value }));
 
 /** Where the picked scheme is kept between pages. */
-export const SCHEME_KEY = "vc-components-scheme";
+export { SCHEME_KEY };
 
 /** A value as a JavaScript literal that is safe inside an inline <script>:
  *  the characters that could close the tag or end a line are escaped. */

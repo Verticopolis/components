@@ -316,7 +316,7 @@ catalog (`src/tests/catalogFixture.ts`). The overview map is not on it, since
 it draws a running tower.
 
 ```sh
-npm run build           # the gallery reads lib/
+npm run build           # first: the gallery and its config (site.mjs) read lib/
 npm run gallery:install # the site's own packages (site/package-lock.json)
 npm run gallery         # a local server with the site
 npm run gallery:build   # writes site/dist/

@@ -41,6 +41,10 @@ test("OK dresses the page in the pick, and Options shows it", async ({ page }) =
   const options = page.getByRole("menu", { name: "Options" });
   await expect(options.getByRole("menuitemradio", { name: "High Contrast" })).toHaveAttribute("aria-checked", "true");
   await expect(options.getByRole("menuitemradio", { name: "Standard" })).toHaveAttribute("aria-checked", "false");
+
+  // The pick is kept: the next page opens in it.
+  await openPage(page, "controls/buttons/");
+  await expect(page.locator("html")).toHaveAttribute("data-scheme", "high_contrast");
 });
 
 test("Cancel leaves the page as it was, even after a pick", async ({ page }) => {
