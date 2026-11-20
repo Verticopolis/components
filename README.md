@@ -56,7 +56,7 @@ waits for a curated public surface. Each folder is a subpath export:
 | --- | --- | --- |
 | `@verticopolis/components/render/*` | `src/render/` | The Excalibur scene, the tower renderer and the procedural sprites |
 | `@verticopolis/components/presentation/*` | `src/presentation/` | What the view shows for each kind of room |
-| `@verticopolis/components/model/*` | `src/model/` | Input events and the vacate reasons' wording. The rest of the folder is deprecated (below). `shared/*` is the same folder under its old name, kept until 1.0 |
+| `@verticopolis/components/model/*` | `src/model/` | Input events and the vacate reasons' wording. The rest of the folder is deprecated (below) |
 | `@verticopolis/components/audio/*` | `src/audio/` | The procedural music and ambience on Tone.js |
 | `@verticopolis/components/windows/*` | `src/ui/` | The Win95 windows, menus and message boxes |
 | `@verticopolis/components/styles.css` | `src/styles.css` | The styles the windows use |

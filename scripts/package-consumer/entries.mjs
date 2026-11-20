@@ -28,8 +28,6 @@ for (const [key, target] of Object.entries(exports)) {
   for (const f of files) {
     if (!f.startsWith(pre) || !f.endsWith(post)) continue;
     const middle = f.slice(pre.length, f.length - post.length);
-    // `shared/*` is the alias of `model/*`: one name per file is enough.
-    if (key === "./shared/*") continue;
     specifiers.add(`@verticopolis/components/${keyParts.join(middle)}`);
   }
 }
