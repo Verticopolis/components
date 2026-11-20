@@ -1,0 +1,37 @@
+/* The game's Win95 menu bar (menu-bar.css) across the top of a Starlight
+   docs site, above its title bar, where the game draws it. A site that has
+   the bar adds this after starlight.css and puts the bar's markup, with the
+   `starlight-menubar` class, first in its Header override. The header grows by
+   the bar's height, and the title bar and the phone's menu button keep their
+   size and move down under it. A site without the bar leaves this out. */
+@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@import "./menu-bar.css";
+
+@layer vc.page {
+  :root {
+    --vc-menubar-h: 24px;
+    --sl-nav-height: calc(3.5rem + var(--vc-menubar-h));
+  }
+  @media (min-width: 50rem) {
+    :root {
+      --sl-nav-height: calc(4rem + var(--vc-menubar-h));
+    }
+  }
+  .header {
+    padding-top: calc(var(--sl-nav-pad-y) + var(--vc-menubar-h));
+  }
+  .vc-bar-title img {
+    height: calc(var(--sl-nav-height) - var(--vc-menubar-h) - 2 * var(--sl-nav-pad-y));
+  }
+  .sl-menu-button {
+    top: calc(var(--vc-menubar-h) + (var(--sl-nav-height) - var(--vc-menubar-h) - var(--sl-menu-button-size)) / 2);
+  }
+  .starlight-menubar {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: var(--vc-menubar-h);
+    box-sizing: border-box;
+  }
+}

@@ -158,14 +158,26 @@ bundle to one copy of each.
 - `styles/starlight.css` dresses a [Starlight](https://starlight.astro.build)
   docs site in the game's look: the tokens, `styles/starlight-theme.css` (the
   How to Play window's title bar, sidebar and well, and the title screen for a
-  page with a hero) and `styles/title-bar.css`, in that order (a `customCss`
-  entry). Starlight puts its own CSS in the `starlight` layer, so the site
+  page with a hero), `styles/title-bar.css` and `styles/starlight-schemes.css`,
+  in that order (a `customCss` entry). Starlight puts its own CSS in the `starlight` layer, so the site
   declares `@layer starlight, vc;` in a `<style>` through Starlight's `head`
   option: `head: [{ tag: "style", content: "@layer starlight, vc;" }]`. A
   `customCss` entry comes too late for that, since Astro puts the CSS a
   page's scripts import (the menu bar's, from `windows/menuBar`) ahead of
   `customCss`, and that CSS would set `vc` first.
   The title screen's skyline is `/splash-skyline.svg`, which the site serves.
+- `styles/starlight-schemes.css` gives a Starlight docs site's chrome the
+  game's color schemes (the header, the selected row, the buttons and, in
+  High Contrast, Starlight's own colors). Like the game's scheme files, each
+  rule applies only under `html[data-scheme="skyline"]` or
+  `html[data-scheme="high_contrast"]`, which the site sets from the scheme
+  the player picked. `styles/starlight.css` includes it.
+- `styles/starlight-menu-bar.css` puts the game's menu bar (`menu-bar.css`,
+  which it imports) across the top of a Starlight site, above the title bar:
+  the header grows by the bar's height. A site with the bar adds it as a
+  second `customCss` entry after `starlight.css`, draws the bar's markup with
+  the `starlight-menubar` class first in its Header override, and wires it
+  with `windows/menuBar`. A site without the bar leaves it out.
 - `styles/title-bar.css` is the docs title bar on its own: the `.vc-bar`
   markup a docs site draws in its header, and that a page outside Starlight
   (such as `cargo doc` output) can draw on a navy bar of its own. Such a page
@@ -198,7 +210,8 @@ in this order at the top of every stylesheet:
   which lay out the game's stage around the map), the game's layout
   (`styles/game/*`), the color schemes and the standalone pages
   (`retro-page.css`, `not-found.css`), in the order `styles.css` imports them,
-  and the docs pages (`starlight-theme.css`, then `title-bar.css`).
+  and the docs pages (`starlight-theme.css`, `title-bar.css`,
+  `starlight-schemes.css`, then `starlight-menu-bar.css`).
 
 A later layer beats an earlier one whatever the selectors, and a rule a page
 writes outside any layer beats every `vc` rule, wherever the bundler puts the
