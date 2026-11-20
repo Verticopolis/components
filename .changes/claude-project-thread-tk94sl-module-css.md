@@ -8,3 +8,6 @@ package: major
   now need a bundler that loads CSS imported from JavaScript (Vite does);
   plain Node can no longer import them. Their declarations do not carry the
   CSS imports.
+- a Starlight site declares `@layer starlight, vc;` through Starlight's `head`
+  option rather than a first `customCss` entry: Astro puts the menu bar's CSS,
+  which the `windows/menuBar` module now imports, ahead of `customCss`.

@@ -134,9 +134,13 @@ bundle to one copy of each.
 - `styles/starlight.css` dresses a [Starlight](https://starlight.astro.build)
   docs site in the game's look: the tokens, `styles/starlight-theme.css` (the
   How to Play window's title bar, sidebar and well, and the title screen for a
-  page with a hero) and `styles/title-bar.css`, in that order. Starlight puts
-  its own CSS in the `starlight` layer, so the site's first `customCss` entry
-  is a file holding `@layer starlight, vc;`, and `starlight.css` comes next.
+  page with a hero) and `styles/title-bar.css`, in that order (a `customCss`
+  entry). Starlight puts its own CSS in the `starlight` layer, so the site
+  declares `@layer starlight, vc;` in a `<style>` through Starlight's `head`
+  option: `head: [{ tag: "style", content: "@layer starlight, vc;" }]`. A
+  `customCss` entry comes too late for that, since Astro puts the CSS a
+  page's scripts import (the menu bar's, from `windows/menuBar`) ahead of
+  `customCss`, and that CSS would set `vc` first.
   The title screen's skyline is `/splash-skyline.svg`, which the site serves.
 - `styles/title-bar.css` is the docs title bar on its own: the `.vc-bar`
   markup a docs site draws in its header, and that a page outside Starlight
@@ -180,6 +184,9 @@ a `!important` inside a `vc` layer beats an unlayered `!important`, and a page
 that puts its own CSS in layers orders them against `vc` with a statement of
 its own before it loads the components (for example `@layer vc, app;`, or
 `@layer starlight, vc;` on a Starlight site so the menu bar keeps its look).
+That statement has to come before the first components CSS on the page,
+including the sheet a window module imports, which a bundler may put ahead of
+the page's own stylesheets.
 
 Every stylesheet counts as a side effect, so a bundler keeps a CSS import even
 though nothing names what it exports.
