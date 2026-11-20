@@ -34,6 +34,18 @@ export function renderToFragment(result: TemplateResult): DocumentFragment {
   return frag;
 }
 
+/** A rendered node's markup without lit's comment markers: a deep copy with
+ *  every Comment node dropped, read as `outerHTML` (or `innerHTML` for
+ *  `"inner"`). The rendered node itself is left as it is. */
+export function markupOf(node: Element, part: "outer" | "inner" = "outer"): string {
+  const copy = node.cloneNode(true) as Element;
+  const walker = document.createTreeWalker(copy, 128 /* NodeFilter.SHOW_COMMENT */);
+  const comments: Node[] = [];
+  while (walker.nextNode()) comments.push(walker.currentNode);
+  for (const comment of comments) comment.parentNode!.removeChild(comment);
+  return part === "outer" ? copy.outerHTML : copy.innerHTML;
+}
+
 /** Fire a bubbling, cancelable event on a rendered node so a test can prove an
  *  inline `@click`/`@change`/`@input` binding called back. It is a plain `Event`
  *  (no mouse/input fields); a test that needs `event.target.value` sets the

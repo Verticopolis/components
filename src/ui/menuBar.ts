@@ -1,6 +1,6 @@
 /**
- * The Win95 menu bar's behavior (index.html `#menubar`): a title opens its
- * menu, and while one is open, pointing at another title switches to it, the
+ * The Win95 menu bar: it draws itself from a {@link MenuBarModel} with lit
+ * (`menuBarTemplate.ts`) and runs it. A title opens its menu, and while one is open, pointing at another title switches to it, the
  * way a 1995 desktop menu bar works. The keyboard follows the WAI-ARIA
  * menubar keys (the markup is a row of menu buttons, each with its menu):
  * Left and Right move between titles, Down (or Enter or Space) on a title
@@ -17,19 +17,31 @@
  * An item with an underlined character (Open Recent's numbers) is picked by
  * pressing that key while its menu has the focus, as in a 1995 menu.
  *
- * What an item does is not this module's business: each item is a real
- * button whose click the game wires (`game/menuWiring.ts`). A click on an
- * item that is not grayed out closes the menu after its own handlers run.
+ * What an item does is not this module's business: each item's `onPick` is
+ * the page's. A click on an item that is not grayed out closes the menu
+ * after its `onPick` runs.
  *
  * Cost: nothing runs per frame. Opening a menu calls `onOpen` once, so the
- * wiring can refresh check marks and grayed items only when someone looks.
+ * page can {@link MenuBar.render} fresh check marks and grayed items only
+ * when someone looks; lit then touches only what changed.
  *
  * A trip is the time from a menu opening with none open to the menus
  * closing. `onTrip` hears it begin and `onDismiss` hears it end with no pick
- * (the analytics in `game/menuWiring.ts`); pointing from menu to menu inside
- * a trip is neither.
+ * (a page's menu analytics); pointing from menu to menu inside a trip is
+ * neither.
  */
+import { render } from "lit-html";
 import "../styles/menu-bar.css"; // the bar, its titles, menus and items
+import { menuBarTemplate, type MenuBarHandlers, type MenuBarModel } from "./menuBarTemplate";
+
+export type {
+  MenuBarModel,
+  MenuEntryModel,
+  MenuItemModel,
+  MenuModel,
+  MenuSeparatorModel,
+  SubmenuModel,
+} from "./menuBarTemplate";
 
 /** How a trip into the menus began: a click on a title, the keyboard on a
  *  focused title, or Alt with a title's underlined letter. */
@@ -76,6 +88,9 @@ const SUB_POP = ".mb-subpop";
 export type MenuCloseHow = "pick" | MenuDismissHow;
 
 export interface MenuBarOptions {
+  /** False leaves Alt and a title's letter alone (a second bar on a page
+   *  whose own bar answers them). */
+  readonly altKeys?: boolean;
   /** Runs as a menu opens, before it shows, with the menu's popup. */
   readonly onOpen?: (menu: HTMLElement) => void;
   /** A trip begins: `title`'s menu opened with none open before it. */
@@ -84,8 +99,7 @@ export interface MenuBarOptions {
   readonly onDismiss?: (title: HTMLButtonElement, how: MenuDismissHow, browsed: number) => void;
 }
 
-export class MenuBar {
-  private readonly titles: HTMLButtonElement[];
+export class MenuBar implements MenuBarHandlers {
   private openTitle: HTMLButtonElement | null = null;
   /** The sub title whose submenu is open, or null. */
   private openSubTitle: HTMLElement | null = null;
@@ -95,52 +109,16 @@ export class MenuBar {
   private swallowUntil = -Infinity;
   /** The menus this trip has shown. */
   private readonly tripMenus = new Set<HTMLButtonElement>();
+  /** The bar's titles, found once per render rather than per key. */
+  private titleList: readonly HTMLButtonElement[] = [];
 
+  /** Render `model` into `root`, its handlers bound by the template. */
   constructor(
     private readonly root: HTMLElement,
+    model: MenuBarModel,
     private readonly opts: MenuBarOptions = {},
   ) {
-    this.titles = [...root.querySelectorAll<HTMLButtonElement>(".mb-title")];
-    for (const title of this.titles) {
-      // A keyboard press on a focused title arrives as a click with no
-      // pointer behind it (`detail` 0).
-      title.addEventListener("click", (e) =>
-        this.openTitle === title
-          ? this.close(true, "title")
-          : this.open(title, false, e.detail === 0 ? "keys" : "click"),
-      );
-      // A mouse switches menus by pointing. A finger's tap also fires
-      // pointerenter just before its click, which would open the menu and
-      // then close it again, so a tap switches by its click alone.
-      title.addEventListener("pointerenter", (e) => {
-        if (e.pointerType !== "mouse") return;
-        if (this.openTitle && this.openTitle !== title) this.open(title, false);
-      });
-      title.addEventListener("keydown", (e) => this.titleKey(e, title));
-      const menu = this.menuOf(title);
-      menu?.addEventListener("keydown", (e) => this.menuKey(e, title));
-      // After the item's own click handlers (they were added at wiring time,
-      // before this bubbling listener on the popup runs).
-      menu?.addEventListener("click", (e) => {
-        const item = e.target instanceof Element ? e.target.closest(".mb-item") : null;
-        if (!item || item.getAttribute("aria-disabled") === "true") return;
-        if (!item.matches(SUB_TITLE)) this.close();
-        // A mouse already opened it by pointing, so its click keeps it open.
-        // A tap or a key toggles it, and a key also moves into it.
-        else if (this.mouseDown && (e as MouseEvent).detail > 0) this.openSub(item as HTMLElement, false);
-        else this.toggleSub(item as HTMLElement, (e as MouseEvent).detail === 0);
-      });
-      menu?.addEventListener("pointerdown", (e) => (this.mouseDown = e.pointerType === "mouse"));
-      // A mouse opens a submenu by pointing at its title, and closes it by
-      // pointing at another item of the same menu.
-      menu?.addEventListener("pointerover", (e) => {
-        if (e.pointerType !== "mouse" || !(e.target instanceof Element)) return;
-        const item = e.target.closest(".mb-item");
-        if (!item || item.closest(SUB_POP)) return;
-        if (item.matches(SUB_TITLE)) this.openSub(item as HTMLElement, false);
-        else this.closeSub(false);
-      });
-    }
+    this.render(model);
     const doc = root.ownerDocument;
     const win = doc.defaultView;
     // A press outside the bar only closes the open menu, as a 1995 menu does:
@@ -167,9 +145,68 @@ export class MenuBar {
     };
     win?.addEventListener("pointerup", swallow, true);
     win?.addEventListener("click", swallow, true);
-    doc.addEventListener("keydown", (e) => this.accelerator(e));
+    if (opts.altKeys !== false) doc.addEventListener("keydown", (e) => this.accelerator(e));
     win?.addEventListener("blur", () => this.close(true, "blur"));
   }
+
+  /** Render `model` into the root, replacing what an earlier render drew
+   *  (check marks, grayed and hidden items, Open Recent's lines). An open
+   *  menu stays open. Menus are matched by id, so they may come and go;
+   *  the entries inside a menu are matched by place, so keep an open menu's
+   *  entries in their order. */
+  render(model: MenuBarModel): void {
+    render(menuBarTemplate(model, this), this.root);
+    this.titleList = [...this.root.querySelectorAll<HTMLButtonElement>(".mb-title")];
+  }
+
+  /** A title's click: a keyboard press on a focused title arrives as a click
+   *  with no pointer behind it (`detail` 0). */
+  readonly titleClick = (e: MouseEvent): void => {
+    const title = e.currentTarget as HTMLButtonElement;
+    if (this.openTitle === title) this.close(true, "title");
+    else this.open(title, false, e.detail === 0 ? "keys" : "click");
+  };
+
+  /** A mouse switches menus by pointing. A finger's tap also fires
+   *  pointerenter just before its click, which would open the menu and then
+   *  close it again, so a tap switches by its click alone. */
+  readonly titlePointerEnter = (e: PointerEvent): void => {
+    const title = e.currentTarget as HTMLButtonElement;
+    if (e.pointerType !== "mouse") return;
+    if (this.openTitle && this.openTitle !== title) this.open(title, false);
+  };
+
+  readonly titleKeyDown = (e: KeyboardEvent): void => this.titleKey(e, e.currentTarget as HTMLButtonElement);
+
+  readonly menuKeyDown = (e: KeyboardEvent): void => {
+    const title = this.titleOf(e.currentTarget as HTMLElement);
+    if (title) this.menuKey(e, title);
+  };
+
+  /** An item's click, heard on its popup after the item's own handlers. */
+  readonly menuClick = (e: MouseEvent): void => {
+    const item = e.target instanceof Element ? e.target.closest(".mb-item") : null;
+    if (!item || item.getAttribute("aria-disabled") === "true") return;
+    if (!item.matches(SUB_TITLE)) this.close();
+    // A mouse already opened it by pointing, so its click keeps it open.
+    // A tap or a key toggles it, and a key also moves into it.
+    else if (this.mouseDown && e.detail > 0) this.openSub(item as HTMLElement, false);
+    else this.toggleSub(item as HTMLElement, e.detail === 0);
+  };
+
+  readonly menuPointerDown = (e: PointerEvent): void => {
+    this.mouseDown = e.pointerType === "mouse";
+  };
+
+  /** A mouse opens a submenu by pointing at its title, and closes it by
+   *  pointing at another item of the same menu. */
+  readonly menuPointerOver = (e: PointerEvent): void => {
+    if (e.pointerType !== "mouse" || !(e.target instanceof Element)) return;
+    const item = e.target.closest(".mb-item");
+    if (!item || item.closest(SUB_POP)) return;
+    if (item.matches(SUB_TITLE)) this.openSub(item as HTMLElement, false);
+    else this.closeSub(false);
+  };
 
   /** The title whose menu is open, or null. */
   current(): HTMLButtonElement | null {
@@ -224,6 +261,11 @@ export class MenuBar {
     if (refocus && hadFocus) title.focus();
   }
 
+  /** The title that opens `popup`. */
+  private titleOf(popup: HTMLElement): HTMLButtonElement | undefined {
+    return this.titleList.find((t) => t.getAttribute("aria-controls") === popup.id);
+  }
+
   private menuOf(title: HTMLButtonElement): HTMLElement | null {
     const id = title.getAttribute("aria-controls");
     return id ? this.root.ownerDocument.getElementById(id) : null;
@@ -269,7 +311,7 @@ export class MenuBar {
   }
 
   private neighbor(title: HTMLButtonElement, step: 1 | -1): HTMLButtonElement {
-    const shown = this.titles.filter(onBar);
+    const shown = this.titleList.filter(onBar);
     const at = shown.indexOf(title);
     return shown[(at + step + shown.length) % shown.length] ?? title;
   }
@@ -357,12 +399,15 @@ export class MenuBar {
   }
 
   /** Alt with a title's underlined letter opens that menu, unless a dialog is
-   *  open: the menus act on the tower, and a dialog holds the screen. */
+   *  open (the menus act on the tower, and a dialog holds the screen) or
+   *  another bar already answered it. */
   private accelerator(e: KeyboardEvent): void {
+    // Another bar on the page already took this key.
+    if (e.defaultPrevented) return;
     if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.key.length !== 1) return;
     if (this.root.ownerDocument.querySelector("dialog[open]")) return;
     const letter = e.key.toLowerCase();
-    const title = this.titles.find((t) => onBar(t) && t.querySelector("u")?.textContent?.toLowerCase() === letter);
+    const title = this.titleList.find((t) => onBar(t) && t.querySelector("u")?.textContent?.toLowerCase() === letter);
     if (!title) return;
     e.preventDefault();
     this.open(title, true, "alt");

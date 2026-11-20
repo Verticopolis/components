@@ -108,7 +108,8 @@ the chrome face above the top bar: 12px titles that press in (`--bevel`-style
 inset) while their menu is open, menus as floating `.win`-style boxes
 (`--bevel-out` + `--win-shadow`) with a navy highlight row, a ✓ for a checked
 item, gray for a disabled one, and etched separators. Behavior follows the
-WAI-ARIA menubar pattern (`src/ui/menuBar.ts`). The status bar
+WAI-ARIA menubar pattern (`src/ui/menuBar.ts`), and the bar draws itself
+from a model with lit-html (`src/ui/menuBarTemplate.ts`). The status bar
 (`#statusbar`) is a row of sunken cells (`inset` shadow pair) on the face;
 an empty cell hides itself. On a phone the menu bar grows to 14px with
 finger-sized rows and keeps a navy logo badge at its left, and the status

@@ -1,28 +1,43 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MenuBar } from "./menuBar";
+import { MenuBar, type MenuBarModel } from "./menuBar";
 
-/** A File menu with a submenu between two items, the way index.html lays out
- *  File > Open Recent, its lines numbered with the number underlined. */
-function setup() {
-  document.body.innerHTML = `
-    <nav id="menubar">
-      <div class="mb-menu">
-        <button class="mb-title" id="t-file" aria-expanded="false" aria-controls="m-file"><u>F</u>ile</button>
-        <div class="mb-pop" id="m-file" role="menu" hidden>
-          <button class="mb-item" id="i-open" role="menuitem">Open</button>
-          <div class="mb-sub" role="none">
-            <button class="mb-item mb-sub-title" id="i-load" role="menuitem" aria-expanded="false" aria-controls="m-load">Load</button>
-            <div class="mb-pop mb-subpop" id="m-load" role="menu" hidden>
-              <button class="mb-item" id="i-auto" role="menuitem"><u>1</u>Sky Mall</button>
-              <button class="mb-item" id="i-gone" role="menuitem" hidden><u>2</u>Gone</button>
-              <button class="mb-item" id="i-two" role="menuitem"><u>3</u>Old Tower</button>
-            </div>
-          </div>
-          <button class="mb-item" id="i-save" role="menuitem">Save</button>
-        </div>
-      </div>
-    </nav>`;
-  const bar = new MenuBar(document.getElementById("menubar")!);
+/** A File menu with a submenu between two items, the way the game lays out
+ *  File > Open Recent, its lines numbered with the number underlined.
+ *  `grayed` grays the submenu's title. */
+function model(grayed = false): MenuBarModel {
+  return {
+    id: "menubar",
+    label: "Test menu",
+    menus: [
+      {
+        id: "t-file",
+        popupId: "m-file",
+        label: "File",
+        mnemonic: 0,
+        items: [
+          { id: "i-open", label: "Open" },
+          {
+            kind: "submenu",
+            id: "i-load",
+            popupId: "m-load",
+            label: "Load",
+            disabled: grayed,
+            items: [
+              { id: "i-auto", label: "1Sky Mall", mnemonic: 0 },
+              { id: "i-gone", label: "2Gone", mnemonic: 0, hidden: true },
+              { id: "i-two", label: "3Old Tower", mnemonic: 0 },
+            ],
+          },
+          { id: "i-save", label: "Save" },
+        ],
+      },
+    ],
+  };
+}
+
+function setup(grayed = false) {
+  document.body.innerHTML = `<div id="host"></div>`;
+  const bar = new MenuBar(document.getElementById("host")!, model(grayed));
   bars.push(bar);
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
   const key = (el: Element, k: string) =>
@@ -117,8 +132,7 @@ describe("a menu's submenu", () => {
   });
 
   it("a grayed title opens nothing, by pointing, a tap or the keys", () => {
-    const { $, press, point, key } = setup();
-    $("i-load").setAttribute("aria-disabled", "true");
+    const { $, press, point, key } = setup(true);
     point($("i-load"));
     press($("i-load"), "touch");
     $("i-open").focus();

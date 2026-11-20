@@ -14,7 +14,7 @@ import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/
 import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
 import type { DrawCtx } from "../lib/render/sprites.js";
-import { MenuBar } from "../lib/ui/menuBar.js";
+import { MenuBar, type MenuBarModel } from "../lib/ui/menuBar.js";
 import { ICON_NAMES, iconElement } from "../lib/ui/icons.js";
 import { GALLERY_HOUR, roomCells, type RoomCell } from "./rooms.js";
 import { paintScene, sceneSize, type Scene } from "./scene.js";
@@ -82,32 +82,34 @@ const WELLS = `
   </div>
 </div>`;
 
-const MENU = `
-<nav class="menubar" aria-label="Sample menu">
-    <div class="mb-menu">
-      <button type="button" class="mb-title" id="g-file" aria-haspopup="menu" aria-expanded="false" aria-controls="g-file-menu"><span class="g-key">F</span>ile</button>
-      <div class="mb-pop" id="g-file-menu" role="menu" aria-labelledby="g-file" hidden>
-        <button type="button" role="menuitem" class="mb-item">New…</button>
-        <button type="button" role="menuitem" class="mb-item">Open…<kbd>Ctrl+O</kbd></button>
-        <hr class="mb-sep" />
-        <button type="button" role="menuitem" class="mb-item">Save<kbd>Ctrl+S</kbd></button>
-        <button type="button" role="menuitem" class="mb-item" aria-disabled="true">Grayed item</button>
-      </div>
-    </div>
-    <div class="mb-menu">
-      <button type="button" class="mb-title" id="g-options" aria-haspopup="menu" aria-expanded="false" aria-controls="g-options-menu"><span class="g-key">O</span>ptions</button>
-      <div class="mb-pop" id="g-options-menu" role="menu" aria-labelledby="g-options" hidden>
-        <button type="button" role="menuitemcheckbox" class="mb-item" aria-checked="true">Sound</button>
-        <button type="button" role="menuitemcheckbox" class="mb-item" aria-checked="false">Music</button>
-      </div>
-    </div>
-    <div class="mb-menu">
-      <button type="button" class="mb-title" id="g-help" aria-haspopup="menu" aria-expanded="false" aria-controls="g-help-menu"><span class="g-key">H</span>elp</button>
-      <div class="mb-pop" id="g-help-menu" role="menu" aria-labelledby="g-help" hidden>
-        <button type="button" role="menuitem" class="mb-item">About…</button>
-      </div>
-    </div>
-</nav>`;
+/** The sample menu bar, with made-up items that do nothing. */
+const SAMPLE_MENU: MenuBarModel = {
+  label: "Sample menu",
+  menus: [
+    {
+      id: "g-file",
+      label: "File",
+      mnemonic: 0,
+      items: [
+        { label: "New…" },
+        { label: "Open…", shortcut: "Ctrl+O" },
+        { kind: "separator" },
+        { label: "Save", shortcut: "Ctrl+S" },
+        { label: "Grayed item", disabled: true },
+      ],
+    },
+    {
+      id: "g-options",
+      label: "Options",
+      mnemonic: 0,
+      items: [
+        { label: "Sound", checked: true },
+        { label: "Music", checked: false },
+      ],
+    },
+    { id: "g-help", label: "Help", mnemonic: 0, items: [{ label: "About…" }] },
+  ],
+};
 
 function icons(): HTMLElement {
   const grid = document.createElement("div");
@@ -170,18 +172,12 @@ function towerFacts(): { cat: RenderCatalog; facts: (kind: FacilityKind) => Rend
   return { cat, facts };
 }
 
-/** Work a demo needs done once it is in the page, by its root element. */
-const onMounted = new WeakMap<HTMLElement, () => void>();
-
-/** The sample bar. `MenuBar` finds each menu by id in the document, so it is
- *  built once the bar is in the page. Its letters are underlined without a
- *  <u>, so Alt and a letter open the site's own bar and never this one too. */
+/** The sample bar. Its Alt keys are off, so Alt and a letter open the
+ *  site's own bar and never this one too. */
 function sampleMenu(): HTMLElement {
   const holder = document.createElement("div");
   holder.className = "g-menu-sample";
-  const menu = fromMarkup(MENU);
-  holder.append(menu);
-  onMounted.set(holder, () => new MenuBar(menu));
+  new MenuBar(holder, SAMPLE_MENU, { altKeys: false });
   return holder;
 }
 
@@ -218,9 +214,7 @@ export function mountDemos(root: ParentNode = document): void {
     const name = holder.dataset.demo as DemoName;
     const make = DEMOS[name];
     if (!make) throw new Error(`The gallery has no demo named ${name}.`);
-    const demo = make();
-    holder.replaceChildren(demo);
-    onMounted.get(demo)?.();
+    holder.replaceChildren(make());
   }
   (window as unknown as { galleryReady: boolean }).galleryReady = true;
 }

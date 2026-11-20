@@ -24,6 +24,11 @@
   .sl-menu-button {
     top: calc(var(--vc-menubar-h) + (var(--sl-nav-height) - var(--vc-menubar-h) - var(--sl-menu-button-size)) / 2);
   }
+  /* The bar's place on the page before its script draws it in: a box of its
+     own would move the absolutely placed bar, so the host has none. */
+  #site-menubar-host {
+    display: contents;
+  }
   .site-menubar {
     position: absolute;
     inset-inline: 0;
@@ -93,9 +98,6 @@
   .g-sprites figcaption {
     font-size: 12px;
     padding: 2px 0;
-  }
-  .g-key {
-    text-decoration: underline;
   }
   .g-people {
     display: flex;
