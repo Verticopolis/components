@@ -32,6 +32,12 @@ const SHIM_PATHS = [
   },
 ];
 
+/** A module in src/model/ importing a sibling shim. */
+const SHIM_SIBLINGS = {
+  regex: `^\\./(${SHIM_MODELS.join("|")})$`,
+  message: "This module re-exports the engine and goes in components 1.0: use the render model instead.",
+};
+
 // The rules every linted file shares.
 const rules = {
   "@typescript-eslint/no-explicit-any": "warn",
@@ -89,6 +95,15 @@ export default [
     ignores: [...SHIMS, "src/**/*.test.ts", "src/**/*.fixture.ts"],
     rules: {
       "no-restricted-imports": ["error", { patterns: [ENGINE_PACKAGE, ...SHIM_PATHS] }],
+    },
+  },
+  {
+    // Beside the shims in src/model/, a sibling import (`./types`) reaches
+    // the engine too.
+    files: ["src/model/*.ts"],
+    ignores: [...SHIMS, "src/**/*.test.ts", "src/**/*.fixture.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [ENGINE_PACKAGE, ...SHIM_PATHS, SHIM_SIBLINGS] }],
     },
   },
   {

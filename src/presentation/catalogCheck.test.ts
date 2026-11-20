@@ -8,11 +8,9 @@ import { refuseForeignCatalogs } from "./catalogCheck";
  * (`rustEngine.ts`): a catalog that lists other facility kinds than this build
  * draws, or lays the ground floor with one it does not, is refused, and so are
  * two modes that state different worlds, naming what differs. The catalogs here
- * are the TypeScript reference engine's, used only as sample input; the game
- * reads the Rust engine's, which `conformance/catalog-digests.json` pins.
- * Reading a catalog the build
- * cannot parse (its version, a kind listed twice) is `readCatalog`'s, in
- * `src/engineBinding/catalog.test.ts`.
+ * are the engine package's fixtures, written from the Rust catalog, used only
+ * as sample input. Reading a catalog the build cannot parse (its version, a
+ * kind listed twice) is the engine's `readCatalog`, tested in the engine.
  */
 
 const MODES = ["classic", "modern"] as const;
