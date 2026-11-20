@@ -79,6 +79,8 @@
     "lint": "eslint src",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "icons": "node scripts/gen-icon-paths.ts",
+    "icons:check": "node scripts/gen-icon-paths.ts && git diff --exit-code -- src/ui/iconPaths.generated.ts",
     "test": "vitest run",
     "build": "sh scripts/build-lib.sh",
     "prepack": "sh scripts/build-lib.sh",
