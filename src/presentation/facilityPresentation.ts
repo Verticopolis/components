@@ -1,5 +1,5 @@
 import type { CatalogWorld } from "../catalog/catalogTypes";
-import type { FacilityKind } from "../shared/types";
+import type { FacilityKind } from "../model/types";
 
 /**
  * How each facility looks and reads in the UI: its swatch and sprite color and

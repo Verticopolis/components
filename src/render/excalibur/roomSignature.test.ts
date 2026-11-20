@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { kindFacts, kindKeys, keepsHours } from "../../tests/catalogKinds";
-import type { FacilityKind, Unit, UnitState } from "../../shared/types";
+import type { FacilityKind, Unit, UnitState } from "../../model/types";
 import { LATE_NIGHT_KINDS } from "../lateNight";
 import { paintSettledUnit } from "../regionPaint";
 import { FLOOR, TILE } from "../scale";

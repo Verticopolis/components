@@ -1,5 +1,5 @@
 import { kindWidth } from "../../presentation/viewKinds";
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 import type { UnitView, TransportView } from "../../simport/view";
 import { SHIRTS, personFigure } from "../pixelSprites/common";
 import { FLOOR, TILE } from "../scale";

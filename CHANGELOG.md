@@ -21,6 +21,11 @@ requests that made each version.
 
 ## Unreleased
 
+- **minor**: `src/shared/` is now `src/model/`, exported as `model/*`: the
+  tower model types and the small helpers over them. `shared/*` stays as an
+  alias for the same files until 1.0, so existing imports keep working; move
+  them to `model/*`.
+
 ## 0.2.2 (2026-11-19)
 
 - **patch**: the shared chrome is split into one stylesheet per component

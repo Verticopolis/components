@@ -1,4 +1,4 @@
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 import { drawPerson, LOOKS } from "../pixelSprites/people";
 import { drawCarBack, drawCarFront } from "../sprites/transport";
 import type { CarArrow } from "../carIndicator";

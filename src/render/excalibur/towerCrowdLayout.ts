@@ -1,6 +1,6 @@
 import { catalogFacility, type Catalog } from "../../catalog/catalogTypes";
 import type { UnitView } from "../../simport/view";
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 
 /**
  * Pure layout math for the decorative passer-by builder in {@link buildWalkers}.

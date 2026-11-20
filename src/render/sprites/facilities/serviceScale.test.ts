@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { kindFacts } from "../../../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../../../shared/types";
+import type { FacilityKind, Unit } from "../../../model/types";
 import type { DrawCtx } from "../common";
 import { TILE, FLOOR } from "../../scale";
 import { refMap } from "./serviceKit";

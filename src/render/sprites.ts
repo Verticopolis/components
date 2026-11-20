@@ -1,5 +1,5 @@
 import { facilityColor } from "../presentation/facilityPresentation";
-import type { FacilityKind } from "../shared/types";
+import type { FacilityKind } from "../model/types";
 import type { UnitView } from "../simport/view";
 import { drawRoom } from "./pixelSprites";
 import { layerEnd } from "./pixelSprites/layers";

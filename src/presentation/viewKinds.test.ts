@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
 import { catalogFacility } from "../catalog/catalogTypes";
 import { bindViewKinds, hasBusinessHours, isCommercialKind, isElevatorKind, isHotelKind, isLeaseAmenityKind, isOpenAt, isUnmetDemandKind, kindFloors, kindWidth, resetViewKindsForTests, viewKindKeys } from "./viewKinds";
-import type { FacilityKind } from "../shared/types";
+import type { FacilityKind } from "../model/types";
 
 describe("the view's kind facts", () => {
   beforeEach(() => bindViewKinds(catalogFor("modern")));

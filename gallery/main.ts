@@ -10,7 +10,7 @@
 import initEngine, { catalog as engineCatalog } from "@verticopolis/engine/web/verticopolis_engine.js";
 import { readCatalog } from "../lib/engineBinding/catalog.js";
 import type { Catalog, CatalogFacility } from "../lib/catalog/catalogTypes.js";
-import type { FacilityKind } from "../lib/shared/types.js";
+import type { FacilityKind } from "../lib/model/types.js";
 import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
 import { drawRoomPortrait, drawTransportPortrait } from "../lib/render/roomPortrait.js";

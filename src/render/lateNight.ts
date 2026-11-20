@@ -1,4 +1,4 @@
-import type { FacilityKind } from "../shared/types";
+import type { FacilityKind } from "../model/types";
 
 /**
  * The small-hours window that changes a home's look, shared by the room art,

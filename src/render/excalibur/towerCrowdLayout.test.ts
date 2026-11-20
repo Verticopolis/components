@@ -7,7 +7,7 @@ import {
   SHOP_FRONT_TILES,
   trafficLots,
 } from "./towerCrowdLayout";
-import type { Unit } from "../../shared/types";
+import type { Unit } from "../../model/types";
 import { catalogFor } from "../../tests/catalogFixture";
 
 const MODERN = catalogFor("modern");

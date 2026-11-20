@@ -3,7 +3,7 @@ import { CRANE_REACH_LEFT_TILES, CRANE_REACH_RIGHT_TILES, craneAnchorTile, crane
 import { facadeGeometry } from "./facadeGeometry";
 import { lobbyHalls } from "./lobbyHalls";
 import { catalogFor } from "../tests/catalogFixture";
-import type { FacilityKind, Unit } from "../shared/types";
+import type { FacilityKind, Unit } from "../model/types";
 
 const MODERN = catalogFor("modern");
 

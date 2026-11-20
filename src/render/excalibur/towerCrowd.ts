@@ -3,7 +3,7 @@ import { Z } from "../depthPlanes";
 import { isElevatorKind } from "../../presentation/viewKinds";
 import { catalogFacility } from "../../catalog/catalogTypes";
 import { towerCatalog } from "../../catalog/towerCatalog";
-import { isOperational } from "../../shared/unitState";
+import { isOperational } from "../../model/unitState";
 import { drawGarbageTruck, drawStreetCar } from "../sprites";
 import { GARBAGE_TRUCK_H } from "../sprites/facilities/vehicles";
 import { metroTrainAt } from "../metroTrainSchedule";

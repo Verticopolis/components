@@ -1,5 +1,5 @@
 import * as ex from "excalibur";
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 import type { TransportView } from "../../simport/view";
 import { cabRiderFoot, cabRiderX } from "../sprites/transport";
 import { cabFit, carIndicator, NO_FIGURES, type CarIndicator } from "../carIndicator";

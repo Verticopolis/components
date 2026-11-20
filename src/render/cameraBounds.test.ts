@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { clampCameraY, fitZoom, FIT_SKY_FLOORS, MIN_FIT_SPAN_FLOORS, MAX_FIT_ZOOM, SKY_HEADROOM_FLOORS, WEDDING_HALL_RISE_FLOORS } from "./cameraBounds";
-import { VIEW_ZOOM_MIN } from "../shared/types";
+import { VIEW_ZOOM_MIN } from "../model/types";
 import { catalogFor } from "../tests/catalogFixture";
 import { CRANE_H } from "./sprites/structure/rooftop";
 // Pull the buildable bounds from the engine catalog and FLOOR from the pure

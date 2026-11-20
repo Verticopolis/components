@@ -1,4 +1,4 @@
-import type { FacilityKind, Unit } from "../shared/types";
+import type { FacilityKind, Unit } from "../model/types";
 import { kindFacts } from "./catalogKinds";
 import { paintSettledUnit } from "../render/regionPaint";
 import { FLOOR, TILE } from "../render/scale";

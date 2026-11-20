@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../tests/catalogKinds";
-import type { Unit } from "../shared/types";
+import type { Unit } from "../model/types";
 import { OFFSETS, paintAt, paintPastSeam, tail, unitOf } from "../tests/originSeedsHarness";
 import { roomKinds, variantPlacements } from "./atlas/catalog";
 import { FLOOR, TILE } from "./scale";

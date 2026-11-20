@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { subtypesOf } from "../tests/catalogKinds";
-import type { Unit } from "../shared/types";
+import type { Unit } from "../model/types";
 import { drawUnit, drawLobbyEntrance, type EntranceKind, type DrawCtx } from "./sprites";
 import { FLOOR, TILE } from "./scale";
 

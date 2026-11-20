@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ROOM_EDGE, ROOM_LIGHT, shadeRoom, shadesRoom } from "./roomShading";
-import type { UnitState } from "../shared/types";
+import type { UnitState } from "../model/types";
 
 describe("Modern's room shading (#2097)", () => {
   it("shades a room only in Modern's look and only while someone is there", () => {

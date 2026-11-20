@@ -1,5 +1,5 @@
 import type { CatalogFacility } from "../catalog/catalogTypes";
-import type { FacilityKind, Transport, Unit, UnitState } from "../shared/types";
+import type { FacilityKind, Transport, Unit, UnitState } from "../model/types";
 import { fitAtGameScale } from "./catalogScale";
 import { FLOOR, TILE } from "./scale";
 import { drawCar, drawTransport, drawUnit, type DrawCtx } from "./sprites";

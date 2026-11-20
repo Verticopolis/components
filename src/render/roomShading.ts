@@ -1,5 +1,5 @@
-import { isPresent } from "../shared/unitState";
-import type { UnitState } from "../shared/types";
+import { isPresent } from "../model/unitState";
+import type { UnitState } from "../model/types";
 
 /**
  * Modern's room shading (#2097): a light pass over each settled room, lit

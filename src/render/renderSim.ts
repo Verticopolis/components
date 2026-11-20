@@ -1,6 +1,6 @@
-import type { ElevatorQueueView } from "../shared/engineTypes";
-import type { HeatCell, HeatmapMode } from "../shared/engineTypes";
-import type { GameMode, SerializedView, WeatherKind } from "../shared/types";
+import type { ElevatorQueueView } from "../model/engineTypes";
+import type { HeatCell, HeatmapMode } from "../model/engineTypes";
+import type { GameMode, SerializedView, WeatherKind } from "../model/types";
 import type { BombSearchView, CrowdView, FireResponseView, TowerView } from "../simport/view";
 import type { LobbyHalls } from "./lobbyHalls";
 

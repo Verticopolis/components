@@ -15,7 +15,7 @@
  * A kind the table has never heard of at run time (a forged save, a newer
  * engine) paints as a loud placeholder.
  */
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 import { FACILITY_PRESENTATION } from "../../presentation/facilityPresentation";
 
 /** The marks a pattern tile is built from. `solid` is a plain fill. */

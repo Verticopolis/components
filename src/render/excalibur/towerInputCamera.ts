@@ -1,9 +1,9 @@
 import * as ex from "excalibur";
 import { viewWorld } from "../../presentation/viewWorld";
 import { findCatalogFacility } from "../../catalog/catalogTypes";
-import type { FacilityKind, SerializedView, WeatherKind } from "../../shared/types";
-import { VIEW_ZOOM_MAX, VIEW_ZOOM_MIN } from "../../shared/viewZoom";
-import { wheelZoomDelta } from "../../shared/inputEvents";
+import type { FacilityKind, SerializedView, WeatherKind } from "../../model/types";
+import { VIEW_ZOOM_MAX, VIEW_ZOOM_MIN } from "../../model/viewZoom";
+import { wheelZoomDelta } from "../../model/inputEvents";
 import { clampCameraY, fitZoom } from "../cameraBounds";
 import { stablePointerId } from "../pinchTracker";
 import { FLOOR, TILE } from "../scale";
@@ -18,7 +18,7 @@ import { towerCatalog } from "../../catalog/towerCatalog";
  *  (extracted from `TowerEngine.ts`; the class keeps thin delegations and the
  *  coordinate transforms these read). */
 
-/** Camera zoom range (screen px per world px). Lives in shared/viewZoom
+/** Camera zoom range (screen px per world px). Lives in model/viewZoom
  *  (VIEW_ZOOM_MIN/MAX: the save schema clamps a restored zoom at the
  *  deserialize trust boundary); re-exported under the familiar names. */
 export const MIN_ZOOM = VIEW_ZOOM_MIN;
