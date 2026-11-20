@@ -16,8 +16,7 @@
  * enough to carry a pattern gets a hatch, and the legend counts the rooms in
  * words.
  */
-import type { FacilityKind, UnitState } from "../../model/types";
-import type { UnitView } from "../../simport/view";
+import type { FacilityKind, UnitState, RenderUnit } from "../renderModel";
 import { floorsFor } from "./drawList";
 import { snappedBlock, type MapLayout, type MapRect } from "./geometry";
 import { MIN_PATTERN_SIDE, type MapPaintContext, type PatternSource } from "./paint";
@@ -62,7 +61,7 @@ export const HOTEL_LEGEND: ReadonlyArray<{
 ];
 
 /** The room fields the Hotel view reads. `state` is read live each hour. */
-export type HotelRoom = Pick<UnitView, "kind" | "floor" | "x" | "width" | "state">;
+export type HotelRoom = Pick<RenderUnit, "kind" | "floor" | "x" | "width" | "state">;
 
 /** A hotel room and where it sits on the map. */
 export interface HotelRoomMark {

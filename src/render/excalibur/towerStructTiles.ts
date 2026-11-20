@@ -1,13 +1,12 @@
+import type { RenderSim, RenderUnit } from "../renderModel";
+import { towerCatalog } from "../towerSource";
 import type * as ex from "excalibur";
-import type { RenderSim } from "../renderSim";
-import type { UnitView } from "../../simport/view";
 import { lobbyVariant } from "../sprites";
 import type { TowerEngine } from "./TowerEngine";
 import type { EntranceKind } from "../sprites/structure/lobby";
-import { hallDoors } from "../lobbyHalls";
+import { hallDoors, lobbyHalls } from "../lobbyHalls";
 import { relightHallDoors, syncHallDoors } from "./towerHallDoors";
 import { stampGroundEntrances, towerOfSpan } from "../groundEntrances";
-import { towerCatalog } from "../../catalog/towerCatalog";
 import { bridgeCellKey, bridgeLookCells, bridgeTileGfx, NO_BRIDGE_LOOKS, type BridgeCell } from "./towerBridgeTiles";
 
 /** The slices of a grand entrance, which carry its staff. */
@@ -24,10 +23,10 @@ type GrandKind = Exclude<EntranceKind, "service">;
  *  order) and the lobby cells with their units. */
 export interface StructPass {
   sim: RenderSim | null;
-  units: readonly UnitView[] | null;
+  units: readonly RenderUnit[] | null;
   revision: number;
   lit: boolean;
-  rooms: readonly UnitView[];
+  rooms: readonly RenderUnit[];
   lobbies: readonly LobbyCell[];
   /** The lobby cells that show a grand entrance, whose doorman and attendant
    *  come and go with their tower's tenants ({@link repaintEntrances}). */
@@ -44,7 +43,7 @@ type UndersideCell = readonly [ex.Tile, BridgeCell];
 /** A lobby cell: the tile, its lobby unit, which story of the lobby it shows
  *  (0 is the lobby's own floor), the lobby's height in stories (#308) and, on
  *  a sky bridge in a drawn look, its look and place on the bridge. */
-export type LobbyCell = readonly [ex.Tile, UnitView, number, number, BridgeCell?];
+export type LobbyCell = readonly [ex.Tile, RenderUnit, number, number, BridgeCell?];
 
 /** A record that matches no sim, so the next sync walks every unit. */
 export function emptyStructPass(): StructPass {
@@ -68,7 +67,7 @@ export function emptyStructPass(): StructPass {
  *  Any other sync touches no cell and hands back the kept rooms, whose entries
  *  stay current because the view patches them in place until it rebuilds the
  *  unit list. */
-export function syncStructureTiles(engine: TowerEngine): readonly UnitView[] {
+export function syncStructureTiles(engine: TowerEngine): readonly RenderUnit[] {
   const tower = engine.sim.tower;
   const pass = engine.structPass;
   const units = tower.units;
@@ -86,11 +85,11 @@ export function syncStructureTiles(engine: TowerEngine): readonly UnitView[] {
     return pass.rooms;
   }
   const topFloor = engine.structTopFloor;
-  const rooms: UnitView[] = [];
+  const rooms: RenderUnit[] = [];
   const lobbies: LobbyCell[] = [];
   // Read once per full pass (#308): a tall lobby's cells cover the stories
   // above its floor too.
-  const tall = tower.tallLobbies();
+  const tall = lobbyHalls(tower.lobbyHeights());
   // The lobby columns of each floor that holds a tall hall, for the walls
   // between halls of different heights (#2068).
   const hallFloors = new Map<number, Set<number>>();
@@ -200,7 +199,7 @@ function paintCell(cell: ex.Tile, gfx: ex.Graphic): void {
  *  variant to a wide-storefront grand slice, a compact grand fallback, or
  *  a service entrance; see {@link floor1EntranceKind}. A sky bridge tile in a
  *  drawn look (`look`) shows that look. */
-function lobbyTileGfx(engine: TowerEngine, u: UnitView, story = 0, height = 1, look?: BridgeCell): ex.Canvas {
+function lobbyTileGfx(engine: TowerEngine, u: RenderUnit, story = 0, height = 1, look?: BridgeCell): ex.Canvas {
   if (look !== undefined) return bridgeTileGfx(look, engine.litState);
   const lit = engine.litState ? 1 : 0;
   if (height > 1) {

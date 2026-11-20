@@ -1,3 +1,4 @@
+import type { RenderSim } from "../renderModel";
 import * as ex from "excalibur";
 import { Z } from "../depthPlanes";
 import { viewWorld } from "../../presentation/viewWorld";
@@ -28,7 +29,6 @@ import {
   drawTree,
   lampAlpha,
 } from "./towerSceneryDraw";
-import type { RenderSim } from "../renderSim";
 import type { TowerEngine } from "./TowerEngine";
 
 /**

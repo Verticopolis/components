@@ -1,7 +1,7 @@
+import type { RenderUnit } from "../renderModel";
 import * as ex from "excalibur";
 import { Z } from "../depthPlanes";
 import { viewWorld } from "../../presentation/viewWorld";
-import type { UnitView } from "../../simport/view";
 import { FLOOR, TILE } from "../scale";
 import { METRO_TUNNEL_TILE, drawMetroTunnel } from "../sprites/facilities";
 import { METRO_PORTAL_W, METRO_TRAIN_H, drawMetroPortal, drawMetroTrain } from "../sprites/facilities/vehicles";
@@ -19,7 +19,7 @@ import type { TowerEngine } from "./TowerEngine";
  *  (`metroTrainAt`). */
 export interface MetroTrain {
   actor: ex.Actor;
-  u: UnitView;
+  u: RenderUnit;
   w: number;
   shift: (offset: number) => void;
   line: readonly number[];
@@ -29,8 +29,8 @@ export interface MetroTrain {
 /** Every station's train and portals, and one tunnel along their row. A Modern
  *  tower may run several stations on one line, so the tunnel is laid once, in
  *  the gaps the stations leave. */
-export function addMetros(engine: TowerEngine, stations: readonly UnitView[]): void {
-  const rows = new Map<number, UnitView[]>();
+export function addMetros(engine: TowerEngine, stations: readonly RenderUnit[]): void {
+  const rows = new Map<number, RenderUnit[]>();
   for (const u of stations) rows.set(u.floor, [...(rows.get(u.floor) ?? []), u]);
   for (const [floor, onRow] of rows) {
     const ordered = [...onRow].sort((a, b) => a.x - b.x);
@@ -42,7 +42,7 @@ export function addMetros(engine: TowerEngine, stations: readonly UnitView[]): v
 
 /** The world x of a station's train canvas, where the train stands when it
  *  calls there. */
-function trainLeft(engine: TowerEngine, u: UnitView): number {
+function trainLeft(engine: TowerEngine, u: RenderUnit): number {
   return engine.worldX(u.x) + 3;
 }
 
@@ -64,7 +64,7 @@ export function tunnelSpans(stations: readonly { x: number; width: number }[], l
  *  the track just below the platform edge: its base is 3px off the station
  *  floor and it stands METRO_TRAIN_H tall. `line` and `stop` place the station
  *  on its row's line, so the one train shows here only when it calls here. */
-function addMetro(engine: TowerEngine, u: UnitView, line: readonly number[], stop: number): void {
+function addMetro(engine: TowerEngine, u: RenderUnit, line: readonly number[], stop: number): void {
   const w = u.width * TILE - 6;
   const trainY = engine.worldYTop(u.floor) + FLOOR - 3 - METRO_TRAIN_H;
   // The consist is baked once; the actor stays on the station and its canvas
@@ -131,7 +131,7 @@ function addTunnel(engine: TowerEngine, floor: number, spans: readonly [number, 
 
 /** A dark mouth at each end of the station, drawn over the train: the train
  *  comes out of the dark and goes back into it. */
-function addPortals(engine: TowerEngine, u: UnitView, trainY: number): void {
+function addPortals(engine: TowerEngine, u: RenderUnit, trainY: number): void {
   const h = METRO_TRAIN_H + 3;
   for (const side of ["left", "right"] as const) {
     const x = side === "left" ? engine.worldX(u.x) : engine.worldX(u.x + u.width) - METRO_PORTAL_W;

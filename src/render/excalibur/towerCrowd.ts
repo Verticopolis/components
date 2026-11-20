@@ -1,9 +1,9 @@
+import { catalogFacility } from "../catalogIndex";
+import { towerCatalog, towerRules } from "../towerSource";
+import type { RenderPerson } from "../renderModel";
 import * as ex from "excalibur";
 import { Z } from "../depthPlanes";
 import { isElevatorKind } from "../../presentation/viewKinds";
-import { catalogFacility } from "../../catalog/catalogTypes";
-import { towerCatalog } from "../../catalog/towerCatalog";
-import { isOperational } from "../../model/unitState";
 import { drawGarbageTruck, drawStreetCar } from "../sprites";
 import { GARBAGE_TRUCK_H } from "../sprites/facilities/vehicles";
 import { metroTrainAt } from "../metroTrainSchedule";
@@ -12,7 +12,6 @@ import { buildWalkers } from "./towerWalkerBuild";
 import { cabLoad, cabRidersOf } from "./cabRiders";
 import { CabGraphic, cabWant, carKey, IDLE_CAR } from "./cabGraphics";
 import { glideCar, newCarDraw, type CarDrawState } from "../carMotion";
-import type { PersonView } from "../../simport/view";
 import { FLOOR, TILE } from "../scale";
 import type { TowerEngine } from "./TowerEngine";
 import { climbDrawX, leaveFlight, type Climber } from "../climbPath";
@@ -149,7 +148,7 @@ export function reconcileCrowd(engine: TowerEngine): void {
   reap(engine.crowdActors, seen, (rec) => rec.actor.kill());
 }
 
-function positionPerson(engine: TowerEngine, p: PersonView, rec: CrowdActor, look: CrowdLook): void {
+function positionPerson(engine: TowerEngine, p: RenderPerson, rec: CrowdActor, look: CrowdLook): void {
   const inCar = ridingHidden(p);
   // A rider walking into the car keeps the shaft found while they waited.
   const boarding = inCar && !rec.inCar;
@@ -454,6 +453,7 @@ export function updateMotion(engine: TowerEngine, elapsedMs = 1000 / 60): void {
   const simClock = engine.sim.clock;
   const garbageCollectHour = towerCatalog(engine.sim).economy.garbageCollectHour;
   const truckHour = simClock.hour === garbageCollectHour;
+  const { isOperational } = towerRules(engine.sim);
   for (const tk of engine.truckActors) {
     // No collection at a center that isn't running (under construction, on
     // fire, or a gutted shell), a non-operational plant processes no waste.

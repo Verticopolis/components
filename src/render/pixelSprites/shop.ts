@@ -1,4 +1,4 @@
-import type { UnitView } from "../../simport/view";
+import type { RenderUnit } from "../renderModel";
 import { SHIRTS, closedShutter, person, shell, type RoomCtx } from "./common";
 import { SHOP_LOOKS } from "./shop.looks";
 import { drawShopInterior, drawShopSignage, type ShopGeom } from "./shop.interiors";
@@ -21,7 +21,7 @@ export type { ShopLook } from "./shop.looks";
 
 // ---- Shop ---------------------------------------------------------------
 
-export function shop(d: RoomCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
+export function shop(d: RoomCtx, u: RenderUnit, x: number, y: number, w: number, h: number): void {
   const { ctx } = d;
   if (u.state === "occupied" && !(d.hour >= 10 && d.hour < 21)) return closedShutter(d, x, y, w, h, "#b58ad6");
   // Subtype look (canon variant); unknown/undefined = the legacy generic shop

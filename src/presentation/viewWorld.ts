@@ -1,4 +1,4 @@
-import type { CatalogWorld } from "../catalog/catalogTypes";
+import type { RenderWorld } from "../render/renderModel";
 
 /**
  * The world geometry the view is built for: the lot width and the floor range
@@ -16,7 +16,7 @@ import type { CatalogWorld } from "../catalog/catalogTypes";
  */
 
 /** The fields the view reads. */
-export type ViewWorld = Pick<CatalogWorld, "lotWidth" | "minFloor" | "maxFloor">;
+export type ViewWorld = Pick<RenderWorld, "lotWidth" | "minFloor" | "maxFloor">;
 
 let bound: ViewWorld | null = null;
 

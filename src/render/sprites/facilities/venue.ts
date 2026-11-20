@@ -1,4 +1,4 @@
-import type { UnitView } from "../../../simport/view";
+import type { RenderUnit } from "../../renderModel";
 import { shade, type DrawCtx } from "../common";
 import { personSeated, personStanding, roomOccupants } from "../../pixelSprites/common";
 import { layerBreak } from "../../pixelSprites/layers";
@@ -19,7 +19,7 @@ import { layerBreak } from "../../pixelSprites/layers";
  * ghost crowd this replaced is gone for good. Static fills only, no `d.anim` read; the
  * seed is geography so a TDT id renumber does not reshuffle the guests.
  */
-export function drawPartyHall(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number) {
+export function drawPartyHall(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number) {
   const ctx = d.ctx;
   const f = (bx: number, by: number, bw: number, bh: number, c: string, o = 1) => {
     ctx.fillStyle = c;
@@ -153,7 +153,7 @@ export function drawPartyHall(d: DrawCtx, u: UnitView, x: number, y: number, w: 
  * so an empty pool draws none and a busy one fills. Static fills only, no `d.anim`
  * read; the seed is geography so a TDT id renumber does not reshuffle the crowd.
  */
-export function drawAquaticCenter(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number) {
+export function drawAquaticCenter(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number) {
   const ctx = d.ctx;
   const f = (bx: number, by: number, bw: number, bh: number, c: string, o = 1) => {
     ctx.fillStyle = c;

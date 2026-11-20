@@ -4,6 +4,40 @@ import prettier from "eslint-config-prettier";
 import lit from "eslint-plugin-lit";
 import globals from "globals";
 
+import { SHIM_FOLDERS, SHIM_MODELS } from "./scripts/engineShims.mjs";
+
+/** The deprecated shim modules, the only files that may import the engine. */
+const SHIMS = [
+  ...SHIM_FOLDERS.map((f) => `src/${f}/**`),
+  `src/model/{${SHIM_MODELS.join(",")}}.ts`,
+  // The tests' helpers wrap the engine's testing/* until components 1.0.
+  "src/tests/**",
+];
+
+const ENGINE_PACKAGE = {
+  group: ["@verticopolis/engine", "@verticopolis/engine/*"],
+  message: "Components never import the engine: read the render model (src/render/renderModel.ts) instead.",
+};
+
+/** A relative import of a shim reaches the engine just the same. */
+const SHIM_PATHS = [
+  {
+    regex: `^(\\.\\.?/)+(${SHIM_FOLDERS.join("|")})/`,
+    message:
+      "This folder re-exports the engine and goes in components 1.0: use the render model or presentation/ instead.",
+  },
+  {
+    regex: `^(\\.\\.?/)+model/(${SHIM_MODELS.join("|")})$`,
+    message: "This module re-exports the engine and goes in components 1.0: use the render model instead.",
+  },
+];
+
+/** A module in src/model/ importing a sibling shim. */
+const SHIM_SIBLINGS = {
+  regex: `^\\./(${SHIM_MODELS.join("|")})$`,
+  message: "This module re-exports the engine and goes in components 1.0: use the render model instead.",
+};
+
 // The rules every linted file shares.
 const rules = {
   "@typescript-eslint/no-explicit-any": "warn",
@@ -49,6 +83,34 @@ export default [
           "CallExpression[callee.name='addBoxActor'] > .arguments:nth-child(5):not(Identifier):not(:has(Identifier))",
         ].map((selector) => ({ selector, message: "Take the actor's z from the draw-plane table in depthPlanes.ts." })),
       ],
+    },
+  },
+  {
+    // Components depend on nothing from the engine (engine#89): the renderer,
+    // presentation, UI and audio read the render model (src/render/renderModel.ts)
+    // that each app fills from the engine. Only the deprecated shims re-export
+    // the engine, until components 1.0 removes them; the tests move off them
+    // then too.
+    files: ["src/**/*.ts"],
+    ignores: [...SHIMS, "src/**/*.test.ts", "src/**/*.fixture.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [ENGINE_PACKAGE, ...SHIM_PATHS] }],
+    },
+  },
+  {
+    // Beside the shims in src/model/, a sibling import (`./types`) reaches
+    // the engine too.
+    files: ["src/model/*.ts"],
+    ignores: [...SHIMS, "src/**/*.test.ts", "src/**/*.fixture.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [ENGINE_PACKAGE, ...SHIM_PATHS, SHIM_SIBLINGS] }],
+    },
+  },
+  {
+    files: ["src/**/*.test.ts", "src/**/*.fixture.ts"],
+    ignores: SHIMS,
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [ENGINE_PACKAGE] }],
     },
   },
   {

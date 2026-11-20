@@ -1,11 +1,11 @@
+import type { RenderSim, RenderUnit } from "../renderModel";
+import { towerCatalog } from "../towerSource";
 import * as ex from "excalibur";
 import { drawTallLobbyEntrance, drawTallLobbyTile } from "../sprites/structure/tallLobby";
 import { Z } from "../depthPlanes";
 import { GROUND, groundBelowFloors } from "../sceneryLayout";
-import type { RenderSim } from "../renderSim";
 import { bindViewWorld, viewWorld } from "../../presentation/viewWorld";
 import { bindViewKinds } from "../../presentation/viewKinds";
-import type { UnitView } from "../../simport/view";
 import {
   AWNING_W,
   drawAwning,
@@ -40,7 +40,6 @@ import * as overlayFx from "./towerOverlay";
 import * as crowd from "./towerCrowd";
 import { clearHallDoors } from "./towerHallDoors";
 import type { TowerEngine } from "./TowerEngine";
-import { towerCatalog } from "../../catalog/towerCatalog";
 
 /**
  * Static scene construction, shared-graphics baking, the sky-layer painters
@@ -171,7 +170,7 @@ export function bakeSharedGraphics(engine: TowerEngine): void {
   // Structural tiles bake from a FIXED DrawCtx (not the live this.d): these
   // canvases cache on first render, so baking from live state would freeze
   // whatever lighting happened to be on screen at that moment into the tile.
-  const bake = (u: UnitView, lit: boolean) =>
+  const bake = (u: RenderUnit, lit: boolean) =>
     new ex.Canvas({
       width: TILE,
       height: FLOOR,
@@ -295,7 +294,7 @@ export function bakeSharedGraphics(engine: TowerEngine): void {
   engine.people = bakePeople();
 }
 
-export function fakeStruct(kind: "floor" | "lobby", floor = 1, x = 0): UnitView {
+export function fakeStruct(kind: "floor" | "lobby", floor = 1, x = 0): RenderUnit {
   return {
     id: -1,
     kind,
@@ -304,7 +303,6 @@ export function fakeStruct(kind: "floor" | "lobby", floor = 1, x = 0): UnitView 
     width: 1,
     state: "occupied",
     occupants: 0,
-    label: "",
   };
 }
 

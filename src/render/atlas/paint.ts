@@ -1,5 +1,4 @@
-import type { FacilityKind, UnitState } from "../../model/types";
-import type { UnitView, TransportView } from "../../simport/view";
+import type { FacilityKind, UnitState, RenderUnit, RenderTransport } from "../renderModel";
 import type { PersonBuild } from "../pixelSprites/common";
 import { personFigure } from "../pixelSprites/common";
 import type { CarArrow } from "../carIndicator";
@@ -60,7 +59,7 @@ export interface UnitPaint {
 }
 
 /** Build the unit view a {@link UnitPaint} describes. */
-export function unitOf(s: UnitPaint): UnitView {
+export function unitOf(s: UnitPaint): RenderUnit {
   return {
     id: s.id,
     kind: s.kind,
@@ -71,12 +70,11 @@ export function unitOf(s: UnitPaint): UnitView {
     occupants: s.occupants,
     outForMeal: s.outForMeal,
     subtype: s.subtype,
-    label: "",
   };
 }
 
 /** A structural tile as the web bakes it (`towerScene.fakeStruct`). */
-function structUnit(kind: "floor" | "lobby", floor: number, x: number): UnitView {
+function structUnit(kind: "floor" | "lobby", floor: number, x: number): RenderUnit {
   return {
     id: -1,
     kind,
@@ -85,7 +83,6 @@ function structUnit(kind: "floor" | "lobby", floor: number, x: number): UnitView
     width: 1,
     state: "occupied",
     occupants: 0,
-    label: "",
   };
 }
 
@@ -183,7 +180,7 @@ function structCtx(ctx: CanvasRenderingContext2D, lit: boolean): DrawCtx {
 
 /** A shaft `floors` tall for one band bake, as the web's `transportGraphic`
  *  draws it. */
-function shaftOf(kind: FacilityKind, floors: number, skip: number[], w: number): TransportView {
+function shaftOf(kind: FacilityKind, floors: number, skip: number[], w: number): RenderTransport {
   return {
     id: 1,
     kind,

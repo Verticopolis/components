@@ -1,4 +1,4 @@
-import type { FacilityKind } from "../model/types";
+import type { FacilityKind } from "./renderModel";
 
 /**
  * The small-hours window that changes a home's look, shared by the room art,

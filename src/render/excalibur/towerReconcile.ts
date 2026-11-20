@@ -1,10 +1,9 @@
+import { catalogFacility } from "../catalogIndex";
+import { towerCatalog, towerRules } from "../towerSource";
+import type { RenderTransport, RenderUnit } from "../renderModel";
 import * as ex from "excalibur";
 import { Z } from "../depthPlanes";
-import { catalogFacility } from "../../catalog/catalogTypes";
-import { towerCatalog } from "../../catalog/towerCatalog";
 import { viewWorld } from "../../presentation/viewWorld";
-import { isPresent } from "../../model/unitState";
-import type { TransportView, UnitView } from "../../simport/view";
 import {
   CRANE_H,
   CRANE_MAST_ANCHOR_X,
@@ -18,6 +17,7 @@ import {
   ESCAPE_W,
 } from "../sprites";
 import { facadeGeometry, type FloorEdge } from "../facadeGeometry";
+import { lobbyHalls } from "../lobbyHalls";
 import { setRainShelter } from "./rainShelter";
 import { paintAnimatedUnit } from "../regionPaint";
 import { FLOOR, TILE, TRANSPORT_BAND_FLOORS } from "../scale";
@@ -108,6 +108,7 @@ export function syncScene(engine: TowerEngine): void {
   // the venues are gathered on this one walk of the rooms, and the flights
   // reconciled, only when that key moved since the last sync.
   const catalog = towerCatalog(engine.sim);
+  const { isPresent } = towerRules(engine.sim);
   const windsBesideVenues = catalog.rules.venueFlights;
   const flights = engine.flightPass;
   const flightsStale =
@@ -204,7 +205,7 @@ const NO_VENUES: readonly VenueBox[] = [];
  *  and every transport edit bumps the tower revision. */
 function syncTransports(
   engine: TowerEngine,
-  transports: ReadonlyArray<TransportView>,
+  transports: ReadonlyArray<RenderTransport>,
   winding: ReadonlySet<number>,
 ): void {
   const seenT = new Set<number>();
@@ -243,7 +244,12 @@ export function syncFacade(engine: TowerEngine): void {
   // raised story of a tall lobby hall.)
   const tower = engine.sim.tower;
   const hi = tower.highestFloor;
-  const { runs, topFloor, topTiles } = facadeGeometry(tower.units, hi, towerCatalog(engine.sim), tower.tallLobbies());
+  const { runs, topFloor, topTiles } = facadeGeometry(
+    tower.units,
+    hi,
+    towerCatalog(engine.sim),
+    lobbyHalls(tower.lobbyHeights()),
+  );
   syncEscapes(engine, runs);
   syncCrane(engine, topFloor, topTiles);
   setRainShelter(engine, runs);
@@ -362,7 +368,7 @@ function addBoxActor(engine: TowerEngine, pos: ex.Vector, w: number, h: number, 
  *  region canvas (z 0) and under every crowd sprite: walkers sit at 0.4 or
  *  lower, garage commute cars at exactly 0.5, so 0.45 avoids the insertion-
  *  order tie a 0.5 room would have with the cars driving past the flames. */
-function addRoom(engine: TowerEngine, u: UnitView): void {
+function addRoom(engine: TowerEngine, u: RenderUnit): void {
   const hgt = catalogFacility(towerCatalog(engine.sim), u.kind).floors;
   const w = u.width * TILE;
   const h = hgt * FLOOR;
@@ -381,7 +387,7 @@ function addRoom(engine: TowerEngine, u: UnitView): void {
   engine.animatedRooms.set(u.id, a);
 }
 
-function addTransport(engine: TowerEngine, t: TransportView, winds: boolean): void {
+function addTransport(engine: TowerEngine, t: RenderTransport, winds: boolean): void {
   const w = t.width * TILE;
   const totalFloors = t.top - t.bottom + 1;
   const h = totalFloors * FLOOR;
@@ -402,7 +408,7 @@ function addTransport(engine: TowerEngine, t: TransportView, winds: boolean): vo
  */
 function transportGraphic(
   engine: TowerEngine,
-  t: TransportView,
+  t: RenderTransport,
   w: number,
   totalFloors: number,
   winds: boolean,

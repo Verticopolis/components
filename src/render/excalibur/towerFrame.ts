@@ -48,6 +48,6 @@ export function beginFrame(engine: TowerEngine, elapsedMs: number): void {
   // first call after the sim steps or the tower structure changes (for example
   // a paused structural edit), which rebuilds once. The queue render that draws
   // from it is a follow-up story.
-  engine.d.elevatorQueue = engine.sim.crowd.queueView(engine.sim.tower);
+  engine.d.elevatorQueue = engine.sim.crowd.queueView();
   engine.engine.backgroundColor = ex.Color.fromHex(skyColor(c.hour));
 }

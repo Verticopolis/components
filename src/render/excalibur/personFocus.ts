@@ -1,5 +1,5 @@
+import type { RenderPerson } from "../renderModel";
 import * as ex from "excalibur";
-import type { PersonView } from "../../simport/view";
 import { FLOOR, TILE } from "../scale";
 import { FIGURE_ANCHOR, FIGURE_H, FIGURE_W } from "./peopleGfx";
 import type { TowerEngine } from "./TowerEngine";
@@ -118,7 +118,7 @@ export function focusSpot(engine: TowerEngine): ex.Vector | null {
   return f.at ? ex.vec(engine.worldX(f.at.x), engine.worldYTop(f.at.floor) + FLOOR - 3) : null;
 }
 
-function viewPerson(engine: TowerEngine, id: number): PersonView | undefined {
+function viewPerson(engine: TowerEngine, id: number): RenderPerson | undefined {
   for (const p of engine.sim.crowd.people) if (p.id === id) return p;
   return undefined;
 }

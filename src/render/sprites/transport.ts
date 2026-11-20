@@ -1,7 +1,6 @@
+import type { FacilityKind, RenderTransport } from "../renderModel";
 import { isElevatorKind } from "../../presentation/viewKinds";
 import { facilityColor } from "../../presentation/facilityPresentation";
-import type { FacilityKind } from "../../model/types";
-import type { TransportView } from "../../simport/view";
 import { personRider } from "../pixelSprites/common";
 import { layerBreak, layerEnd } from "../pixelSprites/layers";
 import { RIDER_STEP, type CarArrow } from "../carIndicator";
@@ -13,7 +12,7 @@ import { drawSpiralStair } from "./spiralStair";
 
 export function drawTransport(
   ctx: CanvasRenderingContext2D,
-  t: TransportView,
+  t: RenderTransport,
   sx: number,
   topY: number,
   w: number,

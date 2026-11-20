@@ -1,15 +1,15 @@
-import { dayName, formatClock, formatRetroDate } from "../presentation/clockText";
-import { ClockReads } from "./clockView";
-import type { HeaderView } from "./view";
+import { clockOf as clockAt, type ClockView } from "../presentation/clockOf";
+import { ClockReads } from "@verticopolis/engine/port/clockView";
+import type { HeaderView } from "@verticopolis/engine/port/view";
 
 /**
- * What a panel derives from the view's header instead of reading it off a
- * `Simulation` (facade slice 4, #1211): the clock's day, hour and names. The
- * engine reports the date numbers in the header (day, day of the week,
- * weekend flag, quarter, year, the calendar's week lengths); the names come
- * from `presentation/clockText.ts`. The mode's rules a panel shows come from
- * the tower's catalog (`catalog.rules`).
+ * @deprecated Moved to `presentation/clockOf`, which takes the header's date
+ * fields and the engine's clock (`RenderSim.clock`). This wrapper reads the
+ * clock from the header with the engine's `ClockReads`, as before. It goes in
+ * components 1.0.
  */
+
+export type { ClockView } from "../presentation/clockOf";
 
 /** The fields of the header a clock reading needs. */
 export type ClockHeader = Pick<
@@ -17,45 +17,7 @@ export type ClockHeader = Pick<
   "minutes" | "day" | "dayOfWeek" | "isWeekend" | "quarter" | "year" | "weekDays" | "weekendDays"
 >;
 
-/** The clock's readings a panel shows. */
-export interface ClockView {
-  readonly minutes: number;
-  readonly minuteOfDay: number;
-  readonly hour: number;
-  readonly minute: number;
-  readonly day: number;
-  readonly dayOfWeek: number;
-  readonly isWeekend: boolean;
-  readonly quarter: number;
-  readonly year: number;
-  readonly dayName: string;
-  isMorning(): boolean;
-  isEvening(): boolean;
-  isNight(): boolean;
-  format(): string;
-  formatRetroDate(): string;
-}
-
-/** The clock at the header's minute, on the tower's calendar. */
+/** @deprecated Use `clockOf(header, sim.clock)` from `presentation/clockOf`. */
 export function clockOf(h: ClockHeader): ClockView {
-  const time = new ClockReads().set(h);
-  return {
-    minutes: h.minutes,
-    minuteOfDay: time.minuteOfDay,
-    hour: time.hour,
-    minute: time.minute,
-    day: h.day,
-    dayOfWeek: h.dayOfWeek,
-    isWeekend: h.isWeekend,
-    quarter: h.quarter,
-    year: h.year,
-    get dayName() {
-      return dayName(h);
-    },
-    isMorning: () => time.isMorning(),
-    isEvening: () => time.isEvening(),
-    isNight: () => time.isNight(),
-    format: () => formatClock(h, time.hour, time.minute),
-    formatRetroDate: () => formatRetroDate(h),
-  };
+  return clockAt(h, new ClockReads().set(h));
 }

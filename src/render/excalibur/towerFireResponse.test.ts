@@ -11,7 +11,10 @@ import {
   roofOverFire,
 } from "./towerFireResponse";
 
-vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules: { shadedLook: false } }) }));
+vi.mock("../towerSource", async (real) => ({
+  ...(await real<typeof import("../towerSource")>()),
+  towerCatalog: () => ({ rules: { shadedLook: false } }),
+}));
 
 /** A fire in the room at tiles 170 to 178 on floor 6, a guard who climbed
  *  from floor 2 and stands at tile 174, and the helicopter called at 100. */

@@ -1,4 +1,4 @@
-import type { UnitView } from "../../../simport/view";
+import type { RenderUnit } from "../../renderModel";
 import { shade, type DrawCtx } from "../common";
 import { FLOOR } from "../../scale";
 import { personFigure, personSeated, roomOccupants } from "../../pixelSprites/common";
@@ -44,7 +44,7 @@ function bloom(ctx: CanvasRenderingContext2D, x: number, y: number, c: string): 
  * lone guest in an empty hall. The room's live attendance arrives through the
  * `customersIn` -> `occupants` mirror, which is already a bake-signature input.
  */
-function drawWeddingNave(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number) {
+function drawWeddingNave(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number) {
   const ctx = d.ctx;
   const n = roomOccupants(u);
   let filled = 0;
@@ -406,7 +406,7 @@ function drawWeddingGarden(d: DrawCtx, x: number, y: number, w: number, h: numbe
  * four stories of sky garden and a pair of gold rings rise above it. The rect is split into one equal
  * story per floor.
  */
-export function drawWeddingHall(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number) {
+export function drawWeddingHall(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number) {
   // The TypeScript engine's catalog still holds the one-story hall: draw the nave alone.
   const stories = Math.round(h / FLOOR);
   if (stories < 2) return drawWeddingNave(d, u, x, y, w, h);

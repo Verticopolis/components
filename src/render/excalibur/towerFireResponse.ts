@@ -1,5 +1,5 @@
-import type { FireResponseView } from "../../simport/view";
-import { towerCatalog } from "../../catalog/towerCatalog";
+import type { RenderFireResponse } from "../renderModel";
+import { towerCatalog } from "../towerSource";
 import { FLOOR, TILE } from "../scale";
 import { drawSearchGuard } from "../sprites/events";
 import { drawHelicopter, drawWaterSpray } from "../sprites/helicopter";
@@ -20,7 +20,7 @@ export const HELICOPTER_HOVER_FLOORS = 3;
  *  started in while it sprays, then flying off to the left. Null before it
  *  was called and once it is gone. */
 export function helicopterPlace(
-  fire: FireResponseView,
+  fire: RenderFireResponse,
   now: number,
   roof = fire.floor,
 ): { x: number; floor: number; spraying: boolean } | null {
@@ -48,7 +48,7 @@ export function helicopterPlace(
 let roofRead: { seq: number; revision: number; roof: number } | null = null;
 
 /** The highest floor built over the middle of the fire's room. */
-export function roofOverFire(engine: TowerEngine, fire: FireResponseView): number {
+export function roofOverFire(engine: TowerEngine, fire: RenderFireResponse): number {
   const tower = engine.sim.tower;
   if (roofRead && roofRead.seq === fire.seq && roofRead.revision === tower.revision) return roofRead.roof;
   const x = fire.x + fire.width / 2;

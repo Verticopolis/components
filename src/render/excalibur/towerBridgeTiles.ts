@@ -1,6 +1,6 @@
+import type { RenderSkyBridge } from "../renderModel";
 import * as ex from "excalibur";
 import { FLOOR, TILE } from "../scale";
-import type { SkyBridgeView } from "../../simport/view";
 import { drawBridgeTile, drawsBridgeLook, type BridgePart } from "../sprites/structure/skyBridge";
 
 /**
@@ -29,7 +29,7 @@ export const NO_BRIDGE_LOOKS: ReadonlyMap<number, BridgeCell> = new Map();
 /** Each bridge tile drawn in a look, keyed by {@link bridgeCellKey}. Built
  *  once per full structure pass from the view's bridges, a handful of runs. */
 export function bridgeLookCells(
-  bridges: readonly SkyBridgeView[],
+  bridges: readonly RenderSkyBridge[],
   looks: readonly string[] | undefined,
 ): Map<number, BridgeCell> {
   const cells = new Map<number, BridgeCell>();

@@ -1,12 +1,12 @@
+import { catalogFacility } from "../catalogIndex";
+import { towerCatalog } from "../towerSource";
+import type { RenderTransport } from "../renderModel";
 import { drawPersonRing } from "./personFocus";
 import { drawTrafficSpotlight } from "./trafficSpotlight";
 import { RAIN } from "../sprites/sky";
 import { clipToOpenSky } from "./rainShelter";
 import { isElevatorKind } from "../../presentation/viewKinds";
-import { catalogFacility } from "../../catalog/catalogTypes";
-import { towerCatalog } from "../../catalog/towerCatalog";
 import { viewWorld } from "../../presentation/viewWorld";
-import type { TransportView } from "../../simport/view";
 import { beatFrame, strideFrame } from "./crowdLook";
 import { drawExplosion, drawSearchGuard, drawThief, drawTreasure, drawVipLimo } from "../sprites/events";
 import { FLOOR, TILE } from "../scale";
@@ -411,7 +411,7 @@ function drawSelection(engine: TowerEngine, ctx: CanvasRenderingContext2D): void
 
 /** Outline the selected shaft and, for elevators, draw clickable extend
  *  arrows above the top and below the bottom (as in the original). */
-function drawTransportSelection(engine: TowerEngine, ctx: CanvasRenderingContext2D, t: TransportView): void {
+function drawTransportSelection(engine: TowerEngine, ctx: CanvasRenderingContext2D, t: RenderTransport): void {
   const z = engine.cam.zoom;
   const sx = engine.worldToScreenX(t.x);
   const sw = t.width * TILE * z;

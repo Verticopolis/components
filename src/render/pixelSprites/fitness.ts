@@ -1,4 +1,4 @@
-import type { UnitView } from "../../simport/view";
+import type { RenderUnit } from "../renderModel";
 import {
   busyStations,
   castShadow,
@@ -49,7 +49,7 @@ export const FITNESS_LOOKS: Record<string, FitnessLook> = {
 
 /** A stable per-room seed from GEOGRAPHY (floor, x), so the figures survive a
  *  save/export/import (which renumbers `u.id`). */
-function figureSeed(u: Pick<UnitView, "floor" | "x">): number {
+function figureSeed(u: Pick<RenderUnit, "floor" | "x">): number {
   return (u.floor * 131 + u.x * 17) | 0;
 }
 
@@ -232,7 +232,7 @@ function drawClimb(
 
 /** The Modern Fitness Club. Reused for every format subtype; the look's `format`
  *  discriminant picks the interior so each format renders as its own room. */
-export function fitnessClub(d: RoomCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
+export function fitnessClub(d: RoomCtx, u: RenderUnit, x: number, y: number, w: number, h: number): void {
   const { ctx } = d;
   const look = (u.subtype !== undefined && FITNESS_LOOKS[u.subtype]) || FITNESS_DEFAULT;
   const floorY = shell(ctx, x, y, w, h, look.wall, look.floor);

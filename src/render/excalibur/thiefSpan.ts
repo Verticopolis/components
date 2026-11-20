@@ -1,4 +1,4 @@
-import type { UnitView } from "../../simport/view";
+import type { RenderUnit } from "../renderModel";
 
 /** The tile span of a floor's rooms: left edge, right edge (exclusive). The
  *  run the thief takes across one tower's part of a floor (#1886). */
@@ -14,7 +14,7 @@ export interface ThiefSpan {
  *  floor on a lot with several. One pass over the units, made once when a
  *  thief appears (at most once a game day), never per frame. */
 export function floorRoomSpan(
-  units: ReadonlyArray<Pick<UnitView, "kind" | "floor" | "x" | "width">>,
+  units: ReadonlyArray<Pick<RenderUnit, "kind" | "floor" | "x" | "width">>,
   floor: number,
   x?: number,
 ): ThiefSpan | null {
@@ -32,7 +32,7 @@ export function floorRoomSpan(
 /** The run of floor and lobby tiles on `floor` that holds tile `x`, as its
  *  first and last tiles, or null when no such tile is there. */
 function structuralRun(
-  units: ReadonlyArray<Pick<UnitView, "kind" | "floor" | "x" | "width">>,
+  units: ReadonlyArray<Pick<RenderUnit, "kind" | "floor" | "x" | "width">>,
   floor: number,
   x: number,
 ): ThiefSpan | null {

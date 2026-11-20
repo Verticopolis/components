@@ -1,56 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { isOperational, isPresent } from "@verticopolis/engine/model/unitState";
+import { VIEW_ZOOM_MAX, VIEW_ZOOM_MIN } from "@verticopolis/engine/model/viewZoom";
 import { catalogFor } from "../tests/catalogFixture";
-import type { Catalog } from "./catalogTypes";
-import { catalogFacility, findCatalogFacility } from "./catalogTypes";
+import { towerRules, towerCatalog as sourceCatalog } from "../render/towerSource";
 import { towerCatalog, useTowerCatalogSource } from "./towerCatalog";
-import type { GameMode } from "../model/types";
 
-/** A tower as the handle reads it: a key with a mode. */
-const tower = (mode: GameMode): { readonly mode: GameMode } => ({ mode });
+describe("the deprecated catalog handle", () => {
+  const sim = { mode: "classic" as const };
+  afterEach(() => useTowerCatalogSource(sim, null));
 
-describe("a tower's catalog handle (#921)", () => {
-  it("reads the fallback source for the tower's own mode by default", () => {
-    for (const mode of ["classic", "modern"] as const) {
-      const sim = tower(mode);
-      expect(towerCatalog(sim)).toEqual(catalogFor(mode));
-      expect(towerCatalog(sim).mode).toBe(mode);
-    }
-  });
-
-  it("reads each mode once and hands back the same catalog after", () => {
-    const sim = tower("classic");
-    expect(towerCatalog(sim)).toBe(towerCatalog(sim));
-    expect(towerCatalog(sim, "modern")).toBe(towerCatalog(sim, "modern"));
-    expect(towerCatalog(sim, "modern").mode).toBe("modern");
-  });
-
-  it("keeps each tower's catalog apart", () => {
-    const a = tower("classic");
-    const b = tower("classic");
-    useTowerCatalogSource(a, () => ({ ...catalogFor("classic"), version: 0 }));
-    expect(towerCatalog(a).version).toBe(0);
-    expect(towerCatalog(b)).toEqual(catalogFor("classic"));
-  });
-
-  it("switches to another source and back", () => {
-    const sim = tower("modern");
-    const asked: GameMode[] = [];
-    const marked: Catalog = { ...catalogFor("modern"), economy: { ...catalogFor("modern").economy, addCarCost: 1 } };
-    useTowerCatalogSource(sim, (mode) => {
-      asked.push(mode);
-      return marked;
-    });
-    expect(towerCatalog(sim).economy.addCarCost).toBe(1);
-    expect(towerCatalog(sim).economy.addCarCost).toBe(1);
-    expect(asked).toEqual(["modern"]);
-    useTowerCatalogSource(sim, null);
-    expect(towerCatalog(sim)).toEqual(catalogFor("modern"));
-  });
-
-  it("finds a facility by kind, and refuses an unknown one only when asked to", () => {
-    const catalog = catalogFor("classic");
-    expect(catalogFacility(catalog, "office").key).toBe("office");
-    expect(findCatalogFacility(catalog, "castle" as "office")).toBeUndefined();
-    expect(() => catalogFacility(catalog, "castle" as "office")).toThrow(/lists no facility "castle"/);
+  it("sets the tower's source with the engine's rules filled in", () => {
+    const marked = { ...catalogFor("classic"), version: 0 };
+    useTowerCatalogSource(sim, () => marked);
+    expect(towerCatalog(sim)).toBe(marked);
+    expect(sourceCatalog(sim)).toBe(marked);
+    const rules = towerRules(sim);
+    expect(rules.isPresent).toBe(isPresent);
+    expect(rules.isOperational).toBe(isOperational);
+    expect(rules.viewZoom).toEqual({ min: VIEW_ZOOM_MIN, max: VIEW_ZOOM_MAX });
   });
 });

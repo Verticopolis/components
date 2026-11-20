@@ -1,8 +1,9 @@
 /**
  * Engine-neutral copy shared by simulation logs, notifications and the UI.
  * This module contains text only, with no gameplay or engine imports.
- * Keep in sync with the VacateReason union in src/model/types.ts; that
- * module enforces Record<VacateReason, string> at compile time.
+ * Keep in sync with the engine's VacateReason union: the deprecated
+ * src/model/types.ts path types this as Record<VacateReason, string> against
+ * it, so a reason the engine adds fails the compiler.
  */
 export const VACATE_REASON_TEXT = {
   access: "no route to the lobby",

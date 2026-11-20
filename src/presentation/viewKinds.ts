@@ -1,5 +1,5 @@
-import { catalogOpenAt, type Catalog, type CatalogFacility } from "../catalog/catalogTypes";
-import type { FacilityKind } from "../model/types";
+import { catalogOpenAt } from "../render/catalogIndex";
+import type { RenderCatalog, RenderFacility, FacilityKind } from "../render/renderModel";
 
 /**
  * What the view knows about each kind, read from the engine's catalog: which
@@ -15,16 +15,16 @@ import type { FacilityKind } from "../model/types";
  * throw for unknown kinds rather than silently inventing simulation rules.
  */
 
-let bound: ReadonlyMap<FacilityKind, CatalogFacility> | null = null;
+let bound: ReadonlyMap<FacilityKind, RenderFacility> | null = null;
 
 /** Binds the view's kind facts to a catalog. A later bind replaces them: both
  *  modes' catalogs state the same facts, and a damaged catalog is refused where
  *  it is read. */
-export function bindViewKinds(catalog: Catalog): void {
+export function bindViewKinds(catalog: RenderCatalog): void {
   bound = new Map(catalog.facilities.map((f) => [f.key, f]));
 }
 
-function entry(kind: FacilityKind): CatalogFacility {
+function entry(kind: FacilityKind): RenderFacility {
   if (!bound)
     throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
   const f = bound.get(kind);
@@ -34,7 +34,7 @@ function entry(kind: FacilityKind): CatalogFacility {
 
 /** The catalog facts for `kind`, or null when the bound catalog lists none.
  *  Throws before the first bind. */
-export function findViewKind(kind: FacilityKind): CatalogFacility | null {
+export function findViewKind(kind: FacilityKind): RenderFacility | null {
   if (!bound)
     throw new Error("the view's kind facts are not bound yet: bind them from the tower's catalog before drawing");
   return bound.get(kind) ?? null;

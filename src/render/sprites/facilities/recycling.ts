@@ -1,4 +1,4 @@
-import type { UnitView } from "../../../simport/view";
+import type { RenderUnit } from "../../renderModel";
 import { personHiVis } from "../../pixelSprites/common";
 import { layerBreak, layerShell } from "../../pixelSprites/layers";
 import { rand, serviceLabel, type DrawCtx } from "../common";
@@ -42,7 +42,7 @@ import {
 /** Rooms drawn narrower than this (in screen px) leave the FULL label off. */
 const FULL_LABEL_MIN_W = 44;
 
-export function drawRecycling(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
+export function drawRecycling(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number): void {
   const ctx = d.ctx;
   const RW = RECYCLING_REF_W;
   const RH = RECYCLING_REF_H;

@@ -7,7 +7,7 @@
  * engine's floor still says how far up they are, and this only says where
  * along the run that height falls. Nothing here changes the simulation.
  */
-import type { TransportView } from "../simport/view";
+import type { RenderTransport } from "./renderModel";
 import { FLOOR, TILE } from "./scale";
 import { halfTurnY } from "./sprites/escalator";
 import { spiralAngle, spiralRadius } from "./sprites/spiralStair";
@@ -37,7 +37,7 @@ const HALF_TURN_LOWER = 1 - halfTurnY(0, FLOOR) / FLOOR;
  *  one-story flight that `winds` beside a venue (`venueFlights.ts`) is a
  *  one-story spiral, or an escalator that turns back at its landing. */
 function placeOnFlight(
-  t: Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">,
+  t: Pick<RenderTransport, "kind" | "x" | "width" | "bottom" | "top">,
   fy: number,
   out: ClimbSpot,
   winds = false,
@@ -70,7 +70,7 @@ function placeOnFlight(
 /** The point along `t`'s run at floor `fy`; `winds` when it stands beside a
  *  venue (`venueFlights.ts`). */
 export function climbSpot(
-  t: Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">,
+  t: Pick<RenderTransport, "kind" | "x" | "width" | "bottom" | "top">,
   fy: number,
   winds = false,
 ): ClimbSpot {
@@ -86,15 +86,15 @@ export function climbSpot(
  *  (`descending`). `climbDrawX` looks again once `fy` leaves the flight it
  *  found. */
 export function climbFlight(
-  transports: ReadonlyArray<TransportView>,
+  transports: ReadonlyArray<RenderTransport>,
   x: number,
   floor: number,
   fy = floor,
   descending = false,
-): TransportView | undefined {
+): RenderTransport | undefined {
   const below = Math.floor(fy);
   const above = Math.ceil(fy);
-  let holdsFloor: TransportView | undefined;
+  let holdsFloor: RenderTransport | undefined;
   for (const t of transports) {
     if (t.kind !== "stairs" && t.kind !== "escalator") continue;
     if (Math.abs(t.x + t.width / 2 - x) >= 1e-6) continue;
@@ -108,7 +108,7 @@ export function climbFlight(
 
 /** Whether drawn floor `fy` has left `t`, so the climber is on another flight
  *  of a stack. */
-function leftFlight(t: TransportView, fy: number): boolean {
+function leftFlight(t: RenderTransport, fy: number): boolean {
   return fy < t.bottom || fy > t.top;
 }
 
@@ -119,7 +119,7 @@ const SCRATCH: ClimbSpot = { x: 0, rightward: true };
 export interface Climber {
   /** The flight the climber is on, found when the climb began or they moved
    *  on to the next flight of a stack; `null` when none matched. */
-  flight?: TransportView | null;
+  flight?: RenderTransport | null;
   /** Where the climber was last drawn, so the walk off the flight starts
    *  from that landing instead of the flight's middle. */
   climbX?: number;
@@ -139,7 +139,7 @@ export interface Climber {
  *  flight is found. */
 export function climbDrawX(
   c: Climber,
-  transports: ReadonlyArray<TransportView>,
+  transports: ReadonlyArray<RenderTransport>,
   x: number,
   floor: number,
   fy: number,

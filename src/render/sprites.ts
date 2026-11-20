@@ -1,6 +1,5 @@
+import type { FacilityKind, RenderUnit } from "./renderModel";
 import { facilityColor } from "../presentation/facilityPresentation";
-import type { FacilityKind } from "../model/types";
-import type { UnitView } from "../simport/view";
 import { drawRoom } from "./pixelSprites";
 import { layerEnd } from "./pixelSprites/layers";
 import type { DrawCtx } from "./sprites/common";
@@ -80,7 +79,7 @@ const ROOM_KINDS = new Set<FacilityKind>([
  */
 
 /** Draw a placed room/structure unit into the given screen rectangle. */
-export function drawUnit(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
+export function drawUnit(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number): void {
   const { ctx } = d;
 
   if (u.kind === "floor") return drawFloor(ctx, x, y, w, h);
@@ -108,7 +107,7 @@ export function drawUnit(d: DrawCtx, u: UnitView, x: number, y: number, w: numbe
 }
 
 /** Dispatch to the per-facility interior drawing (services & special only). */
-function drawInterior(d: DrawCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
+function drawInterior(d: DrawCtx, u: RenderUnit, x: number, y: number, w: number, h: number): void {
   const ctx = d.ctx;
   switch (u.kind) {
     case "partyHall":

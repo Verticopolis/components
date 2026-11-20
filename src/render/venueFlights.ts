@@ -14,8 +14,7 @@
  * nothing about it is saved: the look follows from the flight and the rooms
  * beside it, so it changes the moment a venue is built or bulldozed.
  */
-import type { FacilityKind } from "../model/types";
-import type { TransportView, UnitView } from "../simport/view";
+import type { FacilityKind, RenderTransport, RenderUnit } from "./renderModel";
 
 /** The venues a flight winds beside: the halls a crowd arrives at. The
  *  recycling center is two stories as well, but it is back of house. Art
@@ -41,11 +40,11 @@ export interface VenueBox {
 }
 
 /** The box `u` fills, `stories` high. */
-export function venueBox(u: Pick<UnitView, "floor" | "x" | "width">, stories: number): VenueBox {
+export function venueBox(u: Pick<RenderUnit, "floor" | "x" | "width">, stories: number): VenueBox {
   return { floor: u.floor, top: u.floor + stories - 1, x: u.x, right: u.x + u.width };
 }
 
-type Flight = Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">;
+type Flight = Pick<RenderTransport, "kind" | "x" | "width" | "bottom" | "top">;
 
 /** What the winding set was last worked out from (`towerReconcile`
  *  `syncScene`): the sim, the tower revision, the view's room and flight
@@ -83,7 +82,7 @@ export function besideVenue(t: Flight, v: VenueBox): boolean {
  *  moves (`FlightPass`), never per frame: a tower holds at most 64 flights
  *  and a few dozen venues. */
 export function windingFlights(
-  transports: ReadonlyArray<TransportView>,
+  transports: ReadonlyArray<RenderTransport>,
   venues: ReadonlyArray<VenueBox>,
   out: Set<number>,
 ): Set<number> {

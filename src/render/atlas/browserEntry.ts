@@ -1,3 +1,4 @@
+import type { RenderCatalog } from "../renderModel";
 import { bake, type BakeResult, type Renderer } from "./bake";
 import { roomJobs, type Job } from "./catalog";
 import {
@@ -17,7 +18,6 @@ import { withLayerHook } from "../pixelSprites/layers";
 import { SAMPLES, type Sample } from "./samples";
 import { verifySample, type SampleResult } from "./verify";
 import { verifyExtras } from "./verifyExtras";
-import type { Catalog } from "../../catalog/catalogTypes";
 import { bindViewWorld } from "../../presentation/viewWorld";
 import { bindViewKinds } from "../../presentation/viewKinds";
 
@@ -211,7 +211,7 @@ export interface AtlasPage {
   /** Binds the view to the engine's Modern catalog before anything draws:
    *  the page draws sprites without a tower, so Node hands it the catalog it
    *  read from the engine package (`scripts/atlas-catalog.ts`). */
-  bind(catalog: Catalog): void;
+  bind(catalog: RenderCatalog): void;
   run(filter?: string): { images: number; frames: number; animations: number; softDropped: string[] };
   records(): Omit<BakeResult, "images" | "normals">;
   /** Images from `from` on, at least one, until about `maxBytes` of base64. */

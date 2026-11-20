@@ -1,5 +1,4 @@
-import type { FacilityKind } from "../../model/types";
-import type { UnitView } from "../../simport/view";
+import type { FacilityKind, RenderUnit } from "../renderModel";
 import { viewWorld } from "../../presentation/viewWorld";
 import { CAST, castIndex, drawPerson, type Dims } from "./people";
 
@@ -170,7 +169,7 @@ export function busyStations(stations: number, people: number, seed: number): Se
  *  never touches the sim RNG stream. The kind salt (ratified formula) keeps a
  *  bulldoze-and-rebuild of a different kind at the same footprint from
  *  inheriting correlated picks. */
-export function geoVariant(u: Pick<UnitView, "kind" | "floor" | "x">, axis: number, n: number): number {
+export function geoVariant(u: Pick<RenderUnit, "kind" | "floor" | "x">, axis: number, n: number): number {
   const kindSalt = (u.kind.length * 7919 + u.kind.charCodeAt(0) * 31) | 0;
   return Math.floor(hash(kindSalt + (u.floor - viewWorld().minFloor) * viewWorld().lotWidth + u.x + axis * 104729) * n);
 }

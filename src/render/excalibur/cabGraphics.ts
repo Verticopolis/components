@@ -1,6 +1,5 @@
+import type { FacilityKind, RenderTransport } from "../renderModel";
 import * as ex from "excalibur";
-import type { FacilityKind } from "../../model/types";
-import type { TransportView } from "../../simport/view";
 import { cabRiderFoot, cabRiderX } from "../sprites/transport";
 import { cabFit, carIndicator, NO_FIGURES, type CarIndicator } from "../carIndicator";
 import { loadFigures, type CabLoad } from "./cabRiders";
@@ -33,7 +32,7 @@ export interface CabGfxEntry {
  *  and drawing the state it shows (`shown`, a `carKey`) with `cab`. */
 export interface CabActor extends CabGfxEntry {
   readonly actor: ex.Actor;
-  readonly t: TransportView;
+  readonly t: RenderTransport;
   readonly i: number;
   readonly cab: CabGraphic;
   shown: string;

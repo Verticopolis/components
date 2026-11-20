@@ -1,4 +1,4 @@
-import type { CatalogMetroTrain } from "../catalog/catalogTypes";
+import type { RenderMetroTrain } from "./renderModel";
 
 /**
  * Where the Metro's train is, on game time, drawn from the engine's timetable
@@ -10,14 +10,14 @@ import type { CatalogMetroTrain } from "../catalog/catalogTypes";
  */
 
 /** Each timetable's line timings by line length, worked out once. */
-const lineTimes = new WeakMap<CatalogMetroTrain, Map<number, Readonly<{ leg: number; dwell: number }>>>();
+const lineTimes = new WeakMap<RenderMetroTrain, Map<number, Readonly<{ leg: number; dwell: number }>>>();
 
 /** How long the train takes between two calls (or a tunnel mouth and a call)
  *  and how long it waits at each, on a line of `stops` stations. One station
  *  waits the timetable's full dwell; more stations share the hour, so the
  *  train waits less at each and is gone before the next hour's run. The
  *  engine works out the same (`crowd::metro_train::line_times`). */
-export function metroLineTimes(timetable: CatalogMetroTrain, stops: number): Readonly<{ leg: number; dwell: number }> {
+export function metroLineTimes(timetable: RenderMetroTrain, stops: number): Readonly<{ leg: number; dwell: number }> {
   const n = Math.max(1, stops);
   // Asked every frame for every station, so each line length's answer is kept.
   let known = lineTimes.get(timetable);
@@ -45,7 +45,7 @@ export function metroTrainAt(
   minuteOfDay: number,
   stops: readonly number[],
   span: number,
-  timetable: CatalogMetroTrain,
+  timetable: RenderMetroTrain,
 ): number {
   const first = stops[0] ?? 0;
   const hour = Math.floor((((minuteOfDay % 1440) + 1440) % 1440) / 60);

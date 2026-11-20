@@ -1,12 +1,12 @@
+import { catalogFacility } from "../catalogIndex";
+import { towerCatalog, towerRules } from "../towerSource";
+import type { RenderUnit } from "../renderModel";
 import * as ex from "excalibur";
 import { Z } from "../depthPlanes";
-import { catalogFacility } from "../../catalog/catalogTypes";
-import { towerCatalog } from "../../catalog/towerCatalog";
 import { paintSettledUnit } from "../regionPaint";
 import { shadeRoom, shadesRoom } from "../roomShading";
 import { FLOOR, TILE } from "../scale";
 import { regionRect, regionsOf } from "../regionGrid";
-import type { UnitView } from "../../simport/view";
 import type { TowerEngine } from "./TowerEngine";
 
 /**
@@ -60,6 +60,7 @@ function materialize(engine: TowerEngine, key: number): RegionRec {
       engine.d.ctx = ctx;
       ctx.clearRect(0, 0, r.w, r.h);
       const shadedLook = towerCatalog(engine.sim).rules.shadedLook;
+      const { isPresent } = towerRules(engine.sim);
       for (const id of units) {
         const u = engine.sim.tower.getUnit(id);
         if (!u) continue;
@@ -74,7 +75,7 @@ function materialize(engine: TowerEngine, key: number): RegionRec {
         paintSettledUnit(engine.d, u, dx, dy, w, h, engine.deadParking.has(id));
         // Modern lights its rooms from the upper left (web only: the shared
         // sprite, and so the native atlas, stays flat).
-        if (shadesRoom(shadedLook, u)) shadeRoom(ctx, dx, dy, w, h);
+        if (shadesRoom(shadedLook, u, isPresent)) shadeRoom(ctx, dx, dy, w, h);
       }
     },
   });
@@ -93,7 +94,7 @@ function materialize(engine: TowerEngine, key: number): RegionRec {
  *  placed unit today, but a footprint that silently outgrew its cached
  *  regions would render a permanent hole, so the four divisions are cheap
  *  insurance (the old per-unit bake kept a width guard for the same reason). */
-export function markRegionUnit(engine: TowerEngine, u: UnitView, sameFrame = false): void {
+export function markRegionUnit(engine: TowerEngine, u: RenderUnit, sameFrame = false): void {
   const fresh = regionsOf(u.floor, u.x, u.width, catalogFacility(towerCatalog(engine.sim), u.kind).floors);
   const cached = engine.regionUnits.get(u.id);
   let keys = cached;

@@ -1,5 +1,4 @@
-import type { CatalogNoise } from "../../catalog/catalogTypes";
-import type { TowerView } from "../../simport/view";
+import type { RenderNoise, RenderTower } from "../renderModel";
 import { FLOOR, TILE } from "../scale";
 import type { RingView } from "./towerHaloRings";
 
@@ -13,7 +12,7 @@ import type { RingView } from "./towerHaloRings";
  */
 
 /** The tiles the walk reads: the same lookups the engine's scan makes. */
-export type NoiseTiles = Pick<TowerView, "unitAt" | "hasStructure" | "structureKindAt">;
+export type NoiseTiles = Pick<RenderTower, "unitAt" | "hasStructure" | "structureKindAt">;
 
 /** How many tiles out from each edge of the room at `x` (width `width`) on
  *  `floor` the noise can travel before a lobby or a gap, up to `limit`. One
@@ -50,7 +49,7 @@ const BAND_ALPHA = 0.22;
  *  story it covers; it hears only on its lowest, where the scan walks. */
 export function drawNoiseReach(
   ctx: CanvasRenderingContext2D,
-  noise: readonly CatalogNoise[],
+  noise: readonly RenderNoise[],
   room: { floor: number; floors: number; x: number; width: number },
   tower: NoiseTiles,
   view: RingView,
@@ -65,7 +64,7 @@ export function drawNoiseReach(
   ctx.lineWidth = 1.5;
   for (let story = 0; story < room.floors; story++) {
     const floor = room.floor + story;
-    const felt = (n: CatalogNoise): boolean => n.role === "carries" || story === 0;
+    const felt = (n: RenderNoise): boolean => n.role === "carries" || story === 0;
     if (!noise.some(felt)) continue;
     const open = openTiles(tower, floor, room.x, room.width, limit);
     const y = view.worldToScreenY(floor);

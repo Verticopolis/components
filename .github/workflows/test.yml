@@ -18,7 +18,7 @@ permissions:
 
 # The package's checks: install from the lockfile, then typecheck, lint,
 # check the formatting (Prettier) and run the unit tests. The tests mock the
-# engine and read its catalog from the JSON fixtures in src/simport/fixtures,
+# engine and read its catalog from the engine package's JSON fixtures,
 # so no engine build is needed. The game's e2e, engine-host and WASM jobs stay
 # in the game's repository.
 #

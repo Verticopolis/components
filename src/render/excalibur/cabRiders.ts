@@ -1,4 +1,4 @@
-import type { PersonView, TransportView } from "../../simport/view";
+import type { RenderPerson, RenderTransport } from "../renderModel";
 import { CAST } from "../pixelSprites/people";
 import { ridingHidden } from "./crowdFigure";
 import { figureKey, IMPATIENT_SHARE } from "./crowdLook";
@@ -6,10 +6,10 @@ import { figureKey, IMPATIENT_SHARE } from "./crowdLook";
 /** What `cabRidersOf` reads of the drawn tower. */
 export interface CabSource {
   readonly sim: {
-    readonly crowd: { readonly people: ReadonlyArray<PersonView> };
+    readonly crowd: { readonly people: ReadonlyArray<RenderPerson> };
     readonly tower: {
-      readonly transports: ReadonlyArray<TransportView>;
-      readonly elevators?: ReadonlyArray<TransportView>;
+      readonly transports: ReadonlyArray<RenderTransport>;
+      readonly elevators?: ReadonlyArray<RenderTransport>;
     };
   };
 }
@@ -86,7 +86,7 @@ const STAND_LIT = 1;
  *  them (`personFigure`: `castIndex` of their seed, `waitMood` of their
  *  wait), standing still and facing into the car. Written out here because it
  *  runs for every rider on every step. */
-export function riderFigure(p: PersonView, look: RiderLook): number {
+export function riderFigure(p: RenderPerson, look: RiderLook): number {
   const wait = p.wait;
   let stand = STAND_CONTENT;
   if (wait > look.fedUpWait) stand = STAND_FED_UP;
@@ -107,7 +107,7 @@ function sameAsLast(load: CabLoad): boolean {
 /** A shaft the count looks in, with its cars' loads, so a rider's car is
  *  found without a lookup by id. Kept and reused from count to count. */
 interface Slot {
-  t: TransportView;
+  t: RenderTransport;
   loads: CabLoad[];
 }
 const slots: Slot[] = [];
@@ -123,7 +123,7 @@ const columns = new Map<number, Slot[]>();
 /** The car of `t` nearest floor `fy`. Its distance is left in `nearestGap`,
  *  so the per-rider search allocates nothing. */
 let nearestGap = 0;
-function nearestCar(t: TransportView, fy: number): number {
+function nearestCar(t: RenderTransport, fy: number): number {
   const at = t.carPositions;
   let car = 0;
   let gap = Math.abs(at[0] - fy);
@@ -142,8 +142,8 @@ function nearestCar(t: TransportView, fy: number): number {
  *  over the people after one over the shafts, then one over the cars: callers
  *  run it once per sim step, never per car or per frame. */
 export function countCabRiders(
-  people: ReadonlyArray<PersonView>,
-  transports: ReadonlyArray<TransportView>,
+  people: ReadonlyArray<RenderPerson>,
+  transports: ReadonlyArray<RenderTransport>,
   out: CabRiders,
   look: RiderLook,
 ): CabRiders {
