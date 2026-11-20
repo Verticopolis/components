@@ -3,37 +3,71 @@
  *
  *   node scripts/change-notes-check.ts --base origin/main
  *
- * Every note under `.changes/` must parse. With `--base`, a pull request that
- * changes what the package ships (SHIPPED: src/ outside its tests) must add a
- * note, a `package: none` one included, and must not edit or delete a note already on
- * the base branch, which belongs to the pull request that merged it. Release
- * branches (`release/`) and Dependabot's (`dependabot/`) are exempt from both,
+ * Every note under `.changes/` must parse, and notes sit directly in
+ * `.changes/`, never in a subfolder. With `--base`, a pull request:
+ *
+ * - that changes what the package ships (`isShipped`) must add a note, a
+ *   `package: none` one included (a devDependency bump, say);
+ * - must not edit or delete a note already on the base branch, which belongs
+ *   to the pull request that merged it;
+ * - must not change the version sections of `CHANGELOG.md` (from the first
+ *   `## <version>` heading down) or add an `## Unreleased` one, nor change
+ *   the version in `package.json` or `package-lock.json`: only a release PR
+ *   does that, and a version raise on main publishes a release. The
+ *   introduction above the sections is documentation and may change.
+ *
+ * Release branches (`release/`) and Dependabot's (`dependabot/`) are exempt,
  * the way the game's version check exempts them: the release PR deletes the
- * notes, and Dependabot cannot write one. The branch name comes from
- * GITHUB_HEAD_REF.
+ * notes and writes the changelog, and Dependabot cannot write a note. The
+ * branch name comes from GITHUB_HEAD_REF.
  */
 import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { isNoteFile, parseNote } from "./changeNotes.ts";
+import { isNoteFile, parseNote, type ChangeNote } from "./changeNotes.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const NOTES = ".changes";
-/** True for a path whose change reaches the npm package. */
-const SHIPPED = (path: string) =>
-  path.startsWith("src/") && !path.startsWith("src/tests/") && !/\.test\.ts$/.test(path);
+const CHANGELOG = "CHANGELOG.md";
+const VERSIONED = ["package.json", "package-lock.json"];
 const EXEMPT_BRANCHES = ["release/", "dependabot/"];
+
+/**
+ * Paths whose change reaches the npm package: the sources under src/ (not
+ * their tests), the manifest (exports, dependencies), the build and the
+ * files the tarball carries.
+ */
+const SHIPPED_FILES = [
+  "package.json",
+  "ASSETS-LICENSE.md",
+  "LICENSE",
+  "vite.lib.config.ts",
+  "tsconfig.build.json",
+  "scripts/build-lib.sh",
+  "scripts/pack-components.sh",
+];
+const isShipped = (path: string) =>
+  SHIPPED_FILES.includes(path) ||
+  (path.startsWith("src/") && !path.startsWith("src/tests/") && !/\.test\.ts$/.test(path));
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
 
+const git = (...args: string[]) => execFileSync("git", args, { cwd: root, encoding: "utf8" });
+
 const problems: string[] = [];
-for (const f of readdirSync(join(root, NOTES)).filter(isNoteFile)) {
+const notes = new Map<string, ChangeNote>();
+for (const entry of readdirSync(join(root, NOTES), { withFileTypes: true })) {
+  if (entry.isDirectory()) {
+    problems.push(`${NOTES}/${entry.name}/ is a folder; notes sit directly in ${NOTES}/`);
+    continue;
+  }
+  if (!isNoteFile(entry.name)) continue;
   try {
-    parseNote(f, readFileSync(join(root, NOTES, f), "utf8"));
+    notes.set(entry.name, parseNote(entry.name, readFileSync(join(root, NOTES, entry.name), "utf8")));
   } catch (e) {
     problems.push(e instanceof Error ? e.message : String(e));
   }
@@ -42,25 +76,45 @@ for (const f of readdirSync(join(root, NOTES)).filter(isNoteFile)) {
 const base = arg("--base");
 const branch = process.env.GITHUB_HEAD_REF ?? "";
 if (base && !EXEMPT_BRANCHES.some((p) => branch.startsWith(p))) {
-  const diff = execFileSync("git", ["diff", "--name-status", "--no-renames", `${base}...HEAD`], {
-    cwd: root,
-    encoding: "utf8",
-  });
-  const rows = diff
+  const rows = git("diff", "--name-status", "--no-renames", `${base}...HEAD`)
     .split("\n")
     .filter(Boolean)
     .map((l) => l.split("\t") as [string, string]);
-  const isNote = (path: string) => path.startsWith(`${NOTES}/`) && isNoteFile(path.slice(NOTES.length + 1));
-  const added = rows.filter(([s, p]) => s === "A" && isNote(p));
-  for (const [s, p] of rows) {
-    if (s !== "A" && isNote(p))
-      problems.push(`${p} is already on the base branch; add a new note instead of changing it`);
+  const noteName = (path: string) => (path.startsWith(`${NOTES}/`) ? path.slice(NOTES.length + 1) : undefined);
+  const added: ChangeNote[] = [];
+  for (const [status, path] of rows) {
+    const name = noteName(path);
+    if (name === undefined || !isNoteFile(name) || name.includes("/")) continue;
+    if (status !== "A") problems.push(`${path} is already on the base branch; add a new note instead of changing it`);
+    else {
+      const note = notes.get(name);
+      if (note) added.push(note);
+    }
   }
-  const shipped = rows.filter(([, p]) => SHIPPED(p)).map(([, p]) => p);
+
+  const shipped = rows.filter(([, p]) => isShipped(p)).map(([, p]) => p);
+  const list = (paths: string[]) => `${paths.slice(0, 3).join(", ")}${paths.length > 3 ? ", ..." : ""}`;
   if (shipped.length > 0 && added.length === 0) {
     problems.push(
-      `this pull request changes what the package ships (${shipped.slice(0, 3).join(", ")}${shipped.length > 3 ? ", ..." : ""}) and adds no note under ${NOTES}/; add one with its package level (see ${NOTES}/README.md)`,
+      `this pull request changes what the package ships (${list(shipped)}) and adds no note under ${NOTES}/; add one with its package level (see ${NOTES}/README.md)`,
     );
+  }
+
+  if (rows.some(([, p]) => p === CHANGELOG)) {
+    const sections = (text: string) => text.slice(Math.max(0, text.search(/^## \d/m)));
+    const now = readFileSync(join(root, CHANGELOG), "utf8");
+    if (/^## Unreleased\s*$/m.test(now) || sections(now) !== sections(git("show", `${base}:${CHANGELOG}`))) {
+      problems.push(
+        `only a release PR writes the version sections of ${CHANGELOG}; put the entries in a note under ${NOTES}/`,
+      );
+    }
+  }
+  for (const file of VERSIONED) {
+    if (!rows.some(([, p]) => p === file)) continue;
+    const version = (text: string) => (JSON.parse(text) as { version?: string }).version;
+    const before = version(git("show", `${base}:${file}`));
+    const after = version(readFileSync(join(root, file), "utf8"));
+    if (before !== after) problems.push(`only a release PR changes the version (${before} -> ${after} in ${file})`);
   }
 }
 

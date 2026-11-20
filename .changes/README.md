@@ -21,10 +21,18 @@ package: minor    # major | minor | patch | none
   and starting where the text after `- **<level>**: ` would, with any further
   lines indented two spaces. The release leads each entry with the note's
   level, so leave the level out of the entry.
-- A pull request that changes `src/` outside its tests needs a note, a
-  `package: none` one included. CI, the gallery, the screenshot tests and
-  docs alone need none, and neither do Dependabot's branches, which cannot
-  write one.
+- A pull request that changes what the package ships needs a note: `src/`
+  outside its tests, `package.json` (its exports and dependencies),
+  `vite.lib.config.ts`, `tsconfig.build.json`, `scripts/build-lib.sh`,
+  `scripts/pack-components.sh`, `LICENSE` or `ASSETS-LICENSE.md`. A
+  `package: none` note covers a change there that ships nothing new, such as
+  a devDependency bump. CI, the gallery, the screenshot tests and docs alone
+  need none, and neither do Dependabot's branches, which cannot write one.
+- Notes sit directly in `.changes/`, never in a subfolder.
+- A feature pull request leaves `version` in `package.json` and
+  `package-lock.json` and the version sections of `CHANGELOG.md` alone: a
+  version raise on `main` publishes a release, so only the release PR makes
+  one.
 - A note that is already on `main` belongs to the pull request that merged
   it. A follow-up pull request from the same branch name adds
   `<branch-slug>-2.md` instead of editing it; only the release PR removes a

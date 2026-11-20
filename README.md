@@ -199,10 +199,12 @@ A pull request that changes what the package ships adds a change note under
 [`.changes/`](.changes/README.md), named after its branch, with its level
 and its [`CHANGELOG.md`](CHANGELOG.md) entries: **major** for a breaking
 change to an export or a stylesheet's selectors, **minor** for a new export,
-component or look, **patch** for a fix, and `none` for a change to `src/`
-that ships nothing new. Notes keep two open pull requests from editing the
+component or look, **patch** for a fix, and `none` for a change that ships
+nothing new. Notes keep two open pull requests from editing the
 same changelog lines. The **Change notes** check requires one when a pull
-request changes `src/` outside its tests.
+request changes what the package ships (the paths are in
+[`.changes/README.md`](.changes/README.md)), and refuses a feature pull
+request that changes the version or the changelog's version sections.
 
 **Cut release** (`.github/workflows/cut-release.yml`) opens the release PR,
 as in the game's repository: run it from the Actions tab on `main`. It runs
