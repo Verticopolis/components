@@ -1,16 +1,16 @@
+import type { FacilityKind, RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { facadeGeometry } from "./facadeGeometry";
 import { lobbyHalls } from "./lobbyHalls";
 import { catalogFor } from "../tests/catalogFixture";
-import type { FacilityKind, Unit } from "../model/types";
 
 const MODERN = catalogFor("modern");
 
 /** One unit per tile from `lo` to `hi` on `floor`. Only the fields
  *  facadeGeometry reads are set. */
-function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor"): Unit[] {
-  const out: Unit[] = [];
-  for (let x = lo; x <= hi; x++) out.push({ floor, x, width: 1, kind } as unknown as Unit);
+function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor"): RenderUnit[] {
+  const out: RenderUnit[] = [];
+  for (let x = lo; x <= hi; x++) out.push({ floor, x, width: 1, kind } as unknown as RenderUnit);
   return out;
 }
 
@@ -36,7 +36,7 @@ describe("the facade's runs: one per tower on each floor", () => {
     const units = [
       ...tiles(3, 100, 119),
       ...tiles(3, 120, 139),
-      { floor: 3, x: 110, width: 9, kind: "office" } as unknown as Unit,
+      { floor: 3, x: 110, width: 9, kind: "office" } as unknown as RenderUnit,
     ];
     expect(facadeGeometry(units, 3, MODERN).runs.get(3)).toEqual([{ min: 100, max: 140 }]);
   });

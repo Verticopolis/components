@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { ROOM_EDGE, ROOM_LIGHT, shadeRoom, shadesRoom } from "./roomShading";
 import type { UnitState } from "./renderModel";
-import { isPresent } from "../model/unitState";
+import { testRules } from "../tests/renderRules";
+
+const { isPresent } = testRules;
 
 describe("Modern's room shading (#2097)", () => {
   it("shades a room only in Modern's look and only while someone is there", () => {

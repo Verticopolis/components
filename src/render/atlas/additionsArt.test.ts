@@ -1,6 +1,6 @@
+import type { FacilityKind } from "../renderModel";
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../../tests/catalogKinds";
-import type { FacilityKind } from "../../model/types";
 import { RECYCLING_GAUGE_ROWS, RECYCLING_PILE_SLOTS, recyclingLook } from "../sprites/facilities/recyclingLook";
 import { FLOOR, TILE } from "../scale";
 import { RECYCLE_BREAKS, RECYCLE_STEPS, roomJobs, type StillJob } from "./catalog";

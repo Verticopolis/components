@@ -1,6 +1,6 @@
+import type { FacilityKind, RenderUnit } from "../../renderModel";
 import { describe, it, expect, vi } from "vitest";
 import { kindFacts } from "../../../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../../../model/types";
 import type { DrawCtx } from "../common";
 import { TILE, FLOOR } from "../../scale";
 import { refMap } from "./serviceKit";
@@ -70,7 +70,15 @@ function recorder() {
 }
 
 const dc = (ctx: CanvasRenderingContext2D): DrawCtx => ({ ctx, lit: false, anim: 0, hour: 12 });
-const UNIT = { id: 7, kind: "parking", x: 0, floor: 1, width: 4, state: "occupied", occupants: 0 } as unknown as Unit;
+const UNIT = {
+  id: 7,
+  kind: "parking",
+  x: 0,
+  floor: 1,
+  width: 4,
+  state: "occupied",
+  occupants: 0,
+} as unknown as RenderUnit;
 
 /** The six sprites, each with the tile footprint its reference was authored for.
  *  Signatures differ, so each carries its own caller. */

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { ON_THE_ESCAPE } from "./guardPosition";
 import { FLOOR } from "../scale";
-import { VIEW_ZOOM_MIN } from "../../model/viewZoom";
+import { TEST_ZOOM } from "../../tests/renderRules";
 import { drawSearchGuard, drawThief, FIGURE_HEIGHT } from "../sprites/events";
 import { STAFF_LOOK } from "../pixelSprites/people";
 import { drawOverlay, floorFigureScale, floorRoomSpan } from "./towerOverlay";
@@ -57,7 +57,7 @@ function extent(rects: ReadonlyArray<Rect>): number {
   return bottom - top;
 }
 
-const ZOOMS = [VIEW_ZOOM_MIN, 0.1, 0.25, 0.5, 1, 2, 4];
+const ZOOMS = [TEST_ZOOM.min, 0.1, 0.25, 0.5, 1, 2, 4];
 /** Whole-pixel rounding can add a pixel at each end of a tiny figure. */
 const ROUNDING = 2;
 

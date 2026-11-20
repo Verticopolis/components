@@ -1,16 +1,37 @@
 import { describe, expect, it } from "vitest";
-import { ClockReads } from "../simport/clockView";
-import { clockOf as headerClockOf, type ClockHeader } from "../simport/headerClock";
-import { clockOf as clockAt, type ClockView } from "./clockOf";
+import type { RenderClock } from "../render/renderModel";
+import { clockOf as clockAt, type ClockDate, type ClockView } from "./clockOf";
 
-/** The panel's clock for a header, with the engine's clock at its minute. */
-const clockOf = (h: ClockHeader): ClockView => clockAt(h, new ClockReads().set(h));
+/** A game's clock at `minutes`, as the tests fake it: morning from 7 to 10,
+ *  evening from 17 to 22, night from 22 to 6. The panel passes these answers
+ *  through. */
+function fakeClock(minutes: number): RenderClock & { minutes: number } {
+  const clock = {
+    minutes,
+    get minuteOfDay() {
+      return clock.minutes % 1440;
+    },
+    get hour() {
+      return Math.floor(clock.minuteOfDay / 60);
+    },
+    get minute() {
+      return clock.minuteOfDay % 60;
+    },
+    isMorning: () => clock.hour >= 7 && clock.hour < 10,
+    isEvening: () => clock.hour >= 17 && clock.hour < 22,
+    isNight: () => clock.hour >= 22 || clock.hour < 6,
+  };
+  return clock;
+}
+
+type ClockHeader = ClockDate & { minutes: number };
+
+/** The panel's clock for a header, with a game clock at its minute. */
+const clockOf = (h: ClockHeader): ClockView => clockAt(h, fakeClock(h.minutes));
 
 /**
- * A panel's clock, derived from the header alone: the time of day from the
- * header's minute, the names from its day fields and the calendar's week. The
- * date fields below are the Rust engine's for each minute;
- * `portReads.integration.test.ts` checks the engine still dates them so.
+ * A panel's clock: the time of day from the game's clock, the names from the
+ * header's day fields and the calendar's week. The rows are sample dates.
  */
 
 const readings = (c: ClockView) => [
@@ -94,14 +115,9 @@ describe("clockOf", () => {
   it("takes its reading once, so a clock that moves on leaves it alone", () => {
     const week = { weekDays: 7, weekendDays: 2 };
     const h = { minutes: 420, day: 0, dayOfWeek: 0, isWeekend: false, quarter: 0, year: 0, ...week };
-    const live = new ClockReads().set(h);
+    const live = fakeClock(h.minutes);
     const c = clockAt(h, live);
-    live.set({ minutes: 1260 });
+    live.minutes = 1260;
     expect([c.minutes, c.hour, c.isMorning(), c.isNight(), c.format()]).toEqual([420, 7, true, false, "Mon 07:00"]);
-  });
-
-  it("keeps the deprecated header path's readings", () => {
-    const week = { weekDays: 3, weekendDays: 1 };
-    for (const r of CANON) expect(readings(headerClockOf(headerOf(r, week)))).toEqual(r);
   });
 });

@@ -1,5 +1,5 @@
+import type { RenderTransport, RenderUnit } from "../renderModel";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { TransportView, UnitView } from "../../simport/view";
 import type { TowerEngine } from "./TowerEngine";
 import { syncScene } from "./towerReconcile";
 import { emptyStructPass } from "./towerStructTiles";
@@ -53,7 +53,7 @@ vi.mock("./towerCrowd", () => ({
   },
 }));
 vi.mock("./towerRegions", () => ({
-  markRegionUnit: vi.fn((engine: TowerEngine, u: UnitView) => void engine.regionUnits.set(u.id, [1])),
+  markRegionUnit: vi.fn((engine: TowerEngine, u: RenderUnit) => void engine.regionUnits.set(u.id, [1])),
   dropRegionUnit: vi.fn((engine: TowerEngine, id: number) => void engine.regionUnits.delete(id)),
 }));
 
@@ -65,7 +65,7 @@ const cinema = {
   width: 31,
   state: "occupied",
   occupants: 0,
-} as unknown as UnitView;
+} as unknown as RenderUnit;
 const stairs = {
   id: 40,
   kind: "stairs",
@@ -76,7 +76,7 @@ const stairs = {
   cars: 0,
   carPositions: [],
   carDir: [],
-} as TransportView;
+} as RenderTransport;
 const lift = {
   id: 41,
   kind: "elevatorStandard",
@@ -87,13 +87,13 @@ const lift = {
   cars: 1,
   carPositions: [2],
   carDir: [0],
-} as TransportView;
+} as RenderTransport;
 
 /** Just the engine surface `syncScene` reads: `units` and `transports` are
  *  live arrays, and an edit bumps the revision the way the view does. */
-type FakeEngine = TowerEngine & { sim: { tower: { units: UnitView[]; revision: number } } };
+type FakeEngine = TowerEngine & { sim: { tower: { units: RenderUnit[]; revision: number } } };
 
-function fakeSim(units: UnitView[]) {
+function fakeSim(units: RenderUnit[]) {
   return {
     tower: {
       units,
@@ -116,7 +116,7 @@ function rasterOf(engine: TowerEngine, id: number): void {
   actor.graphics.use.mock.calls[0][0].options.draw({});
 }
 
-function fakeEngine(units: UnitView[]): FakeEngine {
+function fakeEngine(units: RenderUnit[]): FakeEngine {
   return {
     sim: fakeSim(units),
     engine: { add: vi.fn() },
@@ -225,7 +225,7 @@ describe("a flight beside a venue restyles with the venue", () => {
     syncScene(engine);
     expect(engine.transportSig.get(40)).toMatch(/:winds$/);
     engine.transportSig.set(40, "left as it was");
-    const tower = engine.sim.tower as unknown as { transports: TransportView[] };
+    const tower = engine.sim.tower as unknown as { transports: RenderTransport[] };
     tower.transports = [...tower.transports];
     syncScene(engine);
     expect(engine.transportSig.get(40)).toMatch(/:winds$/);

@@ -1,9 +1,9 @@
+import type { FacilityKind, RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { CRANE_REACH_LEFT_TILES, CRANE_REACH_RIGHT_TILES, craneAnchorTile, craneMastTile, craneRoof } from "./sprites";
 import { facadeGeometry } from "./facadeGeometry";
 import { lobbyHalls } from "./lobbyHalls";
 import { catalogFor } from "../tests/catalogFixture";
-import type { FacilityKind, Unit } from "../model/types";
 
 const MODERN = catalogFor("modern");
 
@@ -156,9 +156,9 @@ function range(lo: number, hi: number): number[] {
 /** One unit per tile across [lo, hi] on `floor` (default a 1×1 floor tile), or
  *  a single `width`-wide room when `width > 1`. Only the fields facadeGeometry
  *  reads are set; the rest are irrelevant to silhouette geometry. */
-function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor", width = 1): Unit[] {
-  if (width > 1) return [{ floor, x: lo, width, kind } as unknown as Unit];
-  return range(lo, hi).map((x) => ({ floor, x, width: 1, kind }) as unknown as Unit);
+function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor", width = 1): RenderUnit[] {
+  if (width > 1) return [{ floor, x: lo, width, kind } as unknown as RenderUnit];
+  return range(lo, hi).map((x) => ({ floor, x, width: 1, kind }) as unknown as RenderUnit);
 }
 
 /**

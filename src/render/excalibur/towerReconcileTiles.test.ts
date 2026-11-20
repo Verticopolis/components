@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { describe, expect, it, vi } from "vitest";
-import type { UnitView } from "../../simport/view";
 import type { TowerEngine } from "./TowerEngine";
 import { syncScene } from "./towerReconcile";
 import { markRegionUnit } from "./towerRegions";
@@ -24,7 +24,7 @@ vi.mock("./towerHallDoors", async (importOriginal) => ({
 // scene) walks the tiles again. Hand-built engine, as in towerReconcileFire.
 vi.mock("./towerScenery", () => ({ syncScenery: vi.fn() }));
 vi.mock("./roomSignature", () => ({
-  roomSignature: (_u: UnitView, d: { hour: number }) => `hour ${d.hour}`,
+  roomSignature: (_u: RenderUnit, d: { hour: number }) => `hour ${d.hour}`,
   isDeadParking: () => false,
 }));
 vi.mock("../regionPaint", () => ({ paintAnimatedUnit: vi.fn() }));
@@ -46,7 +46,7 @@ vi.mock("./towerCrowd", () => ({
   },
 }));
 vi.mock("./towerRegions", () => ({
-  markRegionUnit: vi.fn((engine: TowerEngine, u: UnitView) => void engine.regionUnits.set(u.id, [1])),
+  markRegionUnit: vi.fn((engine: TowerEngine, u: RenderUnit) => void engine.regionUnits.set(u.id, [1])),
   dropRegionUnit: vi.fn((engine: TowerEngine, id: number) => void engine.regionUnits.delete(id)),
   disposeRegions: vi.fn(),
 }));
@@ -65,9 +65,9 @@ class Cell {
   }
 }
 
-const tile = (kind: "floor" | "lobby", floor: number, x: number): UnitView =>
-  ({ id: NaN, kind, floor, x, width: 1, state: "empty", occupants: 0 }) as unknown as UnitView;
-const office: UnitView = {
+const tile = (kind: "floor" | "lobby", floor: number, x: number): RenderUnit =>
+  ({ id: NaN, kind, floor, x, width: 1, state: "empty", occupants: 0 }) as unknown as RenderUnit;
+const office: RenderUnit = {
   id: 7,
   kind: "office",
   floor: 2,
@@ -75,7 +75,7 @@ const office: UnitView = {
   width: 6,
   state: "occupied",
   occupants: 0,
-} as unknown as UnitView;
+} as unknown as RenderUnit;
 
 /** Lobby graphics named by lighting, so a test can read which one a cell got. */
 const lobbyGfx = (lit: number): string[][] => [
@@ -83,7 +83,7 @@ const lobbyGfx = (lit: number): string[][] => [
   Array.from({ length: 16 }, (_, v) => `ground ${lit}:${v}`),
 ];
 
-function fakeEngine(state: { units: UnitView[]; revision: number; tall?: readonly number[] }) {
+function fakeEngine(state: { units: RenderUnit[]; revision: number; tall?: readonly number[] }) {
   const cells = new Map<string, Cell>();
   const getTile = vi.fn((x: number, y: number) => {
     const key = `${x},${y}`;
@@ -147,7 +147,7 @@ function fakeEngine(state: { units: UnitView[]; revision: number; tall?: readonl
   return { engine, getTile, cell: (x: number, floor: number) => cells.get(`${x},${20 - floor}`) };
 }
 
-function tower(): { units: UnitView[]; revision: number } {
+function tower(): { units: RenderUnit[]; revision: number } {
   const units = [{ ...office }];
   for (let x = 4; x < 8; x++) units.push(tile("lobby", 1, x));
   for (let x = 4; x < 8; x++) units.push(tile("floor", 2, x));
@@ -158,7 +158,7 @@ function tower(): { units: UnitView[]; revision: number } {
  *  so the list keeps one identity, and return a reader of how many entries
  *  have been read since the last reset. It counts every indexed read, so a
  *  `for...of`, a `some`, a `filter` or an index loop over the list all show. */
-function countReads(state: { units: UnitView[] }): { reads: () => number; reset: () => void } {
+function countReads(state: { units: RenderUnit[] }): { reads: () => number; reset: () => void } {
   let reads = 0;
   state.units = new Proxy(state.units, {
     get(target, key, receiver) {
@@ -414,9 +414,9 @@ describe("the scene sync walks the structure tiles only when what they draw from
 
   /** Two towers apart: lobby 4..7 and lobby 12..15, an office over each,
    *  each leased only when its flag says so. */
-  function twoTowers(leftLeased: boolean, rightLeased: boolean): { units: UnitView[]; revision: number } {
-    const lease = (x: number, leased: boolean): UnitView =>
-      ({ ...office, id: x, x, width: 4, state: leased ? "occupied" : "empty" }) as unknown as UnitView;
+  function twoTowers(leftLeased: boolean, rightLeased: boolean): { units: RenderUnit[]; revision: number } {
+    const lease = (x: number, leased: boolean): RenderUnit =>
+      ({ ...office, id: x, x, width: 4, state: leased ? "occupied" : "empty" }) as unknown as RenderUnit;
     const units = [lease(4, leftLeased), lease(12, rightLeased)];
     for (const x of [4, 5, 6, 7, 12, 13, 14, 15]) units.push(tile("lobby", 1, x), tile("floor", 2, x));
     return { units, revision: 5 };

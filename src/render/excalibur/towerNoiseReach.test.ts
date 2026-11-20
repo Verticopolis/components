@@ -1,5 +1,5 @@
+import type { RenderNoise } from "../renderModel";
 import { describe, expect, it, vi } from "vitest";
-import type { CatalogNoise } from "../../catalog/catalogTypes";
 import { FLOOR, TILE } from "../scale";
 import type { RingView } from "./towerHaloRings";
 import { drawNoiseReach, openTiles, type NoiseTiles } from "./towerNoiseReach";
@@ -11,7 +11,7 @@ import { drawNoiseReach, openTiles, type NoiseTiles } from "./towerNoiseReach";
  * lowest story only for what a room hears.
  */
 
-const OFFICE: CatalogNoise[] = [
+const OFFICE: RenderNoise[] = [
   { role: "hears", tiles: 11, kinds: ["fastFood"] },
   { role: "carries", tiles: 21, kinds: ["condo"] },
 ];

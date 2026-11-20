@@ -1,5 +1,5 @@
+import type { FacilityKind } from "../renderModel";
 import { describe, expect, it } from "vitest";
-import type { FacilityKind } from "../../model/types";
 import { kindFacts } from "../../tests/catalogKinds";
 import { TILE } from "../scale";
 import { LEGACY_SHAFT_WIDTHS, legacyShaftJobs, transportJobs } from "./catalogExtras";

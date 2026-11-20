@@ -4,7 +4,9 @@ import * as ex from "excalibur";
 import { catalogFor } from "../../tests/catalogFixture";
 import { FLOOR, TILE } from "../scale";
 import { mapSideMarginTiles } from "../overviewMap/extent";
-import { VIEW_ZOOM_MAX as MAX_ZOOM, VIEW_ZOOM_MIN as MIN_ZOOM } from "../../model/viewZoom";
+import { TEST_ZOOM } from "../../tests/renderRules";
+
+const { min: MIN_ZOOM, max: MAX_ZOOM } = TEST_ZOOM;
 import {
   pan,
   zoomAt,

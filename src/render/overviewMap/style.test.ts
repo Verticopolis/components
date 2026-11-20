@@ -1,5 +1,5 @@
+import type { FacilityKind } from "../renderModel";
 import { describe, it, expect } from "vitest";
-import type { FacilityKind } from "../../model/types";
 import { FACILITY_PRESENTATION } from "../../presentation/facilityPresentation";
 import {
   GROUP_PATTERN,

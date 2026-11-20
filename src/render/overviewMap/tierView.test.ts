@@ -1,9 +1,8 @@
+import type { EvalTier, FacilityKind, RentTier } from "../renderModel";
 import { describe, it, expect } from "vitest";
-import type { FacilityKind } from "../../model/types";
 import { SKY_HEADROOM_FLOORS } from "../cameraBounds";
 import { extentFloors, fitLayout, mapExtent } from "./geometry";
 import { MIN_PATTERN_SIDE, type MapPaintContext, type PatternSource } from "./paint";
-import type { EvalTier, RentTier } from "../../simport/roomTiers";
 import { tiersOf } from "./tierView.fixture";
 import {
   EVAL_LEGEND,

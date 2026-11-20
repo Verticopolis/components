@@ -1,16 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
-import type { Catalog } from "../catalog/catalogTypes";
-import { refuseForeignCatalogs } from "./catalogCheck";
+import { refuseForeignCatalogs, type CheckedCatalog } from "./catalogCheck";
 
 /**
- * The boot check the shipped host runs on the engine package's catalogs
- * (`rustEngine.ts`): a catalog that lists other facility kinds than this build
- * draws, or lays the ground floor with one it does not, is refused, and so are
- * two modes that state different worlds, naming what differs. The catalogs here
- * are the engine package's fixtures, written from the Rust catalog, used only
- * as sample input. Reading a catalog the build cannot parse (its version, a
- * kind listed twice) is the engine's `readCatalog`, tested in the engine.
+ * The boot check a game runs on its catalogs: a catalog that lists other
+ * facility kinds than this build draws, or lays the ground floor with one it
+ * does not, is refused, and so are two modes that state different worlds,
+ * naming what differs. The catalogs here are the tests' hand-written ones,
+ * with the ground floor's kind added.
  */
 
 const MODES = ["classic", "modern"] as const;
@@ -20,8 +17,12 @@ type Editable = { world: Record<string, unknown>; facilities: { key: string }[] 
 function catalogs(
   mode?: (typeof MODES)[number],
   edit?: (c: Editable) => void,
-): Record<(typeof MODES)[number], Catalog> {
-  const out = { classic: structuredClone(catalogFor("classic")), modern: structuredClone(catalogFor("modern")) };
+): Record<(typeof MODES)[number], CheckedCatalog> {
+  const laid = (m: (typeof MODES)[number]): CheckedCatalog => {
+    const c = structuredClone(catalogFor(m));
+    return { ...c, world: { ...c.world, groundFloorStructure: "lobby" } };
+  };
+  const out = { classic: laid("classic"), modern: laid("modern") };
   if (mode && edit) edit(out[mode] as unknown as Editable);
   return out;
 }
@@ -37,7 +38,7 @@ describe("refuseForeignCatalogs", () => {
         c.world[field] = (c.world[field] as number) + 1;
       });
       expect(() => refuseForeignCatalogs(other), field).toThrow(
-        `the Rust engine's classic and modern catalogs state different worlds (${field}), and the view draws one world for the page`,
+        `the classic and modern catalogs state different worlds (${field}), and the view draws one world for the page`,
       );
     }
   });
@@ -47,7 +48,7 @@ describe("refuseForeignCatalogs", () => {
       const first = catalogFor(mode).facilities[0].key;
       const unknown = catalogs(mode, (c) => c.facilities.push({ ...c.facilities[0], key: "hangar" }));
       expect(() => refuseForeignCatalogs(unknown)).toThrow(
-        `the Rust engine's ${mode} catalog lists other facility kinds than this build draws (unknown hangar)`,
+        `the ${mode} catalog lists other facility kinds than this build draws (unknown hangar)`,
       );
       const dropped = catalogs(mode, (c) => c.facilities.shift());
       expect(() => refuseForeignCatalogs(dropped)).toThrow(`(missing ${first})`);
@@ -63,7 +64,7 @@ describe("refuseForeignCatalogs", () => {
         c.world.groundFloorStructure = "hangar";
       });
       expect(() => refuseForeignCatalogs(other)).toThrow(
-        `the Rust engine's ${mode} catalog lays the ground floor with a kind this build does not draw (hangar)`,
+        `the ${mode} catalog lays the ground floor with a kind this build does not draw (hangar)`,
       );
     });
   }

@@ -1,6 +1,6 @@
+import type { FacilityKind, RenderUnit, UnitState } from "../renderModel";
 import { describe, expect, it } from "vitest";
 import { kindFacts, kindKeys, keepsHours } from "../../tests/catalogKinds";
-import type { FacilityKind, Unit, UnitState } from "../../model/types";
 import { LATE_NIGHT_KINDS } from "../lateNight";
 import { paintSettledUnit } from "../regionPaint";
 import { FLOOR, TILE } from "../scale";
@@ -62,7 +62,7 @@ function spyCtx(): { ctx: CanvasRenderingContext2D; log: string[] } {
 }
 
 let nextId = 1;
-function unit(kind: FacilityKind, over: Partial<Unit> = {}): Unit {
+function unit(kind: FacilityKind, over: Partial<RenderUnit> = {}): RenderUnit {
   return {
     id: nextId++,
     kind,
@@ -73,7 +73,7 @@ function unit(kind: FacilityKind, over: Partial<Unit> = {}): Unit {
     satisfaction: 0.8,
     occupants: 3,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 
 const scene = (hour: number, over: Partial<RoomSigScene> = {}): RoomSigScene => ({
@@ -88,7 +88,7 @@ const scene = (hour: number, over: Partial<RoomSigScene> = {}): RoomSigScene => 
 /** The draw log for `u` at `hour` under fixed lighting, painted the way the
  *  region compositor bakes a settled room (`paintSettledUnit`, so the same
  *  dispatch: room art, service interiors, the gutted shell). */
-function art(u: Unit, hour: number, lit = true): string {
+function art(u: RenderUnit, hour: number, lit = true): string {
   const { ctx, log } = spyCtx();
   const d: DrawCtx = { ctx, lit, anim: 0, hour, staffed: true, parkingUse: 0, recycleFill: 0 };
   paintSettledUnit(d, u, 0, 0, u.width * TILE, FLOOR, false);
@@ -163,7 +163,7 @@ const SPOTS = [
 ] as const;
 
 /** Nobody home, a full room, and a full room with two out for a meal. */
-const CROWDS: Partial<Unit>[] = [{ occupants: 0 }, { occupants: 3 }, { occupants: 3, outForMeal: 2 }];
+const CROWDS: Partial<RenderUnit>[] = [{ occupants: 0 }, { occupants: 3 }, { occupants: 3, outForMeal: 2 }];
 /** Kinds whose art must show an hour-driven change, so the guard's empty miss
  *  list is not vacuous: all three homes' late-night look and every kind with
  *  business hours (its closed look). The party hall and aquatic center keep

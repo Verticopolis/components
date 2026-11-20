@@ -1,6 +1,6 @@
+import type { FacilityKind, RenderUnit } from "../renderModel";
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { FLOOR, TILE } from "../scale";
 import type { RoomCtx } from "./common";
@@ -20,7 +20,7 @@ interface Figure {
 
 /** Every finalized figure a room draws: the person builds stamp one contact-shadow
  *  literal per figure, one pixel left of it. */
-function figures(u: Unit, hour: number): Figure[] {
+function figures(u: RenderUnit, hour: number): Figure[] {
   const out: Figure[] = [];
   let fill = "";
   let armed = false;
@@ -69,7 +69,7 @@ function figures(u: Unit, hour: number): Figure[] {
 
 const key = (f: Figure): string => `${f.x},${f.y}`;
 
-function unitAt(kind: FacilityKind, subtype: string | undefined, x: number, occupants: number): Unit {
+function unitAt(kind: FacilityKind, subtype: string | undefined, x: number, occupants: number): RenderUnit {
   return {
     id: 7,
     floor: 12,
@@ -80,7 +80,7 @@ function unitAt(kind: FacilityKind, subtype: string | undefined, x: number, occu
     width: kindFacts(kind).width,
     satisfaction: 0.8,
     occupants,
-  } as Unit;
+  } as RenderUnit;
 }
 
 const SPREAD: [FacilityKind, string | undefined, number][] = [

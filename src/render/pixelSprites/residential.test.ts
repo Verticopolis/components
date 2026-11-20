@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { describe, it, expect } from "vitest";
-import type { Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { geoVariant, RESERVED_COLORS, type RoomCtx } from "./common";
 import { CAST, castIndex } from "./people";
@@ -69,7 +69,7 @@ const room = (ctx: CanvasRenderingContext2D, over: Partial<RoomCtx> = {}): RoomC
 });
 
 let nextId = 1;
-function unit(over: Partial<Unit> = {}): Unit {
+function unit(over: Partial<RenderUnit> = {}): RenderUnit {
   return {
     id: nextId++,
     kind: "office",
@@ -80,7 +80,7 @@ function unit(over: Partial<Unit> = {}): Unit {
     satisfaction: 0.8,
     occupants: 4,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 
 /** How many finalized figures were drawn: the seated/standing build stamps one
@@ -233,7 +233,7 @@ describe("residential look tables", () => {
 });
 
 describe("residential rooms draw at representative states without throwing", () => {
-  const cases: Array<[string, Partial<Unit>, Partial<RoomCtx>]> = [
+  const cases: Array<[string, Partial<RenderUnit>, Partial<RoomCtx>]> = [
     ["office occupied", { kind: "office", occupants: 5 }, {}],
     ["office empty (lease)", { kind: "office", state: "empty", occupants: 0 }, {}],
     ["office night empty", { kind: "office", occupants: 0 }, { lit: true }],
@@ -354,7 +354,7 @@ describe("occupancy is honest (maps to roomOccupants, no ghost people)", () => {
 
   it("dims every lived-in home in the small hours: the condo and both rentals (#1025)", () => {
     const NIGHT_SCRIM = "fillStyle=rgba(8,10,22,0.5)";
-    const scrimmed = (kind: Unit["kind"], hour: number, occupants: number): boolean => {
+    const scrimmed = (kind: RenderUnit["kind"], hour: number, occupants: number): boolean => {
       const s = spyCtx();
       drawRoom(room(s.ctx, { hour, lit: true }), unit({ kind, width: 16, occupants }), 0, 0, 16 * TILE, FLOOR);
       return s.log.includes(NIGHT_SCRIM);
@@ -372,7 +372,7 @@ describe("occupancy is honest (maps to roomOccupants, no ghost people)", () => {
 
 describe("hotel state cues render outside the mirror", () => {
   /** A hotel unit whose geo mirror bit matches `flip`. */
-  function hotelAt(flip: boolean): Unit {
+  function hotelAt(flip: boolean): RenderUnit {
     for (let x = 0; x < 200; x++) {
       const u = unit({ kind: "hotelDouble", width: 6, floor: 12, x });
       if ((geoVariant(u, 1, 2) === 1) === flip) return u;

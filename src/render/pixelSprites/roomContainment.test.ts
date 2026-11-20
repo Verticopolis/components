@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { describe, it, expect } from "vitest";
-import type { Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { geoVariant, type RoomCtx } from "./common";
 import { FLOOR, TILE } from "../scale";
@@ -89,34 +89,34 @@ function figures(log: string[]): { foot: number; x0: number; x1: number }[] {
   return out;
 }
 
-function unit(over: Partial<Unit>): Unit {
-  return { id: 1, floor: 10, x: 20, state: "occupied", satisfaction: 0.8, ...over } as Unit;
+function unit(over: Partial<RenderUnit>): RenderUnit {
+  return { id: 1, floor: 10, x: 20, state: "occupied", satisfaction: 0.8, ...over } as RenderUnit;
 }
 
 /** Office layout selector: `geoVariant(u, 3, 5)` picks 0-2 cubicle row, 3
  *  meeting, 4 executive. */
 const officeLayout =
   (n: number) =>
-  (u: Pick<Unit, "kind" | "floor" | "x">): boolean =>
+  (u: Pick<RenderUnit, "kind" | "floor" | "x">): boolean =>
     geoVariant(u, 3, 5) === n;
 
 // Widths start at 6 tiles. Below that these kinds have never been drawable:
 // their fixed-size wall art alone is wider than the room, which is older than
 // this change and is not what these rows are about.
-const KINDS: [string, number, Partial<Unit>][] = [
+const KINDS: [string, number, Partial<RenderUnit>][] = [
   ["office", 6, { kind: "office" }],
   ...Object.keys(AMUSEMENTS_LOOKS).map(
-    (s) => [`amusements ${s}`, 25, { kind: "amusements", subtype: s }] as [string, number, Partial<Unit>],
+    (s) => [`amusements ${s}`, 25, { kind: "amusements", subtype: s }] as [string, number, Partial<RenderUnit>],
   ),
   ...Object.keys(BOUTIQUE_LOOKS).map(
-    (s) => [`boutiqueBay ${s}`, 22, { kind: "boutiqueBay", subtype: s }] as [string, number, Partial<Unit>],
+    (s) => [`boutiqueBay ${s}`, 22, { kind: "boutiqueBay", subtype: s }] as [string, number, Partial<RenderUnit>],
   ),
   ["skyBar", 22, { kind: "skyBar" }],
   ["nightclub", 30, { kind: "nightclub" }],
   ["daycare", 14, { kind: "daycare" }],
   ["spa", 18, { kind: "spa" }],
   ...Object.keys(FITNESS_LOOKS).map(
-    (s) => [`fitnessClub ${s}`, 20, { kind: "fitnessClub", subtype: s }] as [string, number, Partial<Unit>],
+    (s) => [`fitnessClub ${s}`, 20, { kind: "fitnessClub", subtype: s }] as [string, number, Partial<RenderUnit>],
   ),
 ];
 
@@ -126,7 +126,7 @@ const officeColumns = [0, 1, 2, 3, 4].map((n) => {
   for (let x = 0; x < 400; x++) if (officeLayout(n)({ kind: "office", floor: 10, x })) return x;
   throw new Error(`no office column draws layout ${n}`);
 });
-const columnsFor = (over: Partial<Unit>): number[] => (over.kind === "office" ? officeColumns : [0, 1, 2, 3]);
+const columnsFor = (over: Partial<RenderUnit>): number[] => (over.kind === "office" ? officeColumns : [0, 1, 2, 3]);
 
 describe("a full room keeps every figure and fixture inside its own box", () => {
   // Packing the restored slots back in must not solve the count by drawing

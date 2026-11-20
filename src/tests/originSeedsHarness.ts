@@ -1,4 +1,4 @@
-import type { FacilityKind, Unit } from "../model/types";
+import type { FacilityKind, RenderUnit } from "../render/renderModel";
 import { kindFacts } from "./catalogKinds";
 import { paintSettledUnit } from "../render/regionPaint";
 import { FLOOR, TILE } from "../render/scale";
@@ -210,7 +210,7 @@ export function crop(r: Raster, ox: number, oy: number, w: number, h: number): n
   return out;
 }
 
-export function unitOf(kind: FacilityKind, over: Partial<Unit> = {}): Unit {
+export function unitOf(kind: FacilityKind, over: Partial<RenderUnit> = {}): RenderUnit {
   return {
     id: 9,
     kind,
@@ -221,7 +221,7 @@ export function unitOf(kind: FacilityKind, over: Partial<Unit> = {}): Unit {
     satisfaction: 1,
     occupants: kindFacts(kind).population,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 
 /** The game's region paint of `u` with the room at (ox, oy) inside a region
@@ -229,7 +229,7 @@ export function unitOf(kind: FacilityKind, over: Partial<Unit> = {}): Unit {
  *  `extra` sets the scene inputs a `DrawCtx` may carry (parking use,
  *  recycling fill, staffing, animation time). */
 export function paintAt(
-  u: Unit,
+  u: RenderUnit,
   ox: number,
   oy: number,
   lit: boolean,
@@ -249,7 +249,7 @@ export function paintAt(
  *  (-dx, -dy), as in the second region of a room that straddles a seam: the
  *  canvas holds only the part past the seam, cropped from (0, 0). */
 export function paintPastSeam(
-  u: Unit,
+  u: RenderUnit,
   dx: number,
   dy: number,
   lit: boolean,

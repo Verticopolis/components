@@ -1,5 +1,5 @@
+import type { FacilityKind } from "../renderModel";
 import { describe, it, expect } from "vitest";
-import type { FacilityKind } from "../../model/types";
 import { SKY_HEADROOM_FLOORS } from "../cameraBounds";
 import { buildMapDrawList, type MapSource } from "./drawList";
 import { buildMapGaps } from "./gaps";

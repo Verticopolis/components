@@ -1,8 +1,8 @@
+import type { FacilityKind } from "../renderModel";
+import { catalogFacility } from "../catalogIndex";
 import { describe, expect, it } from "vitest";
 import { kindFacts, keepsHours, openAt } from "../../tests/catalogKinds";
-import { catalogFacility } from "../../catalog/catalogTypes";
 import { catalogFor } from "../../tests/catalogFixture";
-import type { FacilityKind } from "../../model/types";
 import { FLOOR, TILE } from "../scale";
 import { allJobs } from "./browserEntry";
 import { UNIT_STATES, hourFor, occupantCap, roomJobs, roomKinds, variantPlacements, type StillJob } from "./catalog";

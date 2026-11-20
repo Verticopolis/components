@@ -1,6 +1,6 @@
+import type { RenderUnit } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { subtypesOf } from "../tests/catalogKinds";
-import type { Unit } from "../model/types";
 import { drawUnit, craneAnchorTile, lobbyVariant, LOBBY_VARIANTS, type DrawCtx } from "./sprites";
 import { shade, rand, ACCENTS } from "./sprites/common";
 import { SKIN } from "./pixelSprites/common";
@@ -79,7 +79,7 @@ function spyCtx() {
   };
 }
 
-function unit(over: Partial<Unit> = {}): Unit {
+function unit(over: Partial<RenderUnit> = {}): RenderUnit {
   return {
     id: 1,
     kind: "office",
@@ -90,14 +90,14 @@ function unit(over: Partial<Unit> = {}): Unit {
     satisfaction: 1,
     occupants: 2,
     ...over,
-  } as Unit;
+  } as RenderUnit;
 }
 function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
   return { ctx, lit: true, anim: 0.5, hour: 20, ...over };
 }
 
 describe("drawUnit — every facility/state paints without throwing", () => {
-  const cases: Array<[string, Partial<Unit>]> = [
+  const cases: Array<[string, Partial<RenderUnit>]> = [
     ["floor", { kind: "floor" }],
     ["lobby", { kind: "lobby" }],
     ["under construction", { kind: "office", state: "construction" }],
@@ -340,7 +340,7 @@ describe("service facilities — reserved colors, integer pixels, and state cues
   // Reserved state colors must never appear as decoration, every rectangle must
   // land on integer coordinates, and the recycling FULL gauge is a state cue.
   const RESERVED = ["#C24A3A", "#C9CCC4", "#B2B0A4", "#E8A030", "#D4623A", "#FFD86A", "#E0556B"];
-  const KINDS: Array<Partial<Unit>> = (
+  const KINDS: Array<Partial<RenderUnit>> = (
     ["security", "medical", "housekeeping", "recycling", "metro", "parking", "parkingRamp"] as const
   ).map((kind) => ({ kind }));
 
@@ -474,7 +474,7 @@ describe("retail subtype looks paint distinctly (drawRoom)", () => {
   // variant of a kind paints differently (colors or geometry), while the kind
   // anchor shape survives. Also exercises every fixture and interior branch
   // so the coverage gate keeps guarding this file.
-  const cases: Array<[Unit["kind"], readonly string[], number]> = [
+  const cases: Array<[RenderUnit["kind"], readonly string[], number]> = [
     ["fastFood", subtypesOf("fastFood"), 12],
     ["restaurant", subtypesOf("restaurant"), 19],
     ["shop", subtypesOf("shop"), 14],
@@ -520,7 +520,7 @@ describe("retail subtype looks paint distinctly (drawRoom)", () => {
 });
 
 describe("per-unit geo-seeded variety (party law: geometry first)", () => {
-  const at = (kind: Unit["kind"], floor: number, ux: number, over: Partial<Unit> = {}): Unit =>
+  const at = (kind: RenderUnit["kind"], floor: number, ux: number, over: Partial<RenderUnit> = {}): RenderUnit =>
     unit({ kind, floor, x: ux, occupants: 4, ...over });
 
   it("the same room paints identically twice (pure geo seed, no RNG)", () => {

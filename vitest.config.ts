@@ -1,15 +1,13 @@
 import { configDefaults, defineConfig } from "vitest/config";
 
 // The package's unit tests run headless in happy-dom, as the game's do. The
-// setup file binds the view to the engine's Modern catalog (the engine
-// package's JSON fixtures), so a test can draw and lay out without a running
-// engine.
+// setup file binds the view to the hand-written Modern render catalog
+// (src/tests/catalogFixture.ts), so a test can draw and lay out without a
+// game.
 export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify("0.0.0-test"),
     __APP_SHA__: JSON.stringify("test"),
-    __TOOLING_ENGINE__: "false",
-    __ENGINE_PACKAGE__: "null",
   },
   test: {
     globals: true,

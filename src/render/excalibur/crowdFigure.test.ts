@@ -1,5 +1,5 @@
+import type { RenderPerson, RenderTransport } from "../renderModel";
 import { describe, expect, it } from "vitest";
-import type { PersonView, TransportView } from "../../simport/view";
 import { personFigure, waitFacesLeft, waitShaftMid, type CrowdLook } from "./crowdFigure";
 import { figureOf, newGlide, newStepClock } from "./crowdLook";
 
@@ -8,7 +8,7 @@ import { figureOf, newGlide, newStepClock } from "./crowdLook";
  * they wait at, whichever way they walked to their place in the line.
  */
 
-const shaft = (x: number, over: Partial<TransportView> = {}): TransportView => ({
+const shaft = (x: number, over: Partial<RenderTransport> = {}): RenderTransport => ({
   id: x,
   kind: "elevatorStandard",
   x,
@@ -20,7 +20,7 @@ const shaft = (x: number, over: Partial<TransportView> = {}): TransportView => (
   carDir: [0],
   ...over,
 });
-const waiter = (x: number, floor = 1): PersonView => ({
+const waiter = (x: number, floor = 1): RenderPerson => ({
   id: 1,
   seed: 5,
   state: "waiting",

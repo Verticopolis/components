@@ -1,6 +1,6 @@
+import type { FacilityKind } from "../renderModel";
 import { keepsHours, openAt } from "../../tests/catalogKinds";
 import { describe, expect, it } from "vitest";
-import type { FacilityKind } from "../../model/types";
 import { withLayerHook } from "../pixelSprites/layers";
 import { allJobs } from "./browserEntry";
 import { roomJobs, roomKinds, type Job, type StillJob } from "./catalog";

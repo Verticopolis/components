@@ -1,6 +1,7 @@
+import type { FacilityKind } from "../render/renderModel";
+import { catalogFacility } from "../render/catalogIndex";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
-import { catalogFacility } from "../catalog/catalogTypes";
 import {
   bindViewKinds,
   hasBusinessHours,
@@ -15,7 +16,6 @@ import {
   resetViewKindsForTests,
   viewKindKeys,
 } from "./viewKinds";
-import type { FacilityKind } from "../model/types";
 
 describe("the view's kind facts", () => {
   beforeEach(() => bindViewKinds(catalogFor("modern")));

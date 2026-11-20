@@ -41,10 +41,14 @@ For maintainers:
 To build it yourself:
 
 ```bash
-npm ci                                       # installs @verticopolis/engine, whose catalog the bake reads
+npm ci
 npm run atlas -- --out dist-atlas            # whole catalog
 npm run atlas -- --out dist-atlas --filter room/office   # a slice, written as verticopolis-atlas-preview.zip
+npm run atlas -- --out dist-atlas --catalog my-catalog.json   # cut to a game's own Modern render catalog
 ```
+
+The bake draws with the components' own Modern render catalog
+(`src/tests/catalogFixture.ts`) unless `--catalog` names a game's.
 
 The release copy is baked inside the pinned Playwright image (the same
 `mcr.microsoft.com/playwright:v<lockfile playwright version>-jammy` the
