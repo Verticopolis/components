@@ -3,6 +3,9 @@
 The UI speaks one language, **Windows 3.1 / SimTower chrome**: gray faces,
 two-pixel bevels, navy title bars, press-only feedback. This document is the
 contract for anyone (human or agent) touching `src/styles.css` or UI markup.
+It moved here from Verticopolis/web on 2026-11-20 with the stylesheet; how the
+web game builds its windows in code is in its
+[`docs/ui/`](https://github.com/Verticopolis/web/tree/main/docs/ui).
 
 The stylesheet (`src/styles.css`) is organized as **one generation of CSS in
 five layers**: tokens → base → components → layout/surfaces → media. It is a
@@ -32,8 +35,9 @@ Everything derives from `:root` custom properties. Swap these to re-theme.
 | `--win-shadow` | the one hard drop shadow floating windows cast |
 | `--r-font` | the UI face (MS Sans Serif stack) |
 
-**Rule: never hard-code a color that has a token.** Quote balance numbers from
-the engine config; quote colors from here.
+**Rule: never hard-code a color that has a token.** Quote colors from here.
+The full token list is in `src/styles/retro-tokens.css`, and the color schemes
+in `src/styles/schemes/`.
 
 ## 2. Components
 
@@ -58,10 +62,8 @@ buttons may not).
   Skip button. It NEVER grows on touch. A 36px ✕ inflates every navy bar and a
   wider one stretches into a pill (both shipped bugs, since fixed). Instead,
   coarse pointers get an invisible tap halo (`::after { inset: -8px }`) for a
-  ~34px effective target with zero visual change. In TS there are exactly two
-  ✕ builders: `UI`'s `titleBarClose()` for DOM-built ✕s (modal,
-  inspector) and `ui/templates/editor.ts`'s `titleBar` template for the
-  editor card. Never hand-write a third copy; extend one of those.
+  ~34px effective target with zero visual change. A game builds each ✕ in one
+  place and reuses it, so the markup stays the same everywhere.
 
 ### `.win`: a floating window
 Gray face + `--bevel-out` + `--win-shadow`. Applied to: the modal box, the
@@ -120,10 +122,8 @@ Evalbar = the original-style sunken satisfaction gauge.
 
 Every dismissible floating surface is a **window**: `.win` frame + `.win-title`
 bar + `.btn.xs` ✕. The modal ✕ routes through the dialog's **cancel path**
-(same as Esc). Never call `closeModal()` directly from a close affordance, or
-modals that resolve a pending choice (the emergency dialog) will deadlock the
-paused sim. The ✕ is appended **after** `showModal()` so keyboard focus lands
-on the primary action, not on dismiss.
+(same as Esc), and keyboard focus lands on the primary action when a dialog
+opens (`src/ui/uiModal.ts`).
 
 A closable window moves by a drag on its title bar (`src/ui/movableWindow.ts`):
 it stays whole inside the tower view (a dialog, inside the browser window), a
@@ -146,7 +146,7 @@ splash. It shares interaction grammar only: bevel press states and a visible
 - Focus is always visible: navy `:focus-visible` ring globally, amber on the
   splash (navy vanishes on the night sky).
 - Reduced motion (OS preference or the in-game toggle) disables all decorative
-  CSS animation; the engine freezes canvas ambience separately.
+  CSS animation; the canvas scene freezes its own ambience separately.
 - The traffic cue carries its level in how many bars are filled, so color is never its only cue.
 
 ## 6. Rules of engagement
@@ -166,7 +166,8 @@ splash. It shares interaction grammar only: bevel press states and a visible
    (`max-width: 767px`, or a short landscape screen `max-width: 1023px and
    max-height: 599px`), a tablet block (`768–1023px` wide and `min-height: 600px`,
    docked layout), and desktop (`≥1024px`). Add responsive tweaks to the matching
-   block. The JS `mobileMq` in `main.ts` mirrors the phone query. Keep them in sync.
+   block. A game that reads the phone tier in script mirrors the phone query;
+   keep the two in sync.
    A landscape block after the phone block covers a phone held sideways (the
    short half of the phone query plus `orientation: landscape`). It docks the
    tools as a column on the left instead of the bottom strip and stays inside

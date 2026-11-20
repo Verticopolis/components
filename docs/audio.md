@@ -1,28 +1,20 @@
-# Sound
+# Audio
 
-> **Snapshot of `main` on 2026-10-15.** Every number here (gains, rates,
-> frequencies, timings, budgets) is copied by hand from the source and does
-> not refresh. The files named in each section hold the live values.
+> **Snapshot of the source on 2026-10-15, moved here 2026-11-20.** Every
+> number here (gains, rates, frequencies, timings, budgets) is copied by hand
+> from the source and does not refresh. The files named in each section hold
+> the live values.
 
-How Verticopolis makes noise, what each sound is for, and how to add one.
+How the package makes noise: the modules in `src/audio/`
+(`@verticopolis/components/audio/*`), the bus graph, the lifecycle, the cue
+vocabulary and the ambient layer. Below, "the audio engine" means
+`ToneAudioEngine` and "the facade" means `AudioEngine` in `Audio.ts`.
 
-Sources, and which one wins when they disagree:
-
-- **The code** in `src/audio/` (in
-  [Verticopolis/components](https://github.com/Verticopolis/components),
-  shipped to the game as `@verticopolis/components/audio`) and `src/game/`
-  (here) is the truth about what plays today.
-- **The SPEC** (`_bmad-output/specs/spec-human-audio-theme/`) and the
-  crowd-din-ambience GDD (`_bmad-output/planning-artifacts/gdds/`) are the
-  design record for the intended note data.
-- **The audio plan**
-  (`_bmad-output/planning-artifacts/architecture/architecture-audio-events-2026-10-13.md`)
-  decides where cues come from, who owns the simulation's event drain, and
-  which new sounds get built next. Its stages are tracked in the backlog
-  (`_bmad-output/implementation-artifacts/backlog.md`), one GitHub issue each.
-
-This doc only summarizes them. Below, "the engine" means the simulation and
-"the audio engine" means `ToneAudioEngine`.
+What fires a cue, what the player's settings are, and which sounds are
+planned next belong to the game that hosts the audio: the web game's side is
+[`SOUNDS.md`](https://github.com/Verticopolis/web/blob/main/SOUNDS.md) in
+Verticopolis/web. Issue numbers (`#N`) on this page are Verticopolis/web's,
+where it lived until 2026-11-20.
 
 ## The goal
 
@@ -39,7 +31,7 @@ coordinating, and changed with the hour and with where you were looking.
   while you are looking at something else, and give the tower a park-like
   quality a purely mechanical building would lack.
 
-Verticopolis already has this machinery in the crowd layer. When weighing a new
+The crowd layer already has this machinery. When weighing a new
 sound, ask whether it thickens that soundscape or merely announces an event.
 
 ## The short version
@@ -47,43 +39,62 @@ sound, ask whether it thickens that soundscape or merely announces an event.
 - Sound is **Tone.js**, synthesized live. Excalibur's audio system is not used
   at all: Excalibur draws the tower and nothing more. No `ex.Sound`, no audio
   `Loader`, no per-cue asset files.
-- Almost nothing is sampled. The only files that ship are
-  `src/public/audio/voice-talk.mp3` and `voice-laughs.mp3`: gibberish talk and
-  laughter the owner recorded (provenance and license in `ASSETS-LICENSE.md`),
-  which the crowd layer chops into murmur. Everything else is generated at
-  runtime.
+- Almost nothing is sampled. The only recordings are `audio/voice-talk.mp3`
+  and `audio/voice-laughs.mp3` (`audioAssets.ts`), gibberish talk and
+  laughter the owner recorded, which the crowd layer chops into murmur. The
+  host serves them under its base URL. Everything else is generated at run
+  time.
 - The music and action cues are transcriptions of the owner's own recordings
   (hums, chest hits, taps, a bloop, a ping). New cues should speak in that
   voice rather than introduce a fresh instrument.
 - Every sound is original to Verticopolis, UI effects included: synthesized in
   code, rendered from the project's code, or recorded by the owner. No
-  third-party sample or sound pack ships, free or paid (audio plan, principle 9).
-- The engine (`engine-rs/` in Verticopolis/engine) owns gameplay
-  outcomes and emits gameplay events. It never plays, schedules, or mixes
-  sound. Everything audible lives in `src/audio/`, with the call sites in
-  `src/game/`.
+  third-party sample or sound pack ships, free or paid.
+- The audio layer only plays. The host tells it what to play (`sfx(name)`),
+  where the camera is (`update(focus)`), the program and the player's levels.
+  It never decides a game rule.
+
+```mermaid
+flowchart LR
+    Host["the host game"] -->|"start() on the first gesture"| Facade["AudioEngine facade<br/>Audio.ts (no Tone import)"]
+    Host -->|"sfx(name)"| Facade
+    Host -->|"update(ViewFocus) about 6 Hz"| Facade
+    Host -->|"setVolumes · setMuted · setProgram · setAway"| Facade
+    Facade -->|"lazy import once"| Tone["ToneAudioEngine<br/>ToneAudioEngine.ts"]
+    Tone --> Voices["action cues<br/>toneVoices.ts · tonePercussion.ts"]
+    Tone --> Music["music tracks<br/>toneTracks.ts · toneMusicVoices.ts"]
+    Tone --> Crowd["crowd and venues<br/>toneCrowd*.ts"]
+    Tone --> Beds["room tone · rain<br/>toneRoomTone.ts · toneRain.ts"]
+```
+
+`ViewFocus` is what the scene reports about its camera
+(`src/render/excalibur/towerInputCamera.ts`): the floor at the middle of the
+view, the zoom, the dominant kind, night, the hour, the weather and how full
+the rooms in view are. A host hands the latest one to `update` about six times
+a second.
 
 ## Module map
 
 | File | Job |
 | ---- | --- |
-| `src/audio/Audio.ts` | The `AudioEngine` facade built at boot. No `tone` import; holds mute/volume/program synchronously and lazy-loads the audio engine on first gesture. |
-| `src/audio/ToneAudioEngine.ts` | The live orchestrator: bus graph, every voice, the music `Tone.Part`, the ambient bed driven by camera focus. |
-| `src/audio/toneScenes.ts` | Scene vocabulary and pure math (`SCENES`, `sceneFor`, `midiToFreq`), plus the `SfxName` union. No Tone.js import. |
-| `src/audio/toneTracks.ts` | Composed music: note data for the two tracks and the builders that time them. No Tone.js import. |
-| `src/audio/toneVoices.ts` | Action jingles: the `SfxVoices` instrument set and `playSfx`. |
-| `src/audio/tonePercussion.ts` | The chest-hit thump and object-tap membrane voices. |
-| `src/audio/toneRain.ts` | The outdoor rain bed, on a dry path. |
-| `src/audio/toneRoomTone.ts` | The per-scene room-tone bed (filtered pink noise). |
-| `src/audio/toneMusicVoices.ts` | The tracks' pitched voices: arpeggio, bass and melody. |
-| `src/audio/toneContext.ts` | The one playback context, and `ContextSleep`, which suspends it while the player is away. |
-| `src/audio/awayWatch.ts` | Reports the player leaving the page (hidden tab or lost focus) and coming back. |
-| `src/audio/toneCrowd.ts` | The crowd/venue ambience layer: talkers, per-scene details, venue programs. |
-| `src/audio/toneCrowdData.ts` | Crowd specs and math, including the `pseudo` hash the layer varies itself with. |
-| `src/audio/toneCrowdVoices.ts` | Slices the two seed mp3s into murmur grains. |
-| `src/audio/toneCrowdPrograms.ts` | `PartyBand`, `CinemaProgram`, `MetroProgram`. |
-| `src/audio/audioAssets.ts` | Every file the audio layer fetches at run time (`AUDIO_RUNTIME_FILES`) and the lazy chunk's name, so the offline precache check can find them. |
-| `src/game/audioPrefs.ts` | Player commands: mute, volume, and their persistence (in `src/storage/Prefs.ts`). |
+| `Audio.ts` | The `AudioEngine` facade a host builds at boot. No `tone` import; holds mute, volume and program synchronously and lazy-loads the audio engine on the first gesture. |
+| `ToneAudioEngine.ts` | The live orchestrator: bus graph, every voice, the music `Tone.Part`, the ambient bed driven by camera focus. |
+| `toneScenes.ts` | Scene vocabulary and pure math (`SCENES`, `sceneFor`, `midiToFreq`), plus the `SfxName` union. No Tone.js import. |
+| `toneTracks.ts` | Composed music: note data for the two tracks and the builders that time them. No Tone.js import. |
+| `toneVoices.ts` | Action jingles: the `SfxVoices` instrument set and `playSfx`. |
+| `tonePercussion.ts` | The chest-hit thump and object-tap membrane voices. |
+| `lightSynth.ts`, `lightEnvelope.ts` | Light voices: stand-ins for Tone's synths that build each note from two native nodes and release them when it ends, with Tone's own envelope curves. |
+| `firstCueLatch.ts` | Holds the cue fired by the gesture that unlocks audio, so the very first click is heard. |
+| `toneRain.ts` | The outdoor rain bed, on a dry path. |
+| `toneRoomTone.ts` | The per-scene room-tone bed (filtered pink noise). |
+| `toneMusicVoices.ts` | The tracks' pitched voices: arpeggio, bass and melody. |
+| `toneContext.ts` | The one playback context, and `ContextSleep`, which suspends it while the player is away. |
+| `awayWatch.ts` | Reports the player leaving the page (hidden tab or lost focus) and coming back. |
+| `toneCrowd.ts` | The crowd and venue ambience layer: talkers, per-scene details, venue programs. |
+| `toneCrowdData.ts` | Crowd specs and math, including the `pseudo` hash the layer varies itself with. |
+| `toneCrowdVoices.ts` | Slices the two seed mp3s into murmur grains. |
+| `toneCrowdPrograms.ts` | `PartyBand`, `CinemaProgram`, `MetroProgram`. |
+| `audioAssets.ts` | Every file the audio layer fetches at run time (`AUDIO_RUNTIME_FILES`) and the lazy chunk's name, so a host's offline precache check can find them. |
 
 ## The bus graph
 
@@ -111,23 +122,25 @@ read back from the facade so prefs never store junk.
 ## Lifecycle
 
 Browsers refuse to make noise before a gesture, and the Tone.js chunk is
-large (about 230 kB minified, per the audio plan's audit), so both are handled
-together. `GameApp` (`src/main.ts`) builds the facade at boot with
-nothing heavy loaded. The first real gesture calls `start()`, which
-feature-detects `AudioContext` (so tests and unsupported environments never
-fetch the chunk), then dynamically imports `ToneAudioEngine`. Once the audio
-engine exists the facade replays what it was holding: mute, volumes, program,
-last focus.
+large (about 230 kB minified), so both are handled together. The host builds
+the facade at boot with nothing heavy loaded. The first real gesture calls
+`start()`, which feature-detects `AudioContext` (so tests and unsupported
+environments never fetch the chunk), then dynamically imports
+`ToneAudioEngine`. Once the audio engine exists the facade replays what it was
+holding: mute, volumes, program, last focus, and the cue the unlocking
+gesture fired (`firstCueLatch.ts`).
 
-An installed game has to play every sound offline (#985). The lazy chunk and
-both voice seeds are in the service worker's precache, and three checks keep
-it that way: `scripts/verify-precache.ts` (part of `npm run build`) fails when
-the audio chunk or any file in `AUDIO_RUNTIME_FILES` is missing from the
-manifest, `src/audio/audioAssets.test.ts` fails when a sound file ships or the
-source names one without listing it, and `e2e/offline.spec.ts` plays today's
-sounds from the cache with the network off. `verify-precache.ts` also fails
-the build when the whole precache passes its budget
-(`PRECACHE_BUDGET_BYTES`, 6 MiB today), so a new sound file has to fit.
+```mermaid
+stateDiagram-v2
+    [*] --> Inert: facade built at boot
+    Inert --> Loading: start() on a gesture
+    Loading --> Inert: no AudioContext
+    Loading --> Running: chunk loaded, state replayed
+    Running --> Away: tab hidden or focus lost
+    Away --> Running: player back
+    Running --> [*]: dispose()
+    Loading --> [*]: dispose() (generation guard)
+```
 
 While the chunk loads, a second `start()` returns early. A `generation`
 counter guards the load window, so a `dispose()` mid-flight cannot resurrect a
@@ -136,90 +149,36 @@ torn-down audio engine.
 `setProgram("splash" | "game")` picks the track; the splash theme crossfades to
 the in-game bed on entry.
 
-Leaving the page silences it. `src/audio/awayWatch.ts` reports the player
-away while the tab is hidden or the page has lost focus (another tab, another
-app in front of the installed app), and `setAway` on the facade and engine
-fades the master out, skips the music part's notes and any cues, quiets the
-crowd, and suspends the context once the fade has played, so the music holds
-its place (`ContextSleep` in `toneContext.ts`). Coming
-back resumes the context at the player's own mute. This is kept apart from the
-player's mute. It fixed static heard in a background tab: a backgrounded or
-unfocused page gets a throttled, lower-priority main thread, so the notes it
-builds only 0.1 s ahead (Tone's look-ahead) arrived late and crackled.
+Leaving the page silences it. `awayWatch.ts` reports the player away while the
+tab is hidden or the page has lost focus, and `setAway` fades the master out,
+skips the music part's notes and any cues, quiets the crowd, and suspends the
+context once the fade has played, so the music holds its place
+(`ContextSleep` in `toneContext.ts`). Coming back resumes the context at the
+player's own mute. This is kept apart from the player's mute. It fixed static
+heard in a background tab: a backgrounded or unfocused page gets a throttled,
+lower-priority main thread, so the notes it builds only 0.1 s ahead (Tone's
+look-ahead) arrived late and crackled.
 
-Known runtime behavior, from the audio plan's audit: pausing the game keeps
-music and ambience playing; a blocking modal freezes ambience updates; and the
-app never calls `dispose()`, so the crowd's `humSwell` gain is never released.
-The last is part of `web-audio-lifecycle-a11y` (#973).
+An installed game has to play every sound offline. `AUDIO_RUNTIME_FILES` and
+the chunk name in `audioAssets.ts` are what a host's precache check reads;
+`audioAssets.test.ts` fails when the source names an `audio/...` file the list
+lacks, and `audioFetches.test.ts` fails when the audio engine loads one.
 
 ## The cue vocabulary
 
 `SfxName` is the complete list of one-shot cues. All play through `sfxBus`.
 
-| Cue | Sound | Fired from |
-| --- | ----- | ---------- |
-| `build` | One bloop swooping 520 Hz down to 180 Hz | `buildActions.ts`, `editorActions.ts`, `keyboardPlay.ts` |
-| `click` | A small, quick high bloop | `editorActions.ts` |
-| `sell` | Two falling bloops | `buildActions.ts`, `editorActions.ts` |
-| `error` | A slow, sighing double bloop | Most player-initiated refusals in `buildActions.ts`, `editorActions.ts`, and `keyboardPlay.ts` (drag paths and a few edge refusals stay quiet); also `frameLoop.ts` when the emergency choice modal opens |
-| `promote` | The splash theme's peak turn on the ping bell | `frameLoop.ts`: a star promotion (2 to 5 stars) and the win dialog |
-| `notify` | A single ping on G4 | The onboarding step chime (wired in `appBoot.ts`) |
-| `money` | An ascending four-note arpeggio | **Nothing. Defined and uncalled.** |
+| Cue | Sound |
+| --- | ----- |
+| `build` | One bloop swooping 520 Hz down to 180 Hz |
+| `click` | A small, quick high bloop |
+| `sell` | Two falling bloops |
+| `error` | A slow, sighing double bloop |
+| `promote` | The splash theme's peak turn on the ping bell |
+| `notify` | A single ping on G4 |
+| `money` | An ascending four-note arpeggio |
 
-`money` predates the human-recorded pass; the SPEC deliberately left it alone
-until "a later pass." A cash ding is one idea for it (see "Ideas and planned
-sounds").
-
-## Where cues come from
-
-Today, every sound is triggered in one of four ways. The first three play `SfxName` cues; the fourth drives the continuous
-ambience.
-
-- **The player's own action.** `buildActions.ts`, `editorActions.ts`, and
-  `keyboardPlay.ts` play `build`, `sell`, `click`, or `error` from the command
-  result, so the cue lands on the input frame and covers refusals.
-- **UI only.** The onboarding step chime (`notify`, wired in `appBoot.ts`),
-  mute, and the program change. These stay in the frontend for good.
-- **Polled simulation state.** `frameLoop.ts` plays `promote` when `sim.star`
-  rises, `promote` again when `sim.evaluatedTower` opens the win dialog, and
-  `error` when `sim.pendingChoice` opens the emergency modal.
-- **The read model, about 6 times a second.** `ViewFocus` (camera plus the
-  sim's weather, clock, and occupancy, built in `towerInputCamera.ts`) drives
-  the ambience scene, the crowd layer, and rain.
-
-The engine also emits gameplay events (`star_reached`, `fire_started`,
-`bomb_detonated`, `milestone_reached`, and the rest of
-`engine-rs/src/gameplay/catalog.json`), but audio does not read them yet. The
-drain, `Simulation.drainGameplayEvents()`, empties the buffer, and the
-analytics bridge (`src/analyticsEngineBridge.ts`) is its only caller. **Never
-call it from audio code**: a second caller would steal the batch from
-analytics.
-
-The audio plan changes this in stages, each its own backlog row and issue.
-The first two matter most here:
-
-- **Stage 1**, `gameplay-event-hub` (#964): a host-level hub owns the one
-  drain and hands the same read-only batch to every consumer, with a
-  throwing consumer isolated from the others.
-- **Stage 2**, `web-audio-engine-events` (#965): an audio router on the hub
-  plays `promote` from `star_reached` and retires the `sim.star` poll. The
-  win and emergency cues stay on their dialogs. No audible change.
-
-Until those land, new gameplay-driven cues have nowhere correct to hook in.
-Rules the plan fixes for every cue, now and later:
-
-- **No separate audio event stream.** Audio uses the gameplay catalog and the
-  read model; a fact neither carries is an engine ask, never a
-  side channel.
-- **Observe, never infer.** Audio may read state the engine publishes (a
-  star, a pending choice, occupancy). It never reconstructs an engine decision
-  from indirect signals, such as guessing an elevator arrival from a car's
-  position, or parsing the log's player text.
-- **One fact, one cue.** When an event and a state change describe the same
-  moment, only one of them makes the sound (`build` comes from the command
-  result, never also from `facility_placed`).
-- **Existing sounds first.** New compositions wait until stages 1 and 2 have
-  shipped with today's sounds unchanged (the "initial audio gate").
+Where the web game fires each one is in its `SOUNDS.md`.
 
 ## The ambient layer
 
@@ -374,25 +333,18 @@ night.** See the dawn birds idea below.
 
 ## Recordings instead of tones
 
-Replacing a synthesized element with a recording is an open idea with no
-backlog row. It is a new sound, so it waits for the initial audio gate and an
-owner audition. If it is picked up, these constraints already apply:
+Replacing a synthesized element with a recording is an open idea. It is a new
+sound, so it needs an owner audition. If it is picked up, these constraints
+already apply:
 
 - **The recording is the project's own.** Owner-recorded or rendered from the
-  project's code; no third-party sample or pack, CC0 included (audio plan,
-  principle 9). It gets an entry in `ASSETS-LICENSE.md`.
-- **It is listed for the offline precache.** The file goes in
-  `src/public/audio/` and gets a named constant in `src/audio/audioAssets.ts`
-  holding its full path (for example `"audio/bird-chirp.mp3"`), added to
-  `AUDIO_RUNTIME_FILES`. Code loads it as `` `${baseUrl}${CONSTANT}` ``, the
-  way the voice seeds load. `audioAssets.test.ts` fails when a file in
-  `src/public/audio/` is not listed, when the source names an `audio/...`
-  path that is not listed, or when it builds one from pieces; the build's
-  `verify-precache.ts` fails when a listed file is not precached or the
-  precache passes its 6 MiB budget.
-- **It is an mp3.** The Workbox `globPatterns` in `vite.config.ts` precache
-  `mp3` and no other audio type, and `audioAssets.test.ts` rejects a listed
-  file the glob does not cover.
+  project's code; no third-party sample or pack, CC0 included. It gets an
+  entry in the license record of the repository that ships the file.
+- **It is listed for the offline precache.** It gets a named constant in
+  `audioAssets.ts` holding its full path (for example
+  `"audio/bird-chirp.mp3"`), added to `AUDIO_RUNTIME_FILES`. Code loads it as
+  `` `${baseUrl}${CONSTANT}` ``, the way the voice seeds load.
+- **It is an mp3.** A host precaches `mp3` and no other audio type.
 - **Match the seeds' encoding unless a clip proves it needs more:** 22050 Hz,
   mono, 32 kbps. The talk seed is 18 s in 72 kB and the laugh seed 2.6 s in
   11 kB. Decoded audio is resampled to the context's rate and stored as 32-bit
@@ -407,9 +359,9 @@ owner audition. If it is picked up, these constraints already apply:
 Breaking one tends to produce a bug that shows up only on someone else's
 hardware or in a replay.
 
-- **Never draw from the simulation's RNG.** Sound is presentation and the
-  seeded streams are part of save determinism. Vary with the `pseudo` hash
-  seeded on things that already move. Never `Math.random`, never `sim.rng`.
+- **Never draw from the game's seeded random numbers.** Sound is presentation,
+  and a game's seeded streams are part of its save determinism. Vary with the
+  `pseudo` hash seeded on things that already move, never with `Math.random`.
 - **No `SfxName` cue ramps below 160 Hz.** The owner tested the action cues
   on phone and laptop speakers and could not hear lower floors (the
   audibility rule in `toneVoices.ts`). Deep cues add quiet octave and twelfth
@@ -422,122 +374,38 @@ hardware or in a replay.
   Tone.js import and no live state, which lets tests assert note data directly.
 - **Celebrations ring the ping bell.** `promote` and `notify` play on the
   ping bell (`strikeBell`); the bloops are for build, sell, click, and error.
-- **The engine stays free of audio.** No playback code or audio dependency
-  enters `engine-rs/`. The engine says what happened and
-  never what it should sound like.
-- **Audio only reads.** It never calls `drainGameplayEvents()`, never writes
-  to the simulation, and never parses log or bulletin text for a cue.
+- **Audio only reads.** It reads the focus it is handed and never writes back
+  to the game.
 
 ## Adding a cue
 
-First check that the sound may be added at all:
-
-- **It is original.** Owner-recorded or synthesized in the project's code,
-  per the short version above.
-- **It can wait for the gate.** A new composition lands only after the
-  initial audio gate (stages 1 and 2 of the audio plan), and only after the
-  owner has auditioned it.
-- **It is player-facing.** A new or changed cue bumps `package.json`
-  `version` (minor, with the lockfile via `npm version`), and its deep review
-  is `/gds-code-review` (see `CLAUDE.md`).
-
-Then:
+A new sound needs the owner's OK before it merges (CLAUDE.md, design
+sign-off). Then:
 
 1. Add the name to the `SfxName` union in `toneScenes.ts`.
 2. Add its recipe as a `case` in `playSfx`, reusing existing voices where you
    can. A new instrument means a new `SfxVoices` field and its construction
    in `createSfxVoices`. Nothing else is needed for teardown:
-   `ToneAudioEngine.dispose()` walks every `SfxVoices` value (even though the
-   app itself never calls it yet, see Lifecycle).
-3. Fire it with `app.audio.sfx("name")` from a player action in `src/game/`.
-   The facade no-ops before the audio engine loads, which is correct. A cue
-   driven by something the tower does on its own belongs to the audio router
-   the audio plan adds (#965); see "Where cues come from" before wiring one.
-4. Tests: `toneVoices.test.ts` for the recipe, `toneAudioEngineGraph.test.ts`
+   `ToneAudioEngine.dispose()` walks every `SfxVoices` value.
+3. Tests: `toneVoices.test.ts` for the recipe, `toneAudioEngineGraph.test.ts`
    for routing, `toneAudioEngine.test.ts` for the inert-without-audio contract.
-5. If it is optional for the player, gate it at the call site in `src/game/`.
-   Mute and the three volumes are the only policy the audio engine knows
-   about.
+4. Add it to the gallery's sound board (`gallery/sounds.ts`) so it can be
+   heard and reviewed.
+5. Add a change note (`.changes/README.md`).
 
-## Ideas and planned sounds
-
-Two of these are planned in the audio plan, each with a backlog row and an
-issue: the elevator chime and the event cues. The rest are ideas with no row
-yet; each names the open question and where it is decided. Every new sound
-needs an owner audition and waits for the initial audio gate.
-
-### Elevator chime (planned)
-
-No engine output says a car stopped today, and audio must not guess a stop
-from a car's position and direction. So the engine first publishes a per-car
-stop counter in the frame read model (`engine-car-door-state`, #966), kept
-off the event catalog because stops at top speed would flood it. The web
-chime then plays when a counter rises, for cars in view only, at most one per
-car per frame and rate capped (`web-elevator-chime`, #981). A motor whir as
-ambient texture is a separate, open idea; it would have to read published
-state too.
-
-### Event cues (planned)
-
-`web-audio-event-cues` (#967, audio plan stage 6). Today a fire or bomb
-threat plays only the generic `error` when its choice modal opens, and a VIP
-visit plays nothing. The plan maps each new cue to one source:
-
-- an alarm (fire rescue) and a threat cue (bomb) when the choice modal opens,
-  replacing `error` there; `fire_started` itself stays silent because the
-  modal opens in the same step;
-- an explosion on `bomb_detonated` when rooms burn, and a low impact on
-  `fire_gutted`;
-- `notify` on `milestone_reached` and on an emergency that times out;
-- Santa, thief, treasure, and VIP cues when their effect sequences step, with
-  the VIP cue skipped on the winning visit (the win cue covers it).
-
-Read the plan's mapping table before proposing another event cue.
-
-### Dawn birds and a night owl (idea)
-
-The street's bird chirps play at any hour. Gates belong to a whole scene
-(`CrowdSceneSpec.gate`), so giving the birds a dawn curve and adding a night
-owl needs a per-element gate in `ElementSpec` and `scheduleElement`, plus new
-`hourActivity` curves. The layer already has the sim hour, so no engine
-change is needed.
-
-### A cash ding (idea)
-
-Income feedback that rings once per transaction and as a varied cluster for a
-big payday. The engine has no income event, and audio may not parse the
-`"money"` log lines (they also cover outflows and aggregate many
-transactions into one line). It would need a new gameplay catalog event in
-the engine, played through the audio router (#965). The existing `money`
-arpeggio is unused.
-
-### Cinema genres (idea)
-
-The original varied a theater by what was showing. `CinemaProgram` is one
-fixed program. `ViewFocus` carries no unit id and no date, so choosing a genre
-per cinema needs new read-model fields first; the engine's monthly
-blockbuster booking is a yes or no, and it is not published to the read
-model.
-
-### Busier rooms (idea)
-
-A shop register, office phones, drawers, and chairs. These are new elements
-in `CROWD_SCENES` with no new machinery, since the gates and clusters already
-handle when and how often.
+The game then fires it with `sfx("name")`. The facade no-ops before the audio
+engine loads, which is correct.
 
 ## Hearing the current sounds
 
-There is no checked-in way to render the sounds to a file yet. The planned
-tool is `audio-offline-render` (#969, audio plan stage 4): it renders the real
-graph under `Tone.Offline` in headless Chromium to files (the programs, venue
-programs, beds per scene, and jingles) with a manifest, and the outputs stay
-out of the repository. Until it lands, listen in the running game
-(`npm run dev`), zoomed in on the scene you changed.
+The gallery's sound board (`npm run gallery`, `gallery/sounds.ts`) plays every
+action cue, both music tracks and the ambience of each part of a tower. There
+is no checked-in way to render the sounds to a file yet.
 
 An earlier draft of this doc carried a local render script. It was dropped
 because nothing tested it and it re-implemented the crowd layer's synths, so
 it could drift from the game unnoticed. The lessons from it are worth carrying
-into #969:
+into a renderer:
 
 - **Render through the master gain (`0.35`)** or `build`, `sell`, and
   `error` clip, which makes a recipe sound hotter than it is.
