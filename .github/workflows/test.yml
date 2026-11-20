@@ -21,6 +21,10 @@ permissions:
 # engine and read its catalog from the JSON fixtures in src/simport/fixtures,
 # so no engine build is needed. The game's e2e, engine-host and WASM jobs stay
 # in the game's repository.
+#
+# A pull request that changes only prose (.github/actions/docs-only lists
+# it) still runs the job, so the required check reports, but every step
+# after Scope skips. A new step here needs the same `if`.
 jobs:
   test:
     # The name stays "Typecheck and lint": the rulesets require that check.
@@ -30,14 +34,26 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # The merge commit and its base, for the scope step below.
+          fetch-depth: 2
           persist-credentials: false
+      - name: Scope
+        id: scope
+        uses: ./.github/actions/docs-only
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.scope.outputs.run == 'true'
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+        if: steps.scope.outputs.run == 'true'
       - run: npm run typecheck
+        if: steps.scope.outputs.run == 'true'
       - run: npm run lint
+        if: steps.scope.outputs.run == 'true'
       - run: npm run format:check
+        if: steps.scope.outputs.run == 'true'
       - run: npm run icons:check
+        if: steps.scope.outputs.run == 'true'
       - run: npm test
+        if: steps.scope.outputs.run == 'true'
