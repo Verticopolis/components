@@ -18,6 +18,7 @@ import {
 import { drawSanta } from "../sprites/events";
 import { CLOUD_COUNT, CLOUD_DRIFT, SUN_ARC, cloudFill, cloudMotion, cloudRadius, cloudSeed, drawCloud, drawSunDisc, skyColor } from "../sprites/sky";
 import { disposeRegions } from "./towerRegions";
+import { teardownEngine } from "./engineTeardown";
 import { emptyStructPass } from "./towerStructTiles";
 import { emptyFlightPass } from "../venueFlights";
 import { clearLongPress } from "./longPress";
@@ -457,22 +458,11 @@ export function rendersWithWebGL(engine: TowerEngine): boolean {
 }
 
 /** Full teardown, used by in-place context-loss recovery before a rebuild:
- *  Excalibur's dispose stops the loop, force-collects GPU resources,
- *  disables input, and releases the engine singleton slot so a fresh
- *  TowerEngine can be constructed cleanly. Safe on a lost context (GL calls
- *  on one are no-ops per spec). */
+ *  stops the loop, the texture collector and the browser listeners,
+ *  force-collects GPU resources, disables input, and releases the engine
+ *  singleton slot so a fresh TowerEngine can be constructed cleanly. Safe on
+ *  a lost context. See `engineTeardown.ts` for why the collector needs its
+ *  own stop. */
 export function dispose(engine: TowerEngine): void {
-  // Engine.dispose()'s internal stop() is guarded by clock.isRunning,
-  // and on the recovery path the context-loss handler has already stopped
-  // the clock, so that stop() would skip the texture GC and the browser
-  // teardown: the GC's requestIdleCallback loop would respawn forever and
-  // the per-engine window/document listeners (resize, visibilitychange)
-  // would keep the dead engine graph reachable for the page's life. Run
-  // both explicitly; each is idempotent, so the path where dispose()'s own
-  // stop() also runs them stays correct. The GC handle is private (still
-  // in Excalibur 1.0), hence the cast; if a future version renames it the
-  // optional chain degrades to the old leak instead of a crash.
-  (engine.engine as unknown as { _garbageCollector?: { stop(): void } })._garbageCollector?.stop();
-  engine.engine.browser.clear();
-  engine.engine.dispose();
+  teardownEngine(engine.engine);
 }

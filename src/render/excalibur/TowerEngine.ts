@@ -322,7 +322,7 @@ export class TowerEngine {
       physics: false,
       handleContextLost: (e) => {
         e.preventDefault(); // spec: signals the browser we own recovery
-        this.engine.clock.stop(); // every GL call is dead now — stop the loop
+        this.engine.stop(); // every GL call is dead now: stop the loop and the texture collector
         this.onContextLost?.();
       },
       handleContextRestored: () => this.onContextRestored?.(),
