@@ -14,9 +14,8 @@ name: Sprite atlas
 # release already carries both files, a run is an audit: it checks the
 # attached zip against its checksum, re-bakes, and fails on any difference.
 #
-# Parked: the package has no `atlas` script yet, and scripts/atlas-catalog.ts
-# still looks for the engine where the game's build puts it rather than in
-# node_modules/@verticopolis/engine. A run fails at the bake until both land.
+# Release components does not dispatch it, so a slow or failed bake never
+# holds a release back (docs/atlas.md, "Getting it").
 on:
   workflow_dispatch:
 

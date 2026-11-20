@@ -7,39 +7,29 @@ same art without porting the drawing code.
 
 ## Getting it
 
-Every version tag (`v<package.json version>`, for example `v2.30.0`) gets a
-published GitHub release, and the sprite atlas workflow
-(`.github/workflows/sprite-atlas.yml`) attaches `verticopolis-atlas-<tag>.zip`
-and a `.sha256` file beside it shortly after. Check the archive against the
-checksum before you unpack it. Nothing generated is committed to this
-repository.
+Each release of this package can carry the atlas for that version: the sprite
+atlas workflow (`.github/workflows/sprite-atlas.yml`) bakes it from the
+release tag (`v<version>`, for example `v0.2.2`) and attaches
+`verticopolis-atlas-<tag>.zip` and a `.sha256` file beside it to that tag's
+GitHub release. Check the archive against the checksum before you unpack it.
+Nothing generated is committed to this repository.
 
-The game deploys from `main` without a tag, so most commits have no atlas.
-Pin your frontend to a version tag's commit and fetch that tag's release.
+A release without the two files has no atlas yet. Pin your frontend to a
+release tag that has one, and fetch it from that release.
 
-The release flow, for maintainers:
+For maintainers:
 
-- A version tag is the publish step (CONTRIBUTING.md, Versioning). A release
-  PR's merge creates it and dispatches `.github/workflows/github-release.yml`
-  (from `.github/workflows/release-tag.yml`); a maintainer can also push one.
-  The tag must equal `v<package.json version>` at that commit, and the version
-  must be a plain `x.y.z`, or the workflow stops.
-- The release workflow publishes the release first, then dispatches the atlas
-  workflow, so a slow or failed bake never holds the release back. The notes
-  are that version's player notes, read from `CHANGELOG.md` by the reader the
-  in-game update prompt uses (every top-level bullet of the section's first
-  list, uncapped), each printed as plain text with its Markdown escaped
-  (`releaseNoteLines`), so the page shows a note the way the prompt does; a
-  version with no player notes gets a plain line. The release becomes Latest
-  unless a higher version has already been released, so a backport tagged
-  later leaves Latest alone. Two tags pushed within the same few minutes can
-  both decide they are Latest; push one at a time, or set Latest by hand if
-  that happens. A release that is already published is left as it is.
-- The atlas workflow bakes the atlas and attaches the zip, then the checksum,
-  to the tag's published release. It only adds assets, so it relies on
-  releases staying mutable (GitHub's immutable releases setting is off). If a
-  bake fails, run the "Sprite atlas" workflow by hand with the tag as input.
-  When both files are already attached, a run is an audit: it checks the
+- **Release components** (`.github/workflows/components-release.yml`) tags
+  `v<version>` and publishes the release when a release PR raises the version
+  (README, "Releasing"). It does not bake the atlas, so a slow or failed bake
+  never holds a release back.
+- To attach the atlas, run the "Sprite atlas" workflow from the Actions tab
+  with "Use workflow from" set to the release tag. It runs only from a plain
+  `v<x.y.z>` tag (or a `components-v<x.y.z>` tag, which versions up to 0.2.1
+  used), checks out that tag and nothing else, bakes the atlas and attaches
+  the zip, then the checksum. It only adds assets, so it relies on releases
+  staying mutable (GitHub's immutable releases setting is off).
+- When both files are already attached, a run is an audit: it checks the
   attached zip against the attached checksum and re-bakes, passing only when
   the bake reproduces that checksum.
 
@@ -74,7 +64,7 @@ Each draw routine runs once, at the game's canonical size (a 10 x 45 pixel tile
 per floor column), in a real 2D canvas set up the way the game sets up its own
 bake canvases. The 2x and 4x pages are nearest-neighbor upscales of those 1x
 pages. The art is never redrawn larger: the routines use fixed pixel literals
-(#812, #813), so a larger redraw changes the geometry.
+(Verticopolis/web#812, Verticopolis/web#813), so a larger redraw changes the geometry.
 
 ## Archive layout
 
@@ -636,8 +626,7 @@ the same asset license as the rest of the atlas.
 
 ## How it is checked
 
-The export's own pre-flight (and, until the split, the web game's
-`e2e/atlas.spec.ts`) composes atlas frames and
+The export's own pre-flight composes atlas frames and
 layers for the sample room signatures with the reference reader, paints the
 same rooms through the game's own paint functions (`src/render/regionPaint.ts`,
 which the region compositor and the burning-room canvas call), and requires an
@@ -676,4 +665,4 @@ their depth layers.
 ## Not in the atlas yet
 
 Event cameos (Santa, the VIP limo, the thief, the explosion) are not exported
-yet (backlog row `atlas-event-cameos`, issue #1027).
+yet ([Verticopolis/components#6](https://github.com/Verticopolis/components/issues/6)).
