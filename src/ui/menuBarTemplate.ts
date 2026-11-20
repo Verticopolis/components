@@ -55,6 +55,11 @@ export interface MenuItemModel extends EntryBase, Labelled {
   readonly rel?: string;
   /** Runs on the item's click, before the bar closes the menu. */
   readonly onPick?: (e: MouseEvent) => void;
+  /** The tooltip over the item (its `title`). */
+  readonly title?: string;
+  /** Drawn in place of the underlined label when set, for a line with parts
+   *  of its own (a recent file's number and name, say). */
+  readonly content?: TemplateResult;
 }
 
 /** A line between groups of items. */
@@ -158,7 +163,7 @@ function itemTemplate(item: MenuItemModel): TemplateResult {
   const role = item.checked === undefined ? "menuitem" : checkRole(item);
   const checked = item.checked === undefined ? nothing : String(item.checked);
   const disabled = item.disabled ? "true" : nothing;
-  const content = html`${labelTemplate(item)}${item.shortcut ? html`<kbd>${item.shortcut}</kbd>` : nothing}`;
+  const content = html`${item.content ?? labelTemplate(item)}${item.shortcut ? html`<kbd>${item.shortcut}</kbd>` : nothing}`;
   if (item.href !== undefined) {
     return html`<a
       role=${role}
@@ -167,6 +172,7 @@ function itemTemplate(item: MenuItemModel): TemplateResult {
       href=${item.href}
       target=${ifDefined(item.target)}
       rel=${ifDefined(item.rel)}
+      title=${ifDefined(item.title)}
       aria-checked=${checked}
       aria-disabled=${disabled}
       ?hidden=${!!item.hidden}
@@ -180,6 +186,7 @@ function itemTemplate(item: MenuItemModel): TemplateResult {
     role=${role}
     class=${classes("mb-item", item.className)}
     id=${ifDefined(item.id)}
+    title=${ifDefined(item.title)}
     aria-checked=${checked}
     aria-disabled=${disabled}
     ?hidden=${!!item.hidden}
