@@ -25,20 +25,10 @@ on:
       - "tsconfig*.json"
       - "package.json"
       - "package-lock.json"
+      - ".nvmrc"
       - ".github/workflows/screenshots.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "src/**"
-      - "gallery/**"
-      - "e2e/**"
-      - "playwright.config.ts"
-      - "scripts/build-lib.sh"
-      - "vite.lib.config.ts"
-      - "tsconfig*.json"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/screenshots.yml"
   workflow_dispatch:
 
 permissions: {}
@@ -58,10 +48,32 @@ jobs:
       contents: read
     outputs:
       image: ${{ steps.pin.outputs.image }}
+      run: ${{ steps.scope.outputs.run }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
+      # Every pull request reports this check, so the branch rules can
+      # require it. When the PR touches none of the paths the push trigger
+      # lists (or .nvmrc), the compare job is skipped.
+      - name: Decide whether this change needs the screenshot comparison
+        id: scope
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT" != pull_request ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # Collect the list first, so a failing git diff fails the step
+          # instead of skipping the work.
+          changed="$(git diff --name-only --no-renames "$BASE...$HEAD")"
+          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|e2e/|playwright\.config\.ts$|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/screenshots\.yml$|\.nvmrc$)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No file the screenshot comparison reads changed; skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
       - id: pin
         run: |
           ver=$(node -e "process.stdout.write(require('./package-lock.json').packages['node_modules/playwright'].version)")
@@ -70,6 +82,11 @@ jobs:
   compare:
     name: Compare the gallery screenshots
     needs: resolve-image
+    # Skipped (which a required check counts as passing) when the pull
+    # request touches nothing the comparison reads, so the image is not
+    # pulled. If resolve-image failed, this job still starts and fails (it
+    # has no image), so the required check never passes on a failed scope.
+    if: ${{ !cancelled() && (needs.resolve-image.result != 'success' || needs.resolve-image.outputs.run == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
