@@ -3,7 +3,9 @@
  * as a 1995 program's "This program has stopped" box did. It is a real
  * `<dialog>` opened with `showModal()`, so it wins the top layer over any
  * other open dialog and makes the page behind it inert, and it swallows
- * Escape: its buttons are the only way out. A card with no buttons (a wait,
+ * Escape: its buttons are the only way out. A browser that closes it anyway
+ * (one lets a page refuse only so many Escapes in a row) sees it open again
+ * at once. A card with no buttons (a wait,
  * such as "Recovering graphics") closes only when its caller closes it.
  *
  * The caller writes every word and owns what each button does; the card
@@ -65,8 +67,9 @@ function buttonTemplate(b: AlertCardButton, focus: string | undefined): Template
 }
 
 /** The card's elements: the dialog, its title, text, status line and row.
- *  `open` is set only where the page has no `showModal`. */
-export function alertCardTemplate(id: string, view: AlertCardView, open = false): TemplateResult {
+ *  `open` is set only where the page has no `showModal`; `closed` hears the
+ *  dialog close. */
+export function alertCardTemplate(id: string, view: AlertCardView, open = false, closed?: () => void): TemplateResult {
   const titleId = `${id}-title`;
   const heard = view.kind === "wait" ? "status" : nothing;
   const buttons = view.buttons ?? [];
@@ -82,6 +85,7 @@ export function alertCardTemplate(id: string, view: AlertCardView, open = false)
     aria-labelledby=${titleId}
     ?open=${open}
     @cancel=${keepOpen}
+    @close=${closed ?? nothing}
   ><h2 id=${titleId} class="win-title">${view.title}</h2>${view.text.map((p) => html`<p role=${heard}>${p}</p>`)}${status}${row}</dialog>`;
 }
 
@@ -92,6 +96,13 @@ export class AlertCard {
   /** The page has no `showModal`, so the card shows as an open dialog in the
    *  page's flow; the stylesheet keeps it in view. */
   private fallback = false;
+  /** `close` is taking the card down, so its dialog's close is meant. */
+  private closing = false;
+  /** The dialog closed without `close`: a browser that stops honoring a
+   *  refused Escape closes it anyway, so put it straight back. */
+  private readonly closed = () => {
+    if (!this.closing) this.show();
+  };
   /** The card's `<dialog>`. */
   readonly dialog: HTMLDialogElement;
 
@@ -103,18 +114,10 @@ export class AlertCard {
     view: AlertCardView,
   ) {
     this.view = view;
-    this.drawn = renderDetached(doc, alertCardTemplate(id, view));
+    this.drawn = renderDetached(doc, alertCardTemplate(id, view, false, this.closed));
     this.dialog = this.drawn.elements[0] as HTMLDialogElement;
     doc.body.append(this.dialog);
-    try {
-      this.dialog.showModal();
-    } catch {
-      // A page without dialog support, or a dialog already open.
-      this.fallback = true;
-      this.draw();
-    }
-    // showModal honors autofocus; this covers the fallback too.
-    if (view.focus !== undefined) this.button(view.focus)?.focus();
+    this.show();
   }
 
   /** Draw the card with a new view (a status, a busy button). */
@@ -130,11 +133,29 @@ export class AlertCard {
 
   /** Take the card down. */
   close(): void {
+    this.closing = true;
     if (this.dialog.open) this.dialog.close();
     this.dialog.remove();
   }
 
+  /** Open the dialog as a modal, or as an open dialog in the page's flow
+   *  where `showModal` is missing or refuses, and focus the named button. */
+  private show(): void {
+    try {
+      this.dialog.showModal();
+    } catch {
+      // A page without dialog support. lit writes `open` only when its value
+      // changes, so a reopen draws it off and then on.
+      this.fallback = false;
+      this.draw();
+      this.fallback = true;
+      this.draw();
+    }
+    // showModal honors autofocus; this covers the fallback and a reopen too.
+    if (this.view.focus !== undefined) this.button(this.view.focus)?.focus();
+  }
+
   private draw(): void {
-    this.drawn.update(alertCardTemplate(this.id, this.view, this.fallback));
+    this.drawn.update(alertCardTemplate(this.id, this.view, this.fallback, this.closed));
   }
 }

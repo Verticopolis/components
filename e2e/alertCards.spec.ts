@@ -1,7 +1,7 @@
 /**
  * Screenshot and behavior tests over the gallery's Alert cards and updates
  * page (gallery/alertCards.ts): the crash card and the update boxes in each
- * color scheme, the crash card keeping Escape and redrawing its status, and
+ * color scheme, the crash card keeping Escape (even repeated) and redrawing its status, and
  * the wait card closing on its own.
  */
 import { test, expect, type Page } from "@playwright/test";
@@ -39,13 +39,18 @@ for (const scheme of SCHEMES) {
   });
 }
 
-test("the crash card keeps Escape, focuses its default button and redraws its status", async ({ page }) => {
+test("the crash card keeps Escape, even repeated, focuses its default button and redraws its status", async ({
+  page,
+}) => {
   await openPage(page, PAGE);
   await open(page, "A crash card…");
   const card = page.getByRole("alertdialog", { name: "The program stopped" });
   await expect(card.getByRole("button", { name: "Close" })).toBeFocused();
-  await page.keyboard.press("Escape");
-  await expect(card).toBeVisible();
+  // A browser refuses only so many Escapes in a row; the card opens again.
+  for (let i = 0; i < 4; i++) {
+    await page.keyboard.press("Escape");
+    await expect(card).toBeVisible();
+  }
   await expect(card.getByRole("link", { name: "Report a bug (opens in a new tab)" })).toHaveAttribute(
     "target",
     "_blank",

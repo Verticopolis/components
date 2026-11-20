@@ -109,6 +109,31 @@ describe("AlertCard", () => {
     expect(card.dialog.open).toBe(true);
   });
 
+  it("opens again at once when the browser closes it anyway, as one does after several Escapes", () => {
+    const card = new AlertCard(document, "crash-screen", CRASH);
+    card.dialog.removeAttribute("open");
+    card.dialog.dispatchEvent(new Event("close"));
+    expect(showModal).toHaveBeenCalledTimes(2);
+    expect(card.dialog.open).toBe(true);
+    expect(document.activeElement).toBe(card.button("reload"));
+  });
+
+  it("opens again in the page's flow where there is no showModal", () => {
+    delete (HTMLDialogElement.prototype as { showModal?: unknown }).showModal;
+    const card = new AlertCard(document, "crash-screen", CRASH);
+    card.dialog.removeAttribute("open");
+    card.dialog.dispatchEvent(new Event("close"));
+    expect(card.dialog.open).toBe(true);
+  });
+
+  it("stays closed when its caller closes it", () => {
+    const card = new AlertCard(document, "crash-screen", CRASH);
+    card.close();
+    card.dialog.dispatchEvent(new Event("close"));
+    expect(showModal).toHaveBeenCalledTimes(1);
+    expect(card.dialog.open).toBe(false);
+  });
+
   it("closes and leaves the page", () => {
     const card = new AlertCard(document, "crash-screen", CRASH);
     card.close();
