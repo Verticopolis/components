@@ -51,6 +51,7 @@ export const sidebar = [
       { label: "The desk", link: "/desktop/desk/" },
       { label: "Where windows open", link: "/desktop/layout/" },
       { label: "Title screen", link: "/desktop/title-screen/" },
+      { label: "Map window", link: "/desktop/map/" },
       { label: "Screen saver", link: "/desktop/screen-saver/" },
     ],
   },

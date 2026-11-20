@@ -1,0 +1,68 @@
+---
+// The package's Map window (gallery/mapWindow.ts) in a stage of its own, over
+// the parts of the game's stylesheet that draw it, on a page of its own so the
+// rest of the gallery keeps its own styles. The frame is the game's stage, so
+// the window's own media queries pick its desktop or phone layout from the
+// frame's width. The Map window page shows it in a frame (Frame.astro).
+import "../../../../lib/styles/retro-tokens.css";
+import "../../../../lib/styles/retro-components.css";
+import "../../../../lib/styles/overview-map-views.css";
+import "../../../../lib/styles/schemes/skyline.css";
+import "../../../../lib/styles/schemes/high-contrast.css";
+import { SCHEME_BOOT } from "../../../site.mjs";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Map window</title>
+    <script is:inline set:html={SCHEME_BOOT} />
+    <style is:global>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        background: var(--r-face);
+        font-family: var(--r-font);
+        font-size: 11px;
+        color: var(--r-ink);
+      }
+      /* The game's stage: the world canvas sits here, and the Map docks in
+         its corner. */
+      #stage {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        background: linear-gradient(#3d5f9e, #9cb8de);
+        box-shadow: var(--bevel-in);
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      #g-map-said {
+        margin: 6px 8px;
+        min-height: 1.4em;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="stage"></section>
+    <p id="g-map-said" role="status"></p>
+    <script>
+      import { mountMapWindow } from "../../../../gallery/mapWindow";
+      mountMapWindow();
+    </script>
+  </body>
+</html>
