@@ -1,0 +1,21 @@
+---
+title: Alert cards and updates
+description: The alert card that holds the page until it is answered, a wait card, and the update box.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+An alert card (`AlertCard` from `windows/alertCard`) holds the whole page until it is answered. It is a real dialog opened as a modal, so it shows over any other open dialog and the page behind it stops taking input. Escape does not close it: its buttons are the only way out. A game shows one when it can no longer go on, such as a crash card when its graphics are lost. Nothing in the card draws on a canvas, so it still works when the game's canvas is gone.
+
+The caller writes every word and decides what each button does. A button can be a link that opens in a new tab, such as a bug report. A status line under the text says how the work behind a button is going, and a screen reader hears it as it changes. `update` draws the card again with a new status or a grayed button.
+
+A wait card has no buttons. It says what is happening, such as graphics restarting, and closes when its caller closes it.
+
+The update box (`updateBoxView` from `windows/updateBox`) opens in the shared modal, like a message box. It says a newer version is ready, lists what is new in it, and offers Later and Update now. A short release is a plain list. A longer one, or the notes of several skipped versions, goes in a well that scrolls on its own, so the buttons stay in view. Later takes the focus when the box opens.
+
+<Demo name="alert-cards" />
+
+| Piece           | What the caller gives                                                                                                | What the card or box does                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `AlertCard`     | An id, a title, `alert` or `wait`, the paragraphs, an optional status and the buttons                                | Opens as a modal dialog at the end of the page, swallows Escape, focuses the named button, redraws on `update`, and closes on `close` |
+| `updateBoxView` | The words, the incoming version and its notes, any skipped versions' notes, a release notes link and the build lines | Draws the notes as a list or a scrolling well, and calls `later` or `update` from its buttons                                         |

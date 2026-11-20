@@ -313,4 +313,19 @@
       aspect-ratio: 9 / 16;
     }
   }
+
+  /* Screen-reader-only text inside a demo, such as a link's "(opens in a new
+     tab)" (the game's rule in styles.css, which the site does not load). */
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
