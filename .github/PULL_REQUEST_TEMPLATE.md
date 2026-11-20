@@ -8,8 +8,6 @@ Keep every ## heading and write something under each one: "None" or
 (.github/workflows/pr-template.yml) fails a description that drops a heading.
 Opening a PR through the API or `gh pr create --body` skips this template, so
 start that body from this file.
-Until the game builds from this repository's package, component changes are on
-hold (see the README's Contributing section).
 -->
 
 ## What & why
