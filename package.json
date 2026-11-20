@@ -76,7 +76,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p e2e/tsconfig.json",
-    "lint": "eslint src",
+    "lint": "eslint src scripts gallery e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "icons": "node scripts/gen-icon-paths.ts",
@@ -107,7 +107,9 @@
     "@verticopolis/engine": "https://github.com/Verticopolis/engine/releases/download/engine-v1.57.1/verticopolis-engine-1.57.1.tgz",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-lit": "^2.3.1",
     "excalibur": "^1.0.0",
+    "globals": "^17.14.0",
     "happy-dom": "^21.0.4",
     "lit-html": "^3.3.3",
     "pixelarticons": "^2.2.0",
