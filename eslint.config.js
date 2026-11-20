@@ -1,20 +1,21 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
+import lit from "eslint-plugin-lit";
+import globals from "globals";
+
+// The rules every linted file shares.
+const rules = {
+  "@typescript-eslint/no-explicit-any": "warn",
+  "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+  "prefer-const": "error",
+  "no-var": "error",
+  "no-nested-ternary": "error",
+};
 
 export default [
   {
-    ignores: [
-      "node_modules",
-      "dist",
-      "lib",
-      "vite.lib.config.ts",
-      "coverage",
-      "scripts",
-      "**/*.config.js",
-      "src/public",
-      "src/engineBinding/engine.d.ts",
-    ],
+    ignores: ["node_modules", "dist", "lib", "vite.lib.config.ts", "coverage", "**/*.config.js", "src/public"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -25,13 +26,13 @@ export default [
       ecmaVersion: 2020,
       sourceType: "module",
     },
-    rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      "prefer-const": "error",
-      "no-var": "error",
-      "no-nested-ternary": "error",
-    },
+    rules,
+  },
+  {
+    // The lit-html templates: the plugin's recommended checks (bindings in
+    // valid positions, no duplicate attributes, well-formed template HTML).
+    files: ["src/**/*.ts"],
+    ...lit.configs["flat/recommended"],
   },
   {
     // Every scene actor takes its draw plane (z) from the shared table
@@ -57,19 +58,24 @@ export default [
     },
   },
   {
-    // The same-origin analytics relay: a Node.js-runtime Vercel Function plus its
-    // env-read entry. Same rule set as src, module source.
-    files: ["api/**/*.ts"],
+    // The build, release and atlas scripts run on Node.
+    files: ["scripts/**/*.{ts,mts,js,mjs}"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
+      globals: globals.node,
     },
-    rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      "prefer-const": "error",
-      "no-var": "error",
-      "no-nested-ternary": "error",
+    rules,
+  },
+  {
+    // The gallery and its Playwright check: Node for the specs, the browser for
+    // the page and the callbacks the specs hand to it.
+    files: ["gallery/**/*.ts", "e2e/**/*.ts"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: { ...globals.node, ...globals.browser },
     },
+    rules,
   },
 ];

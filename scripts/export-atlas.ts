@@ -47,6 +47,7 @@ import {
   softLayerDrift,
 } from "../src/render/atlas/archive";
 import type { BakeResult } from "../src/render/atlas/bake";
+import type { AtlasPage } from "../src/render/atlas/browserEntry";
 import type { Image } from "../src/render/atlas/pixels";
 
 const root = resolve(import.meta.dirname, "..");
@@ -153,13 +154,13 @@ async function main(): Promise<void> {
     const page = await browser.newPage();
     await page.setContent("<!doctype html><html><body></body></html>");
     await page.addScriptTag({ content: code });
-    await page.evaluate((c) => (globalThis as any).__vcAtlas.bind(c), catalog);
+    await page.evaluate((c) => (globalThis as unknown as { __vcAtlas: AtlasPage }).__vcAtlas.bind(c), catalog);
     // Pre-flight: the atlas must reproduce the game's paint for every sample
     // signature before anything is written.
     // A filtered preview skips it and is named as a preview.
     if (!filter) {
       const checks: { label: string; mismatches: number; control?: boolean }[] = await page.evaluate(() =>
-        (globalThis as any).__vcAtlas.verify(),
+        (globalThis as unknown as { __vcAtlas: AtlasPage }).__vcAtlas.verify(),
       );
       // A control case compares two different pictures on purpose; it must
       // report a mismatch, or the comparison itself is broken.
@@ -169,19 +170,22 @@ async function main(): Promise<void> {
       if (layeredChecks === 0) throw new Error("pre-flight: no sample was composed through its depth layers");
       console.log(`pre-flight: ${checks.length} sample paints match the game (${layeredChecks} through depth layers)`);
     }
-    const summary = await page.evaluate((f) => (globalThis as any).__vcAtlas.run(f), filter);
+    const summary = await page.evaluate(
+      (f) => (globalThis as unknown as { __vcAtlas: AtlasPage }).__vcAtlas.run(f),
+      filter,
+    );
     if (summary.frames === 0) throw new Error(`--filter ${filter} matches no frame`);
     console.log(`baked ${summary.frames} frames, ${summary.animations} animations, ${summary.images} unique images`);
     const dropped: string[] = summary.softDropped;
     console.log(
       `soft furniture: left out of ${dropped.length} layered frames where an occupant step cannot be drawn over it or the soft pass failed${dropped.length > 0 ? `: ${dropped.slice(0, 5).join(", ")}${dropped.length > 5 ? ", ..." : ""}` : ""}`,
     );
-    const records = await page.evaluate(() => (globalThis as any).__vcAtlas.records());
+    const records = await page.evaluate(() => (globalThis as unknown as { __vcAtlas: AtlasPage }).__vcAtlas.records());
     const images: Image[] = [];
     const normals: Image[] = [];
     while (images.length < summary.images) {
       const got: { w: number; h: number; b64: string; normal: string }[] = await page.evaluate(
-        ([from, bytes]) => (globalThis as any).__vcAtlas.images(from, bytes),
+        ([from, bytes]) => (globalThis as unknown as { __vcAtlas: AtlasPage }).__vcAtlas.images(from, bytes),
         [images.length, TRANSFER_BYTES],
       );
       for (const g of got) {

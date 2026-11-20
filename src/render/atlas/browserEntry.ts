@@ -206,7 +206,8 @@ function toBase64(bytes: Uint8ClampedArray): string {
   return btoa(s);
 }
 
-interface AtlasPage {
+/** The bake entry points this bundle puts on the page as `__vcAtlas`. */
+export interface AtlasPage {
   /** Binds the view to the engine's Modern catalog before anything draws:
    *  the page draws sprites without a tower, so Node hands it the catalog it
    *  read from the engine package (`scripts/atlas-catalog.ts`). */
