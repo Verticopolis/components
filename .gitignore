@@ -8,3 +8,5 @@ site/.astro/
 test-results/
 playwright-report/
 site/src/content/docs/docs/
+# Personal BMAD overrides (each skill reads _bmad/custom/<skill>.user.toml).
+_bmad/custom/*.user.toml
