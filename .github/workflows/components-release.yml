@@ -119,7 +119,7 @@ jobs:
         run: |
           set -euo pipefail
           awk -v v="$VERSION" '/^## / { if (on) exit; if ($2 == v) { on = 1; next } } on' CHANGELOG.md > notes.md
-          if ! grep -q '[^[:space:]]' notes.md; then echo "::error::CHANGELOG.md has no $VERSION section. Rename its Unreleased heading in a release PR."; exit 1; fi
+          if ! grep -q '[^[:space:]]' notes.md; then echo "::error::CHANGELOG.md has no $VERSION section. Cut release writes it from the change notes."; exit 1; fi
           printf '\nThe tarball and its SHA-256 checksum are attached. On npm as [`@verticopolis/components@%s`](https://www.npmjs.com/package/@verticopolis/components/v/%s) once the owner approves the publish.\n' "$VERSION" "$VERSION" >> notes.md
 
       - name: Pack

@@ -195,20 +195,25 @@ pixel comparison (`PW_VISUAL=1` compares anyway).
 
 ## Releasing
 
-A pull request that changes what the package ships adds a line under
-`## Unreleased` in [`CHANGELOG.md`](CHANGELOG.md), led by its level:
-**major** for a breaking change to an export or a stylesheet's selectors,
-**minor** for a new export, component or look, **patch** for a fix.
+A pull request that changes what the package ships adds a change note under
+[`.changes/`](.changes/README.md), named after its branch, with its level
+and its [`CHANGELOG.md`](CHANGELOG.md) entries: **major** for a breaking
+change to an export or a stylesheet's selectors, **minor** for a new export,
+component or look, **patch** for a fix, and `none` for a change to `src/`
+that ships nothing new. Notes keep two open pull requests from editing the
+same changelog lines. The **Change notes** check requires one when a pull
+request changes `src/` outside its tests.
 
 **Cut release** (`.github/workflows/cut-release.yml`) opens the release PR,
 as in the game's repository: run it from the Actions tab on `main`. It runs
-`scripts/cut-release.ts`, which takes the highest level among the
-Unreleased lines (every line must lead with one), raises `version` in
-`package.json` and `package-lock.json` with `npm version`, renames the
-heading to `## <version> (<date>)`, commits that to `release/<version>` and
+`scripts/cut-release.ts`, which takes the highest level among the change
+notes, raises `version` in `package.json` and `package-lock.json` with
+`npm version`, writes the notes' entries into a new `## <version> (<date>)`
+section of `CHANGELOG.md` (each led by its level, the highest first),
+deletes the notes, commits that to `release/<version>` and
 opens the "Release components <version>" PR. While the package is 0.x, a
-**major** line raises the minor version; 1.0.0 comes only when the version
-is named in the run. Leave the version empty for the level the lines ask
+**major** note raises the minor version; 1.0.0 comes only when the version
+is named in the run. Leave the version empty for the level the notes ask
 for, or name a later one. It refuses while another release PR is open. The
 PR comes from the workflow token, which starts no checks, so start them with
 the run button on the PR, or close and reopen it. The workflow needs "Allow

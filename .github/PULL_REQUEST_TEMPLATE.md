@@ -36,13 +36,14 @@ Closes #
 
 <!--
 Only a release PR, which the Cut release workflow opens, edits `version`
-in package.json and renames `## Unreleased` in CHANGELOG.md to
-`## <version> (<date>)`; merging it releases that version. A change to what the package ships adds a line under
-`## Unreleased`, led by its level (**major**, **minor** or **patch**).
+in package.json and CHANGELOG.md; merging it releases that version. A change
+to what the package ships adds a change note under .changes/ named after its
+branch, with its level (**major**, **minor**, **patch** or none) and its
+changelog entries (.changes/README.md).
 -->
 
 - [ ] Left `version` alone, **or** this is a release PR
-- [ ] Added a CHANGELOG.md line under `## Unreleased`, **or** this PR changes nothing the package ships
+- [ ] Added a change note with its level under `.changes/`, **or** this PR changes nothing the package ships
 - [ ] Updated the README where it went stale, **or** read it and it did not
 
 ## Complexity
