@@ -5,7 +5,8 @@ This repository is the Verticopolis components package
 windows and menus, and the procedural sprites and audio. They read a render
 model each game fills from its simulation, and depend on no simulation
 package. [README.md](README.md) has the layout, the
-checks, the gallery, the screenshot tests and releasing. Read it.
+checks, the gallery, the screenshot tests and releasing, and
+[ARCHITECTURE.md](ARCHITECTURE.md) has the design in diagrams. Read both.
 
 ## Load the game's repository too
 
