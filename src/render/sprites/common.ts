@@ -1,4 +1,4 @@
-import type { ElevatorQueueView } from "../../shared/engineTypes";
+import type { ElevatorQueueView } from "../../model/engineTypes";
 
 export function shade(hex: string, amt: number): string {
   const n = parseInt(hex.slice(1), 16);

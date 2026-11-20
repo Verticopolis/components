@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { keepsHours, openAt } from "../../tests/catalogKinds";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 import { withLayerHook } from "../pixelSprites/layers";
 import { roomJobs, roomKinds, type StillJob } from "./catalog";
 import { LOBBY_VARIANTS } from "../sprites";

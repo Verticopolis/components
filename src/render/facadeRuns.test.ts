@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { facadeGeometry } from "./facadeGeometry";
 import { lobbyHalls } from "./lobbyHalls";
 import { catalogFor } from "../tests/catalogFixture";
-import type { FacilityKind, Unit } from "../shared/types";
+import type { FacilityKind, Unit } from "../model/types";
 
 const MODERN = catalogFor("modern");
 

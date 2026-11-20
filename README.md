@@ -53,7 +53,7 @@ waits for a curated public surface. Each folder is a subpath export:
 | `@verticopolis/components/render/*` | `src/render/` | The Excalibur scene, the tower renderer and the procedural sprites |
 | `@verticopolis/components/presentation/*` | `src/presentation/` | What the view shows for each kind of room |
 | `@verticopolis/components/catalog/*` | `src/catalog/` | The engine catalog as the view reads it |
-| `@verticopolis/components/shared/*` | `src/shared/` | Small shared helpers |
+| `@verticopolis/components/model/*` | `src/model/` | The tower model types (`types`, `engineTypes`, `serializedGame`) and small helpers over them. `shared/*` is the same folder under its old name, kept until 1.0 |
 | `@verticopolis/components/binding/*` | `src/engineBinding/` | The WebAssembly binding's types and export tiers |
 | `@verticopolis/components/port/*` | `src/simport/` | The engine port a frontend talks to |
 | `@verticopolis/components/host/*` | `src/wasmhost/` | Loading and checking the engine package |

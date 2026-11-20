@@ -1,4 +1,4 @@
-import type { FacilityKind } from "../../shared/types";
+import type { FacilityKind } from "../../model/types";
 import type { UnitView } from "../../simport/view";
 import { viewWorld } from "../../presentation/viewWorld";
 import { CAST, castIndex, drawPerson, type Dims } from "./people";

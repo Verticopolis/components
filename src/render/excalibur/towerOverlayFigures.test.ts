@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { ON_THE_ESCAPE } from "./guardPosition";
 import { FLOOR } from "../scale";
-import { VIEW_ZOOM_MIN } from "../../shared/viewZoom";
+import { VIEW_ZOOM_MIN } from "../../model/viewZoom";
 import { drawSearchGuard, drawThief, FIGURE_HEIGHT } from "../sprites/events";
 import { STAFF_LOOK } from "../pixelSprites/people";
 import { drawOverlay, floorFigureScale, floorRoomSpan } from "./towerOverlay";

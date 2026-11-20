@@ -14,7 +14,7 @@
  * nothing about it is saved: the look follows from the flight and the rooms
  * beside it, so it changes the moment a venue is built or bulldozed.
  */
-import type { FacilityKind } from "../shared/types";
+import type { FacilityKind } from "../model/types";
 import type { TransportView, UnitView } from "../simport/view";
 
 /** The venues a flight winds beside: the halls a crowd arrives at. The

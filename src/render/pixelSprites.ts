@@ -1,4 +1,4 @@
-import type { FacilityKind, UnitState } from "../shared/types";
+import type { FacilityKind, UnitState } from "../model/types";
 import type { UnitView } from "../simport/view";
 import { hasBusinessHours, isOpenAt } from "../presentation/viewKinds";
 import { facilityColor } from "../presentation/facilityPresentation";

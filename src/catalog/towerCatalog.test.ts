@@ -3,7 +3,7 @@ import { catalogFor } from "../tests/catalogFixture";
 import type { Catalog } from "./catalogTypes";
 import { catalogFacility, findCatalogFacility } from "./catalogTypes";
 import { towerCatalog, useTowerCatalogSource } from "./towerCatalog";
-import type { GameMode } from "../shared/types";
+import type { GameMode } from "../model/types";
 
 /** A tower as the handle reads it: a key with a mode. */
 const tower = (mode: GameMode): { readonly mode: GameMode } => ({ mode });

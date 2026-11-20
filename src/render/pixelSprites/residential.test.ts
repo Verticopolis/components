@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Unit } from "../../shared/types";
+import type { Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { geoVariant, RESERVED_COLORS, type RoomCtx } from "./common";
 import { CAST, castIndex } from "./people";

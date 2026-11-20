@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { kindFacts } from "../../tests/catalogKinds";
-import type { FacilityKind, Unit } from "../../shared/types";
+import type { FacilityKind, Unit } from "../../model/types";
 import { drawRoom } from "../pixelSprites";
 import { lookupRoom, type LiveScene } from "../atlas/lookup";
 import { occupantCap } from "../atlas/catalog";

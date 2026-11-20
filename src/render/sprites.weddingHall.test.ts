@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Unit } from "../shared/types";
+import type { Unit } from "../model/types";
 import { drawUnit, type DrawCtx } from "./sprites";
 import { FLOOR } from "./scale";
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { kindFacts, kindKeys } from "../tests/catalogKinds";
-import type { Unit } from "../shared/types";
+import type { Unit } from "../model/types";
 import { drawUnit, type DrawCtx } from "./sprites";
 import { facilityColor } from "../presentation/facilityPresentation";
 

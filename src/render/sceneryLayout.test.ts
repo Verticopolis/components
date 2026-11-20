@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
-import type { Unit } from "../shared/types";
+import type { Unit } from "../model/types";
 import {
   APRON_PAD_TILES,
   FORECOURT_TILES,

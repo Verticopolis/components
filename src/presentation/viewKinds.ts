@@ -1,5 +1,5 @@
 import { catalogOpenAt, type Catalog, type CatalogFacility } from "../catalog/catalogTypes";
-import type { FacilityKind } from "../shared/types";
+import type { FacilityKind } from "../model/types";
 
 /**
  * What the view knows about each kind, read from the engine's catalog: which
