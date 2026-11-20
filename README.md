@@ -164,6 +164,33 @@ npm run gallery:build   # writes dist-gallery/
 The Gallery workflow builds it on every pull request that touches the source,
 and publishes it to GitHub Pages from `main`.
 
+## Screenshot tests
+
+The Screenshots workflow drives the gallery in Chromium and compares each
+piece with the images in `e2e/__screenshots__`: the page window, the buttons,
+windows, wells, the menu bar closed and with each menu open, and the icons in
+every color scheme, plus each room sprite once, on a desktop and a phone
+screen. A change that moves a pixel fails the check, and the run keeps the
+diffs as an artifact.
+
+The baselines come only from the pinned Playwright image
+(`mcr.microsoft.com/playwright:v<version>-jammy`, the version in
+`package-lock.json`), since glyph and canvas rasterization differ across
+Chromium builds. To refresh them, push a commit whose message contains
+`[update-screenshots]`; the Update screenshots workflow renders them in that
+image and pushes them back as a commit on the branch. Review that commit's
+images like code. The same image works locally:
+
+```sh
+npm ci
+docker run --rm --ipc=host -v "$PWD":/work -w /work \
+  mcr.microsoft.com/playwright:v<version>-jammy \
+  sh -c 'CI=1 npx playwright test --update-snapshots'
+```
+
+`npm run screenshots` on any other browser runs the specs but skips the
+pixel comparison (`PW_VISUAL=1` compares anyway).
+
 ## Releasing
 
 A release PR raises `version` in `package.json` (and `package-lock.json`,

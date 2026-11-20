@@ -79,7 +79,9 @@
     "pack": "sh scripts/pack-components.sh",
     "gallery": "vite -c gallery/vite.config.ts",
     "gallery:build": "vite build -c gallery/vite.config.ts",
-    "atlas": "tsx scripts/export-atlas.ts"
+    "atlas": "tsx scripts/export-atlas.ts",
+    "screenshots": "playwright test",
+    "screenshots:update": "playwright test --update-snapshots"
   },
   "peerDependencies": {
     "@verticopolis/engine": "^1.57.1",
@@ -92,6 +94,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^26.6.6",
     "@verticopolis/engine": "https://github.com/Verticopolis/engine/releases/download/engine-v1.57.1/verticopolis-engine-1.57.1.tgz",
     "eslint": "^9.39.2",
