@@ -1,29 +1,28 @@
 import { describe, it, expect } from "vitest";
-import {
-  iconElement,
-  iconTemplate,
-  appendMessageWithIcons,
-  messageWithIcons,
-  EMOJI_ICONS,
-  ACCENT_FILLS,
-  ICON_NAMES,
-  type IconName,
-} from "./icons";
+import { iconTemplate, messageWithIcons, EMOJI_ICONS, ACCENT_FILLS, ICON_NAMES, type IconName } from "./icons";
 import { html } from "lit-html";
 import { renderToFragment } from "./testing/litTestUtils";
 
 /**
- * The inline icon module (issue #721): the element/template builders, and the
- * two message mappers that swap bulletin emoji for icons while keeping every
+ * The inline icon module (issue #721): the icon template, and the
+ * message mapper that swaps a bulletin emoji for an icon while keeping every
  * other character as text. Each game checks that every emoji its own
  * bulletins emit has an entry in EMOJI_ICONS.
  */
 
 const ALL_NAMES = [...new Set(Object.values(EMOJI_ICONS))];
 
-describe("iconElement", () => {
+/** An icon drawn through lit, as the element a page would hold. */
+const drawIcon = (name: IconName, opts?: Parameters<typeof iconTemplate>[1]) =>
+  renderToFragment(iconTemplate(name, opts)).querySelector("svg")!;
+
+/** A message drawn through lit inside a div, as a bulletin line would be. */
+const drawMessage = (message: string) =>
+  renderToFragment(html`<div>${messageWithIcons(message)}</div>`).firstElementChild as HTMLElement;
+
+describe("iconTemplate, drawn", () => {
   it("builds a currentColor svg carrying its data-icon name and a11y attributes", () => {
-    const svg = iconElement("save");
+    const svg = drawIcon("save");
     expect(svg.namespaceURI).toBe("http://www.w3.org/2000/svg");
     expect(svg.getAttribute("data-icon")).toBe("save");
     expect(svg.getAttribute("fill")).toBe("currentColor");
@@ -35,7 +34,7 @@ describe("iconElement", () => {
   });
 
   it("honors size and merges an extra class without dropping vc-icon", () => {
-    const svg = iconElement("map", { size: 14, className: "extra" });
+    const svg = drawIcon("map", { size: 14, className: "extra" });
     expect(svg.getAttribute("width")).toBe("14");
     expect(svg.getAttribute("height")).toBe("14");
     expect(svg.classList.contains("vc-icon")).toBe(true);
@@ -44,7 +43,7 @@ describe("iconElement", () => {
 
   it("builds a valid element for every icon EMOJI_ICONS points at", () => {
     for (const name of ALL_NAMES) {
-      const svg = iconElement(name as IconName);
+      const svg = drawIcon(name as IconName);
       expect(svg.querySelectorAll("path").length, `${name} has no path`).toBeGreaterThan(0);
       for (const p of svg.querySelectorAll("path")) {
         expect(p.getAttribute("d"), `${name} path has empty d`).toBeTruthy();
@@ -83,7 +82,7 @@ describe("iconElement", () => {
       "heart",
     ];
     for (const name of names) {
-      const svg = iconElement(name);
+      const svg = drawIcon(name);
       expect(svg.getAttribute("data-icon"), `${name} lost its data-icon`).toBe(name);
       expect(svg.querySelectorAll("path").length, `${name} has no path`).toBeGreaterThan(0);
       for (const p of svg.querySelectorAll("path")) {
@@ -94,7 +93,7 @@ describe("iconElement", () => {
 
   it("keeps every bulletin icon currentColor-only, so a log line's severity color carries", () => {
     for (const name of ALL_NAMES) {
-      const svg = iconElement(name as IconName);
+      const svg = drawIcon(name as IconName);
       expect(svg.getAttribute("fill"), `${name} lost its currentColor root`).toBe("currentColor");
       for (const p of svg.querySelectorAll("path")) {
         expect(p.getAttribute("fill"), `${name} bakes a path fill; a bulletin icon must inherit its color`).toBeNull();
@@ -106,7 +105,7 @@ describe("iconElement", () => {
     const allowed = new Set<string>(ACCENT_FILLS);
     const baked = new Map<string, string[]>();
     for (const name of ICON_NAMES) {
-      const fills = [...iconElement(name).querySelectorAll("path")]
+      const fills = [...drawIcon(name).querySelectorAll("path")]
         .map((p) => p.getAttribute("fill"))
         .filter((f): f is string => f !== null);
       if (fills.length > 0) baked.set(name, fills);
@@ -120,7 +119,7 @@ describe("iconElement", () => {
   });
 
   it("bakes the bulldoze wrecking ball as two accent-filled paths (the one two-tone glyph)", () => {
-    const svg = iconElement("bulldoze");
+    const svg = drawIcon("bulldoze");
     const paths = [...svg.querySelectorAll("path")];
     expect(paths).toHaveLength(2);
     const fills = paths.map((p) => p.getAttribute("fill"));
@@ -136,8 +135,8 @@ describe("iconElement", () => {
     // narrower volume-1 speaker whose cone reaches only x5), so the speaker
     // jumped under the glyph. Mute now reuses the exact volume-2 speaker cone
     // that sound draws, and this pins it: it fails on the old volume-1 path.
-    const mutePaths = [...iconElement("mute").querySelectorAll("path")].map((p) => p.getAttribute("d")!);
-    const soundD = iconElement("sound").querySelector("path")!.getAttribute("d")!;
+    const mutePaths = [...drawIcon("mute").querySelectorAll("path")].map((p) => p.getAttribute("d")!);
+    const soundD = drawIcon("sound").querySelector("path")!.getAttribute("d")!;
     expect(mutePaths).toHaveLength(2); // the speaker, then the X that replaces the waves
     const volume2Cone = "M7 10H5v4h2v2H3V8h4v2Z"; // the left cone at x3, shared with sound
     expect(soundD, "sound should draw the volume-2 speaker").toContain(volume2Cone);
@@ -169,37 +168,31 @@ describe("iconTemplate", () => {
   });
 });
 
-describe("appendMessageWithIcons", () => {
+describe("messageWithIcons, drawn", () => {
   it("swaps a leading bulletin emoji for an inline icon and keeps the rest as text", () => {
-    const el = document.createElement("div");
-    const inserted = appendMessageWithIcons(el, "🔥 Fire broke out on Floor 3!");
-    expect(inserted).toBe(true);
+    const el = drawMessage("🔥 Fire broke out on Floor 3!");
     const svg = el.querySelector("svg")!;
     expect(svg.getAttribute("data-icon")).toBe("fire");
     expect(svg.classList.contains("vc-icon-inline")).toBe(true);
-    // The message text survives as text nodes (never innerHTML), icon aside.
+    // The message text survives as text (lit binds it as text), icon aside.
     expect(el.textContent).toBe(" Fire broke out on Floor 3!");
   });
 
   it("consumes a trailing VS16 (U+FE0F) so the presentation selector is not left behind", () => {
-    const el = document.createElement("div");
-    appendMessageWithIcons(el, "🕵️ A thief slipped through.");
+    const el = drawMessage("🕵️ A thief slipped through.");
     expect(el.querySelector("svg")?.getAttribute("data-icon")).toBe("security");
     // No stray variation selector left in the text.
     expect(el.textContent).toBe(" A thief slipped through.");
   });
 
-  it("leaves an unmapped message untouched and reports no insertion", () => {
-    const el = document.createElement("div");
-    const inserted = appendMessageWithIcons(el, "Rent collected: $1,200");
-    expect(inserted).toBe(false);
+  it("leaves an unmapped message as text", () => {
+    const el = drawMessage("Rent collected: $1,200");
     expect(el.querySelector("svg")).toBeNull();
     expect(el.textContent).toBe("Rent collected: $1,200");
   });
 
-  it("never sets innerHTML: hostile markup in the message stays literal text", () => {
-    const el = document.createElement("div");
-    appendMessageWithIcons(el, '💰 <img src=x onerror="alert(1)"> found');
+  it("binds the message as text: hostile markup in it stays literal", () => {
+    const el = drawMessage('💰 <img src=x onerror="alert(1)"> found');
     expect(el.querySelector("img")).toBeNull();
     expect(el.querySelector("svg")?.getAttribute("data-icon")).toBe("money");
     expect(el.textContent).toBe(' <img src=x onerror="alert(1)"> found');
@@ -210,18 +203,14 @@ describe("appendMessageWithIcons", () => {
     // the simulation emits). A mapped emoji sitting later in the string (a room
     // name, a copied bulletin) must survive as text, never get eaten by an
     // aria-hidden icon.
-    const el = document.createElement("div");
-    const inserted = appendMessageWithIcons(el, "🏅 Milestone reached: the 💰 vault opened");
-    expect(inserted).toBe(true);
+    const el = drawMessage("🏅 Milestone reached: the 💰 vault opened");
     expect(el.querySelectorAll("svg").length).toBe(1);
     expect(el.querySelector("svg")?.getAttribute("data-icon")).toBe("milestone");
     expect(el.textContent).toBe(" Milestone reached: the 💰 vault opened");
   });
 
   it("leaves a mapped emoji that is not at the very start as text", () => {
-    const el = document.createElement("div");
-    const inserted = appendMessageWithIcons(el, "Rent up! 💰 collected");
-    expect(inserted).toBe(false);
+    const el = drawMessage("Rent up! 💰 collected");
     expect(el.querySelector("svg")).toBeNull();
     expect(el.textContent).toBe("Rent up! 💰 collected");
   });
@@ -229,18 +218,14 @@ describe("appendMessageWithIcons", () => {
   it("tolerates leading whitespace before the marker (issue #743)", () => {
     // A stray space ahead of the marker must not silently demote the icon back
     // to tofu-prone emoji text. The whitespace is consumed with the marker.
-    const el = document.createElement("div");
-    const inserted = appendMessageWithIcons(el, " 🔥 Fire broke out on Floor 3!");
-    expect(inserted).toBe(true);
+    const el = drawMessage(" 🔥 Fire broke out on Floor 3!");
     expect(el.querySelectorAll("svg").length).toBe(1);
     expect(el.querySelector("svg")?.getAttribute("data-icon")).toBe("fire");
     expect(el.textContent).toBe(" Fire broke out on Floor 3!");
   });
 
   it("consumes the VS16 behind whitespace too", () => {
-    const el = document.createElement("div");
-    const inserted = appendMessageWithIcons(el, "  ⚠️ Save could not be read.");
-    expect(inserted).toBe(true);
+    const el = drawMessage("  ⚠️ Save could not be read.");
     expect(el.querySelector("svg")?.getAttribute("data-icon")).toBe("warning");
     expect(el.textContent).toBe(" Save could not be read.");
   });
@@ -250,9 +235,7 @@ describe("appendMessageWithIcons", () => {
     // marker, so it stays text here. Each game checks that its own bulletins
     // never write this shape.
     for (const message of ["Day 5: 🔥 Blaze in the lobby", '"🔥 Blaze in the lobby" was the bulletin']) {
-      const el = document.createElement("div");
-      const inserted = appendMessageWithIcons(el, message);
-      expect(inserted, message).toBe(false);
+      const el = drawMessage(message);
       expect(el.querySelector("svg"), message).toBeNull();
       expect(el.textContent, message).toBe(message);
     }
@@ -306,8 +289,8 @@ describe("messageWithIcons", () => {
 describe("EMOJI_ICONS", () => {
   it("points only at real icon names (no dangling mapping)", () => {
     for (const [emoji, name] of Object.entries(EMOJI_ICONS)) {
-      // iconElement throws / renders empty if the name is not a real icon.
-      const svg = iconElement(name);
+      // A name with no path data draws an empty svg.
+      const svg = drawIcon(name);
       expect(svg.querySelectorAll("path").length, `${emoji} -> ${name} has no icon`).toBeGreaterThan(0);
     }
   });
