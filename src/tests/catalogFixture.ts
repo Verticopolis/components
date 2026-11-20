@@ -20,6 +20,8 @@ const MEALS = hours("000000000001110001111110");
 const ALL_DAY = hours("000000011111111111111100");
 
 interface Row {
+  /** The display name, when it is not the key spelled out. */
+  readonly name?: string;
   readonly width: number;
   readonly floors?: number;
   readonly population?: number;
@@ -41,10 +43,10 @@ const ROWS: Readonly<Record<FacilityKind, Row>> = {
   lobby: { width: 1 },
   floor: { width: 1 },
   office: { width: 9, population: 6, unmetDemand: true },
-  condo: { width: 16, population: 3, maxHousehold: 5, unmetDemand: true },
-  hotelSingle: { width: 4, population: 1, hotel: true, unmetDemand: true },
-  hotelDouble: { width: 6, population: 2, hotel: true, unmetDemand: true },
-  hotelSuite: { width: 10, population: 2, hotel: true, unmetDemand: true },
+  condo: { name: "Condominium", width: 16, population: 3, maxHousehold: 5, unmetDemand: true },
+  hotelSingle: { name: "Single Room", width: 4, population: 1, hotel: true, unmetDemand: true },
+  hotelDouble: { name: "Twin Room", width: 6, population: 2, hotel: true, unmetDemand: true },
+  hotelSuite: { name: "Suite", width: 10, population: 2, hotel: true, unmetDemand: true },
   fastFood: {
     width: 16,
     population: 25,
@@ -67,6 +69,7 @@ const ROWS: Readonly<Record<FacilityKind, Row>> = {
     subtypes: ["Ramen Bar", "Taco Stand", "Bubble Tea", "Poke Bowl", "Deli Counter", "Coffee Cart"],
   },
   shop: {
+    name: "Retail Shop",
     width: 12,
     population: 20,
     commercial: true,
@@ -118,24 +121,24 @@ const ROWS: Readonly<Record<FacilityKind, Row>> = {
   skyBar: { width: 12, population: 22, commercial: true, openHours: hours("000000000000000011111111") },
   aquaticCenter: { width: 28, floors: 2, attendance: 24, openHours: hours("000000001111111111111100") },
   daycare: { width: 12, population: 14, commercial: true, openHours: hours("000000011111111111100000") },
-  stairs: { width: 8, transport: true, carCapacity: 8 },
+  stairs: { name: "Stairway", width: 8, transport: true, carCapacity: 8 },
   escalator: { width: 8, transport: true, carCapacity: 30 },
-  elevatorStandard: { width: 4, transport: true, maxCars: 8, carCapacity: 21 },
-  elevatorService: { width: 4, transport: true, maxCars: 8, carCapacity: 17 },
-  elevatorExpress: { width: 6, transport: true, maxCars: 8, carCapacity: 42 },
+  elevatorStandard: { name: "Standard Elevator", width: 4, transport: true, maxCars: 8, carCapacity: 21 },
+  elevatorService: { name: "Service Elevator", width: 4, transport: true, maxCars: 8, carCapacity: 17 },
+  elevatorExpress: { name: "Express Elevator", width: 6, transport: true, maxCars: 8, carCapacity: 42 },
   parkingRamp: { width: 16, basement: true },
-  parking: { width: 4, basement: true },
+  parking: { name: "Parking Space", width: 4, basement: true },
   security: { width: 16 },
-  medical: { width: 26 },
+  medical: { name: "Medical Center", width: 26 },
   housekeeping: { width: 15 },
-  recycling: { width: 25, floors: 2, basement: true },
-  metro: { width: 30, floors: 3, basement: true },
+  recycling: { name: "Recycling Center", width: 25, floors: 2, basement: true },
+  metro: { name: "Metro Station", width: 30, floors: 3, basement: true },
   weddingHall: { width: 28, floors: 5, attendance: 12 },
-  rentalStudio: { width: 6, population: 1 },
-  rentalApartment: { width: 11, population: 2, maxHousehold: 5, unmetDemand: true },
+  rentalStudio: { name: "Studio", width: 6, population: 1 },
+  rentalApartment: { name: "Apartment", width: 11, population: 2, maxHousehold: 5, unmetDemand: true },
 };
 
-/** A display name from a kind's key: `hotelSingle` reads "Hotel Single". */
+/** A display name from a kind's key, for the rows that name none: `partyHall` reads "Party Hall". */
 const nameOf = (key: string): string => key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
 
 const HOMES: readonly FacilityKind[] = [
@@ -189,7 +192,7 @@ const MODERN_HALOS: Partial<Record<FacilityKind, RenderFacility["halo"]>> = {
 function facility(key: FacilityKind, row: Row, mode: GameMode): RenderFacility {
   return {
     key,
-    name: nameOf(key),
+    name: row.name ?? nameOf(key),
     width: row.width,
     floors: row.floors ?? 1,
     population: row.population ?? 0,
