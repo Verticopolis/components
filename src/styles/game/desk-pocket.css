@@ -5,9 +5,10 @@
    body.desk-pocket: phones and upright tablets. The tower window fills the
    desk with Info and Tools inside it, and the Map floats over the tower at
    the size it has on phones today (overview-map.css), so the minimap and
-   the tower always show together. The Bulletin, Tower
-   Info and the Control Panel open over the whole desk, one at a time, the
-   way Windows CE did, and the taskbar switches between them.
+   the tower always show together. The Bulletin opens over
+   the whole desk, and Tower Info and the Control Panel across its top at the
+   height of what they hold, the way Windows CE did; the taskbar switches
+   between them.
    The game builds .desk-pocket-body inside the tower window and moves
    #topbar, #palette and #stage into it; the Map stays in #stage.
    Part of the game's stylesheet: src/styles.css imports it after desk.css. */
@@ -290,8 +291,8 @@
     }
   }
 
-  /* Bulletin, Tower Info and the Control Panel cover the desk while open;
-     the tower stays laid out under them. */
+  /* Bulletin, Tower Info and the Control Panel open over the tower, full
+     width; the tower stays laid out under them. */
   body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control).desk-win {
     inset: 0 !important;
     width: auto !important;
@@ -301,5 +302,12 @@
   }
   body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control) > .desk-grip {
     display: none;
+  }
+  /* Tower Info and the Control Panel are as tall as what they hold, across the
+     top of the desk, with the tower showing below; a long list scrolls. */
+  body.desk-pocket :is(#tower-win, #desk-win-control).desk-win {
+    bottom: auto !important;
+    max-height: 100%;
+    overflow-y: auto;
   }
 }
