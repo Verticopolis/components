@@ -5,6 +5,12 @@
  * an extension (or with `.ts`), which `tsc` copies into the `.d.ts` files as
  * written; the JavaScript that Vite emits already carries `.js`.
  * scripts/dts-extensions.ts runs it on lib/.
+ *
+ * It also drops a module's import of its own stylesheet (`import
+ * "../styles/window.css";`), which `tsc` copies into the declaration too: the
+ * types need nothing from it, and a project that checks side-effect imports
+ * (`noUncheckedSideEffectImports`) would fail on a CSS file it has no
+ * declaration for.
  */
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -38,7 +44,7 @@ export function rewrite(file: string, text: string, missing: string[]): string {
       out = out.slice(0, start) + next + out.slice(start + f.fileName.length);
     }
   }
-  return out;
+  return out.replace(/^import ["'][^"']+\.css["'];\n?/gm, "");
 }
 
 function declarations(dir: string): string[] {

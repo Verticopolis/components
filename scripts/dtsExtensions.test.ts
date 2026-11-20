@@ -53,6 +53,13 @@ describe("dtsExtensions rewrite", () => {
     expect(rewrite(join(dir, "a.d.ts"), text, [])).toBe(text);
   });
 
+  it("drops a module's import of its own stylesheet", () => {
+    const text = `import "../styles/window.css";\nimport type { X } from "./b";\nexport declare const css = "a.css";\n`;
+    expect(rewrite(join(dir, "a.d.ts"), text, [])).toBe(
+      `import type { X } from "./b.js";\nexport declare const css = "a.css";\n`,
+    );
+  });
+
   it("reports a relative import that names no declaration", () => {
     const missing: string[] = [];
     rewrite(join(dir, "a.d.ts"), `import type { X } from "./gone";`, missing);

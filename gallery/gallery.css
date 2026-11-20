@@ -1,7 +1,8 @@
 /* The gallery loads the package's stylesheets from lib/, the way a consumer
-   would, plus the two color schemes. Its own rules only lay the page out. */
+   would, plus the two color schemes. The menu bar's sheet comes with the
+   MenuBar module (main.ts), so it is not named here. Its own rules only lay
+   the page out. */
 @import "../lib/styles/retro-page.css";
-@import "../lib/styles/menu-bar.css";
 @import "../lib/styles/schemes/skyline.css";
 @import "../lib/styles/schemes/high-contrast.css";
 

@@ -105,12 +105,21 @@ inlines each file once, in the order of its first `@import`:
 @import "@verticopolis/components/styles/overview-map-views.css"; /* its View row (with the map) */
 ```
 
-Import the pieces from one CSS file rather than one JS `import` each: every
-JS import is its own stylesheet, so each one carries its own copy of the
-tokens. A minified build drops the repeats but keeps the last copy, which
-changes the cascade order, so a token a page overrides between two imports
-is reset by the later copy. No module imports its own CSS, because Node
-cannot load a module that does.
+The window modules bring their own stylesheet. `windows/menuBar` imports
+`menu-bar.css`, and `windows/uiModal` and `windows/movableWindow` (so
+`windows/desk/deskWindow` too) import `window.css`, so a page that uses only
+those modules needs no stylesheet import for them. That needs a bundler that
+loads CSS imported from JavaScript, as Vite does: plain Node has no loader
+for `.css` and cannot import those modules, while a test runner built on a
+bundler (Vitest) can. Their declarations do not carry the CSS imports.
+
+When a module and a page's stylesheet bring the same sheet, the bundle may
+hold two copies of it. That changes nothing on screen: each piece sits in a
+cascade layer of its own and the tokens in theirs (see "Cascade layers"), so
+a copy cannot move one piece ahead of another, and a page's own rules, a
+token override on `:root` included, beat every copy. Importing the other
+pieces from one CSS file rather than one JS `import` each still keeps the
+bundle to one copy of each.
 
 - `styles/retro-tokens.css` holds the colors, bevels and fonts every piece is
   skinned from. Every piece imports it, so a page imports it on its own only

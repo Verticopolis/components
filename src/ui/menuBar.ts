@@ -29,6 +29,8 @@
  * (the analytics in `game/menuWiring.ts`); pointing from menu to menu inside
  * a trip is neither.
  */
+// The bar, its titles, menus and items.
+import "../styles/menu-bar.css";
 
 /** How a trip into the menus began: a click on a title, the keyboard on a
  *  focused title, or Alt with a title's underlined letter. */
