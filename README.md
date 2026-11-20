@@ -229,6 +229,12 @@ bundle to one copy of each.
   (`words`, `kinds` with their icon marks from `windows/fileDialog/fileIcons`,
   the kind Save As writes, and the name rules). Both import
   `styles/game/file-dialog.css`.
+- `windows/titleScreen/titleScreen` is the game's title screen: the dusk
+  sky, sun and skyline (`titleSceneTemplate`), the wordmark
+  (`wordmarkTemplate`), and `titleScreenTemplate(view)` with the buttons, the
+  small print and the optional mute, install and sponsor corners the caller
+  hands in. A page renders it into its own `#splash` container. It imports
+  `styles/game/splash.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -310,6 +316,7 @@ built package from `lib/` the way a consumer would:
 | Message boxes | `windows/messageBox` in the modal: a message, a question, a warning with its icon, and a notice |
 | Appearance | the Appearance dialog; OK dresses the site in the picked scheme |
 | Open and Save As | the Open, Save As and Previous Versions windows over a made-up folder that lives only on the page |
+| Title screen | the game's title screen in a frame, with sample buttons and every corner |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
