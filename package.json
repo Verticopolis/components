@@ -33,10 +33,6 @@
       "types": "./lib/model/*.d.ts",
       "default": "./lib/model/*.js"
     },
-    "./shared/*": {
-      "types": "./lib/model/*.d.ts",
-      "default": "./lib/model/*.js"
-    },
     "./binding/*": {
       "types": "./lib/engineBinding/*.d.ts",
       "default": "./lib/engineBinding/*.js"
