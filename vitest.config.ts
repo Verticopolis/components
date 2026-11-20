@@ -19,7 +19,8 @@ export default defineConfig({
     execArgv: ["--no-experimental-webstorage"],
     testTimeout: 30000,
     hookTimeout: 30000,
-    include: ["src/**/*.test.ts"],
+    // scripts/ holds the release tooling, which never ships.
+    include: ["src/**/*.test.ts", "scripts/**/*.test.ts"],
     exclude: [...configDefaults.exclude],
     setupFiles: ["src/tests/viewWorldSetup.ts"],
   },

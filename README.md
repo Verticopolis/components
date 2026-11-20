@@ -199,10 +199,23 @@ A pull request that changes what the package ships adds a line under
 **major** for a breaking change to an export or a stylesheet's selectors,
 **minor** for a new export, component or look, **patch** for a fix.
 
-A release PR raises `version` in `package.json` (and `package-lock.json`,
-with `npm version <x.y.z> --no-git-tag-version`) to the highest level its
-Unreleased lines name, and renames that heading to `## <version> (<date>)`.
-When it merges, **Release components**
+**Cut release** (`.github/workflows/cut-release.yml`) opens the release PR,
+as in the game's repository: run it from the Actions tab on `main`. It runs
+`scripts/cut-release.ts`, which takes the highest level among the
+Unreleased lines (every line must lead with one), raises `version` in
+`package.json` and `package-lock.json` with `npm version`, renames the
+heading to `## <version> (<date>)`, commits that to `release/<version>` and
+opens the "Release components <version>" PR. While the package is 0.x, a
+**major** line raises the minor version; 1.0.0 comes only when the version
+is named in the run. Leave the version empty for the level the lines ask
+for, or name a later one. It refuses while another release PR is open. The
+PR comes from the workflow token, which starts no checks, so start them with
+the run button on the PR, or close and reopen it. The workflow needs "Allow
+GitHub Actions to create and approve pull requests" (Settings, Actions,
+General). To cut one by hand instead, run `node scripts/cut-release.ts` on a
+clean `release/<version>` branch off `main`.
+
+When the release PR merges, **Release components**
 (`.github/workflows/components-release.yml`) packs that commit, tags
 `v<version>` on it, publishes the GitHub release (named after the tag, and
 Latest unless it is a prerelease) with the version's changelog section, the
