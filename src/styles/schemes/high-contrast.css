@@ -4,6 +4,7 @@
    solid lines instead of bevels. Scoped to html[data-scheme="high_contrast"];
    style only. The system's forced-colors mode still wins. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
 
 @layer vc.page {
   html[data-scheme="high_contrast"] body {

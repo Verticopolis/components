@@ -140,8 +140,10 @@ in this order at the top of every stylesheet:
 
 - `vc.tokens`: `retro-tokens.css`, the custom properties.
 - `vc.base`: `game/base.css`, the reset and the document.
-- `vc.components`: the button, window, well, key/value grid, menu bar and
-  overview map.
+- `vc.components`: the button, window, well, key/value grid, overview map
+  and menu bar, each in a layer of its own in that order
+  (`vc.components.button` through `vc.components.menu-bar`, declared in a
+  second statement), so a second copy of a sheet cannot change their order.
 - `vc.page`: the game's layout (`styles/game/*`), the color schemes and the
   standalone pages (`retro-page.css`, `not-found.css`).
 

@@ -12,6 +12,7 @@
    window's shape, so an on-screen keyboard or a split screen that makes the
    window taller than wide switches back to the portrait phone layout. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
 
 @layer vc.page {
   @media (max-width: 1023px) and (max-height: 599px) and (orientation: landscape) {

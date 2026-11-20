@@ -5,6 +5,7 @@
  * Two selectable mode cards. The chosen rule-set is permanent for the tower, so
  * the lede spells that out and the cards read as a deliberate, one-time choice. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
 
 @layer vc.page {
   .nt-lede {

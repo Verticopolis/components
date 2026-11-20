@@ -10,6 +10,7 @@
    the refusal-card opacity gate (end of this section) encodes its COMPLEMENT:
    a breakpoint change here must land in both. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
 
 @layer vc.page {
   @media (max-width: 767px), (max-width: 1023px) and (max-height: 599px) {

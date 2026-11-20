@@ -3,9 +3,10 @@
    there a bundler inlines each file once, while separate JS imports each carry
    their own copy (see the README's Styles section). */
 @layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
 @import "./retro-tokens.css";
 
-@layer vc.components {
+@layer vc.components.kv {
   /* .kv — two-column key/value grid (editor stats, tower stats, statistics
    dialog columns). */
   .kv {

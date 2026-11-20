@@ -6,6 +6,7 @@
    accents. Staging leads, the count strip is a pressed well of 24 bar
    buttons, and every stepper reuses .btn. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
 
 @layer vc.page {
   .es-body {
