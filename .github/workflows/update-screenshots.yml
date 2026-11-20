@@ -5,12 +5,21 @@ name: Update screenshots
 # in, so a baseline minted on another browser never sets the truth. Trigger
 # it by pushing a branch whose head commit message contains
 # [update-screenshots], or from the Actions tab; the refreshed images come
-# back as a bot commit on the same branch. Review that commit's image diff
-# like code: it blesses a new look.
+# back as a bot commit on the same branch. Run from the Actions tab on main,
+# it never pushes to main: the commit goes to a new update-screenshots/<run>
+# branch with a pull request. Review that commit's image diff like code: it
+# blesses a new look.
+#
+# Two jobs: render runs the branch's code (npm ci, the build, the specs)
+# with a read-only token and uploads the images; publish holds the write
+# token, runs no repository code, accepts only PNG files from the upload,
+# and commits them.
 #
 # The bot pushes with GITHUB_TOKEN, which starts no workflows, so push (or
 # rebase) once more after pulling its commit to get the checks on the final
-# head.
+# head. Opening the pull request from main needs the repository setting
+# "Allow GitHub Actions to create and approve pull requests"; without it the
+# branch is still pushed and the run prints a link to open the PR by hand.
 
 on:
   push:
@@ -43,27 +52,19 @@ jobs:
           ver=$(node -e "process.stdout.write(require('./package-lock.json').packages['node_modules/playwright'].version)")
           echo "image=mcr.microsoft.com/playwright:v${ver}-jammy" >> "$GITHUB_OUTPUT"
 
-  update:
+  render:
     needs: resolve-image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Earns write: it pushes the refreshed baselines. Only the push step sees
-    # the token; the steps that run branch code (npm ci, the build, the specs)
-    # run with no token on disk.
+    # Runs the branch's code, so it gets a read-only token and nothing else.
     permissions:
-      contents: write
+      contents: read
     container:
       image: ${{ needs.resolve-image.outputs.image }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
           persist-credentials: false
-
-      # A container checkout trips git's dubious-ownership guard.
-      - name: Trust the workspace
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -75,35 +76,69 @@ jobs:
       - name: Regenerate the baselines
         run: npx playwright test --update-snapshots
 
-      - name: Commit the refreshed baselines
-        id: commit
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: screenshots
+          path: e2e/__screenshots__/
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Earns write: it commits the images and pushes them (and opens a pull
+    # request when run from main). It runs no repository code.
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: screenshots
+          path: ${{ runner.temp }}/screenshots
+
+      # The images come from a job that ran branch code, so only regular
+      # .png files under the two project folders are taken.
+      - name: Take the rendered images
+        env:
+          SHOTS: ${{ runner.temp }}/screenshots
         run: |
+          set -euo pipefail
+          bad="$(find "$SHOTS" -mindepth 1 \( -type l -o \( -type f ! -name '*.png' \) -o \( -type d ! -path "$SHOTS/desktop" ! -path "$SHOTS/phone" \) \) -print)"
+          if [ -n "$bad" ]; then printf '::error::The upload holds something other than PNG images:\n%s\n' "$bad"; exit 1; fi
+          rm -rf e2e/__screenshots__
+          mkdir -p e2e/__screenshots__
+          cp -R "$SHOTS"/. e2e/__screenshots__/
+
+      - name: Commit and push the refreshed baselines
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add e2e/__screenshots__
+          git add -A e2e/__screenshots__
           if git diff --cached --quiet; then
             echo "The baselines already match this image; nothing to commit."
-            echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "Update gallery screenshots from CI"
-          echo "committed=true" >> "$GITHUB_OUTPUT"
-
-      # The only step that receives the write token. Every credentialed git
-      # call runs in a fresh throwaway repository with global and system git
-      # config off, since the branch code above could have planted git state
-      # (an insteadOf rewrite, a hook) in the workspace or HOME. The one
-      # command that reads the workspace (the local fetch) runs without the
-      # token in its environment.
-      - name: Push the refreshed baselines
-        if: steps.commit.outputs.committed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
-          remote="https://x-access-token:${GITHUB_TOKEN}@${GITHUB_SERVER_URL#https://}/${GITHUB_REPOSITORY}.git"
-          pushdir="$(mktemp -d)"
-          git init -q "$pushdir"
-          env -u GITHUB_TOKEN git -C "$pushdir" -c safe.directory='*' fetch -q "$GITHUB_WORKSPACE" HEAD
-          git -C "$pushdir" checkout -q FETCH_HEAD
-          git -C "$pushdir" push "$remote" "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          git commit -q -m "Update gallery screenshots from CI"
+          remote="https://x-access-token:${GH_TOKEN}@${GITHUB_SERVER_URL#https://}/${GITHUB_REPOSITORY}.git"
+          if [ "$GITHUB_REF_NAME" != main ]; then
+            git push -q "$remote" "HEAD:refs/heads/${GITHUB_REF_NAME}"
+            echo "Pushed the refreshed baselines to ${GITHUB_REF_NAME}."
+            exit 0
+          fi
+          # Never push to main: a run from main gets its own branch and PR.
+          branch="update-screenshots/${RUN_ID}"
+          git push -q "$remote" "HEAD:refs/heads/${branch}"
+          if ! gh pr create --base main --head "$branch" --title "Update gallery screenshots" \
+            --body "Baselines re-rendered in the pinned Playwright image by run ${RUN_ID}. Review the image diff: it sets the gallery's look."; then
+            echo "::warning::Pushed ${branch}, but could not open the pull request. Open it by hand: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/main...${branch}"
+          fi
