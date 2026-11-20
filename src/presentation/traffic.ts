@@ -4,7 +4,7 @@
  *
  * The readout follows the tower's worst waiting line right now (owner,
  * 2026-11-17): of every elevator landing where people stand waiting (the
- * engine's `queueView`, the same lines the renderer draws), the one with the
+ * simulation's `queueView`, the same lines the renderer draws), the one with the
  * most pressure. It names that line's floor, and a tap zooms to that landing,
  * so what the readout says is something the player can see on screen.
  *

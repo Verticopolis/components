@@ -205,7 +205,7 @@ describe("transport, crane & event sprites paint", () => {
   it("stairs and escalator each draw one flight rising to a second-floor landing", () => {
     // A two-floor stairway/escalator draws exactly one flight (the top band is
     // the arrival landing) and the two kinds render as different sprites. The
-    // sprite bakes no rider; climbers are separate engine-driven actors.
+    // sprite bakes no rider; climbers are separate simulation-driven actors.
     const stair = spyCtx();
     const esc = spyCtx();
     drawTransport(stair.ctx, transport({ kind: "stairs", bottom: 1, top: 2, width: 8 }), 0, 0, 88, 44);
@@ -215,7 +215,7 @@ describe("transport, crane & event sprites paint", () => {
     // Warm tan treads vs metallic steps: the two transport kinds are distinct.
     expect(stair.sig()).not.toBe(esc.sig());
     // The stairs paint their warm-tan tread color; the routed climbers that ride
-    // the flight are engine-driven actors, not baked into this static sprite.
+    // the flight are simulation-driven actors, not baked into this static sprite.
     expect(stair.log.some((l) => l.includes("#EDE6D2"))).toBe(true);
   });
 

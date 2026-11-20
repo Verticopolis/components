@@ -13,8 +13,8 @@ import { renderToFragment } from "./testing/litTestUtils";
 /**
  * The inline icon module (issue #721): the element/template builders, and the
  * two message mappers that swap bulletin emoji for icons while keeping every
- * other character as text. The engine->bulletin coverage contract (every emoji
- * the engine emits is mapped) is pinned separately in
+ * other character as text. The simulation->bulletin coverage contract (every emoji
+ * the simulation emits is mapped) is pinned separately in
  * `src/tests/iconCoverage.guard.test.ts`.
  */
 
@@ -179,7 +179,7 @@ describe("appendMessageWithIcons", () => {
 
   it("only swaps the leading marker: a mapped emoji mid-message stays text", () => {
     // The mapping is anchored to the head of the message (the severity marker
-    // the engine emits). A mapped emoji sitting later in the string (a room
+    // the simulation emits). A mapped emoji sitting later in the string (a room
     // name, a copied bulletin) must survive as text, never get eaten by an
     // aria-hidden icon.
     const el = document.createElement("div");
@@ -220,7 +220,7 @@ describe("appendMessageWithIcons", () => {
   it("keeps a labeled or quoted prefix message as plain text (issue #743)", () => {
     // A non-whitespace prefix means the emoji is not the leading severity
     // marker, so it stays text here; the emitter-side guard in
-    // iconCoverage.guard.test.ts is what forbids the engine from ever writing
+    // iconCoverage.guard.test.ts is what forbids the simulation from ever writing
     // this shape, keeping the invariant structural instead of assumed.
     for (const message of ["Day 5: 🔥 Blaze in the lobby", '"🔥 Blaze in the lobby" was the bulletin']) {
       const el = document.createElement("div");

@@ -115,7 +115,7 @@ function lookupAtCatalogWidth(u: LiveUnit, s: LiveScene, variant: number, width:
   return { frame: `${stem}/home`, chains: { occupants: visible }, overlays: [], ...cycles };
 }
 
-/** A count or fraction from the engine, with a corrupt value read as 0. */
+/** A count or fraction from the simulation, with a corrupt value read as 0. */
 function finite(n: number): number {
   return Number.isFinite(n) ? n : 0;
 }

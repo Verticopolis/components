@@ -43,7 +43,7 @@ export interface ArchiveInfo {
   licenseText: string;
   /** The app icon files, shipped under `icon/` by name. */
   icons?: Record<string, Uint8Array>;
-  /** The engine's Modern catalog the art was drawn with. The archive reads
+  /** The Modern render catalog the art was drawn with. The archive reads
    *  room and scenery facts through the view, and Node's archive builder runs
    *  apart from the page that baked the art, so it binds its own view to this. */
   catalog: RenderCatalog;
@@ -68,9 +68,9 @@ export function signature(): AtlasManifest["signature"] {
         "'home' when the unit's occupants is above 0, else 'away'; kinds whose art ignores occupants (the garage, ramp, services, recycling, metro) carry no presence segment",
       width:
         "room frames exist for each kind's catalog width only. A room at another width (a TDT import or an old save keeps its original width) uses the catalog-width frame or animation, composed as usual, then scaled horizontally to its real width, nearest neighbor from the left edge (the reference reader's stretchTo); it approximates the web game, which redraws the room at its real width. Legacy shaft widths (stairs and escalators 4, standard elevator 3, express 4) have frames of their own, named with a w<tiles> segment after the kind; a shaft at any other width stretches its catalog frames the same way",
-      subtype: "a subtype the engine does not list for the kind draws the default look, the '-' frame",
+      subtype: "a subtype the simulation does not list for the kind draws the default look, the '-' frame",
       visibleOccupants:
-        "occupants minus outForMeal, rounded up and clamped at 0. Read outForMeal as between 0 and occupants: a negative or non-finite value is nobody out, and a value over occupants is everybody out; a non-finite occupants is nobody. Draw chain steps 1..min(n, max) over the 'home' frame. Chains cover every count the engine produces (population, venue attendance, the largest household)",
+        "occupants minus outForMeal, rounded up and clamped at 0. Read outForMeal as between 0 and occupants: a negative or non-finite value is nobody out, and a value over occupants is everybody out; a non-finite occupants is nobody. Draw chain steps 1..min(n, max) over the 'home' frame. Chains cover every count the simulation produces (population, venue attendance, the largest household)",
       riders:
         "the cab's rider indicator (0..4, the game's load quantized to quarters); draw chain steps 1..min(n, max) over the car frame",
       recyclingFill: `round(fill * ${RECYCLE_STEPS}) for the tower's recycling fill in 0..1; draw chain steps over the frame. The web re-bakes on the same eighths but paints the exact fill, so a pile between steps can differ by a bag or a gauge pixel`,

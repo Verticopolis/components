@@ -93,9 +93,6 @@ labels:
   - name: audio
     color: "c5def5"
     description: "Sound effects, music and the audio engine"
-  - name: wasm
-    color: "c5def5"
-    description: "The engine binding, the host loader and the worker"
   - name: tooling
     color: "c5def5"
     description: "CI, tests, lint and the package build"

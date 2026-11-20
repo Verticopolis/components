@@ -17,10 +17,9 @@ permissions:
   contents: read
 
 # The package's checks: install from the lockfile, then typecheck, lint,
-# check the formatting (Prettier) and run the unit tests. The tests mock the
-# engine and read its catalog from the engine package's JSON fixtures,
-# so no engine build is needed. The game's e2e, engine-host and WASM jobs stay
-# in the game's repository.
+# check the formatting (Prettier) and run the unit tests. The tests read
+# hand-written render-model fakes, so nothing else is built first. The game's
+# own end-to-end jobs stay in the game's repository.
 #
 # A pull request that changes only prose (.github/actions/docs-only lists
 # it) still runs the job, so the required check reports, but every step

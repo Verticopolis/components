@@ -35,7 +35,7 @@ function simFixture(over: Record<string, any> = {}): any {
   };
 }
 
-/** A tenant riding at the middle of a shaft at floor `fy`, as the engine
+/** A tenant riding at the middle of a shaft at floor `fy`, as the simulation
  *  places riders (`Riding` in crowd/motion.rs). */
 function rider(id: number, x: number, fy: number): any {
   return { id, seed: id, state: "riding", x, floor: Math.round(fy), fy, wait: 0 };

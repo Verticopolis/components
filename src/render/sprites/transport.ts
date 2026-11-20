@@ -50,7 +50,7 @@ export function drawTransport(
     for (let fl = 1; fl <= span; fl++) {
       // Each flight is confined to band `fl` (the departure floor's band); the
       // top band stays the arrival landing so a two-floor stairway never draws
-      // a second stacked flight. The engine's own routed climbers ride over it.
+      // a second stacked flight. The simulation's own routed climbers ride over it.
       drawStairFlight(ctx, sx, w, topY + fl * floorH, topY + (fl + 1) * floorH);
     }
     return;
@@ -143,7 +143,7 @@ export function drawTransport(
  *  (the departure floor's band) so the arrival band above stays the landing,
  *  never a second stacked flight. The flight is drawn strictly inside
  *  `[sx, sx + w]` so it never overpaints a neighbor. Structure only, NO baked
- *  climber: the engine's routed sims ride over it as separate actors, so an empty
+ *  climber: the simulation's routed sims ride over it as separate actors, so an empty
  *  tower shows a bare, unoccupied flight. Integer coordinates. */
 function drawStairFlight(
   ctx: CanvasRenderingContext2D,

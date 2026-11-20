@@ -17,7 +17,7 @@ import type { TowerEngine } from "./TowerEngine";
  *  (extracted from `TowerEngine.ts`; the class keeps thin delegations and the
  *  coordinate transforms these read). */
 
-/** The camera's zoom range (screen px per world px): the engine's view zoom
+/** The camera's zoom range (screen px per world px): the simulation's view zoom
  *  limits (the save schema clamps a restored zoom to them), from the tower's
  *  rules. */
 function zoomRange(engine: TowerEngine): { readonly min: number; readonly max: number } {

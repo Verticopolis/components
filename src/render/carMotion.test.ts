@@ -15,7 +15,7 @@ function step(s: ReturnType<typeof newCarDraw>, target: number, frames: number):
 }
 
 describe("glideCar", () => {
-  it("moves every frame of a slow step and reaches the engine's floor at its end", () => {
+  it("moves every frame of a slow step and reaches the simulation's floor at its end", () => {
     const s = newCarDraw(4);
     const drawn = step(s, 5, 60); // a one-second step at the lunch slowdown
     for (let i = 1; i < drawn.length; i++) expect(drawn[i]).toBeGreaterThan(drawn[i - 1]);
@@ -33,7 +33,7 @@ describe("glideCar", () => {
     expect(s.pos).toBeCloseTo(1.25, 9);
   });
 
-  it("stands still at a stop while the engine keeps it there", () => {
+  it("stands still at a stop while the simulation keeps it there", () => {
     const s = newCarDraw(7);
     expect(step(s, 7, 10).every((p) => p === 7)).toBe(true);
   });

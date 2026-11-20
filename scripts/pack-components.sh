@@ -29,8 +29,7 @@ node -e '
   const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
   pkg.version = version;
   // The repository pins its own tooling to Node 26 (package.json, .nvmrc);
-  // the package itself runs on any Node from 22, the oldest the engine
-  // package supports too.
+  // the package itself runs on any Node from 22.
   pkg.engines = { node: ">=22" };
   delete pkg.scripts;
   delete pkg.devDependencies;

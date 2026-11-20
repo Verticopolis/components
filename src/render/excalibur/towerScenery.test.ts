@@ -30,7 +30,7 @@ const SEED = 4400;
  *  `towerScenery` computes them. Pinning a literal went stale the moment the
  *  world scale moved: TILE 11 -> 10 shortened both strips and dropped one. */
 const FIXED_ACTORS = 10;
-/** The lot's width in tiles, from the engine's catalog. */
+/** The lot's width in tiles, from the game's catalog. */
 const LOT_WIDTH = catalogFor("classic").world.lotWidth;
 const ROAD_SEGMENTS = Math.ceil(((ROUNDABOUT_START + LOT_WIDTH) * TILE) / STRIP_MAX_SEG);
 const GROUND_SEGMENTS = Math.ceil((LOT_WIDTH * TILE) / STRIP_MAX_SEG);
@@ -63,8 +63,8 @@ afterAll(() => {
 });
 
 /** What the scenery reads of the render sim: the founding seed, the tower's
- *  revision and ground-floor units, and the clock. That the port's render sim
- *  answers these from the engine is checked in `portReads.integration.test.ts`. */
+ *  revision and ground-floor units, and the clock. A game checks that its own
+ *  simulation answers these. */
 interface SceneSim {
   rng: { initialSeed: number };
   tower: { revision: number; units: RenderUnit[] };

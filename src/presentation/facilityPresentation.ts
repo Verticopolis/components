@@ -3,7 +3,7 @@ import type { FacilityKind, RenderWorld } from "../render/renderModel";
 /**
  * How each facility looks and reads in the UI: its swatch and sprite color and
  * the tool card's description. Presentation only, so it lives outside the
- * engine (#921): prices, sizes and rules come from the tower's catalog.
+ * simulation (#921): prices, sizes and rules come from the tower's catalog.
  */
 export interface FacilityPresentation {
   /** Hex color the palette swatch and the procedural sprites use. */

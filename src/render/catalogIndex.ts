@@ -6,8 +6,7 @@ import type { FacilityKind, GameMode, RenderFacility } from "./renderModel";
  *
  * The lookups are generic over the facility type, so each caller gets back
  * the entry type its catalog holds: the renderer's `RenderCatalog` gives a
- * `RenderFacility`, and an engine `Catalog` (through the deprecated
- * `catalog/catalogTypes` path) gives the engine's full `CatalogFacility`.
+ * `RenderFacility`, and a game's own, wider catalog gives its own entries.
  */
 
 /** A catalog's facility list, whatever entry type it holds. */
@@ -44,7 +43,7 @@ export function catalogFacility<F extends { readonly key: FacilityKind }>(
 }
 
 /** Whether a facility is open in `hour` (the game hour; fractions and 24 read
- *  as the engines read them, since every opening and closing is on the hour):
+ *  as a simulation reads them, since every opening and closing is on the hour):
  *  always, for a kind that keeps no business hours. */
 export function catalogOpenAt(f: Pick<RenderFacility, "openHours">, hour: number): boolean {
   return f.openHours === null || f.openHours[((Math.floor(hour) % 24) + 24) % 24] === true;

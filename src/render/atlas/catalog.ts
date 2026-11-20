@@ -148,7 +148,7 @@ export function hourFor(kind: FacilityKind, open: boolean, late: boolean): numbe
   throw new Error(`no hour realizes ${kind} open=${open} late=${late}`);
 }
 
-/** The most occupants the engine can put in a room of `kind`, which is the
+/** The most occupants the simulation can put in a room of `kind`, which is the
  *  occupant chain's length. Leases and stays fill to the catalog population,
  *  commercial customers stay under it (`crowd/visits.ts`), venues are clamped
  *  to their attendance (`census.syncAttendanceOccupants`), and a Modern
@@ -160,7 +160,7 @@ export function occupantCap(kind: FacilityKind): number {
   return Math.max(f.population, f.attendance ?? 0, household);
 }
 
-/** Frame name token for a subtype: the engine's name, or `-` for none. */
+/** Frame name token for a subtype: the simulation's name, or `-` for none. */
 function subtypeToken(s: string | undefined): string {
   if (s === undefined) return "-";
   if (s.includes("/")) throw new Error(`subtype ${s} would break the frame name`);

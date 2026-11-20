@@ -2,7 +2,7 @@ import type { RenderMetroTrain } from "./renderModel";
 import { describe, it, expect } from "vitest";
 import { metroLineTimes, metroTrainAt } from "./metroTrainSchedule";
 
-/** The catalog's `world.metroTrain` as the engine publishes it, the canned
+/** The catalog's `world.metroTrain` as the simulation publishes it, the canned
  *  answer these pure functions read. */
 const TIMETABLE: RenderMetroTrain = { firstHour: 6, lastHour: 20, legMinutes: 6, dwellMinutes: 14, runMinutes: 54 };
 const SPAN = 100;

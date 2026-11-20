@@ -12,7 +12,7 @@ import {
 
 const FRAME = 1000 / 60;
 
-/** Drive one car up a shaft at 60 frames a second: the engine moves it one
+/** Drive one car up a shaft at 60 frames a second: the simulation moves it one
  *  floor on each frame `stepsAt` says a step lands, and the drawn car glides
  *  on the shared step clock. Returns how far the drawn car moved each frame. */
 function drawnMoves(frames: number, stepsAt: (frame: number) => boolean): number[] {

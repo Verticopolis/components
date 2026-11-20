@@ -4,11 +4,11 @@ import type { TowerEngine } from "./TowerEngine";
 
 /** How far past the screen the people window reaches: tiles past each side,
  *  floors past the top and the bottom, so a figure walking in is already in
- *  the frame when it shows. The engine adds its own pad on top, so every
+ *  the frame when it shows. The simulation adds its own pad on top, so every
  *  rider of a car on screen comes along (`view::PeopleWindow::padded`). */
 export const WINDOW_MARGIN = { tiles: 2, floors: 1 } as const;
 
-/** The floors and tiles the engine's frame sends people for. */
+/** The floors and tiles the simulation's frame sends people for. */
 export interface PeopleWindow {
   floorLo: number;
   floorHi: number;
@@ -31,7 +31,7 @@ export function peopleWindow(camera: Camera): PeopleWindow {
   };
 }
 
-/** A window that holds nobody: floors far below any lot. The engine reads a
+/** A window that holds nobody: floors far below any lot. The simulation reads a
  *  window it cannot use as every person (`view::PeopleWindow::new`), so an
  *  empty frame needs a real window with nobody in it. */
 export const NO_PEOPLE: PeopleWindow = { floorLo: -1e6, floorHi: -1e6, xLo: 0, xHi: 0 };
@@ -39,7 +39,7 @@ export const NO_PEOPLE: PeopleWindow = { floorLo: -1e6, floorHi: -1e6, xLo: 0, x
 type FrameCamera = Camera & Pick<TowerEngine, "cam" | "crowdCulled">;
 
 /** The window this frame's view sends people for. While the zoom cull hides
- *  the crowd (`crowdCull.ts`), nobody crosses from the engine, since no
+ *  the crowd (`crowdCull.ts`), nobody crosses from the simulation, since no
  *  figure is drawn; the frame where the cull lifts already reads the screen,
  *  because the cull is judged from this frame's zoom without moving the
  *  latch. A followed person keeps the window, so the camera glides with

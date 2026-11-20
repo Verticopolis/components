@@ -89,7 +89,7 @@ describe("the view's kind facts", () => {
     daycare: span(7, 19),
   };
 
-  it("sort the kinds as the engine does, in both modes", () => {
+  it("sort the kinds as the simulation does, in both modes", () => {
     for (const mode of ["classic", "modern"] as const) {
       bindViewKinds(catalogFor(mode));
       for (const [name, { ask, kinds }] of Object.entries(SETS)) {
@@ -98,7 +98,7 @@ describe("the view's kind facts", () => {
     }
   });
 
-  it("open each kind in the engine's posted hours, reading a fraction or 24 onto its hour", () => {
+  it("open each kind in the simulation's posted hours, reading a fraction or 24 onto its hour", () => {
     for (const mode of ["classic", "modern"] as const) {
       bindViewKinds(catalogFor(mode));
       for (const kind of viewKindKeys()) {

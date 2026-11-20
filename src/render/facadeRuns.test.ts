@@ -54,7 +54,7 @@ describe("the facade's runs: one per tower on each floor", () => {
  * A tall lobby hall (#308) rises through the stories above its floor, and the
  * fire escapes climb past them the way they climb past a normal floor. The
  * catalog gives every lobby one story, so the hall's height comes from the
- * engine's `lobbyHeights()` quads (`[floor, x0, x1, height]`).
+ * simulation's `lobbyHeights()` quads (`[floor, x0, x1, height]`).
  */
 describe("the facade's runs beside a tall lobby hall", () => {
   it("hangs escapes on every raised story of a 3-story sky lobby", () => {

@@ -1,9 +1,9 @@
 /**
  * The overview MAP window's Eval and Pricing views (#343 S8, #1618, #1619):
- * each room the engine rates paints over the Edit map in its tier's color, as
- * the original's tinted tabs do. The engine decides every tier (`roomTiers`,
+ * each room the simulation rates paints over the Edit map in its tier's color, as
+ * the original's tinted tabs do. The simulation decides every tier (`roomTiers`,
  * read through `RoomTierReader`), so nothing here compares a score or a
- * price: it matches the engine's rows to the view's rooms, places them on the
+ * price: it matches the simulation's rows to the view's rooms, places them on the
  * map and paints them.
  *
  * One read carries both views, so a switch between Eval and Pricing reads
@@ -15,7 +15,7 @@
  * Both game modes use the same look (owner, 2026-11-04). Color is not the only
  * cue: the tiers of one view differ in pattern too, a room big enough to carry
  * a pattern gets it, and the legend counts the rooms in words. A room the
- * engine lists with no evaluation (Eval) or with no rent level or No Rate
+ * simulation lists with no evaluation (Eval) or with no rent level or No Rate
  * (Pricing) keeps its Edit look.
  */
 import type { FacilityKind, EvalTier, RentTier, RenderRoomTiers, RenderUnit } from "../renderModel";
@@ -86,7 +86,7 @@ export type TierRoom = Pick<RenderUnit, "id" | "kind" | "floor" | "x" | "width">
 
 /**
  * The rows of the last read, and where each matched room sits on the map.
- * The rows are the engine's; the rectangles are found again whenever the
+ * The rows are the simulation's; the rectangles are found again whenever the
  * rooms or the layout change, so a room removed since the read drops out
  * and a moved layout moves the marks.
  */

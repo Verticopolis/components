@@ -1,12 +1,11 @@
 import type { LedgerCat } from "../render/renderModel";
 
 /**
- * The words the Statistics window prints for two things the engine reports by
- * key: the income ledger's categories and the optional milestones. The engine
- * answers which categories exist, their per-day averages and which milestones
- * are done; the labels and descriptions stay here, as the engine's progress
- * panel says. `statsCopy.test.ts` holds this copy to the keys the engine
- * publishes in its view layout (`ledgerCats`, `milestones`).
+ * The words the Statistics window prints for two things the simulation
+ * reports by key: the income ledger's categories and the optional milestones.
+ * The simulation answers which categories exist, their per-day averages and
+ * which milestones are done; the labels and descriptions stay here. The game
+ * checks this copy against the keys its simulation publishes.
  */
 
 /** The income categories in display order. */

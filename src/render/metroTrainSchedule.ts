@@ -1,7 +1,7 @@
 import type { RenderMetroTrain } from "./renderModel";
 
 /**
- * Where the Metro's train is, on game time, drawn from the engine's timetable
+ * Where the Metro's train is, on game time, drawn from the simulation's timetable
  * (the catalog's `world.metroTrain`, which riders leaving by train keep too).
  * One train runs each line and calls each game hour from `firstHour` to
  * `lastHour`; none runs overnight. It slides in from the left tunnel mouth,
@@ -15,8 +15,8 @@ const lineTimes = new WeakMap<RenderMetroTrain, Map<number, Readonly<{ leg: numb
 /** How long the train takes between two calls (or a tunnel mouth and a call)
  *  and how long it waits at each, on a line of `stops` stations. One station
  *  waits the timetable's full dwell; more stations share the hour, so the
- *  train waits less at each and is gone before the next hour's run. The
- *  engine works out the same (`crowd::metro_train::line_times`). */
+ *  train waits less at each and is gone before the next hour's run, the
+ *  same times the simulation runs it on. */
 export function metroLineTimes(timetable: RenderMetroTrain, stops: number): Readonly<{ leg: number; dwell: number }> {
   const n = Math.max(1, stops);
   // Asked every frame for every station, so each line length's answer is kept.

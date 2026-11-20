@@ -11,7 +11,7 @@ import {
 import { catalogFor } from "../tests/catalogFixture";
 import { TEST_ZOOM } from "../tests/renderRules";
 import { CRANE_H } from "./sprites/structure/rooftop";
-// Pull the buildable bounds from the engine catalog and FLOOR from the pure
+// Pull the buildable bounds from the game's catalog and FLOOR from the pure
 // render/scale module so the test can't drift if the tower geometry or the
 // render scale changes (the helper itself is parameterized by floorPx).
 import { FLOOR } from "./scale";

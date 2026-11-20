@@ -9,7 +9,7 @@ import type { TowerEngine } from "./TowerEngine";
 
 /**
  * Construction of the decorative passers-by: figures that loiter in a short
- * stretch of corridor for life, but are not people the engine knows about.
+ * stretch of corridor for life, but are not people the simulation knows about.
  * Split out of `towerCrowd.ts` so the per-frame motion path and this
  * build-once path stay separately readable.
  *
@@ -53,7 +53,7 @@ export function buildWalkers(engine: TowerEngine): void {
   const byFloor = new Map<number, Set<number>>();
   for (const u of tower.units) {
     // Corridors only: the bare floor lots between rooms. A lobby is where the
-    // engine's own commuters cross, so it gets no decorative figure.
+    // simulation's own commuters cross, so it gets no decorative figure.
     if (u.kind !== "floor") continue;
     if (lotCovered(coveredRows, u.floor, u.x)) continue; // upper story of a multi-floor facility
     if (traffic.get(u.floor)?.has(u.x)) continue;

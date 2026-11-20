@@ -2,10 +2,10 @@ import type { GameMode, RenderCatalog, RenderRules } from "./renderModel";
 
 /**
  * Each tower's source (Verticopolis/web#921): where the renderer reads the
- * tower's catalog and the engine's rules, so the values come from whichever
- * engine runs the tower. The app sets one on every tower it runs
- * (`useTowerSource`). Kept beside the tower rather than on it: nothing here is
- * saved, and the engine never reads it.
+ * tower's catalog and its simulation's rules, so the values come from whatever
+ * runs the tower. The app sets one on every tower it runs (`useTowerSource`).
+ * Kept beside the tower rather than on it: nothing here is saved, and the
+ * simulation never reads it.
  *
  * A tower with no source set reads the fallback, which only tests and
  * hand-built towers register. With no fallback a read throws, so a shipped
@@ -50,7 +50,7 @@ export function towerCatalog(tower: { readonly mode: GameMode }, mode: GameMode 
   return catalogOn(tower, mode);
 }
 
-/** The catalog of `mode` from the source set on `key` (a tower, or the engine
+/** The catalog of `mode` from the source set on `key` (a tower, or the simulation
  *  the game holds), read once and kept. */
 export function catalogOn(key: object, mode: GameMode): RenderCatalog {
   const h = handleOf(key);
@@ -62,7 +62,7 @@ export function catalogOn(key: object, mode: GameMode): RenderCatalog {
   return c;
 }
 
-/** The engine's rules for the tower. */
+/** The simulation's rules for the tower. */
 export function towerRules(tower: object): RenderRules {
   return sourceOf(handleOf(tower), "rules").rules;
 }

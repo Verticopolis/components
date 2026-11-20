@@ -5,7 +5,7 @@ import { hallDoors, lobbyHalls, NO_TALL_HALLS } from "./lobbyHalls";
 const lobbyAt = (cols: Record<number, [number, number][]>) => (floor: number, x: number) =>
   (cols[floor] ?? []).some(([x0, x1]) => x0 <= x && x <= x1);
 
-describe("lobbyHalls reads the engine's hall quads (#2068)", () => {
+describe("lobbyHalls reads the simulation's hall quads (#2068)", () => {
   it("answers each column's hall height, and one story where no tall hall stands", () => {
     const halls = lobbyHalls([1, 10, 19, 3, 1, 20, 29, 2, 15, 4, 9, 2]);
     expect(halls.runs).toEqual([

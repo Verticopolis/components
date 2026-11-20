@@ -10,7 +10,7 @@ vi.mock("./towerCrowd", () => ({ syncMotion: vi.fn() }));
 
 /**
  * CAP-3 of the mobile render-perf spec: hour-driven scene reconciles defer
- * exactly one frame off the engine's hourly scans; structural and meal-overlay
+ * exactly one frame off the simulation's hourly scans; structural and meal-overlay
  * reconciles stay same-frame; nothing is ever skipped. The planner is pure and
  * fully pinned here; runSceneSync is driven with a fake engine (no canvas
  * baking happens at this seam, syncScene is a spy).

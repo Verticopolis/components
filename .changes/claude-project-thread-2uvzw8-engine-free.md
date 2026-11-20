@@ -11,3 +11,8 @@ package: major
   classic catalog"), without the engine.
 - `npm run atlas` takes `--catalog <file>` to bake against a game's own
   Modern render catalog; without it the bake uses the components' own.
+- `ui/uiModal`'s `ModalDeps.engineStopped()` is now `gameStopped()`: a modal
+  still never opens over a game-failure message. Rename the member where the
+  game passes its deps.
+- The sprite atlas manifest's notes say "the simulation" where they said
+  "the engine". No frame, field or schema version changes.

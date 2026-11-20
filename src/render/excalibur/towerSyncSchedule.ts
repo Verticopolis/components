@@ -7,7 +7,7 @@ import type { TowerEngine } from "./TowerEngine";
 /**
  * Scene-sync scheduling for {@link TowerEngine.tick} (CAP-3 of the mobile
  * render-perf spec, `_bmad-output/specs/spec-render-perf-mobile-zoom/`). The
- * goal: the engine's `onHour` scans (satisfaction, traffic income) and the
+ * goal: the simulation's `onHour` scans (satisfaction, traffic income) and the
  * render's full `syncScene` reconcile never share a frame. They used to meet
  * two ways: the meal-overlay trigger ran the full reconcile walk in the very
  * frame whose onUpdate crossed an hour (top-speed meal windows bump it every
@@ -20,10 +20,10 @@ import type { TowerEngine } from "./TowerEngine";
  * from live state, so the one-frame-later pass renders the same pixels. The
  * residual: when EVERY frame crosses an hour (deep catch-up), scans run every
  * frame and the drain halves the sync cadence instead of separating them;
- * separating those needs the engine-side onHour amortization, a recorded
+ * separating those needs the simulation-side onHour amortization, a recorded
  * spec non-goal.
  *
- * Meal-overlay bumps are coalesced too (#1747): the engine bumps the meal
+ * Meal-overlay bumps are coalesced too (#1747): the simulation bumps the meal
  * overlay revision on each meal return or venue exit, which during a busy
  * lunch at top speed is most frames, and each sync walks every room. A bump
  * alone syncs at most once per {@link MEAL_SYNC_MS} of real time; one that
@@ -100,7 +100,7 @@ function applySceneSync(engine: TowerEngine, nowMs: number): void {
  *  sim (onUpdate). A deferral booked last frame must repaint before this
  *  frame's sim advance: a throttled catch-up frame can cross the NEXT hour
  *  inside onUpdate, and draining afterward would re-stack the deferred
- *  reconcile with that hour's engine scans, the exact pileup the deferral
+ *  reconcile with that hour's simulation scans, the exact pileup the deferral
  *  exists to prevent. */
 export function drainSceneSync(engine: TowerEngine, nowMs = performance.now()): void {
   if (!engine.hourSyncPending) return;

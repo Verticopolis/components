@@ -417,14 +417,14 @@ function resetInput(engine: TowerEngine): void {
 }
 
 /**
- * Follow an undo or redo step the engine took on the tower this scene draws.
+ * Follow an undo or redo step the simulation took on the tower this scene draws.
  * The step is an edit of that tower, and it moved the tower's revision, so the
  * scene is kept: the tiles, the room, shaft and crowd actors, the camera and
  * any effect in flight. The next sync brings the scene up to the changed tower
  * by its own keys (the revision and unit list for the tiles, each room's and
  * shaft's signature, each person's id), as it does after a build or a
  * bulldoze. A swap to another tower goes through {@link setSim} instead. The
- * input resets, because the engine committed any gesture under way before it
+ * input resets, because the simulation committed any gesture under way before it
  * took the step, and an effect drawn on a spot the step emptied ends.
  */
 export function followStep(engine: TowerEngine): void {

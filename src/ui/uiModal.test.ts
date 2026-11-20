@@ -5,7 +5,7 @@ const deps = (stopped = false): ModalDeps => ({
   titleBarClose: () => document.createElement("button"),
   closeModal: vi.fn(),
   drainNotice: vi.fn(),
-  engineStopped: vi.fn(() => stopped),
+  gameStopped: vi.fn(() => stopped),
 });
 
 describe("finishModal", () => {
@@ -25,7 +25,7 @@ describe("finishModal", () => {
     const dialog = document.getElementById("modal") as HTMLDialogElement;
     const stopped = deps(true);
     finishModal(dialog, dialog.querySelector(".box") as HTMLElement, stopped);
-    expect(stopped.engineStopped).toHaveBeenCalled();
+    expect(stopped.gameStopped).toHaveBeenCalled();
     expect(dialog.open).toBe(false);
   });
 });

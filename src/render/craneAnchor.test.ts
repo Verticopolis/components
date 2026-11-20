@@ -108,8 +108,8 @@ describe("facadeGeometry → crane anchor (integration)", () => {
 });
 
 describe("facadeGeometry and the wedding hall's garden crown", () => {
-  // The Rust catalog the game draws from has the hall five stories tall (floors
-  // 100 to 104); the TypeScript table keeps it at one.
+  // The test catalog has the hall five stories tall (floors
+  // 100 to 104), where the wedding hall is drawn as one.
   const withTallHall = {
     ...MODERN,
     facilities: MODERN.facilities.map((f) => (f.key === "weddingHall" ? { ...f, floors: 5 } : f)),
@@ -129,7 +129,7 @@ describe("facadeGeometry and the wedding hall's garden crown", () => {
 });
 
 describe("facadeGeometry and a tall lobby hall on the top floor", () => {
-  // The engine's highest floor is the hall's own floor (30); its raised
+  // The simulation's highest floor is the hall's own floor (30); its raised
   // stories rise to 32, so the crane stands on the hall's roof.
   it("moves the crane up to the top story of the hall", () => {
     const units = [...tiles(29, 100, 139), ...tiles(30, 110, 129, "lobby")];

@@ -123,7 +123,7 @@ export interface BakeResult {
 }
 
 /** Drop trailing empty steps so `max` is the last step that changes pixels.
- *  The catalog sizes each chain to the largest count the engine produces, so
+ *  The catalog sizes each chain to the largest count the simulation produces, so
  *  steps past `max` look the same as `max`. */
 function trimSteps(steps: (ImageRef | null)[]): (ImageRef | null)[] {
   let n = steps.length;

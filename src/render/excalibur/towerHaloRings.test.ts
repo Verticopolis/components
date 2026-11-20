@@ -5,7 +5,7 @@ import { drawHaloRings, haloStrength, storyDistance, type RingView } from "./tow
 
 /**
  * The placement range rings (#1980), painted against a recording context: one
- * band per floor the halo reaches, faded as the engine fades it, inside the
+ * band per floor the halo reaches, faded as the simulation fades it, inside the
  * lot and the tower's floor range, then one dashed outline.
  */
 

@@ -148,7 +148,7 @@ describe("a climber's place on a flight", () => {
     expect(c.flightWinds).toBe(true);
   });
 
-  it("draws a climber with no matching flight where the engine puts them", () => {
+  it("draws a climber with no matching flight where the simulation puts them", () => {
     const c: Climber = {};
     expect(climbDrawX(c, [], 104, 4, 4.5, false)).toBeUndefined();
   });

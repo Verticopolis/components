@@ -3,20 +3,20 @@ import { SNAP_FLOORS as CAR_SNAP_FLOORS } from "../carMotion";
 
 /**
  * What a moving figure shows this frame (#2097), as pure functions of the
- * engine's own state, so every animation comes from the game and none is a
+ * simulation's own state, so every animation comes from the game and none is a
  * loop for its own sake:
  *
  * - the waiting poses come from how long the person has waited (`wait`)
- *   against the engine's fed-up line (`rules.fedUpWait`): checking the time,
+ *   against the simulation's fed-up line (`rules.fedUpWait`): checking the time,
  *   then hands on hips in the impatient amber, then arms up in the stress red;
  * - the walk cycle follows the distance the drawn figure walks between two
- *   real positions, so it stops when the figure reaches the engine's one;
+ *   real positions, so it stops when the figure reaches the simulation's one;
  * - a housekeeper `dwelling` at a room is cleaning it, so it vacuums;
  * - a `climbing` person climbs.
  *
- * The glide is how the hop is fixed: the engine moves a person once per sim
+ * The glide is how the hop is fixed: the simulation moves a person once per sim
  * step (about 10 a second at the slowest speed, a whole minute of walking at
- * a time), so the drawn figure eases from where it was drawn to the engine's
+ * a time), so the drawn figure eases from where it was drawn to the simulation's
  * new position over one step's length instead of jumping there.
  */
 
@@ -118,7 +118,7 @@ export function beatFrame(clockMs: number, offset: number): number {
 
 // ---- The glide ---------------------------------------------------------------
 
-/** The step clock one renderer keeps: when the engine last moved the crowd. */
+/** The step clock one renderer keeps: when the simulation last moved the crowd. */
 export interface StepClock {
   /** The sim minute last seen; a change means a step ran. */
   minutes: number;
@@ -188,7 +188,7 @@ export function stepProgress(c: StepClock): number {
   return Math.min(1, c.sinceMs / Math.max(MIN_STEP_MS, c.intervalMs));
 }
 
-/** One drawn person's glide between the engine's last two positions. */
+/** One drawn person's glide between the simulation's last two positions. */
 export interface Glide {
   fromX: number;
   toX: number;
@@ -218,7 +218,7 @@ export function newGlide(x: number, fy: number, left: boolean): Glide {
 
 /**
  * Move a glide on: on a step, start from where the figure is drawn now toward
- * the engine's new position, or jump there when the hop is too far to be a
+ * the simulation's new position, or jump there when the hop is too far to be a
  * walk; then draw it `progress` of the way. A person `riding` a car moves
  * with it, so they jump only when the drawn car does (`carMotion`), on the
  * step they get out included: on the walkers' shorter limit a fast car's

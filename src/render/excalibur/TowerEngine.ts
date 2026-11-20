@@ -97,7 +97,7 @@ export class TowerEngine {
    *  on an uncaught throw. Unset, a throw goes on to Excalibur. */
   onFrameError: ((err: unknown) => void) | null = null;
 
-  /** The frame no longer reads the simulation (its engine failed and must
+  /** The frame no longer reads the simulation (it failed and must
    *  not be called again); the last drawn scene stays on screen. */
   halted = false;
 
@@ -249,7 +249,7 @@ export class TowerEngine {
   }
 
   // Individually-routed commuters (SimTower's signature) are owned and advanced
-  // by the engine; the renderer only draws each person and removes them as they
+  // by the simulation; the renderer only draws each person and removes them as they
   // despawn, never mutating the simulation.
   crowdActors = new Map<number, CrowdActor>();
   hallDoors = new HallDoorLayer(); // the revolving doors between lobby halls (#2068)
@@ -384,7 +384,7 @@ export class TowerEngine {
   private runTick(elapsedMs: number): void {
     beginFrame(this, elapsedMs);
     if (this.onUpdate) this.onUpdate(elapsedMs);
-    // The step heard a trap: nothing below may read the engine again.
+    // The step heard a trap: nothing below may read the simulation again.
     if (this.halted) return;
 
     // Scene reconcile scheduling lives in towerSyncSchedule (spec CAP-3):

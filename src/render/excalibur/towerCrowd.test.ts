@@ -19,7 +19,7 @@ function frame(e: any, ms = 1000 / 60): void {
 }
 
 /**
- * Engine-driven crowd and motion for the tower renderer. The parts that BAKE
+ * Simulation-driven crowd and motion for the tower renderer. The parts that BAKE
  * cab/train/walker graphics (syncMotion, buildWalkers) allocate `ex.Canvas`,
  * which needs a real 2D context and can't run under happy-dom; those stay on
  * the Playwright tier. Everything that repositions or reconciles pre-built
@@ -180,7 +180,7 @@ describe("reconcileCrowd draws one actor per live person", () => {
   });
 
   it("waits facing the shaft it walked into, then finds the shaft again at the next wait", () => {
-    // The engine walks a rider into the middle of the shaft (x 10-14, middle
+    // The simulation walks a rider into the middle of the shaft (x 10-14, middle
     // 12), starts the wait there, then lines them up beside it. A second
     // shaft at 18 is nearer the line, and is not theirs.
     const person = { id: 1, seed: 0, staff: false, state: "toShaft", x: 4, floor: 5, fy: 5, wait: 0 };
@@ -233,7 +233,7 @@ describe("reconcileCrowd draws one actor per live person", () => {
     expect(first).toBeGreaterThan(10 * TILE);
     expect(first).toBeLessThan(22 * TILE);
     expect(figureOf(rec.key)).toMatchObject({ pose: "walk", left: false });
-    // Frames with no new step carry it on toward the engine's position, never past it.
+    // Frames with no new step carry it on toward the simulation's position, never past it.
     let last = first;
     for (let i = 0; i < 30; i++) {
       frame(e, 16);
@@ -269,7 +269,7 @@ describe("reconcileCrowd draws one actor per live person", () => {
     e.paused = true;
     for (let i = 0; i < 20; i++) frame(e, 100);
     expect(rec.actor.pos.x).toBeCloseTo(11.5 * TILE, 6);
-    // Unpaused, it carries on and lands on the engine's position.
+    // Unpaused, it carries on and lands on the simulation's position.
     e.paused = false;
     for (let i = 0; i < 15; i++) frame(e, 100);
     expect(rec.actor.pos.x).toBeCloseTo(16 * TILE, 6);

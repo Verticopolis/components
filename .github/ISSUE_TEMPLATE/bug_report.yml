@@ -1,17 +1,17 @@
 name: 🐛 Bug report
-description: A sprite, window, menu, sound or the engine binding in @verticopolis/components behaves incorrectly or crashes.
+description: A sprite, window, menu, sound or style in @verticopolis/components behaves incorrectly or crashes.
 labels: ["bug", "needs-triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting a bug! This repository holds what a frontend builds on: the renderer and Excalibur scene, the Windows 95 windows and menus, the procedural sprites and audio, and the engine binding and host loader. A rule of the simulation belongs on [Verticopolis/engine](https://github.com/Verticopolis/engine/issues/new/choose); if you're not sure, use [Verticopolis/web](https://github.com/Verticopolis/web/issues/new/choose).
+        Thanks for reporting a bug! This repository holds what a frontend builds on: the renderer and Excalibur scene, the Windows 95 windows and menus, and the procedural sprites and audio. A rule of the simulation belongs on [Verticopolis/engine](https://github.com/Verticopolis/engine/issues/new/choose); if you're not sure, use [Verticopolis/web](https://github.com/Verticopolis/web/issues/new/choose).
   - type: input
     id: version
     attributes:
       label: Version
       description: The package version or commit, or the whole version line from the game's title screen.
-      placeholder: "0.1.0, or v4.14.2 · Rust engine 1.57.1 (1a2b3c4d5e6f)"
+      placeholder: "0.3.0, or the version line from the game's title screen"
     validations:
       required: true
   - type: dropdown
@@ -22,7 +22,6 @@ body:
         - Rendering, sprites or the scene
         - Windows, menus or dialogs
         - Audio
-        - Engine binding or host loader
         - Styles
         - Other (note in description)
     validations:

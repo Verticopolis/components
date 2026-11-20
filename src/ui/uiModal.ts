@@ -20,9 +20,8 @@ export interface ModalDeps {
   titleBarClose(className: string, onClick: () => void): HTMLButtonElement;
   closeModal(): void;
   drainNotice(box: HTMLElement): void;
-  /** A game-failure message is up (`isEngineStopped`,
-   *  `game/interactionState.ts`), so no modal may open over it. */
-  engineStopped(): boolean;
+  /** A game-failure message is up, so no modal may open over it. */
+  gameStopped(): boolean;
 }
 
 /** The grammar `UI.openModalTemplate` finishes every modal with: skin the
@@ -64,7 +63,7 @@ export function finishModal(dialog: HTMLDialogElement, box: HTMLElement, deps: M
   // Behind a game-failure message a late modal (an import
   // report that finished after the stop) would sit in the top layer and
   // cover the message's Reload button, so it never opens there.
-  if (!dialog.open && !deps.engineStopped()) dialog.showModal();
+  if (!dialog.open && !deps.gameStopped()) dialog.showModal();
   if (h2 && !h2.querySelector(".modal-x")) {
     h2.appendChild(
       deps.titleBarClose("modal-x btn xs", () => dialog.dispatchEvent(new Event("cancel", { cancelable: true }))),

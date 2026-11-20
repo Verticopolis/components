@@ -24,7 +24,7 @@ const BANDS: HeatBand[] = ["good", "middling", "bad"];
 const cell = (floor: number, severity: number, minX = 10, maxX = 40) => ({ floor, minX, maxX, severity });
 
 describe("the heat views' bands", () => {
-  it("paints the engine's congestion on Traffic and its occupancy on Occupancy", () => {
+  it("paints the simulation's congestion on Traffic and its occupancy on Occupancy", () => {
     expect(HEAT_MODE_OF_VIEW).toEqual({ traffic: "congestion", occupancy: "occupancy" });
   });
 

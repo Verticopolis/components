@@ -1,6 +1,6 @@
 /**
  * Export the game's procedural sprite art as a scaled texture atlas any
- * frontend on the open engine can load (issue #909). Usage:
+ * frontend can load (issue #909). Usage:
  *
  *   npm run atlas -- [--out dist-atlas] [--filter room/office] [--label <tag>] [--catalog <file>]
  *

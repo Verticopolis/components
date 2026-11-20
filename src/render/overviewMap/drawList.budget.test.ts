@@ -13,8 +13,8 @@ import { paintMapMarks, type MapPaintContext, type PatternSource } from "./paint
  * source here is synthetic, so the test pins the algorithm's shape: the draw
  * list is as long as the runs, rooms and shafts and far shorter than the tower's
  * tiles, the painter changes style per kind, and one rebuild plus paint stays far
- * inside a frame. The real engine fixture, the real catalog height lookup and a
- * real canvas are measured by the Playwright perf run (S4).
+ * inside a frame. A real tower, its catalog's height lookup and a real canvas
+ * are measured by the game's Playwright perf run.
  */
 
 const ROOM_KINDS: FacilityKind[] = ["office", "condo", "hotelDouble", "restaurant", "shop", "cinema", "parking"];

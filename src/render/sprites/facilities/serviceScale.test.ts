@@ -248,12 +248,12 @@ describe("service sprites on the grid they are authored for", () => {
   );
 
   it.each(SPRITES.map((s) => [s.name, s] as const))(
-    "%s is authored on its own grid, and every refMap call resamples it to the footprint the engine gives its kind",
+    "%s is authored on its own grid, and every refMap call resamples it to the footprint the simulation gives its kind",
     (name, sp) => {
       // The bounds guard cannot see a sprite whose own RW/RH drifted from its
       // room: a wrong pair still stays in bounds, keeps its rect count and just
       // resamples. So read the pair each painter hands refMap. The reference is
-      // the grid the art was drawn on (`tiles`); the box is the engine's own
+      // the grid the art was drawn on (`tiles`); the box is the simulation's own
       // facility data, which the SimTower widths made wider than the art for
       // security, medical, housekeeping and recycling. The map stretches the art
       // uniformly to that box until it is redrawn.

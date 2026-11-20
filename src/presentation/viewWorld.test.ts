@@ -22,7 +22,7 @@ describe("the view world (#921)", () => {
     expect(viewWorld()).toEqual({ lotWidth: world.lotWidth, minFloor: world.minFloor, maxFloor: world.maxFloor });
   });
 
-  it("accepts a second bind that states the same world (both modes, both engines)", () => {
+  it("accepts a second bind that states the same world (both modes)", () => {
     resetViewWorldForTests();
     bindViewWorld(catalogFor("classic").world);
     expect(() => bindViewWorld(catalogFor("modern").world)).not.toThrow();

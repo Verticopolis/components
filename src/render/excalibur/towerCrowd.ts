@@ -51,7 +51,7 @@ export function reap<K, V>(map: Map<K, V>, seen: ReadonlySet<K>, dispose: (v: V,
   }
 }
 
-/** A decorative passer-by: a corridor figure that is not a person the engine
+/** A decorative passer-by: a corridor figure that is not a person the simulation
  *  knows about (#2091; built by `buildWalkers`, Modern only). */
 export interface Walker {
   actor: ex.Actor;
@@ -72,14 +72,14 @@ export interface Walker {
   floor: number;
 }
 
-/** One drawn person: the actor, its glide between the engine's positions, and
+/** One drawn person: the actor, its glide between the simulation's positions, and
  *  the bake it shows (`figureKey`), so the graphic swaps only on a change. */
 export interface CrowdActor extends Pusher, Climber {
   actor: ex.Actor;
   glide: Glide;
   key: number;
   /** Whether the figure is drawn as inside a car (hidden). It follows the
-   *  engine's riding state once the drawn car gets there. */
+   *  simulation's riding state once the drawn car gets there. */
   inCar: boolean;
   /** The step on which this person got in or out of a car, while the drawn
    *  car is still on its way (see `positionPerson`). */
@@ -111,7 +111,7 @@ export function tickCrowdClock(engine: TowerEngine, elapsedMs: number): void {
   tickStepClock(stepClockOf(engine), engine.sim.clock.minutes, engine.paused ? 0 : elapsedMs);
 }
 
-/** Draw the engine-owned commuters: add/remove/position one actor per live
+/** Draw the simulation-owned commuters: add/remove/position one actor per live
  * person, by stable id. Read-only, the engine advances the crowd in tick().
  * The step clock (`tickCrowdClock`) paces the glide and the beats. */
 export function reconcileCrowd(engine: TowerEngine): void {
@@ -166,7 +166,7 @@ function positionPerson(engine: TowerEngine, p: RenderPerson, rec: CrowdActor, l
       // the step's glide ends and the figure is hidden.
       if (!rec.inCar) doorX = rec.shaftMid ?? p.x;
       else {
-        // Still in the drawn car: stay hidden, and follow the engine.
+        // Still in the drawn car: stay hidden, and follow the simulation.
         if (wasShown) rec.actor.graphics.isVisible = false;
         advanceGlide(rec.glide, p.x, p.fy, look.clock.stepped, look.progress, false);
         return;
@@ -181,7 +181,7 @@ function positionPerson(engine: TowerEngine, p: RenderPerson, rec: CrowdActor, l
     const landing = leaveFlight(rec);
     if (landing !== undefined) rec.glide.x = landing;
   }
-  // A hidden rider still follows the engine, so it reappears where it gets
+  // A hidden rider still follows the simulation, so it reappears where it gets
   // out instead of gliding there from the floor it boarded on.
   advanceGlide(
     rec.glide,
@@ -235,7 +235,7 @@ export function clearCrowd(engine: TowerEngine): void {
   engine.crowdActors.clear();
 }
 
-// ---- Engine-driven motion (cars, train, walkers) ------------------------
+// ---- Simulation-driven motion (cars, train, walkers) ------------------------
 
 export function clearMotion(engine: TowerEngine): void {
   for (const c of engine.carActors) c.actor.kill();
@@ -413,10 +413,10 @@ export function updateMotion(engine: TowerEngine, elapsedMs = 1000 / 60): void {
       drawn = newCarDraw(target);
       carDrawStates.set(c, drawn);
     }
-    // The drawn car glides to the engine's position over the step, on the
+    // The drawn car glides to the simulation's position over the step, on the
     // people's step clock, instead of catching up and waiting between floors.
     glideCar(drawn, target, clock.stepped, progress);
-    // A stale or hostile engine value beyond the shaft never draws past it.
+    // A stale or hostile simulation value beyond the shaft never draws past it.
     if (typeof c.t.bottom === "number" && drawn.pos < c.t.bottom) drawn.pos = c.t.bottom;
     if (typeof c.t.top === "number" && drawn.pos > c.t.top) drawn.pos = c.t.top;
     c.actor.pos = ex.vec(engine.worldX(c.t.x), -drawn.pos * FLOOR);
@@ -441,7 +441,7 @@ export function updateMotion(engine: TowerEngine, elapsedMs = 1000 / 60): void {
     }
   }
   // The metro's one train per line runs on GAME time like the garbage truck,
-  // on the engine's timetable (riders leaving by train board it): a run per
+  // on the simulation's timetable (riders leaving by train board it): a run per
   // daytime hour, none overnight, held while the game is paused.
   const timetable = towerCatalog(engine.sim).world.metroTrain;
   for (const tr of engine.trainActors) {
@@ -475,7 +475,7 @@ export function updateMotion(engine: TowerEngine, elapsedMs = 1000 / 60): void {
   // evening rushes, but only when the garage actually has cars to move.
   // Reads the fraction computed in syncScene (per sync, not per frame), so
   // this frame-path never runs the parking flood-fill itself.
-  // While guards search for a bomb the engine holds every person and car
+  // While guards search for a bomb the simulation holds every person and car
   // still, so the decorations that stand for people (garage cars,
   // passers-by) leave too.
   const lockdown = engine.sim.bombSearch?.lockdown === true;

@@ -10,7 +10,7 @@ import { box, floorb, refMap } from "./serviceKit";
  * (`page-01-parking-medical-security.build.js`, `page-01-parking-ramp.build.js`),
  * which are drawn on the retired 11 by 44 grid. Since the re-authoring, this
  * TypeScript is the canonical art, drawn through the shared `refMap` scaler.
- * Placement is engine truth (`basement:true` and the ramp chain); the render
+ * Placement is simulation truth (`basement:true` and the ramp chain); the render
  * only reflects it.
  *
  * The references were re-authored onto the live TILE 10 by FLOOR 45 grid, so
@@ -108,7 +108,7 @@ export function drawParkingRamp(
   const W = RW;
   // The ramp reads as a raised driving surface via a shaded slab, a dark void
   // beneath, and a support column, so it is visibly the anchor that spaces
-  // chain to. It enforces nothing; the chain is engine truth.
+  // chain to. It enforces nothing; the chain is simulation truth.
   const ground = RH - 4; // the floor line everything standing rests on
   const rampX0 = 22;
   const rampX1 = 107;

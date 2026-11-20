@@ -25,7 +25,7 @@
 
   /* Static boot cover: painted from the first frame (it lives in index.html, and
    the render-blocking stylesheet styles it before paint) so a cold load opens on
-   the title sky instead of flashing the empty game while the engine and the JS
+   the title sky instead of flashing the empty game while the simulation and the JS
    splash mount. It wears the SAME sky as #splash and sits ABOVE it (z 50 > 40),
    so once the real splash mounts underneath, the boot flow removes this cover and
    the identical gradient stays put while the skyline and title card fade in. The
@@ -110,7 +110,7 @@
     top: 30%;
     pointer-events: none;
   }
-  /* The 1994 progress bar. It eases toward most of the way while the engine
+  /* The 1994 progress bar. It eases toward most of the way while the simulation
    loads; bootCover.ts fills the rest as the game starts. */
   .boot-bar {
     position: absolute;

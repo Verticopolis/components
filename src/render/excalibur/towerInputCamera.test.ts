@@ -32,7 +32,7 @@ import {
  * the transport-over-unit precedence, not merely that a hit was found.
  */
 
-/** The lot's width in tiles, from the engine's catalog. */
+/** The lot's width in tiles, from the game's catalog. */
 const LOT_WIDTH = catalogFor("classic").world.lotWidth;
 
 /** A fake TowerEngine carrying just the fields the camera/coord functions read,

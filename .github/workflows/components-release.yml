@@ -12,7 +12,7 @@ name: Release components
 # The check job reads package.json and the existing tags and releases, with
 # no credential and no approval, so a push that leaves the version alone ends
 # there. The release job tags and publishes the GitHub release without an
-# approval, as the engine's Release tags workflow does: the version raise
+# approval: the version raise
 # already came through a reviewed release PR. Only the npm job waits on the
 # `registry` environment, which only the owner can approve, so a release
 # takes one approval and no npm version appears without it. The `registry`

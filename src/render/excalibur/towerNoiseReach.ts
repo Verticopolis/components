@@ -5,13 +5,13 @@ import type { RingView } from "./towerHaloRings";
 /**
  * How far a room's same-floor noise reaches, painted on its floor while it is
  * being placed (Modern, #1980): a band out from each edge as far as the
- * catalog's `noise` says, stopped where the engine's scan stops, at a lobby
+ * catalog's `noise` says, stopped where the simulation's scan stops, at a lobby
  * tile or a gap in the floor. Violet shows where the room's own noise carries,
  * amber where it hears its noisy neighbors. Classic publishes no noise reach,
  * so nothing is painted there.
  */
 
-/** The tiles the walk reads: the same lookups the engine's scan makes. */
+/** The tiles the walk reads: the same lookups the simulation's scan makes. */
 export type NoiseTiles = Pick<RenderTower, "unitAt" | "hasStructure" | "structureKindAt">;
 
 /** How many tiles out from each edge of the room at `x` (width `width`) on
@@ -45,7 +45,7 @@ const BAND_ALPHA = 0.22;
 
 /** Paint `noise`'s reach around the room at `x` (width `width`) whose
  *  lowest floor is `floor` and which stands `floors` stories tall. Its noise
- *  carries on every story it fills, as the engine's scan finds a room on any
+ *  carries on every story it fills, as the simulation's scan finds a room on any
  *  story it covers; it hears only on its lowest, where the scan walks. */
 export function drawNoiseReach(
   ctx: CanvasRenderingContext2D,

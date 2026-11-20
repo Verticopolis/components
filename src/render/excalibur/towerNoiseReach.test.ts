@@ -7,7 +7,7 @@ import { drawNoiseReach, openTiles, type NoiseTiles } from "./towerNoiseReach";
 /**
  * The noise reach painted while a room is placed (Modern, #1980): out from
  * each edge as far as the catalog says, stopped at a lobby tile or a gap the
- * way the engine's scan stops, on every story a noisy room fills and on the
+ * way the simulation's scan stops, on every story a noisy room fills and on the
  * lowest story only for what a room hears.
  */
 

@@ -1,13 +1,13 @@
 /**
- * The drawn position of an elevator car (GH #688, #2097). The engine moves a
+ * The drawn position of an elevator car (GH #688, #2097). The simulation moves a
  * car once per sim step, and at the slow speeds a step is a whole game minute
  * of travel that lands a few times a second, or once every second or two in
  * the lunch slowdown. A car that chased each new position and then waited
  * for the next one stopped between floors. So the drawn car glides from where
- * it is drawn to the engine's new position over one step's length, on the
+ * it is drawn to the simulation's new position over one step's length, on the
  * same step clock as the people (`crowdLook.ts`): it moves the whole time the
- * engine says it moves, and it reaches a floor when the people waiting there
- * see it arrive. The engine's value stays the only truth for WHERE the car is;
+ * simulation says it moves, and it reaches a floor when the people waiting there
+ * see it arrive. The simulation's value stays the only truth for WHERE the car is;
  * this only shapes how the pixels get there. Nothing here reads a clock, so
  * the screenshot generator's stepped TestClock reproduces identical motion.
  */
@@ -22,7 +22,7 @@ export interface CarDrawState {
   pos: number;
   /** Where this step's glide started. */
   from: number;
-  /** The engine's position the glide is heading for. */
+  /** The simulation's position the glide is heading for. */
   to: number;
 }
 
@@ -31,8 +31,8 @@ export function newCarDraw(pos: number): CarDrawState {
 }
 
 /**
- * Move one car's drawn position on by a frame: on a step (or a new engine
- * position) start from where the car is drawn toward the engine's position,
+ * Move one car's drawn position on by a frame: on a step (or a new simulation
+ * position) start from where the car is drawn toward the simulation's position,
  * or jump there when the gap is too far to glide; then draw it `progress`
  * (0 to 1) of the way. Mutates and returns `s`.
  */

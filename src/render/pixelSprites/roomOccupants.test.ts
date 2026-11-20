@@ -39,7 +39,7 @@ const SHOWN_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number 
   [1, 1, 0],
 ];
 
-describe("roomOccupants matches the engine's visible_occupants", () => {
+describe("roomOccupants matches the people a simulation shows", () => {
   it.each(SHOWN_ROWS)("occupants %s, out %s shows %s", (occupants, outForMeal, shown) => {
     expect(roomOccupants({ occupants, outForMeal })).toBe(shown);
   });
