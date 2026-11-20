@@ -4,87 +4,90 @@
    on its own. Import the pieces from one stylesheet: there a bundler inlines
    each file once, while separate JS imports each carry their own copy (see the
    README's Styles section). */
+@layer vc.tokens, vc.base, vc.components, vc.page;
 @import "./retro-tokens.css";
 @import "./button.css";
 
-/* .win — a floating window: gray face, bevel, one hard shadow. Windows
+@layer vc.components {
+  /* .win — a floating window: gray face, bevel, one hard shadow. Windows
    with inner padding declare it via the --pad-y/--pad-x tokens so their
    title bar can run full-bleed without hand-synced negative margins. */
-.win {
-  --pad-y: 0px;
-  --pad-x: 0px;
-  --title-gap: 0px;
-  background: var(--r-face);
-  color: var(--r-ink);
-  border: 0;
-  border-radius: 0;
-  box-shadow: var(--bevel-out), var(--win-shadow);
-}
-/* Docked windows (the palette) sit in the app frame: same face and bevel,
+  .win {
+    --pad-y: 0px;
+    --pad-x: 0px;
+    --title-gap: 0px;
+    background: var(--r-face);
+    color: var(--r-ink);
+    border: 0;
+    border-radius: 0;
+    box-shadow: var(--bevel-out), var(--win-shadow);
+  }
+  /* Docked windows (the palette) sit in the app frame: same face and bevel,
    no floating drop shadow. */
-.win.docked {
-  box-shadow: var(--bevel-out);
-}
+  .win.docked {
+    box-shadow: var(--bevel-out);
+  }
 
-/* .win-title — the navy title bar every window wears: same type, same
+  /* .win-title — the navy title bar every window wears: same type, same
    padding, ✕ pinned right (give the ✕ .btn.xs). */
-.win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--r-title);
-  color: var(--r-title-fg);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 3px 8px;
-}
-/* The title-bar close/skip button (the modal ✕, a DIRECT child of the bar) is
+  .win-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--r-title);
+    color: var(--r-title-fg);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 8px;
+  }
+  /* The title-bar close/skip button (the modal ✕, a DIRECT child of the bar) is
    pushed to the right end. Scoped to a direct child so it never reaches a nav of
    `.btn` links nested inside the bar (the standalone pageShell title bar), which
    would otherwise each get `margin-left:auto` and blow the nav apart. */
-.win-title > .btn {
-  margin-left: auto;
-  flex: none;
-}
-/* .win-closable: the title bar every closable window wears (the Map, the room
+  .win-title > .btn {
+    margin-left: auto;
+    flex: none;
+  }
+  /* .win-closable: the title bar every closable window wears (the Map, the room
    card, the hover card, the dialogs). The compact bar the Map window
    introduced: 11 px type, set 2 px inside the window's frame, with a small
    square ✕ pinned right. The docked Tools palette keeps
    the full-size bar above. */
-.win.win-closable > .win-title {
-  margin: calc(2px - var(--pad-y)) calc(2px - var(--pad-x)) var(--title-gap);
-  padding: 1px 2px 1px 6px;
-  font-size: 11px;
-}
-.win.win-closable > .win-title > .btn.xs {
-  width: 20px;
-  min-width: 0;
-  height: 18px;
-  padding: 0;
-  font-size: 11px;
-  line-height: 1;
-}
-/* A window the player can move (src/ui/movableWindow.ts): its title bar
+  .win.win-closable > .win-title {
+    margin: calc(2px - var(--pad-y)) calc(2px - var(--pad-x)) var(--title-gap);
+    padding: 1px 2px 1px 6px;
+    font-size: 11px;
+  }
+  .win.win-closable > .win-title > .btn.xs {
+    width: 20px;
+    min-width: 0;
+    height: 18px;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1;
+  }
+  /* A window the player can move (src/ui/movableWindow.ts): its title bar
    takes the move cursor, and a press on it moves the window instead of
    selecting the title or scrolling the page. */
-.win-movable > .win-title,
-.win-movable > .modal-box > .win-title {
-  cursor: move;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-/* Mini variant — section strips inside a window (statistics headers) and
+  .win-movable > .win-title,
+  .win-movable > .modal-box > .win-title {
+    cursor: move;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  /* Mini variant — section strips inside a window (statistics headers) and
    other panel-scale bars: smaller, uppercase, tighter padding. */
-.win-title.sm {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 2px 6px;
-}
-/* Full-bleed: a window's title bar cancels the window's own padding via the
+  .win-title.sm {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+  }
+  /* Full-bleed: a window's title bar cancels the window's own padding via the
    tokens declared on .win, so the bar can never drift out of alignment with
    the frame — on ANY window, not just the modal. */
-.win > .win-title {
-  margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) var(--title-gap);
+  .win > .win-title {
+    margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) var(--title-gap);
+  }
 }

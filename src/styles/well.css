@@ -2,18 +2,21 @@
    needs (the tokens), so a page can name it on its own. Import the pieces from
    one stylesheet: there a bundler inlines each file once, while separate JS
    imports each carry their own copy (see the README's Styles section). */
+@layer vc.tokens, vc.base, vc.components, vc.page;
 @import "./retro-tokens.css";
 
-/* .well — sunken white data area (the File Manager idiom): lists,
+@layer vc.components {
+  /* .well — sunken white data area (the File Manager idiom): lists,
    textareas, logs, gauges live on wells. .field is a well you type into. */
-.well,
-.field {
-  background: var(--r-hi);
-  color: var(--r-ink);
-  border: 0;
-  border-radius: 0;
-  box-shadow: var(--bevel-in);
-}
-.field {
-  font: inherit;
+  .well,
+  .field {
+    background: var(--r-hi);
+    color: var(--r-ink);
+    border: 0;
+    border-radius: 0;
+    box-shadow: var(--bevel-in);
+  }
+  .field {
+    font: inherit;
+  }
 }

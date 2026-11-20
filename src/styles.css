@@ -19,6 +19,8 @@
    own thing (box art, not UI); it shares interaction grammar only.
    ===================================================================== */
 
+@layer vc.tokens, vc.base, vc.components, vc.page;
+
 /* ---- 1. TOKENS + SHARED CHROME (extracted for reuse by standalone pages) ---
    The retro tokens and the shared window/button/well/kv components live in
    src/styles/ so the standalone pages and the Help site wear the same chrome from one
