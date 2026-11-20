@@ -6,7 +6,8 @@
  * it takes over a game's own windows. Every window moves by its title bar and
  * minimizes to the taskbar; the tower and Tools resize by their grips, the
  * tower maximizes, and a right-click on a title bar or a taskbar button opens
- * the window menu (`WindowMenu`). The taskbar is a sample (`deskTaskbar.ts`).
+ * the window menu (`WindowMenu`). The taskbar, its Verticopolis menu and the
+ * tray are the package's `DeskTaskbar`; its clock holds at 9:15 AM here.
  *
  * The desk's stylesheet keys its window rules on `body.desk`, so this page's
  * body wears that class while the demo is on it.
@@ -15,7 +16,8 @@ import { html, render, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { renderDetached } from "../lib/ui/detached.js";
 import { DESK_ACTIVE_CLASS, DeskWindow, buildFrame, type DeskChange } from "../lib/ui/desk/deskWindow.js";
-import { WindowMenu, runWindowCommand, windowMenuState } from "../lib/ui/desk/deskWindowMenu.js";
+import { runWindowCommand, windowMenuState } from "../lib/ui/desk/deskWindowMenu.js";
+import { DeskTaskbar } from "../lib/ui/desk/deskTaskbar.js";
 import { TOOLS_LIMITS, TOWER_LIMITS, type DeskRect, type DeskWindowId } from "../lib/ui/desk/deskGeometry.js";
 import { MenuBar, type MenuBarModel } from "../lib/ui/menuBar.js";
 import type { FacilityKind, RenderFacility } from "../lib/render/renderModel.js";
@@ -23,7 +25,6 @@ import { canvasTemplate } from "./canvas.js";
 import { GALLERY_HOUR } from "./rooms.js";
 import { paintScene, sceneSize } from "./scene.js";
 import { lobbyScenes } from "./scenes.js";
-import { startMenuTemplate, taskbarTemplate, type StartItem } from "./deskTaskbar.js";
 
 /** The sample desk's size in CSS px, taskbar included: fixed, so the demo
  *  looks the same on every screen (a narrow one scrolls it). */
@@ -31,6 +32,9 @@ export const DESK_W = 720;
 export const DESK_H = 460;
 /** The taskbar's height (`desk.css`). */
 const TASKBAR_H = 28;
+
+/** The tray clock's fixed time, so the screenshots hold still. */
+const CLOCK = new Date(2026, 10, 15, 9, 15);
 
 /** The site's app icon, beside the site's base. */
 const ICON = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}favicon.png`;
@@ -96,12 +100,8 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
   document.body.classList.add("desk");
   const doc = holder.ownerDocument;
   const entries = new Map<DemoId, Entry>();
-  let area!: HTMLElement;
-  let bar!: HTMLElement;
   let active: Entry | null = null;
   let top = 0;
-  let startOpen = false;
-  let muted = false;
 
   const visible = () => [...entries.values()].filter((e) => e.open && !e.win.minimized);
   const entryOf = (w: DeskWindow) => [...entries.values()].find((e) => e.win === w)!;
@@ -140,11 +140,6 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     else draw();
   };
 
-  const winMenu = new WindowMenu(doc, {
-    state: (id) => windowMenuState(entries.get(id as DemoId)?.win, active?.win ?? null),
-    run: (id, command) => runWindowCommand(entries.get(id as DemoId)?.win, command, (w) => bringUp(entryOf(w))),
-  });
-
   /** Put every window back where it opens, at its own size, and open them. */
   const arrange = () => {
     for (const e of entries.values()) {
@@ -155,51 +150,41 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     focus(entries.get("tower")!);
   };
 
-  const startItems: StartItem[] = [
-    { label: "Sample Tower", run: () => bringUp(entries.get("tower")!) },
-    { label: "Bulletin", run: () => bringUp(entries.get("bulletin")!) },
-    null,
-    { label: "Arrange Windows", run: arrange },
-  ];
+  const START: Record<string, () => void> = {
+    tower: () => bringUp(entries.get("tower")!),
+    bulletin: () => bringUp(entries.get("bulletin")!),
+    arrange,
+  };
+
+  let soundOn = true;
+  const taskbar = new DeskTaskbar(doc, {
+    items: [
+      { id: "tower", label: "Sample Tower" },
+      { id: "bulletin", label: "Bulletin" },
+      null,
+      { id: "arrange", label: "Arrange Windows" },
+    ],
+    icon: ICON,
+    now: () => CLOCK,
+    task: (id) => {
+      const e = entries.get(id as DemoId)!;
+      if (e === active && !e.win.minimized) e.win.minimize();
+      else bringUp(e);
+    },
+    start: (id) => START[id]?.(),
+    sound: () => taskbar.setSound((soundOn = !soundOn)),
+    windowMenu: {
+      state: (id) => windowMenuState(entries.get(id as DemoId)?.win, active?.win ?? null),
+      run: (id, command) => runWindowCommand(entries.get(id as DemoId)?.win, command, (w) => bringUp(entryOf(w))),
+    },
+  });
 
   function draw(): void {
-    const tasks = [...entries.values()]
-      .filter((e) => e.open)
-      .map((e) => ({ id: e.id, label: e.label, on: e === active && !e.win.minimized }));
-    const view = {
-      icon: ICON,
-      startOpen,
-      startItems,
-      tasks,
-      muted,
-      toggleStart: () => setStart(!startOpen),
-      pickStart: (item: NonNullable<StartItem>) => {
-        setStart(false);
-        item.run();
-      },
-      task: (id: string) => {
-        const e = entries.get(id as DemoId)!;
-        if (e === active && !e.win.minimized) e.win.minimize();
-        else bringUp(e);
-      },
-      taskMenu: (id: string, button: HTMLElement, x: number, y: number) => {
-        setStart(false);
-        winMenu.show(id, x, y, true, button);
-      },
-      toggleSound: () => {
-        muted = !muted;
-        draw();
-      },
-    };
-    render(html`${startMenuTemplate(view)}${taskbarTemplate(view)}`, bar);
-  }
-
-  function setStart(open: boolean): void {
-    if (open === startOpen) return;
-    startOpen = open;
-    if (open) winMenu.close();
-    draw();
-    if (open) bar.querySelector<HTMLElement>(".desk-start-menu .mb-item")?.focus();
+    taskbar.render(
+      [...entries.values()]
+        .filter((e) => e.open)
+        .map((e) => ({ id: e.id, label: e.label, active: e === active, minimized: e.win.minimized })),
+    );
   }
 
   /** A right-click on a window's title bar opens its window menu there. */
@@ -210,23 +195,55 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     const e = [...entries.values()].find((x) => x.el === winEl);
     if (!e) return;
     ev.preventDefault();
-    setStart(false);
-    winMenu.show(e.id, ev.clientX, ev.clientY, false, null);
+    taskbar.openWindowMenu(e.id, ev.clientX, ev.clientY);
   };
+
+  // The windows are drawn first, then put on the desk as the desk template's
+  // values, and only then taken over by `DeskWindow`, which needs them on the
+  // page to place them.
+  const tools = buildFrame(doc, "g-desk-tools", "Tools", undefined, ICON);
+  render(TOOLS, tools.body);
+
+  const info = buildFrame(doc, "g-desk-info", "Info", undefined, ICON);
+  render(INFO, info.body);
+
+  const tower = buildFrame(
+    doc,
+    "g-desk-tower",
+    "Sample Tower",
+    { label: "Close Sample Tower", onClick: () => close(entries.get("tower")!) },
+    ICON,
+  );
+  let menuHost!: HTMLElement;
+  render(
+    html`<div class="g-desk-menu" ${ref((el) => el && (menuHost = el as HTMLElement))}></div>${towerScene(facts)}`,
+    tower.body,
+  );
+  new MenuBar(
+    menuHost,
+    towerMenu((id) => bringUp(entries.get(id)!)),
+    { altKeys: false },
+  );
+
+  const bulletin = renderDetached(
+    doc,
+    bulletinTemplate(() => close(entries.get("bulletin")!)),
+  ).elements[0] as HTMLElement;
 
   render(
     html`<div class="g-desk-scroll">
       <div class="g-desk" style=${`width: ${DESK_W}px; height: ${DESK_H}px;`}>
-        <div class="desk-area" style=${`bottom: ${TASKBAR_H}px;`} @contextmenu=${titleMenu} ${ref((el) => el && (area = el as HTMLElement))}></div>
-        <div class="g-desk-bar" ${ref((el) => el && (bar = el as HTMLElement))}></div>
+        <div class="desk-area" style=${`bottom: ${TASKBAR_H}px;`} @contextmenu=${titleMenu}>
+          ${[tools.root, info.root, tower.root, bulletin]}
+        </div>
+        ${taskbar.root}
       </div>
     </div>`,
     holder,
   );
-  holder.querySelector(".g-desk")!.append(winMenu.root);
+  taskbar.start();
 
   const add = (id: DemoId, label: string, el: HTMLElement, opts: Partial<DeskWindow["spec"]>) => {
-    area.append(el);
     const e: Entry = { id, label, el, win: null as unknown as DeskWindow, open: true };
     e.win = new DeskWindow({
       id,
@@ -243,72 +260,21 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     });
     e.win.place(PLACES[id]);
     entries.set(id, e);
-    return e;
   };
 
-  const tools = buildFrame(doc, "g-desk-tools", "Tools", undefined, ICON);
-  render(TOOLS, tools.body);
   add("tools", "Tools", tools.root, { limits: TOOLS_LIMITS, heightOnly: true });
   tools.root.style.width = `${PLACES.tools.w}px`;
-
-  const info = buildFrame(doc, "g-desk-info", "Info", undefined, ICON);
-  render(INFO, info.body);
   add("info", "Info", info.root, {});
   info.root.style.width = `${PLACES.info.w}px`;
-
-  const tower = buildFrame(
-    doc,
-    "g-desk-tower",
-    "Sample Tower",
-    { label: "Close Sample Tower", onClick: () => close(entries.get("tower")!) },
-    ICON,
-  );
-  let menuHost!: HTMLElement;
-  render(
-    html`<div class="g-desk-menu" ${ref((el) => el && (menuHost = el as HTMLElement))}></div>${towerScene(facts)}`,
-    tower.body,
-  );
   add("tower", "Sample Tower", tower.root, {
     layer: "app",
     limits: TOWER_LIMITS,
     canMax: true,
     close: () => close(entries.get("tower")!),
   });
-  new MenuBar(
-    menuHost,
-    towerMenu((id) => bringUp(entries.get(id)!)),
-    { altKeys: false },
-  );
-
-  const bulletin = renderDetached(
-    doc,
-    bulletinTemplate(() => close(entries.get("bulletin")!)),
-  ).elements[0] as HTMLElement;
   add("bulletin", "Bulletin", bulletin, {
     open: () => bringUp(entries.get("bulletin")!),
     close: () => close(entries.get("bulletin")!),
-  });
-
-  // A press anywhere else closes the open menus, and Escape closes them too,
-  // as on the game's desk.
-  doc.addEventListener(
-    "pointerdown",
-    (ev) => {
-      const t = ev.target as Node;
-      if (!winMenu.root.contains(t)) winMenu.close();
-      const start = bar.querySelector(".desk-start");
-      const menu = bar.querySelector(".desk-start-menu");
-      if (!start?.contains(t) && !menu?.contains(t)) setStart(false);
-    },
-    true,
-  );
-  doc.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape") return;
-    winMenu.close(true);
-    if (startOpen) {
-      setStart(false);
-      bar.querySelector<HTMLElement>(".desk-start")?.focus();
-    }
   });
 
   focus(entries.get("tower")!);

@@ -277,7 +277,7 @@ built package from `lib/` the way a consumer would:
 | Buttons, Windows, Wells | the chrome, in the scheme Options picks |
 | Menu bar | a sample menu bar, the same component the site's own bar uses |
 | Message boxes | the modal message box with a message, a question and a notice |
-| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu and a sample taskbar |
+| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
 | Sounds | each action effect, both music tracks and the ambience of each part of a tower |
