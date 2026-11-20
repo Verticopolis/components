@@ -17,6 +17,17 @@ export interface DeskRect {
 /** The windows the desk lays out. */
 export type DeskWindowId = "tower" | "info" | "tools" | "map" | "bulletin" | "towerInfo" | "control";
 
+/** The game's windows, in the order `parseLayout` reads them by default. */
+export const DESK_WINDOW_IDS: readonly DeskWindowId[] = [
+  "tower",
+  "info",
+  "tools",
+  "map",
+  "bulletin",
+  "towerInfo",
+  "control",
+];
+
 /** The size limits of a resizable window; a fixed window has none. */
 export interface SizeLimits {
   readonly minW: number;
@@ -111,8 +122,12 @@ export function resizedTo(
 }
 
 /** Read a saved layout, dropping anything that is not a usable rectangle, so
- *  a damaged or older store opens the default layout for that window. */
-export function parseLayout(raw: string | null): Partial<Record<DeskWindowId, DeskRect>> {
+ *  a damaged or older store opens the default layout for that window. `ids`
+ *  are the windows to read: the game's by default, or a page's own. */
+export function parseLayout<Id extends string = DeskWindowId>(
+  raw: string | null,
+  ids: readonly Id[] = DESK_WINDOW_IDS as readonly string[] as readonly Id[],
+): Partial<Record<Id, DeskRect>> {
   if (!raw) return {};
   let data: unknown;
   try {
@@ -121,8 +136,7 @@ export function parseLayout(raw: string | null): Partial<Record<DeskWindowId, De
     return {};
   }
   if (!data || typeof data !== "object") return {};
-  const out: Partial<Record<DeskWindowId, DeskRect>> = {};
-  const ids: readonly DeskWindowId[] = ["tower", "info", "tools", "map", "bulletin", "towerInfo", "control"];
+  const out: Partial<Record<Id, DeskRect>> = {};
   for (const id of ids) {
     const r = (data as Record<string, unknown>)[id];
     if (!r || typeof r !== "object") continue;

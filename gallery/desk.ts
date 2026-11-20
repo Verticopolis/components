@@ -8,6 +8,7 @@
  * tower maximizes, and a right-click on a title bar or a taskbar button opens
  * the window menu (`WindowMenu`). The taskbar, its Verticopolis menu and the
  * tray are the package's `DeskTaskbar`; its clock holds at 9:15 AM here.
+ * The package's `DeskManager` keeps the windows and the taskbar in step.
  *
  * The desk's stylesheet keys its window rules on `body.desk`, so this page's
  * body wears that class while the demo is on it.
@@ -15,8 +16,9 @@
 import { html, render, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { renderDetached } from "../lib/ui/detached.js";
-import { DESK_ACTIVE_CLASS, DeskWindow, buildFrame, type DeskChange } from "../lib/ui/desk/deskWindow.js";
-import { runWindowCommand, windowMenuState } from "../lib/ui/desk/deskWindowMenu.js";
+import { buildFrame } from "../lib/ui/desk/deskWindow.js";
+import { DeskManager, type DeskSlot } from "../lib/ui/desk/deskManager.js";
+import type { WindowMenuHandlers } from "../lib/ui/desk/deskWindowMenu.js";
 import { DeskTaskbar } from "../lib/ui/desk/deskTaskbar.js";
 import { TOOLS_LIMITS, TOWER_LIMITS, type DeskRect, type DeskWindowId } from "../lib/ui/desk/deskGeometry.js";
 import { MenuBar, type MenuBarModel } from "../lib/ui/menuBar.js";
@@ -50,14 +52,8 @@ const PLACES: Record<DemoId, DeskRect> = {
 
 type DemoId = Extract<DeskWindowId, "tower" | "info" | "tools" | "bulletin">;
 
-/** One window on the sample desk. */
-interface Entry {
-  readonly id: DemoId;
-  readonly label: string;
-  readonly el: HTMLElement;
-  win: DeskWindow;
-  open: boolean;
-}
+/** The taskbar's order. */
+const ORDER: readonly DemoId[] = ["tower", "info", "tools", "bulletin"];
 
 /** The slice of tower the sample tower window shows: two halls of different
  *  heights with rooms above them. */
@@ -95,66 +91,33 @@ const bulletinTemplate = (close: () => void): TemplateResult =>
   </section>`;
 
 /** Build the sample desk into `holder`. `facts` gives the painters the
- *  render catalog's facts for each kind. */
+ *  render catalog's facts for each kind. The package's `DeskManager` keeps
+ *  the windows and the taskbar in step, as it does on the game's desk. */
 export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => RenderFacility): void {
   document.body.classList.add("desk");
   const doc = holder.ownerDocument;
-  const entries = new Map<DemoId, Entry>();
-  let active: Entry | null = null;
-  let top = 0;
+  const els = {} as Record<DemoId, HTMLElement>;
 
-  const visible = () => [...entries.values()].filter((e) => e.open && !e.win.minimized);
-  const entryOf = (w: DeskWindow) => [...entries.values()].find((e) => e.win === w)!;
+  const open = (id: DemoId) => () => void (els[id].hidden = false);
+  const close = (id: DemoId) => () => void (els[id].hidden = true);
 
-  /** Give the focus to `e` (or to nobody): its title bar lights up and it
-   *  stacks on top of its layer. Tools, Info and the Bulletin stay above the
-   *  tower, as on the game's desk. */
-  const focus = (e: Entry | null) => {
-    active = e;
-    if (e) e.el.style.zIndex = String((e.win.spec.layer === "tool" ? 1000 : 0) + ++top);
-    for (const x of entries.values()) x.el.classList.toggle(DESK_ACTIVE_CLASS, x === e);
-    draw();
-  };
-  /** The window now in front once `gone` steps away. */
-  const next = (gone: Entry) =>
-    visible()
-      .filter((e) => e !== gone)
-      .sort((a, b) => Number(b.el.style.zIndex) - Number(a.el.style.zIndex))[0] ?? null;
-
-  const bringUp = (e: Entry) => {
-    if (!e.open) {
-      e.open = true;
-      e.el.hidden = false;
-    }
-    if (e.win.minimized) e.win.restore();
-    focus(e);
-  };
-  const close = (e: Entry) => {
-    e.open = false;
-    e.el.hidden = true;
-    if (active === e) focus(next(e));
-    else draw();
-  };
-  const changed = (e: Entry) => (what: DeskChange) => {
-    if (what === "min" && active === e) focus(next(e));
-    else draw();
-  };
-
-  /** Put every window back where it opens, at its own size, and open them. */
+  /** Open every window, put each back where it opens at its own size, and
+   *  give the tower the focus. */
   const arrange = () => {
-    for (const e of entries.values()) {
-      if (e.win.maximized) e.win.toggleMax();
-      e.win.place(PLACES[e.id]);
-      bringUp(e);
-    }
-    focus(entries.get("tower")!);
+    for (const id of ORDER) desk.show(id);
+    desk.arrange();
+    desk.bringUp("tower");
   };
 
   const START: Record<string, () => void> = {
-    tower: () => bringUp(entries.get("tower")!),
-    bulletin: () => bringUp(entries.get("bulletin")!),
+    tower: () => desk.show("tower"),
+    bulletin: () => desk.show("bulletin"),
     arrange,
   };
+
+  /** The window menu's handlers, built once the manager is there. */
+  let handlers: WindowMenuHandlers | null = null;
+  const menu = () => (handlers ??= desk.windowMenu());
 
   let soundOn = true;
   const taskbar = new DeskTaskbar(doc, {
@@ -166,41 +129,26 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     ],
     icon: ICON,
     now: () => CLOCK,
-    task: (id) => {
-      const e = entries.get(id as DemoId)!;
-      if (e === active && !e.win.minimized) e.win.minimize();
-      else bringUp(e);
-    },
+    task: (id) => desk.taskPressed(id as DemoId),
     start: (id) => START[id]?.(),
     sound: () => taskbar.setSound((soundOn = !soundOn)),
     windowMenu: {
-      state: (id) => windowMenuState(entries.get(id as DemoId)?.win, active?.win ?? null),
-      run: (id, command) => runWindowCommand(entries.get(id as DemoId)?.win, command, (w) => bringUp(entryOf(w))),
+      state: (id) => menu().state(id),
+      run: (id, command) => menu().run(id, command),
     },
   });
 
-  function draw(): void {
-    taskbar.render(
-      [...entries.values()]
-        .filter((e) => e.open)
-        .map((e) => ({ id: e.id, label: e.label, active: e === active, minimized: e.win.minimized })),
-    );
-  }
-
   /** A right-click on a window's title bar opens its window menu there. */
   const titleMenu = (ev: MouseEvent) => {
-    const t = ev.target as Element;
-    const winEl = t.closest(".desk-win");
-    if (!winEl || !t.closest(".win-title") || t.closest("button")) return;
-    const e = [...entries.values()].find((x) => x.el === winEl);
-    if (!e) return;
+    const id = desk.titleBarOf(ev.target);
+    if (!id) return;
     ev.preventDefault();
-    taskbar.openWindowMenu(e.id, ev.clientX, ev.clientY);
+    taskbar.openWindowMenu(id, ev.clientX, ev.clientY);
   };
 
   // The windows are drawn first, then put on the desk as the desk template's
-  // values, and only then taken over by `DeskWindow`, which needs them on the
-  // page to place them.
+  // values, and only then handed to the manager, which needs them on the page
+  // to place them.
   const tools = buildFrame(doc, "g-desk-tools", "Tools", undefined, ICON);
   render(TOOLS, tools.body);
 
@@ -211,7 +159,7 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     doc,
     "g-desk-tower",
     "Sample Tower",
-    { label: "Close Sample Tower", onClick: () => close(entries.get("tower")!) },
+    { label: "Close Sample Tower", onClick: close("tower") },
     ICON,
   );
   let menuHost!: HTMLElement;
@@ -221,19 +169,23 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
   );
   new MenuBar(
     menuHost,
-    towerMenu((id) => bringUp(entries.get(id)!)),
+    towerMenu((id) => desk.show(id)),
     { altKeys: false },
   );
 
-  const bulletin = renderDetached(
-    doc,
-    bulletinTemplate(() => close(entries.get("bulletin")!)),
-  ).elements[0] as HTMLElement;
+  const bulletin = renderDetached(doc, bulletinTemplate(close("bulletin"))).elements[0] as HTMLElement;
+  Object.assign(els, { tools: tools.root, info: info.root, tower: tower.root, bulletin });
 
+  let area!: HTMLElement;
   render(
     html`<div class="g-desk-scroll">
       <div class="g-desk" style=${`width: ${DESK_W}px; height: ${DESK_H}px;`}>
-        <div class="desk-area" style=${`bottom: ${TASKBAR_H}px;`} @contextmenu=${titleMenu}>
+        <div
+          class="desk-area"
+          style=${`bottom: ${TASKBAR_H}px;`}
+          @contextmenu=${titleMenu}
+          ${ref((el) => el && (area = el as HTMLElement))}
+        >
           ${[tools.root, info.root, tower.root, bulletin]}
         </div>
         ${taskbar.root}
@@ -243,41 +195,41 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
   );
   taskbar.start();
 
-  const add = (id: DemoId, label: string, el: HTMLElement, opts: Partial<DeskWindow["spec"]>) => {
-    const e: Entry = { id, label, el, win: null as unknown as DeskWindow, open: true };
-    e.win = new DeskWindow({
-      id,
-      el,
-      label: () => label,
-      icon: ICON,
-      layer: "tool",
-      limits: null,
-      canMax: false,
-      isOpen: () => e.open,
-      changed: changed(e),
-      pressed: () => active !== e && focus(e),
-      ...opts,
-    });
-    e.win.place(PLACES[id]);
-    entries.set(id, e);
-  };
-
-  add("tools", "Tools", tools.root, { limits: TOOLS_LIMITS, heightOnly: true });
+  // The handlers above reach the manager only once it is made, here.
+  const desk = new DeskManager<DemoId>({
+    desk: area,
+    order: ORDER,
+    places: () => PLACES,
+    // A maximized tower keeps its title bar and menu bar clear of the small windows.
+    chrome: (id) => (id === "tower" ? menuHost : null),
+    refreshed: (entries) => taskbar.render(entries),
+  });
+  const slot = (id: DemoId, label: string, rest: Partial<DeskSlot<DemoId>> = {}): DeskSlot<DemoId> => ({
+    id,
+    el: els[id],
+    label: () => label,
+    icon: ICON,
+    layer: "tool",
+    limits: null,
+    canMax: false,
+    isOpen: () => !els[id].hidden,
+    ...rest,
+  });
+  desk.add(slot("tools", "Tools", { limits: TOOLS_LIMITS, heightOnly: true }));
   tools.root.style.width = `${PLACES.tools.w}px`;
-  add("info", "Info", info.root, {});
+  desk.add(slot("info", "Info"));
   info.root.style.width = `${PLACES.info.w}px`;
-  add("tower", "Sample Tower", tower.root, {
-    layer: "app",
-    limits: TOWER_LIMITS,
-    canMax: true,
-    close: () => close(entries.get("tower")!),
-  });
-  add("bulletin", "Bulletin", bulletin, {
-    open: () => bringUp(entries.get("bulletin")!),
-    close: () => close(entries.get("bulletin")!),
-  });
-
-  focus(entries.get("tower")!);
+  desk.add(
+    slot("tower", "Sample Tower", {
+      layer: "app",
+      limits: TOWER_LIMITS,
+      canMax: true,
+      open: open("tower"),
+      close: close("tower"),
+    }),
+  );
+  desk.add(slot("bulletin", "Bulletin", { open: open("bulletin"), close: close("bulletin") }));
+  desk.start();
 }
 
 /** The sample tower's menu bar: its Window menu brings each window up, the
