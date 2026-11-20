@@ -34,8 +34,20 @@ function spyCtx() {
   const log: string[] = [];
   const ctx: Record<string, unknown> = {};
   for (const m of [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc",
-    "fill", "stroke", "fillRect", "strokeRect", "fillText", "translate", "scale",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "fillText",
+    "translate",
+    "scale",
   ]) {
     ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   }
@@ -101,8 +113,7 @@ describe("busyStations fills a room's seats to its occupancy", () => {
     // people who were in the room went undrawn.
     for (const stations of [0, 1, 3, 8, 21, 64]) {
       for (const people of [0, 1, 2, 5, 20, 1e9]) {
-        expect(busyStations(stations, people, 12345).size, `${people} of ${stations}`)
-          .toBe(Math.min(people, stations));
+        expect(busyStations(stations, people, 12345).size, `${people} of ${stations}`).toBe(Math.min(people, stations));
       }
     }
   });
@@ -160,7 +171,9 @@ describe("busyStations fills a room's seats to its occupancy", () => {
       const b = [...busyStations(stations, 1, (s + 1) * k)][0];
       if (b === a - k) shifted++;
     }
-    expect(shifted / rooms, `${shifted} of ${rooms} rooms repeat the last one's pick shifted ${k} seats`).toBeLessThan(0.08);
+    expect(shifted / rooms, `${shifted} of ${rooms} rooms repeat the last one's pick shifted ${k} seats`).toBeLessThan(
+      0.08,
+    );
   });
 
   it("only adds seats as people arrive, so a crowd grows in place", () => {
@@ -220,7 +233,9 @@ describe("pixelSprites/common person family and palette", () => {
   it("the builds keep their heights (18 / 24 / 24 / 22), give or take a hairstyle", () => {
     const nominal: Record<PersonBuild, number> = { seated: 18, standing: 24, walker: 24, hiVis: 22 };
     for (const build of Object.keys(nominal) as PersonBuild[]) {
-      const heights = new Set(CAST.map((_, seed) => heightOf((ctx) => personFigure(ctx, 10, 100, build, "#5A6E8C", seed))));
+      const heights = new Set(
+        CAST.map((_, seed) => heightOf((ctx) => personFigure(ctx, 10, 100, build, "#5A6E8C", seed))),
+      );
       // A bun or curls add a pixel and a bald head takes one away; the body is the build's.
       for (const h of heights) expect(Math.abs(h - nominal[build]), `${build} ${h}`).toBeLessThanOrEqual(1);
       if (build !== "hiVis") expect(heights).toContain(nominal[build]);
@@ -236,7 +251,10 @@ describe("pixelSprites/common person family and palette", () => {
     ];
     for (const [fn, build] of cases) {
       for (const seed of [0, 3, 4]) {
-        expect(heightOf((ctx) => fn(ctx, 10, 100, seed)), `${build} ${seed}`).toBe(heightOf((ctx) => personFigure(ctx, 10, 100, build, "#5A6E8C", seed)));
+        expect(
+          heightOf((ctx) => fn(ctx, 10, 100, seed)),
+          `${build} ${seed}`,
+        ).toBe(heightOf((ctx) => personFigure(ctx, 10, 100, build, "#5A6E8C", seed)));
       }
     }
   });
@@ -245,7 +263,10 @@ describe("pixelSprites/common person family and palette", () => {
     for (let seed = 0; seed < CAST.length; seed++) {
       const look = CAST[castIndex(seed)];
       const onFloor = heightOf((ctx) => drawPerson(ctx, 10, 100, look, { lit: false, pose: "stand" }));
-      expect(heightOf((ctx) => personRider(ctx, 10, 100, seed)), `seed ${seed}`).toBe(onFloor);
+      expect(
+        heightOf((ctx) => personRider(ctx, 10, 100, seed)),
+        `seed ${seed}`,
+      ).toBe(onFloor);
     }
     // The old rider build drew 17 px; the crowd draws everyone taller than that.
     expect(heightOf((ctx) => personRider(ctx, 10, 100, 0))).toBeGreaterThan(17);
@@ -316,7 +337,10 @@ describe("a sleeper (#2116)", () => {
         const b = blanket!;
         // The outfit (top and trousers) never shows past the blanket.
         for (const r of out.filter((q) => q.color === look.top || q.color === look.bottom)) {
-          expect(r.x >= b.x && r.x + r.w <= b.x + b.w && r.y >= b.y && r.y + r.h <= b.y + b.h, `len ${len}: ${JSON.stringify(r)}`).toBe(true);
+          expect(
+            r.x >= b.x && r.x + r.w <= b.x + b.w && r.y >= b.y && r.y + r.h <= b.y + b.h,
+            `len ${len}: ${JSON.stringify(r)}`,
+          ).toBe(true);
         }
         // Everything lands in the footprint the bed and the sofa leave for it.
         for (const r of out) {

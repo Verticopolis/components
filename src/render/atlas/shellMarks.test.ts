@@ -7,7 +7,10 @@ const ctx = {} as CanvasRenderingContext2D;
 /** Run `marks` ("b" break, "e" end) and report what was saved and restored. */
 function run(marks: string): { log: string[]; split: boolean } {
   const log: string[] = [];
-  const m = shellMarks(() => log.push("save"), () => log.push("restore"));
+  const m = shellMarks(
+    () => log.push("save"),
+    () => log.push("restore"),
+  );
   for (const c of marks) (c === "b" ? m.hook.shellEnd : m.hook.furnitureEnd)(ctx);
   return { log, split: m.finish() };
 }
@@ -48,7 +51,10 @@ describe("shell pass marks", () => {
     expect(log).toEqual(["draw", "save", "onShell", "draw", "restore", "draw"]);
   });
   it("refuses a mark or a second layerShell inside a layerShell", () => {
-    const m = shellMarks(() => undefined, () => undefined);
+    const m = shellMarks(
+      () => undefined,
+      () => undefined,
+    );
     m.hook.shellEnd(ctx);
     expect(() => m.hook.shellPaint!(ctx, () => m.hook.furnitureEnd(ctx))).toThrow(/inside layerShell/);
     expect(() => m.hook.shellPaint!(ctx, () => m.hook.shellPaint!(ctx, () => undefined))).toThrow(/inside layerShell/);

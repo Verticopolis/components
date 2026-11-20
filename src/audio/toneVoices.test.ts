@@ -236,9 +236,7 @@ describe("playSfx", () => {
     expect(v.bell.triggerAttackRelease).toHaveBeenCalledTimes(4);
     expect(v.bellPartial.triggerAttackRelease).toHaveBeenCalledTimes(4);
     // The phrase: C5 D5 B4 A4 (the Terrace tune's peak), strikes strictly later.
-    const calls = v.bell.triggerAttackRelease.mock.calls as Array<
-      [number, number, number, number]
-    >;
+    const calls = v.bell.triggerAttackRelease.mock.calls as Array<[number, number, number, number]>;
     const midiOf = (hz: number) => Math.round(69 + 12 * Math.log2(hz / 440));
     expect(calls.map((c) => midiOf(c[0]))).toEqual([72, 74, 71, 69]);
     for (let i = 1; i < calls.length; i++) {
@@ -253,12 +251,7 @@ describe("playSfx", () => {
     expect(v.bell.triggerAttackRelease).toHaveBeenCalledTimes(1);
     expect(v.bellPartial.triggerAttackRelease).toHaveBeenCalledTimes(1);
     const fund = v.bell.triggerAttackRelease.mock.calls[0] as [number, number, number, number];
-    const part = v.bellPartial.triggerAttackRelease.mock.calls[0] as [
-      number,
-      number,
-      number,
-      number,
-    ];
+    const part = v.bellPartial.triggerAttackRelease.mock.calls[0] as [number, number, number, number];
     expect(part[0]).toBeGreaterThan(fund[0]);
     expect(part[3]).toBeLessThan(fund[3]);
   });

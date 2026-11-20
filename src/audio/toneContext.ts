@@ -63,7 +63,9 @@ export class ContextSleep {
    *  (no gesture yet), so it is caught; the next gesture retries it. */
   wake(): void {
     this.cancel();
-    Tone.getContext().resume().catch(() => {});
+    Tone.getContext()
+      .resume()
+      .catch(() => {});
   }
 
   /** Drop a pending sleep without waking. */

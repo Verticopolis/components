@@ -13,10 +13,16 @@ const anything: unknown = new Proxy(function () {}, {
 const realGetContext = HTMLCanvasElement.prototype.getContext;
 
 function engine(): ex.Engine {
-  (HTMLCanvasElement.prototype as { getContext: unknown }).getContext = (kind: string) => (kind === "webgl2" ? null : anything);
+  (HTMLCanvasElement.prototype as { getContext: unknown }).getContext = (kind: string) =>
+    kind === "webgl2" ? null : anything;
   const canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
-  return new ex.Engine({ canvasElement: canvas, suppressPlayButton: true, suppressConsoleBootMessage: true, physics: false });
+  return new ex.Engine({
+    canvasElement: canvas,
+    suppressPlayButton: true,
+    suppressConsoleBootMessage: true,
+    physics: false,
+  });
 }
 
 afterEach(() => {
@@ -27,7 +33,10 @@ afterEach(() => {
 describe("teardownEngine", () => {
   it("finds the texture collector where this Excalibur keeps it", () => {
     const e = engine();
-    expect(textureCollector(e), `Excalibur ${ex.EX_VERSION} moved its texture collector; update engineTeardown.ts`).toBeDefined();
+    expect(
+      textureCollector(e),
+      `Excalibur ${ex.EX_VERSION} moved its texture collector; update engineTeardown.ts`,
+    ).toBeDefined();
   });
 
   it("stops a running texture collector when the clock is already stopped", () => {

@@ -3,7 +3,6 @@
 
 /* ---- 3. COMPONENTS --------------------------------------------------- */
 
-
 /* .toast — a little gray alert box; the left edge carries the kind. */
 .toast {
   background: var(--r-face);

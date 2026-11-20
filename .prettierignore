@@ -1,0 +1,18 @@
+# Built and installed output
+lib/
+dist/
+dist-gallery/
+coverage/
+test-results/
+playwright-report/
+package-lock.json
+
+# Written by the engine or by a generator, not by hand
+src/simport/fixtures/
+**/*.generated.ts
+e2e/__screenshots__/
+history/
+assets/
+
+# Prose stays as written
+*.md

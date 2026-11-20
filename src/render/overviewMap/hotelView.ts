@@ -52,7 +52,11 @@ export const HOTEL_VIEW_STYLE: Readonly<Record<HousekeepingNeed, MapKindStyle>> 
 
 /** The Hotel view's legend entries, in order, one per need. Each lists the
  *  needs it counts. */
-export const HOTEL_LEGEND: ReadonlyArray<{ readonly label: string; readonly style: MapKindStyle; readonly needs: ReadonlyArray<HousekeepingNeed> }> = [
+export const HOTEL_LEGEND: ReadonlyArray<{
+  readonly label: string;
+  readonly style: MapKindStyle;
+  readonly needs: ReadonlyArray<HousekeepingNeed>;
+}> = [
   { label: "Dirty", style: HOTEL_VIEW_STYLE.dirty, needs: ["dirty"] },
   { label: "Infested", style: HOTEL_VIEW_STYLE.infested, needs: ["infested"] },
 ];
@@ -68,7 +72,11 @@ export interface HotelRoomMark {
 
 /** Every hotel room that can be drawn on `layout`, with its rectangle, in the
  *  rooms' order. One pass over the rooms; call it when the draw list rebuilds. */
-export function buildHotelMarks(layout: MapLayout, rooms: ReadonlyArray<HotelRoom>, floorsOf: (kind: FacilityKind) => number): HotelRoomMark[] {
+export function buildHotelMarks(
+  layout: MapLayout,
+  rooms: ReadonlyArray<HotelRoom>,
+  floorsOf: (kind: FacilityKind) => number,
+): HotelRoomMark[] {
   const heights = new Map<FacilityKind, number>();
   const source = { floorsOf };
   const marks: HotelRoomMark[] = [];
@@ -106,7 +114,8 @@ export class HotelWatch {
     // still drops to 0.
     let changed = this.pending;
     this.pending = false;
-    if (this.seen.length !== this.marks.length) this.seen = new Array<HousekeepingNeed | null>(this.marks.length).fill(null);
+    if (this.seen.length !== this.marks.length)
+      this.seen = new Array<HousekeepingNeed | null>(this.marks.length).fill(null);
     this.count.dirty = 0;
     this.count.infested = 0;
     for (let i = 0; i < this.marks.length; i++) {

@@ -36,11 +36,15 @@ a.btn {
    Pay), last when the safe action must be reached first (destructive
    confirms). */
 .btn.primary {
-  box-shadow: 0 0 0 1px var(--r-dark), var(--bevel-out);
+  box-shadow:
+    0 0 0 1px var(--r-dark),
+    var(--bevel-out);
   font-weight: 700;
 }
 .btn.primary:active {
-  box-shadow: 0 0 0 1px var(--r-dark), var(--bevel-in);
+  box-shadow:
+    0 0 0 1px var(--r-dark),
+    var(--bevel-in);
 }
 /* Danger = red bold label on the SAME chrome (editor Sell/Bulldoze,
    saves-slot delete, any future destructive action). */

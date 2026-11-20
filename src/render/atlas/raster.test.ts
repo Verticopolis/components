@@ -30,14 +30,22 @@ describe("pack", () => {
       for (let j = i + 1; j < rects.length; j++) {
         const a = rects[i];
         const b = rects[j];
-        const apart = a.page !== b.page || a.x + a.w + 1 < b.x || b.x + b.w + 1 < a.x || a.y + a.h + 1 < b.y || b.y + b.h + 1 < a.y;
+        const apart =
+          a.page !== b.page || a.x + a.w + 1 < b.x || b.x + b.w + 1 < a.x || a.y + a.h + 1 < b.y || b.y + b.h + 1 < a.y;
         expect(apart).toBe(true);
       }
     }
     expect(pack(imgs, 64, 1)).toEqual(r); // deterministic
   });
   it("opens a new page when one fills, and slices an image wider than a page", () => {
-    const r = pack([{ id: 0, w: 150, h: 20 }, { id: 1, w: 60, h: 60 }], 64, 1);
+    const r = pack(
+      [
+        { id: 0, w: 150, h: 20 },
+        { id: 1, w: 60, h: 60 },
+      ],
+      64,
+      1,
+    );
     expect(r.placements[0].map((s) => s.sx)).toEqual([0, 62, 124]);
     expect(r.placements[0].reduce((n, s) => n + s.rect.w, 0)).toBe(150);
     expect(r.pages).toBeGreaterThan(1);

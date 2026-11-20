@@ -34,5 +34,5 @@ export function createMusicVoices(musicGain: Tone.Gain): MusicVoices {
   }).connect(musicGain);
   hook.volume.value = -6;
   hook.maxPolyphony = 12;
-return { arp, bass, hook };
+  return { arp, bass, hook };
 }

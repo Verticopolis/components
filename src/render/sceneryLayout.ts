@@ -103,7 +103,12 @@ export function skylineRects(seed: number, world: ViewWorld = viewWorld()): Skyl
   for (const b of SKYLINE_BANDS) {
     for (let t = from + b.start; t < to; t += b.step) {
       const w = b.w.base + hash01(seed + t * b.w.key) * b.w.span;
-      rects.push({ tile: t, w, hFloors: b.hFloors.base + hash01(seed + t * b.hFloors.key) * b.hFloors.span, depth: b.depth });
+      rects.push({
+        tile: t,
+        w,
+        hFloors: b.hFloors.base + hash01(seed + t * b.hFloors.key) * b.hFloors.span,
+        depth: b.depth,
+      });
     }
   }
   return rects;
@@ -151,7 +156,10 @@ export function plantSpots(seed: number, world: ViewWorld = viewWorld()): PlantS
 /** The cement apron under and around the tower: the built ground-floor
  *  footprint padded by {@link APRON_PAD_TILES}, clamped to the lot. Null when
  *  nothing is built on the ground floor yet (a fresh lot is all grass). */
-export function apronRange(units: readonly UnitView[], world: ViewWorld = viewWorld()): { min: number; max: number } | null {
+export function apronRange(
+  units: readonly UnitView[],
+  world: ViewWorld = viewWorld(),
+): { min: number; max: number } | null {
   let min = Infinity;
   let max = -Infinity;
   for (const u of units) {
@@ -220,15 +228,30 @@ export function sceneryPieces(world: ViewWorld = viewWorld()) {
     plazaSidewalk: { x: -PLAZA_SIDEWALK_TILES * TILE, y: -7, w: PLAZA_SIDEWALK_TILES * TILE, h: 11 },
     roundabout: { x: ROUNDABOUT_START * TILE, y: -30, w: ROUNDABOUT_TILES * TILE, h: 48 },
     fountain: { x: FOUNTAIN_TILE * TILE - 50, y: -102, w: 100, h: 112 },
-    plazaLamps: PLAZA_LAMP_TILES.map((t) => ({ x: t * TILE - PLAZA_LAMP_W / 2, y: -PLAZA_LAMP_H + 4, w: PLAZA_LAMP_W, h: PLAZA_LAMP_H })),
+    plazaLamps: PLAZA_LAMP_TILES.map((t) => ({
+      x: t * TILE - PLAZA_LAMP_W / 2,
+      y: -PLAZA_LAMP_H + 4,
+      w: PLAZA_LAMP_W,
+      h: PLAZA_LAMP_H,
+    })),
     /** The road from the scene's left edge to the roundabout (the game cuts it
      *  into texture-safe segments, each 1 px wider to hide seams). */
     leftRoad: { x: -lot * TILE, y: -2, w: (ROUNDABOUT_START + lot) * TILE, h: 14 },
     forecourt: { x: lot * TILE, y: -6, w: FORECOURT_TILES * TILE, h: 10 },
     sidewalk: { x: sidewalk * TILE, y: -7, w: (road - sidewalk) * TILE, h: 11 },
     rightRoad: { x: road * TILE, y: -2, w: ROAD_TILES * TILE, h: 14 },
-    streetLamp: { x: Math.round((sidewalk + 1) * TILE - STREET_LAMP_W / 2), y: -STREET_LAMP_H - 7, w: STREET_LAMP_W, h: STREET_LAMP_H },
-    planter: { x: Math.round((lot + FORECOURT_TILES / 2) * TILE - PLANTER_W / 2), y: -PLANTER_H - 6, w: PLANTER_W, h: PLANTER_H },
+    streetLamp: {
+      x: Math.round((sidewalk + 1) * TILE - STREET_LAMP_W / 2),
+      y: -STREET_LAMP_H - 7,
+      w: STREET_LAMP_W,
+      h: STREET_LAMP_H,
+    },
+    planter: {
+      x: Math.round((lot + FORECOURT_TILES / 2) * TILE - PLANTER_W / 2),
+      y: -PLANTER_H - 6,
+      w: PLANTER_W,
+      h: PLANTER_H,
+    },
   } satisfies Record<string, PieceRect | PieceRect[]>;
 }
 

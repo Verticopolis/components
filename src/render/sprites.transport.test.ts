@@ -37,16 +37,48 @@ function spyCtx() {
   const grad = { addColorStop: (...a: unknown[]) => log.push("stop:" + JSON.stringify(a)) };
   const ctx: any = {};
   const methods = [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc", "arcTo",
-    "quadraticCurveTo", "bezierCurveTo", "rect", "roundRect", "ellipse", "fill", "stroke",
-    "fillRect", "strokeRect", "clearRect", "fillText", "strokeText", "translate", "scale",
-    "rotate", "clip", "setLineDash", "drawImage",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "arcTo",
+    "quadraticCurveTo",
+    "bezierCurveTo",
+    "rect",
+    "roundRect",
+    "ellipse",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "clearRect",
+    "fillText",
+    "strokeText",
+    "translate",
+    "scale",
+    "rotate",
+    "clip",
+    "setLineDash",
+    "drawImage",
   ];
   for (const m of methods) ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   ctx.createLinearGradient = (...a: unknown[]) => (log.push(`grad:${JSON.stringify(a)}`), grad);
   ctx.createRadialGradient = (...a: unknown[]) => (log.push(`rgrad:${JSON.stringify(a)}`), grad);
   ctx.measureText = () => ({ width: 10 });
-  for (const p of ["fillStyle", "strokeStyle", "lineWidth", "globalAlpha", "font", "textAlign", "textBaseline", "lineCap", "lineJoin"]) {
+  for (const p of [
+    "fillStyle",
+    "strokeStyle",
+    "lineWidth",
+    "globalAlpha",
+    "font",
+    "textAlign",
+    "textBaseline",
+    "lineCap",
+    "lineJoin",
+  ]) {
     let v: unknown = "";
     Object.defineProperty(ctx, p, { get: () => v, set: (nv) => (log.push(`${p}=${String(nv)}`), void (v = nv)) });
   }
@@ -54,12 +86,25 @@ function spyCtx() {
     ctx: ctx as CanvasRenderingContext2D,
     log,
     sig: () => log.join("|"),
-    painted: () => log.some((l) => l.startsWith("fillRect") || l.startsWith("fill:") || l.startsWith("stroke:") || l.startsWith("fillText")),
+    painted: () =>
+      log.some(
+        (l) => l.startsWith("fillRect") || l.startsWith("fill:") || l.startsWith("stroke:") || l.startsWith("fillText"),
+      ),
   };
 }
 
 function unit(over: Partial<Unit> = {}): Unit {
-  return { id: 1, kind: "office", floor: 3, x: 5, width: 8, state: "occupied", satisfaction: 1, occupants: 2, ...over } as Unit;
+  return {
+    id: 1,
+    kind: "office",
+    floor: 3,
+    x: 5,
+    width: 8,
+    state: "occupied",
+    satisfaction: 1,
+    occupants: 2,
+    ...over,
+  } as Unit;
 }
 function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
   return { ctx, lit: true, anim: 0.5, hour: 20, ...over };
@@ -67,7 +112,20 @@ function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
 
 describe("transport, crane & event sprites paint", () => {
   function transport(over: Partial<Transport> = {}): Transport {
-    return { id: 1, kind: "elevatorStandard", x: 5, width: 2, bottom: 1, top: 6, cars: 2, carPositions: [1, 4], carDir: [1, -1], carLoad: [3, 0], load: 3, ...over } as Transport;
+    return {
+      id: 1,
+      kind: "elevatorStandard",
+      x: 5,
+      width: 2,
+      bottom: 1,
+      top: 6,
+      cars: 2,
+      carPositions: [1, 4],
+      carDir: [1, -1],
+      carLoad: [3, 0],
+      load: 3,
+      ...over,
+    } as Transport;
   }
 
   it("drawTransport paints a shaft, honoring skip floors", () => {
@@ -109,7 +167,9 @@ describe("transport, crane & event sprites paint", () => {
 
   it("packs riders tighter as the cab fills and never past its far wall", () => {
     expect(cabRiderX(44, 1, 0)).toBe(3);
-    expect((cabRiderX(44, 9, 1) ?? 0) - (cabRiderX(44, 9, 0) ?? 0)).toBeLessThan((cabRiderX(44, 2, 1) ?? 0) - (cabRiderX(44, 2, 0) ?? 0));
+    expect((cabRiderX(44, 9, 1) ?? 0) - (cabRiderX(44, 9, 0) ?? 0)).toBeLessThan(
+      (cabRiderX(44, 2, 1) ?? 0) - (cabRiderX(44, 2, 0) ?? 0),
+    );
     expect(cabRiderX(44, 30, 29)).toBeNull();
   });
 
@@ -164,7 +224,9 @@ describe("transport, crane & event sprites paint", () => {
   it("a flight out of a tall lobby is one spiral, and an escalator a switchback, up the whole hall", () => {
     const fills = (log: string[], color: string) => {
       const at = log.flatMap((l, i) => (l === `fillStyle=${color}` ? [i] : []));
-      return at.map((i) => log.slice(i + 1).find((l) => l.startsWith("fillRect:"))).filter((l): l is string => l !== undefined);
+      return at
+        .map((i) => log.slice(i + 1).find((l) => l.startsWith("fillRect:")))
+        .filter((l): l is string => l !== undefined);
     };
     const rect = (l: string) => JSON.parse(l.slice("fillRect:".length)) as number[];
     for (const stories of [2, 3]) {
@@ -173,7 +235,9 @@ describe("transport, crane & event sprites paint", () => {
       // One brass pole cap, at the hall's top, and a pole down to its floor.
       const caps = fills(stair.log, "#C9A24B");
       expect(caps, `${stories} stories`).toHaveLength(1);
-      const pole = fills(stair.log, "#4A3420").map(rect).find((r) => r[2] === 3);
+      const pole = fills(stair.log, "#4A3420")
+        .map(rect)
+        .find((r) => r[2] === 3);
       expect(pole, `${stories} stories`).toBeDefined();
       expect((pole as number[])[3]).toBeGreaterThan((stories - 1) * FLOOR);
       // No straight flight's walnut handrail.
@@ -187,8 +251,14 @@ describe("transport, crane & event sprites paint", () => {
       const steel = fills(esc.log, "#6A6E76").map(rect);
       const tops = steel.filter((r) => r[3] === 5 && r[1] % FLOOR === 0).map((r) => r[1] / FLOOR);
       expect(tops.sort(), `${stories} stories`).toEqual(Array.from({ length: stories }, (_, i) => i + 1));
-      expect(esc.log.filter((l) => l === "scale:[-1,1]"), `${stories} stories`).toHaveLength(Math.floor(stories / 2));
-      expect(steel.filter((r) => r[3] === 6), `${stories} stories`).toHaveLength(stories - 1);
+      expect(
+        esc.log.filter((l) => l === "scale:[-1,1]"),
+        `${stories} stories`,
+      ).toHaveLength(Math.floor(stories / 2));
+      expect(
+        steel.filter((r) => r[3] === 6),
+        `${stories} stories`,
+      ).toHaveLength(stories - 1);
     }
     // A one-story flight keeps its straight flight and has no pole.
     const one = spyCtx();
@@ -200,7 +270,8 @@ describe("transport, crane & event sprites paint", () => {
   // Beside a venue in Modern (venueFlights.ts) a one-story flight winds.
   it("a one-story flight beside a venue is a spiral, and an escalator turns back halfway up", () => {
     const steel = (log: string[]) =>
-      log.flatMap((l, i) => (l === "fillStyle=#6A6E76" ? [log.slice(i + 1).find((m) => m.startsWith("fillRect:"))] : []))
+      log
+        .flatMap((l, i) => (l === "fillStyle=#6A6E76" ? [log.slice(i + 1).find((m) => m.startsWith("fillRect:"))] : []))
         .filter((l): l is string => l !== undefined)
         .map((l) => JSON.parse(l.slice("fillRect:".length)) as number[]);
     const stair = spyCtx();
@@ -235,7 +306,9 @@ describe("transport, crane & event sprites paint", () => {
     // it at the two-floor (88px) height to prove the arch, aisle, and couple
     // scale into a taller rect without throwing.
     const s = spyCtx();
-    expect(() => drawUnit(draw({}, s.ctx), unit({ kind: "weddingHall" }), 0, 0, WEDDING_HALL_W, WEDDING_HALL_H)).not.toThrow();
+    expect(() =>
+      drawUnit(draw({}, s.ctx), unit({ kind: "weddingHall" }), 0, 0, WEDDING_HALL_W, WEDDING_HALL_H),
+    ).not.toThrow();
     expect(s.painted()).toBe(true);
     // The couple: a dark-suited seated figure at the altar.
     expect(s.log.some((l) => l.includes("#2A2E38"))).toBe(true);
@@ -280,7 +353,12 @@ describe("transport, crane & event sprites paint", () => {
       fn(s.ctx);
       return s;
     };
-    const ctx = (lit: boolean, anim: number): DrawCtx => ({ ctx: null as unknown as CanvasRenderingContext2D, lit, anim, hour: lit ? 20 : 12 });
+    const ctx = (lit: boolean, anim: number): DrawCtx => ({
+      ctx: null as unknown as CanvasRenderingContext2D,
+      lit,
+      anim,
+      hour: lit ? 20 : 12,
+    });
     const grand = bake((c) => drawLobbyEntrance({ ...ctx(true, 0), ctx: c }, "grand-right", 0, 0, 11, 34));
     const grandLeft = bake((c) => drawLobbyEntrance({ ...ctx(true, 0), ctx: c }, "grand-left", 0, 0, 11, 34));
     const grandSolo = bake((c) => drawLobbyEntrance({ ...ctx(true, 0), ctx: c }, "grand-solo", 0, 0, 11, 34));
@@ -288,8 +366,17 @@ describe("transport, crane & event sprites paint", () => {
     const grandDay = bake((c) => drawLobbyEntrance({ ...ctx(false, 0), ctx: c }, "grand-right", 0, 0, 11, 34));
     // Draw a normal variant-0 lobby tile via drawUnit for comparison.
     const lobbyUnit: Unit = {
-      id: -1, kind: "lobby", floor: 1, x: 0, width: 1, state: "occupied",
-      satisfaction: 1, occupants: 0, everOccupied: false, pendingIncome: 0, label: "",
+      id: -1,
+      kind: "lobby",
+      floor: 1,
+      x: 0,
+      width: 1,
+      state: "occupied",
+      satisfaction: 1,
+      occupants: 0,
+      everOccupied: false,
+      pendingIncome: 0,
+      label: "",
     };
     const normal = bake((c) => drawUnit({ ...ctx(true, 0), ctx: c }, lobbyUnit, 0, 0, 11, 34));
     // Both entrance tiles paint, and they don't collapse to the same sprite.
@@ -371,7 +458,9 @@ describe("transport, crane & event sprites paint", () => {
       run(s.ctx);
       const sig = s.log.join("|").toUpperCase();
       for (const reserved of RESERVED_COLORS) {
-        expect(sig, `reserved literal ${reserved} appeared in an enriched sprite`).not.toContain(reserved.toUpperCase());
+        expect(sig, `reserved literal ${reserved} appeared in an enriched sprite`).not.toContain(
+          reserved.toUpperCase(),
+        );
       }
     }
   });

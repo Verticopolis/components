@@ -64,14 +64,7 @@ const ENTRANCE_VARIANT: Record<EntranceKind, number> = {
   service: ENTRANCE_SERVICE,
 };
 
-export function drawLobbyEntrance(
-  d: DrawCtx,
-  kind: EntranceKind,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-): void {
+export function drawLobbyEntrance(d: DrawCtx, kind: EntranceKind, x: number, y: number, w: number, h: number): void {
   // The `??` mirrors the old ladder's fallback: an unlisted kind from an
   // untyped caller still lands on the quiet service door.
   drawLobbyTile(d, x, y, w, h, ENTRANCE_VARIANT[kind] ?? ENTRANCE_SERVICE, true);
@@ -104,7 +97,15 @@ export function drawLobby(d: DrawCtx, u: UnitView, x: number, y: number, w: numb
  * every fourth column. A degenerate 1-tile lobby uses the compact grand-solo
  * fallback and shows none. Decoration reads only `lit`, `variant`, `ground`.
  */
-export function drawLobbyTile(d: DrawCtx, x: number, y: number, w: number, h: number, variant: number, ground: boolean) {
+export function drawLobbyTile(
+  d: DrawCtx,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  variant: number,
+  ground: boolean,
+) {
   const { ctx, lit } = d;
   const x0 = Math.round(x);
   const y0 = Math.round(y);
@@ -179,7 +180,13 @@ export function drawLobbyTile(d: DrawCtx, x: number, y: number, w: number, h: nu
 /** The lobby's polished floor band, its five rows ending at `bottom`: a sheen
  *  line and a dark base, toned down in a sky lobby so it does not add to the
  *  bright band, and the ground lobby's red carpet with a gilded edge. */
-export function lobbyFloor(ctx: CanvasRenderingContext2D, x0: number, ww: number, bottom: number, ground: boolean): void {
+export function lobbyFloor(
+  ctx: CanvasRenderingContext2D,
+  x0: number,
+  ww: number,
+  bottom: number,
+  ground: boolean,
+): void {
   const floorTop = bottom - 5;
   ctx.fillStyle = ground ? "#DCD2B8" : "#CBC3B0";
   ctx.fillRect(x0, floorTop, ww, 5);
@@ -216,7 +223,15 @@ export function fluteColumn(ctx: CanvasRenderingContext2D, cx: number, y0: numbe
  *  few dim city lights, so the transfer floor no longer glares as a bright blue
  *  band against the muted floors around it; by day it is a low-contrast muted
  *  sky. A recessed slate mullion grid keeps the glass reading as background. */
-export function skyGlass(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, lit: boolean, seed: number): void {
+export function skyGlass(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  lit: boolean,
+  seed: number,
+): void {
   const x0 = Math.round(x);
   const y0 = Math.round(y);
   const ww = Math.max(1, Math.round(w));
@@ -256,7 +271,15 @@ export function skyGlass(ctx: CanvasRenderingContext2D, x: number, y: number, w:
  *  grand-entrance tile (ground lobby), so the attendant no longer tiles every
  *  fourth column. Sky lobbies have no single-tile placement path, so they now
  *  show no attendant at all (a logged followup). */
-export function consolePanel(ctx: CanvasRenderingContext2D, x0: number, ww: number, y0: number, floorTop: number, ground: boolean, lit: boolean): void {
+export function consolePanel(
+  ctx: CanvasRenderingContext2D,
+  x0: number,
+  ww: number,
+  y0: number,
+  floorTop: number,
+  ground: boolean,
+  lit: boolean,
+): void {
   const cx = x0 + Math.floor(ww / 2);
   const topY = floorTop - 5; // top of the console/bench, sitting on the floor
   if (ground) {

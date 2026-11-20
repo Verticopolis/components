@@ -13,9 +13,7 @@
  */
 export type GameplayCatalogVersion = 1;
 
-export type GameplayMode =
-  | "classic"
-  | "modern";
+export type GameplayMode = "classic" | "modern";
 
 export type GameplayFacilityKind =
   | "lobby"
@@ -56,26 +54,15 @@ export type GameplayFacilityKind =
   | "rentalStudio"
   | "rentalApartment";
 
-export type GameplayRemovalMethod =
-  | "sell"
-  | "bulldoze";
+export type GameplayRemovalMethod = "sell" | "bulldoze";
 
-export type GameplayEmergencyKind =
-  | "fireRescue"
-  | "bombThreat";
+export type GameplayEmergencyKind = "fireRescue" | "bombThreat";
 
-export type GameplayEmergencyDecision =
-  | "accept"
-  | "decline";
+export type GameplayEmergencyDecision = "accept" | "decline";
 
-export type GameplayEmergencySource =
-  | "player"
-  | "timeout";
+export type GameplayEmergencySource = "player" | "timeout";
 
-export type GameplayFireOutcome =
-  | "security"
-  | "rescue"
-  | "burnedOut";
+export type GameplayFireOutcome = "security" | "rescue" | "burnedOut";
 
 export type GameplayMilestoneId =
   | "pop-500"

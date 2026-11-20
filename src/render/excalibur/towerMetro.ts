@@ -75,8 +75,19 @@ function addMetro(engine: TowerEngine, u: UnitView, line: readonly number[], sto
   bake.height = METRO_TRAIN_H;
   drawMetroTrain(bake.getContext("2d")!, w, true);
   let offset = 0;
-  const cv = new ex.Canvas({ width: w, height: METRO_TRAIN_H, cache: true, draw: (ctx) => ctx.drawImage(bake, Math.round(offset), 0) });
-  const a = new ex.Actor({ pos: ex.vec(trainLeft(engine, u), trainY), width: w, height: METRO_TRAIN_H, anchor: ex.vec(0, 0), z: Z.vehicle });
+  const cv = new ex.Canvas({
+    width: w,
+    height: METRO_TRAIN_H,
+    cache: true,
+    draw: (ctx) => ctx.drawImage(bake, Math.round(offset), 0),
+  });
+  const a = new ex.Actor({
+    pos: ex.vec(trainLeft(engine, u), trainY),
+    width: w,
+    height: METRO_TRAIN_H,
+    anchor: ex.vec(0, 0),
+    z: Z.vehicle,
+  });
   a.graphics.use(cv);
   engine.engine.add(a);
   const shift = (next: number): void => {
@@ -95,7 +106,7 @@ function addTunnel(engine: TowerEngine, floor: number, spans: readonly [number, 
   const y = engine.worldYTop(floor);
   for (const [fromTile, toTile] of spans) {
     const [from, to] = [engine.worldX(fromTile), engine.worldX(toTile)];
-    for (let x = from; x < to; ) {
+    for (let x = from; x < to;) {
       const tileStart = Math.floor(x / METRO_TUNNEL_TILE) * METRO_TUNNEL_TILE;
       const end = Math.min(tileStart + METRO_TUNNEL_TILE, to);
       const w = end - x;
@@ -124,8 +135,19 @@ function addPortals(engine: TowerEngine, u: UnitView, trainY: number): void {
   const h = METRO_TRAIN_H + 3;
   for (const side of ["left", "right"] as const) {
     const x = side === "left" ? engine.worldX(u.x) : engine.worldX(u.x + u.width) - METRO_PORTAL_W;
-    const cv = new ex.Canvas({ width: METRO_PORTAL_W, height: h, cache: true, draw: (ctx) => drawMetroPortal(ctx, METRO_PORTAL_W, h, side) });
-    const a = new ex.Actor({ pos: ex.vec(x, trainY), width: METRO_PORTAL_W, height: h, anchor: ex.vec(0, 0), z: Z.vehicle + 0.05 });
+    const cv = new ex.Canvas({
+      width: METRO_PORTAL_W,
+      height: h,
+      cache: true,
+      draw: (ctx) => drawMetroPortal(ctx, METRO_PORTAL_W, h, side),
+    });
+    const a = new ex.Actor({
+      pos: ex.vec(x, trainY),
+      width: METRO_PORTAL_W,
+      height: h,
+      anchor: ex.vec(0, 0),
+      z: Z.vehicle + 0.05,
+    });
     a.graphics.use(cv);
     engine.engine.add(a);
     engine.tunnelActors.push(a);

@@ -20,7 +20,21 @@ function answer(o: Partial<FireResponseView> = {}): FireResponseView {
     floor: 6,
     x: 170,
     width: 8,
-    guards: [{ floor: 6, left: 160, right: 174, from: 2, route: [[2, 160], [6, 160]], start: 0, arrive: 8, done: 15 }],
+    guards: [
+      {
+        floor: 6,
+        left: 160,
+        right: 174,
+        from: 2,
+        route: [
+          [2, 160],
+          [6, 160],
+        ],
+        start: 0,
+        arrive: 8,
+        done: 15,
+      },
+    ],
     helicopter: { called: 100, arrive: 130, sprayEnd: 150, leave: 165 },
     out: false,
     seq: 3,
@@ -39,8 +53,16 @@ describe("the Fire Rescue helicopter's flight", () => {
   });
 
   it("flies in from the right and down to hover over the room the fire started in", () => {
-    expect(helicopterPlace(answer(), 100)).toEqual({ x: hoverX + HELICOPTER_APPROACH_TILES, floor: hoverFloor + HELICOPTER_APPROACH_FLOORS, spraying: false });
-    expect(helicopterPlace(answer(), 115)).toEqual({ x: hoverX + HELICOPTER_APPROACH_TILES / 2, floor: hoverFloor + HELICOPTER_APPROACH_FLOORS / 2, spraying: false });
+    expect(helicopterPlace(answer(), 100)).toEqual({
+      x: hoverX + HELICOPTER_APPROACH_TILES,
+      floor: hoverFloor + HELICOPTER_APPROACH_FLOORS,
+      spraying: false,
+    });
+    expect(helicopterPlace(answer(), 115)).toEqual({
+      x: hoverX + HELICOPTER_APPROACH_TILES / 2,
+      floor: hoverFloor + HELICOPTER_APPROACH_FLOORS / 2,
+      spraying: false,
+    });
   });
 
   it("hovers a floor clear of the roof when the fire is near the top", () => {

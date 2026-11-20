@@ -130,7 +130,9 @@ export class ToneAudioEngine {
       // Already built, but the context may have been suspended since. main.ts
       // calls start() on every gesture: re-attempt the resume (a no-op on a
       // running context, and it recovers a silenced one).
-      void Tone.getContext().resume().catch(() => {});
+      void Tone.getContext()
+        .resume()
+        .catch(() => {});
       return;
     }
     const hasWebAudio =
@@ -143,7 +145,10 @@ export class ToneAudioEngine {
       // (autoplay/permission) so a blocked context can't surface as unhandled.
       // A cue fired before the unlock lands waits for it (`FirstCueLatch`).
       this.firstCue.begin();
-      Tone.start().then(() => this.sfxIfAny(this.firstCue.release()), () => this.firstCue.release());
+      Tone.start().then(
+        () => this.sfxIfAny(this.firstCue.release()),
+        () => this.firstCue.release(),
+      );
 
       this.master = new Tone.Gain(this.silent ? 0 : 0.35).toDestination();
 
@@ -161,9 +166,7 @@ export class ToneAudioEngine {
       // Ambient bed's distance lowpass: far out = muffled, up close = present.
       this.ambBus = new Tone.Gain(sq(this.ambienceVolume)).connect(this.reverb);
       this.ambDryBus = new Tone.Gain(sq(this.ambienceVolume)).connect(this.master);
-      this.bedFilter = new Tone.Filter({ type: "lowpass", frequency: 3000, Q: 0.7 }).connect(
-        this.ambBus,
-      );
+      this.bedFilter = new Tone.Filter({ type: "lowpass", frequency: 3000, Q: 0.7 }).connect(this.ambBus);
 
       // Composed music path (bypasses the zoom distance filter): voices -> level
       // -> warm lowpass -> sub highpass -> music bus -> reverb. Kept warm and
@@ -185,8 +188,12 @@ export class ToneAudioEngine {
       this.crowd = new CrowdLayer(this.bedFilter, base);
 
       // Ambient room-tone bed (recipe in toneRoomTone).
-      ({ ambGain: this.ambGain, ambTone: this.ambTone, ambFilter: this.ambFilter, ambNoise: this.ambNoise } =
-        createRoomTone(this.bedFilter));
+      ({
+        ambGain: this.ambGain,
+        ambTone: this.ambTone,
+        ambFilter: this.ambFilter,
+        ambNoise: this.ambNoise,
+      } = createRoomTone(this.bedFilter));
 
       // Outdoor rain layer (dry, off the distance filter; see toneRain).
       this.rain = createRain(this.ambDryBus);
@@ -336,14 +343,17 @@ export class ToneAudioEngine {
       this.musicPart?.dispose();
       this.musicPart = null;
       const prog: Program = programFor(this.program);
-      const part = new Tone.Part((time, ev) => {
-        try {
-          if (this.silent) return; // a stray Tone error must not stop the Transport
-          this.noteVoice(ev.voice)?.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, ev.vel);
-        } catch {
-          /* skip this note */
-        }
-      }, prog.events.map((e) => [e.t, e] as [number, typeof e]));
+      const part = new Tone.Part(
+        (time, ev) => {
+          try {
+            if (this.silent) return; // a stray Tone error must not stop the Transport
+            this.noteVoice(ev.voice)?.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, ev.vel);
+          } catch {
+            /* skip this note */
+          }
+        },
+        prog.events.map((e) => [e.t, e] as [number, typeof e]),
+      );
       part.loop = true;
       part.loopEnd = prog.loopEnd;
       part.start(0);

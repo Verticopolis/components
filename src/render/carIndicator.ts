@@ -48,7 +48,15 @@ export function cabFit(cabWidth: number): number {
  * @param aboard people the crowd shows boarding this car (`countCabRiders`)
  * @param figures who they are (`loadFigures`), and `cast` the same as one string
  */
-export function carIndicator(dir: number, load: number, cap: number, fit: number, aboard: number, figures: readonly number[] = NO_FIGURES, cast = ""): CarIndicator {
+export function carIndicator(
+  dir: number,
+  load: number,
+  cap: number,
+  fit: number,
+  aboard: number,
+  figures: readonly number[] = NO_FIGURES,
+  cast = "",
+): CarIndicator {
   // Treat any non-finite input as a safe default so a stray NaN can never leak
   // into a cache key or the draw call.
   const validCap = Number.isFinite(cap) && cap > 0;

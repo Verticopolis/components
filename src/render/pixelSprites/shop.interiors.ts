@@ -29,8 +29,8 @@ export interface ShopGeom {
   railY: number;
   awningBottom: number;
   /** The single browsing-customer gate: a real occupant, and nothing else. The
- *  seeded `hash(u.id)` stand-in that used to fill in for one was retired (#552);
- *  do not bring it back, an empty shop draws no shopper. */
+   *  seeded `hash(u.id)` stand-in that used to fill in for one was retired (#552);
+   *  do not bring it back, an empty shop draws no shopper. */
   busy: boolean;
   /** Live occupant count, for trades that seat more than one client. */
   occupants: number;
@@ -59,7 +59,13 @@ function pen(ctx: CanvasRenderingContext2D) {
     F(px, py + ph - 1, pw, 1, shade(b, -22)); // bottom edge
   };
   const glow = (cx: number, cy: number, c: string): void => {
-    for (const [s, o] of [[4, 0.1], [3, 0.16], [2, 0.3], [1, 0.6]] as const) F(cx - s, cy - s, s * 2, s * 2, c, o);
+    for (const [s, o] of [
+      [4, 0.1],
+      [3, 0.16],
+      [2, 0.3],
+      [1, 0.6],
+    ] as const)
+      F(cx - s, cy - s, s * 2, s * 2, c, o);
   };
   return { F, box, glow };
 }
@@ -179,7 +185,8 @@ function books(ctx: CanvasRenderingContext2D, look: ShopLook, g: ShopGeom): void
     const cw = Math.min(20, Math.round(w * 0.22));
     box(cx, railY, cw, fy - railY - 1, "#6A5240"); // bookcase
     for (let r = 0; r < 4; r++)
-      for (let bx = cx + 2, k = 0; bx + 2 < cx + cw - 1; bx += 3, k++) F(bx, railY + 2 + r * 6, 2, 5, good(look, k + r)); // spines
+      for (let bx = cx + 2, k = 0; bx + 2 < cx + cw - 1; bx += 3, k++)
+        F(bx, railY + 2 + r * 6, 2, 5, good(look, k + r)); // spines
   }
   const dx = x + w - 24;
   box(dx, fy - 6, 16, 3, "#8C6E50"); // reading table
@@ -350,7 +357,12 @@ function post(ctx: CanvasRenderingContext2D, look: ShopLook, g: ShopGeom): void 
   F(pxs, fy - 5, 7, 5, "#C8A87A"); // parcels
   F(pxs + 8, fy - 5, 5, 5, "#B8986A");
   F(pxs + 3, fy - 9, 6, 4, "#C8A87A");
-  for (const [px2, py2] of [[pxs, fy - 5], [pxs + 8, fy - 5], [pxs + 3, fy - 9]] as const) F(px2 + 1, py2 + 1, 3, 1, "#8A6A44"); // tape
+  for (const [px2, py2] of [
+    [pxs, fy - 5],
+    [pxs + 8, fy - 5],
+    [pxs + 3, fy - 9],
+  ] as const)
+    F(px2 + 1, py2 + 1, 3, 1, "#8A6A44"); // tape
   F(x + w - 11, fy - 9, 6, 9, "#4F6EC8"); // mail drop box
   F(x + w - 11, fy - 9, 6, 1, "#6E8AD8");
   F(x + w - 10, fy - 7, 4, 1, "#2A3A6A"); // slot
@@ -369,7 +381,8 @@ function sports(ctx: CanvasRenderingContext2D, look: ShopLook, g: ShopGeom): voi
   F(x + 15, railY + 3, 2, 2, "#FFFFFF"); // number
   box(x + 26, fy - 6, 14, 6, "#8A8A92"); // ball bin
   for (let k = 0; k < 3; k++) F(x + 29 + k * 4, fy - 8, 3, 3, good(look, k)); // balls
-  for (let rx = x + Math.round(w * 0.42), k = 0; k < 5; rx += 3, k++) F(rx, fy - 13, 1, 13, k % 2 ? "#C8A87A" : "#A8845C"); // bats and sticks
+  for (let rx = x + Math.round(w * 0.42), k = 0; k < 5; rx += 3, k++)
+    F(rx, fy - 13, 1, 13, k % 2 ? "#C8A87A" : "#A8845C"); // bats and sticks
   for (let r = 0; r < 2; r++)
     for (let c = 0; c < 3; c++) F(x + Math.round(w * 0.56) + c * 7, railY + 2 + r * 6, 6, 4, good(look, r * 3 + c)); // shoe wall
   const mx = x + w - 12;

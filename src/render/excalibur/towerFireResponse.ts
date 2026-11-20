@@ -19,7 +19,11 @@ export const HELICOPTER_HOVER_FLOORS = 3;
  *  from the right until it lands on the fire, hovering over the room it
  *  started in while it sprays, then flying off to the left. Null before it
  *  was called and once it is gone. */
-export function helicopterPlace(fire: FireResponseView, now: number, roof = fire.floor): { x: number; floor: number; spraying: boolean } | null {
+export function helicopterPlace(
+  fire: FireResponseView,
+  now: number,
+  roof = fire.floor,
+): { x: number; floor: number; spraying: boolean } | null {
   const h = fire.helicopter;
   if (!h || now < h.called || now >= h.leave) return null;
   const hx = fire.x + fire.width / 2;
@@ -27,7 +31,11 @@ export function helicopterPlace(fire: FireResponseView, now: number, roof = fire
   const along = (a: number, b: number): number => (b > a ? Math.min(1, Math.max(0, (now - a) / (b - a))) : 1);
   if (now < h.arrive) {
     const p = along(h.called, h.arrive);
-    return { x: hx + HELICOPTER_APPROACH_TILES * (1 - p), floor: hf + HELICOPTER_APPROACH_FLOORS * (1 - p), spraying: false };
+    return {
+      x: hx + HELICOPTER_APPROACH_TILES * (1 - p),
+      floor: hf + HELICOPTER_APPROACH_FLOORS * (1 - p),
+      spraying: false,
+    };
   }
   if (now < h.sprayEnd) return { x: hx, floor: hf, spraying: true };
   const p = along(h.sprayEnd, h.leave);

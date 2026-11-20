@@ -47,7 +47,9 @@ describe("cab pictures", () => {
   });
 
   it("paints each part once and hands every cab the same picture", () => {
-    const made = vi.spyOn(document, "createElement").mockImplementation(() => ({ getContext: () => traceCtx().ctx }) as unknown as HTMLElement);
+    const made = vi
+      .spyOn(document, "createElement")
+      .mockImplementation(() => ({ getContext: () => traceCtx().ctx }) as unknown as HTMLElement);
     const parts = canvasCabParts();
     expect(parts.empty("elevatorStandard", 32, "up", false)).toBe(parts.empty("elevatorStandard", 32, "up", false));
     expect(parts.rider(5)).toBe(parts.rider(5));
@@ -68,7 +70,12 @@ describe("cab rider pictures", () => {
           const rider = logCtx();
           paintRider(rider.ctx, figureKey(castIndex(seed), "stand", 1, mood, false, lit));
           const person = logCtx();
-          drawPerson(person.ctx, RIDER_X, RIDER_FOOT, LOOKS[castIndex(seed)], { lit, pose: "stand", empty: true, mood });
+          drawPerson(person.ctx, RIDER_X, RIDER_FOOT, LOOKS[castIndex(seed)], {
+            lit,
+            pose: "stand",
+            empty: true,
+            mood,
+          });
           expect(rider.log.length).toBeGreaterThan(0);
           expect(rider.log).toEqual(person.log);
         }

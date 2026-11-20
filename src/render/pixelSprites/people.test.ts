@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { CAST, crewIndex, drawPerson, LOOK, LOOKS, MOOD_TOP, outfitColors, walkFrame, WALK_FRAMES, type Pose } from "./people";
+import {
+  CAST,
+  crewIndex,
+  drawPerson,
+  LOOK,
+  LOOKS,
+  MOOD_TOP,
+  outfitColors,
+  walkFrame,
+  WALK_FRAMES,
+  type Pose,
+} from "./people";
 import { RESERVED_COLORS } from "./common";
 import { POSES, MOODS } from "../excalibur/crowdLook";
 import { FIGURE_FOOT, FIGURE_H, FIGURE_W } from "../excalibur/peopleGfx";
@@ -117,9 +128,15 @@ describe("a figure lying down (#2116)", () => {
       drawPerson(lying.ctx, X, F, look, { lit: false, pose: "stand", empty: true, dims, lying: true });
       const shadow = (r: { color: string }) => r.color.startsWith("rgba(0,0,0");
       // Upright cell (column, row) lands at (row, -column - 1) about the foot point.
-      const turned = upright.rects.filter((r) => !shadow(r)).map((r) => ({
-        x: X + (r.y - F), y: F - (r.x - X) - r.w, w: r.h, h: r.w, color: r.color,
-      }));
+      const turned = upright.rects
+        .filter((r) => !shadow(r))
+        .map((r) => ({
+          x: X + (r.y - F),
+          y: F - (r.x - X) - r.w,
+          w: r.h,
+          h: r.w,
+          color: r.color,
+        }));
       expect(lying.rects).toEqual(turned);
       expect(lying.rects.some(shadow)).toBe(false);
     }

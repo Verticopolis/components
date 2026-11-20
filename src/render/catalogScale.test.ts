@@ -32,7 +32,13 @@ describe("fitAtGameScale", () => {
     // Across cells that fit the footprint, cells that squeeze its width, and
     // cells that squeeze its height, at every magnification the pages use.
     for (const mag of [1, 2, 3]) {
-      for (const [maxW, maxH] of [[4000, 4000], [276, 166], [90, 500], [500, 40], [1, 1]] as const) {
+      for (const [maxW, maxH] of [
+        [4000, 4000],
+        [276, 166],
+        [90, 500],
+        [500, 40],
+        [1, 1],
+      ] as const) {
         const box = fitAtGameScale(tiles, floors, maxW, maxH, mag);
         expect(tilesPerFloor(tiles, floors, box.w, box.h)).toBeCloseTo(FLOOR / TILE, 8);
         expect(box.w).toBeLessThanOrEqual(maxW);

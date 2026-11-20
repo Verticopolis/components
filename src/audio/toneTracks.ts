@@ -250,9 +250,18 @@ const TAP_CYCLE: ReadonlyArray<readonly [number, number]> = [
  *  engine's old arpeggio synth, reused as-is); no arpeggio RUNS exist in this
  *  music, only these held fifths. */
 const ROOTS: Record<string, number> = {
-  Dm: 50, C: 48, G: 43, F: 53, Am: 45, DmLow: 38,
-  Gm: 43, Eb: 51, Bb: 46, Cm: 48,
-  Fpiv: 41, BbPiv: 46,
+  Dm: 50,
+  C: 48,
+  G: 43,
+  F: 53,
+  Am: 45,
+  DmLow: 38,
+  Gm: 43,
+  Eb: 51,
+  Bb: 46,
+  Cm: 48,
+  Fpiv: 41,
+  BbPiv: 46,
 };
 
 /** Splash chords, one per bar. */
@@ -261,8 +270,26 @@ const SPLASH_CHORDS = ["Dm", "C", "G", "F", "Dm", "C", "Am", "F", "Dm", "DmLow"]
 /** Bed chapter one chords (per-bar roots fitted to the hum; the first bar is
  *  pinned to Gm so chapter two's D-minor ending resolves v-i at the loop wrap). */
 const BED_CH1_CHORDS = [
-  "Gm", "Cm", "Gm", "Cm", "Bb", "Cm", "Gm", "Cm", "Gm", "Gm",
-  "Gm", "Eb", "Cm", "Bb", "Cm", "F", "Cm", "Cm", "Cm", "Cm",
+  "Gm",
+  "Cm",
+  "Gm",
+  "Cm",
+  "Bb",
+  "Cm",
+  "Gm",
+  "Cm",
+  "Gm",
+  "Gm",
+  "Gm",
+  "Eb",
+  "Cm",
+  "Bb",
+  "Cm",
+  "F",
+  "Cm",
+  "Cm",
+  "Cm",
+  "Cm",
 ] as const;
 
 /** Bed chapter two chords. */

@@ -55,7 +55,14 @@ describe("roomOccupants agrees with the atlas reader", () => {
   const out = [undefined, -9, -0.5, 0, 1, 1.5, 9, Number.NaN, Number.POSITIVE_INFINITY];
   it.each(counts)("occupants %s", (occupants) => {
     for (const outForMeal of out) {
-      const u = { kind: "nightclub" as const, state: "occupied" as const, width: kindFacts("nightclub").width, occupants, outForMeal, id: 1 };
+      const u = {
+        kind: "nightclub" as const,
+        state: "occupied" as const,
+        width: kindFacts("nightclub").width,
+        occupants,
+        outForMeal,
+        id: 1,
+      };
       const atlas = lookupRoom(u, DAY, 0);
       const atlasCount = "chains" in atlas && atlas.chains ? (atlas.chains.occupants ?? 0) : 0;
       expect(roomOccupants(u), `outForMeal ${outForMeal}`).toBe(atlasCount);
@@ -68,7 +75,22 @@ function draws(u: Unit, hour: number): Map<string, number> {
   const seen = new Map<string, number>();
   let fill = "";
   const ctx: Record<string, unknown> = {};
-  for (const m of ["save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc", "fill", "stroke", "strokeRect", "fillText", "translate", "scale", "setTransform"]) {
+  for (const m of [
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "fill",
+    "stroke",
+    "strokeRect",
+    "fillText",
+    "translate",
+    "scale",
+    "setTransform",
+  ]) {
     ctx[m] = () => {};
   }
   ctx.fillRect = (...a: number[]) => {
@@ -76,7 +98,12 @@ function draws(u: Unit, hour: number): Map<string, number> {
     seen.set(k, (seen.get(k) ?? 0) + 1);
   };
   for (const p of ["strokeStyle", "lineWidth", "font", "textAlign", "globalAlpha"]) ctx[p] = undefined;
-  Object.defineProperty(ctx, "fillStyle", { get: () => fill, set: (v: string) => { fill = String(v); } });
+  Object.defineProperty(ctx, "fillStyle", {
+    get: () => fill,
+    set: (v: string) => {
+      fill = String(v);
+    },
+  });
   const d = { ctx: ctx as unknown as CanvasRenderingContext2D, lit: false, anim: 0, hour } as RoomCtx;
   drawRoom(d, u, 0, 0, u.width * TILE, FLOOR);
   return seen;
@@ -87,7 +114,10 @@ const OPEN_HOUR: Partial<Record<FacilityKind, number>> = { skyBar: 20, nightclub
 // staffed one is lit, so its desks change as well as gain a worker. The atlas
 // carries that through its soft-furniture layer, not by adding people.
 const CASES: [FacilityKind, string | undefined][] = [
-  ["skyBar", undefined], ["nightclub", undefined], ["daycare", undefined], ["spa", undefined],
+  ["skyBar", undefined],
+  ["nightclub", undefined],
+  ["daycare", undefined],
+  ["spa", undefined],
   ...Object.keys(AMUSEMENTS_LOOKS).map((s): [FacilityKind, string] => ["amusements", s]),
   ...Object.keys(BOUTIQUE_LOOKS).map((s): [FacilityKind, string] => ["boutiqueBay", s]),
   ...Object.keys(FITNESS_LOOKS).map((s): [FacilityKind, string] => ["fitnessClub", s]),
@@ -98,12 +128,24 @@ describe("a rewired room's crowd only grows", () => {
     const hour = OPEN_HOUR[kind] ?? 12;
     const cap = occupantCap(kind);
     for (let x = 0; x < 16; x++) {
-      const base = { id: 7, floor: 12, x, kind, subtype, state: "occupied", width: kindFacts(kind).width, satisfaction: 0.8 };
+      const base = {
+        id: 7,
+        floor: 12,
+        x,
+        kind,
+        subtype,
+        state: "occupied",
+        width: kindFacts(kind).width,
+        satisfaction: 0.8,
+      };
       let prev = draws({ ...base, occupants: 1 } as Unit, hour);
       for (let n = 2; n <= cap; n++) {
         const next = draws({ ...base, occupants: n } as Unit, hour);
         for (const [k, c] of prev) {
-          expect(next.get(k) ?? 0, `${kind} ${subtype ?? ""} at x ${x}: ${k} drawn for ${n - 1} people is gone at ${n}`).toBeGreaterThanOrEqual(c);
+          expect(
+            next.get(k) ?? 0,
+            `${kind} ${subtype ?? ""} at x ${x}: ${k} drawn for ${n - 1} people is gone at ${n}`,
+          ).toBeGreaterThanOrEqual(c);
         }
         prev = next;
       }
@@ -118,7 +160,16 @@ describe("a rewired room draws a fractional occupancy as the whole people the at
   it.each(CASES)("%s %s", (kind, subtype) => {
     const hour = OPEN_HOUR[kind] ?? 12;
     const cap = occupantCap(kind);
-    const base = { id: 7, floor: 12, x: 5, kind, subtype, state: "occupied", width: kindFacts(kind).width, satisfaction: 0.8 };
+    const base = {
+      id: 7,
+      floor: 12,
+      x: 5,
+      kind,
+      subtype,
+      state: "occupied",
+      width: kindFacts(kind).width,
+      satisfaction: 0.8,
+    };
     for (const k of [1, 2, 3, 5].filter((n) => n <= cap)) {
       const whole = draws({ ...base, occupants: k } as Unit, hour);
       for (const frac of [k - 0.5, k - 0.01]) {

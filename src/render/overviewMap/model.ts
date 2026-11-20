@@ -95,7 +95,11 @@ export class OverviewMapModel {
     const boxWidth = boxSide(input.boxWidth);
     const boxHeight = boxSide(input.boxHeight);
     const extent = bandedExtent(input.world, input.view.tower, input.skyFloors, boxHeight, input.topReserve);
-    const sameGeometry = this.layout !== null && this.boxWidth === boxWidth && this.boxHeight === boxHeight && sameExtent(this.layout.extent, extent);
+    const sameGeometry =
+      this.layout !== null &&
+      this.boxWidth === boxWidth &&
+      this.boxHeight === boxHeight &&
+      sameExtent(this.layout.extent, extent);
     const same =
       sameGeometry &&
       this.structure === input.view.structure &&

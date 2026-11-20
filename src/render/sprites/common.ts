@@ -64,7 +64,15 @@ export interface DrawCtx {
 
 /** The 7px signage every service facility paints on its back wall; hidden
  *  when the room is too narrow to fit it. */
-export function serviceLabel(ctx: CanvasRenderingContext2D, text: string, sx: number, y: number, color: string, minW: number, w: number) {
+export function serviceLabel(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  sx: number,
+  y: number,
+  color: string,
+  minW: number,
+  w: number,
+) {
   ctx.fillStyle = color;
   ctx.font = "7px system-ui, sans-serif";
   if (w > minW) ctx.fillText(text, sx, y + 11);

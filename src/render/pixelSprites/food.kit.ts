@@ -12,7 +12,9 @@ import { PAL, personSeated, shade } from "./common";
 /** A rectangle fill bound to a room's screen origin: build-local `(bx, by)`
  *  plus the origin, rounded, min 1px, with a transient alpha for the rect.
  *  `ctx` is the target, for the depth-layer marks (`layers.ts`). */
-export type Fill = ((bx: number, by: number, bw: number, bh: number, c: string, o?: number) => void) & { ctx: CanvasRenderingContext2D };
+export type Fill = ((bx: number, by: number, bw: number, bh: number, c: string, o?: number) => void) & {
+  ctx: CanvasRenderingContext2D;
+};
 
 export function mkFill(ctx: CanvasRenderingContext2D, ox: number, oy: number): Fill {
   const fill = (bx: number, by: number, bw: number, bh: number, c: string, o = 1): void => {
@@ -26,7 +28,13 @@ export function mkFill(ctx: CanvasRenderingContext2D, ox: number, oy: number): F
 
 /** A soft four-step warm glow around a fixture bulb. */
 export function glow(f: Fill, cx: number, cy: number, c: string): void {
-  for (const [s, a] of [[4, 0.1], [3, 0.16], [2, 0.3], [1, 0.6]] as const) f(cx - s, cy - s, s * 2, s * 2, c, a);
+  for (const [s, a] of [
+    [4, 0.1],
+    [3, 0.16],
+    [2, 0.3],
+    [1, 0.6],
+  ] as const)
+    f(cx - s, cy - s, s * 2, s * 2, c, a);
 }
 
 /** A framed prop box: contact shadow, fill, then top/left highlight and
@@ -41,7 +49,15 @@ export function box(f: Fill, x: number, y: number, w: number, h: number, b: stri
 }
 
 /** Textured wall: fill, an upper light band, then tile / plank / flat detail. */
-export function wtex(f: Fill, x: number, y: number, w: number, h: number, b: string, mode: "tile" | "plank" | "flat"): void {
+export function wtex(
+  f: Fill,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  b: string,
+  mode: "tile" | "plank" | "flat",
+): void {
   f(x, y, w, h, b);
   f(x, y, w, Math.round(h * 0.4), shade(b, 7));
   if (mode === "tile") {
@@ -64,7 +80,8 @@ export function pfloor(f: Fill, x: number, fy: number, w: number, h: number, b: 
   f(x, fy + 1, w, 1, shade(b, -8));
   f(x, fy + h - 1, w, 1, shade(b, -24));
   if (checker) {
-    for (let px = x; px < x + w; px += 6) f(px + ((((px - x) / 6) | 0) % 2 ? 3 : 0), fy + 2, 3, h - 3, shade(b, 14), 0.5);
+    for (let px = x; px < x + w; px += 6)
+      f(px + ((((px - x) / 6) | 0) % 2 ? 3 : 0), fy + 2, 3, h - 3, shade(b, 14), 0.5);
   } else {
     for (let px = x + 7; px < x + w; px += 12) f(px, fy + 1, 1, h - 2, shade(b, -16));
   }
@@ -117,7 +134,8 @@ export function twall(f: Fill, x: number, y: number, w: number, h: number, b: st
   f(x, y, w, h, b);
   f(x, y, w, Math.round(h * 0.4), shade(b, 8));
   for (let py = y + 3; py < y + h; py += 6) f(x, py, w, 1, shade(b, -8), 0.5);
-  for (let dx = x + 4, i = 0; dx < x + w; dx += 8, i++) for (let dy = y + 5 + (i % 2) * 3; dy < y + h - 2; dy += 6) f(dx, dy, 1, 1, shade(b, 13), 0.5);
+  for (let dx = x + 4, i = 0; dx < x + w; dx += 8, i++)
+    for (let dy = y + 5 + (i % 2) * 3; dy < y + h - 2; dy += 6) f(dx, dy, 1, 1, shade(b, 13), 0.5);
 }
 
 /** A wainscot dado below the rail line, with panel seams and a wood rail. */

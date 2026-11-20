@@ -76,7 +76,8 @@ export function nextVersion(current: string, tier: Tier, named?: string): string
   const bumped = bumpVersion(current, tier);
   if (named === undefined || named === "") return bumped;
   parse(named);
-  if (named !== bumped && !isLater(bumped, named)) throw new Error(`${named} is not ${bumped} or later (the ${tier} release after ${current})`);
+  if (named !== bumped && !isLater(bumped, named))
+    throw new Error(`${named} is not ${bumped} or later (the ${tier} release after ${current})`);
   return named;
 }
 
@@ -85,7 +86,8 @@ export function renameUnreleased(changelog: string, version: string, date: strin
   const lines = changelog.split("\n");
   const i = lines.findIndex((l) => l.trimEnd() === UNRELEASED);
   if (i < 0) throw new Error(`the changelog has no "${UNRELEASED}" section`);
-  if (lines.some((l) => l.startsWith(`## ${version} `) || l.trimEnd() === `## ${version}`)) throw new Error(`the changelog already has a ${version} section`);
+  if (lines.some((l) => l.startsWith(`## ${version} `) || l.trimEnd() === `## ${version}`))
+    throw new Error(`the changelog already has a ${version} section`);
   lines[i] = `## ${version} (${date})`;
   return lines.join("\n");
 }

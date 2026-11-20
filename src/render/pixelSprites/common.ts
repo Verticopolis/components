@@ -106,9 +106,8 @@ export function hash(seed: number): number {
  */
 export function roomOccupants(u: { occupants: number; outForMeal?: number }): number {
   const occupants = Number.isFinite(u.occupants) ? Math.max(0, u.occupants) : 0;
-  const out = u.outForMeal !== undefined && Number.isFinite(u.outForMeal)
-    ? Math.min(occupants, Math.max(0, u.outForMeal))
-    : 0;
+  const out =
+    u.outForMeal !== undefined && Number.isFinite(u.outForMeal) ? Math.min(occupants, Math.max(0, u.outForMeal)) : 0;
   return Math.ceil(Math.max(0, occupants - out));
 }
 
@@ -179,7 +178,13 @@ export function geoVariant(u: Pick<UnitView, "kind" | "floor" | "x">, axis: numb
 /** Run `draw` mirrored horizontally inside the room rect when `flip` is set:
  *  the cheapest true-geometry variant. Callers must not draw TEXT inside
  *  `draw` (it would mirror); the hotel draws its "z" outside the wrapper. */
-export function maybeMirrored(ctx: CanvasRenderingContext2D, flip: boolean, x: number, w: number, draw: () => void): void {
+export function maybeMirrored(
+  ctx: CanvasRenderingContext2D,
+  flip: boolean,
+  x: number,
+  w: number,
+  draw: () => void,
+): void {
   if (!flip) return draw();
   ctx.save();
   ctx.translate(2 * x + w, 0);
@@ -199,7 +204,15 @@ export interface RoomCtx {
  * The iconic SimTower sim: a solid silhouette. `s` is the unit pixel size
  * (figure is ~3*s wide head, ~6*s tall). Seated drops the legs.
  */
-export function person(ctx: CanvasRenderingContext2D, x: number, footY: number, s: number, seed: number, seated = false, tint?: string): void {
+export function person(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  s: number,
+  seed: number,
+  seated = false,
+  tint?: string,
+): void {
   const head = Math.max(2, Math.round(2 * s));
   const bodyW = Math.max(2, Math.round(2.4 * s));
   const bodyH = Math.max(2, Math.round((seated ? 3 : 4) * s));
@@ -215,7 +228,12 @@ export function person(ctx: CanvasRenderingContext2D, x: number, footY: number, 
   if (!seated) {
     ctx.fillStyle = PAL.ink; // little legs
     ctx.fillRect(x, footY - Math.max(1, s), Math.max(1, Math.round(s)), Math.max(1, s));
-    ctx.fillRect(x + bodyW - Math.max(1, Math.round(s)), footY - Math.max(1, s), Math.max(1, Math.round(s)), Math.max(1, s));
+    ctx.fillRect(
+      x + bodyW - Math.max(1, Math.round(s)),
+      footY - Math.max(1, s),
+      Math.max(1, Math.round(s)),
+      Math.max(1, s),
+    );
   }
 }
 
@@ -273,16 +291,36 @@ export function buildDims(build: PersonBuild): Dims {
  *  `footY` is the baseline the feet stand on; the figure rises above it.
  *  `fill` is the torso color: a mood color, or a uniform such as a
  *  pharmacist's white coat. Integer pixels. */
-export function personFigure(ctx: CanvasRenderingContext2D, x: number, footY: number, build: PersonBuild, fill: string, seed = 0): void {
+export function personFigure(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  build: PersonBuild,
+  fill: string,
+  seed = 0,
+): void {
   // A hi-vis build is a tradesperson: hard hat, uniform and reflective stripe.
-  const trade = BUILDS[build].hardhat ? { hairStyle: "hardhat", topKind: "uniform", hiVis: true } as const : {};
+  const trade = BUILDS[build].hardhat ? ({ hairStyle: "hardhat", topKind: "uniform", hiVis: true } as const) : {};
   const look = { ...CAST[castIndex(seed)], ...trade, top: fill };
   drawPerson(ctx, x, footY, look, { lit: false, pose: "stand", empty: true, dims: buildDims(build) });
 }
 
 /** A cast member in a build, wearing their own outfit unless a mood colors it. */
-function castFigure(ctx: CanvasRenderingContext2D, x: number, footY: number, build: PersonBuild, seed: number, mood: Mood): void {
-  drawPerson(ctx, x, footY, CAST[castIndex(seed)], { lit: false, pose: "stand", empty: true, mood, dims: buildDims(build) });
+function castFigure(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  build: PersonBuild,
+  seed: number,
+  mood: Mood,
+): void {
+  drawPerson(ctx, x, footY, CAST[castIndex(seed)], {
+    lit: false,
+    pose: "stand",
+    empty: true,
+    mood,
+    dims: buildDims(build),
+  });
 }
 
 /** A cast member asleep on their back, drawn with the same head, hair and
@@ -292,7 +330,14 @@ function castFigure(ctx: CanvasRenderingContext2D, x: number, footY: number, bui
  *  and columns `headX - 1` to `headX + 4 + len` (a bed shorter than six
  *  pixels of blanket still gets three). Used by a hotel bed and a condo sofa
  *  at night. */
-export function sleeper(ctx: CanvasRenderingContext2D, headX: number, headY: number, len: number, blanket: string, seed: number): void {
+export function sleeper(
+  ctx: CanvasRenderingContext2D,
+  headX: number,
+  headY: number,
+  len: number,
+  blanket: string,
+  seed: number,
+): void {
   const hx = Math.round(headX);
   const hy = Math.round(headY);
   // The head takes six columns; the blanket runs from the chin to the end.
@@ -318,21 +363,51 @@ export function sleeper(ctx: CanvasRenderingContext2D, headX: number, headY: num
 /** Named convenience builds. Each picks its cast member from the seed and
  *  colors the top for the mood, so call sites read clearly:
  *  `personWalker(ctx, x, y, seed)` or `personWalker(ctx, x, y, seed, "fedUp")`. */
-export function personSeated(ctx: CanvasRenderingContext2D, x: number, footY: number, seed: number, mood: Mood = "content"): void {
+export function personSeated(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  seed: number,
+  mood: Mood = "content",
+): void {
   castFigure(ctx, x, footY, "seated", seed, mood);
 }
-export function personStanding(ctx: CanvasRenderingContext2D, x: number, footY: number, seed: number, mood: Mood = "content"): void {
+export function personStanding(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  seed: number,
+  mood: Mood = "content",
+): void {
   castFigure(ctx, x, footY, "standing", seed, mood);
 }
-export function personWalker(ctx: CanvasRenderingContext2D, x: number, footY: number, seed: number, mood: Mood = "content"): void {
+export function personWalker(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  seed: number,
+  mood: Mood = "content",
+): void {
   castFigure(ctx, x, footY, "walker", seed, mood);
 }
 /** A rider in an elevator car, at the size the crowd draws a person on a
  *  floor, so someone stepping into a car does not shrink as they board. */
-export function personRider(ctx: CanvasRenderingContext2D, x: number, footY: number, seed: number, mood: Mood = "content"): void {
+export function personRider(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  seed: number,
+  mood: Mood = "content",
+): void {
   drawPerson(ctx, x, footY, CAST[castIndex(seed)], { lit: false, pose: "stand", empty: true, mood });
 }
-export function personHiVis(ctx: CanvasRenderingContext2D, x: number, footY: number, seed: number, mood: Mood = "content"): void {
+export function personHiVis(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  seed: number,
+  mood: Mood = "content",
+): void {
   personFigure(ctx, x, footY, "hiVis", moodTint(mood, seed), seed);
 }
 
@@ -365,7 +440,14 @@ export function ceilingFixture(ctx: CanvasRenderingContext2D, x: number, y: numb
 
 /** A wainscot dado: the lower wall below `railY` in a shaded panel with a wood
  *  rail, so the lower wall reads as trim rather than a second floor. */
-export function dado(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, railY: number, wall: string): void {
+export function dado(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  railY: number,
+  wall: string,
+): void {
   const x0 = Math.round(x);
   const ww = Math.max(1, Math.round(w));
   const ry = Math.round(railY);
@@ -382,7 +464,15 @@ export function dado(ctx: CanvasRenderingContext2D, x: number, floorY: number, w
  *  and the day band otherwise, and the distant `cityLight` windows glow only at
  *  night. The ink and slate mullion grid plus 1px sparse dots keep the view
  *  reading as background, never as occupants. */
-export function windowView(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, lit: boolean, seed: number): void {
+export function windowView(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  lit: boolean,
+  seed: number,
+): void {
   const x0 = Math.round(x);
   const y0 = Math.round(y);
   const ww = Math.max(1, Math.round(w));
@@ -408,7 +498,15 @@ export function windowView(ctx: CanvasRenderingContext2D, x: number, y: number, 
 }
 
 /** Flat back wall + ceiling seam + hard floor line. Returns the floor-line Y. */
-export function shell(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, wall: string, floor: string): number {
+export function shell(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  wall: string,
+  floor: string,
+): number {
   ctx.fillStyle = wall;
   ctx.fillRect(x, y, w, h);
   ctx.fillStyle = "rgba(42,46,56,0.22)"; // ceiling seam
@@ -430,7 +528,15 @@ export function wallItem(ctx: CanvasRenderingContext2D, x: number, y: number, w:
 }
 
 /** Rooms whose lights track whether anyone is actually inside. */
-export const POPULATED = new Set<FacilityKind>(["office", "condo", "rentalStudio", "rentalApartment", "hotelSingle", "hotelDouble", "hotelSuite"]);
+export const POPULATED = new Set<FacilityKind>([
+  "office",
+  "condo",
+  "rentalStudio",
+  "rentalApartment",
+  "hotelSingle",
+  "hotelDouble",
+  "hotelSuite",
+]);
 
 /** Amber corner ribbon marking a `vacating` (on-notice) lease. */
 export function noticeBadge(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number): void {
@@ -449,7 +555,14 @@ export function noticeBadge(ctx: CanvasRenderingContext2D, x: number, y: number,
   ctx.fillRect(x + w - 3, y + s - 3, 1, 1);
 }
 
-export function vacancy(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, label = "LEASE"): void {
+export function vacancy(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  label = "LEASE",
+): void {
   shell(ctx, x, y, w, h, "#C9CCC4", "#B2B0A4");
   ctx.strokeStyle = "rgba(255,255,255,0.07)";
   ctx.lineWidth = 1;

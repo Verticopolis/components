@@ -104,10 +104,40 @@ export const CROWD_SCENES: Record<CrowdSceneKey, CrowdSceneSpec> = {
     elements: [
       // Two typists: dark 12 ms ticks in bursts at the spec's 900 Hz seat; the
       // rate is the per-keystroke gap and the cluster adds thinking pauses.
-      { kind: "burst", freqMin: 750, freqMax: 900, dur: 0.012, gainMin: 0.02, gainMax: 0.04, rateMin: 0.08, rateVar: 0.1, cluster: { min: 4, max: 12, pauseMin: 1.2, pauseVar: 3.0 } },
-      { kind: "burst", freqMin: 750, freqMax: 900, dur: 0.012, gainMin: 0.02, gainMax: 0.04, rateMin: 0.09, rateVar: 0.09, cluster: { min: 4, max: 12, pauseMin: 1.8, pauseVar: 3.4 } },
+      {
+        kind: "burst",
+        freqMin: 750,
+        freqMax: 900,
+        dur: 0.012,
+        gainMin: 0.02,
+        gainMax: 0.04,
+        rateMin: 0.08,
+        rateVar: 0.1,
+        cluster: { min: 4, max: 12, pauseMin: 1.2, pauseVar: 3.0 },
+      },
+      {
+        kind: "burst",
+        freqMin: 750,
+        freqMax: 900,
+        dur: 0.012,
+        gainMin: 0.02,
+        gainMax: 0.04,
+        rateMin: 0.09,
+        rateVar: 0.09,
+        cluster: { min: 4, max: 12, pauseMin: 1.8, pauseVar: 3.4 },
+      },
       // Page turns: soft dark swishes, not ticks.
-      { kind: "burst", freqMin: 650, freqMax: 750, dur: 0.35, gainMin: 0.03, gainMax: 0.05, rateMin: 4, rateVar: 4, attack: 0.08 },
+      {
+        kind: "burst",
+        freqMin: 650,
+        freqMax: 750,
+        dur: 0.35,
+        gainMin: 0.03,
+        gainMax: 0.05,
+        rateMin: 4,
+        rateVar: 4,
+        attack: 0.08,
+      },
     ],
     gate: "workday",
   },
@@ -124,10 +154,30 @@ export const CROWD_SCENES: Record<CrowdSceneKey, CrowdSceneSpec> = {
     murmur: { maxTalkers: 1, pauseMin: 2.2, pauseVar: 3.0, muffleHz: 420, gain: 0.24, semi: -4 },
     elements: [
       // Cart wheel bumps rolling by in a cluster, then a long quiet hall.
-      { kind: "thud", freqMin: 64, freqMax: 76, dur: 0.12, gainMin: 0.05, gainMax: 0.09, rateMin: 0.35, rateVar: 0.25, cluster: { min: 5, max: 9, pauseMin: 9, pauseVar: 10 } },
+      {
+        kind: "thud",
+        freqMin: 64,
+        freqMax: 76,
+        dur: 0.12,
+        gainMin: 0.05,
+        gainMax: 0.09,
+        rateMin: 0.35,
+        rateVar: 0.25,
+        cluster: { min: 5, max: 9, pauseMin: 9, pauseVar: 10 },
+      },
       // A door thud down the hall (110 Hz body with its 70 Hz floor). 0.636 is
       // the 70/110 interval.
-      { kind: "thud", freqMin: 105, freqMax: 115, dur: 0.35, gainMin: 0.14, gainMax: 0.2, rateMin: 9, rateVar: 9, pair: { ratio: 0.636, delayS: 0.02, gainScale: 0.8 } },
+      {
+        kind: "thud",
+        freqMin: 105,
+        freqMax: 115,
+        dur: 0.35,
+        gainMin: 0.14,
+        gainMax: 0.2,
+        rateMin: 9,
+        rateVar: 9,
+        pair: { ratio: 0.636, delayS: 0.02, gainScale: 0.8 },
+      },
     ],
     gate: "always",
   },
@@ -139,9 +189,39 @@ export const CROWD_SCENES: Record<CrowdSceneKey, CrowdSceneSpec> = {
     // set-down, and an occasional chair scrape. Only the chair scrape uses the
     // shared mono noise voice, so nothing fights over it.
     elements: [
-      { kind: "ping", freqMin: 850, freqMax: 1250, dur: 0.2, gainMin: 0.05, gainMax: 0.13, rateMin: 0.9, rateVar: 2.4, pair: { ratio: 1.5, delayS: 0.06, gainScale: 0.7 } },
-      { kind: "thud", freqMin: 150, freqMax: 210, dur: 0.18, gainMin: 0.06, gainMax: 0.1, rateMin: 4, rateVar: 4, attack: 0.006 },
-      { kind: "burst", freqMin: 360, freqMax: 420, dur: 0.4, gainMin: 0.06, gainMax: 0.1, rateMin: 6, rateVar: 5, attack: 0.12 },
+      {
+        kind: "ping",
+        freqMin: 850,
+        freqMax: 1250,
+        dur: 0.2,
+        gainMin: 0.05,
+        gainMax: 0.13,
+        rateMin: 0.9,
+        rateVar: 2.4,
+        pair: { ratio: 1.5, delayS: 0.06, gainScale: 0.7 },
+      },
+      {
+        kind: "thud",
+        freqMin: 150,
+        freqMax: 210,
+        dur: 0.18,
+        gainMin: 0.06,
+        gainMax: 0.1,
+        rateMin: 4,
+        rateVar: 4,
+        attack: 0.006,
+      },
+      {
+        kind: "burst",
+        freqMin: 360,
+        freqMax: 420,
+        dur: 0.4,
+        gainMin: 0.06,
+        gainMax: 0.1,
+        rateMin: 6,
+        rateVar: 5,
+        attack: 0.12,
+      },
     ],
     gate: "attendance",
   },
@@ -153,9 +233,40 @@ export const CROWD_SCENES: Record<CrowdSceneKey, CrowdSceneSpec> = {
     // register and thud are pitched, so a long noise texture can't be chopped
     // by the frequent tray hits.
     elements: [
-      { kind: "burst", freqMin: 1300, freqMax: 1800, dur: 0.06, gainMin: 0.05, gainMax: 0.1, rateMin: 0.09, rateVar: 0.09, cluster: { min: 2, max: 4, pauseMin: 0.7, pauseVar: 1.6 }, attack: 0.012 },
-      { kind: "ping", freqMin: 900, freqMax: 1400, dur: 0.15, gainMin: 0.05, gainMax: 0.08, rateMin: 1.3, rateVar: 1.8, pair: { ratio: 1.33, delayS: 0.11, gainScale: 0.7 } },
-      { kind: "thud", freqMin: 120, freqMax: 170, dur: 0.2, gainMin: 0.05, gainMax: 0.08, rateMin: 3, rateVar: 4, attack: 0.006 },
+      {
+        kind: "burst",
+        freqMin: 1300,
+        freqMax: 1800,
+        dur: 0.06,
+        gainMin: 0.05,
+        gainMax: 0.1,
+        rateMin: 0.09,
+        rateVar: 0.09,
+        cluster: { min: 2, max: 4, pauseMin: 0.7, pauseVar: 1.6 },
+        attack: 0.012,
+      },
+      {
+        kind: "ping",
+        freqMin: 900,
+        freqMax: 1400,
+        dur: 0.15,
+        gainMin: 0.05,
+        gainMax: 0.08,
+        rateMin: 1.3,
+        rateVar: 1.8,
+        pair: { ratio: 1.33, delayS: 0.11, gainScale: 0.7 },
+      },
+      {
+        kind: "thud",
+        freqMin: 120,
+        freqMax: 170,
+        dur: 0.2,
+        gainMin: 0.05,
+        gainMax: 0.08,
+        rateMin: 3,
+        rateVar: 4,
+        attack: 0.006,
+      },
     ],
     gate: "attendance",
   },
@@ -163,7 +274,17 @@ export const CROWD_SCENES: Record<CrowdSceneKey, CrowdSceneSpec> = {
     murmur: { maxTalkers: 2, pauseMin: 1.2, pauseVar: 2.4, muffleHz: 950, gain: 0.3 },
     elements: [
       // Occasional soft browse rustle.
-      { kind: "burst", freqMin: 1050, freqMax: 1150, dur: 0.42, gainMin: 0.04, gainMax: 0.07, rateMin: 2.2, rateVar: 2.8, attack: 0.1 },
+      {
+        kind: "burst",
+        freqMin: 1050,
+        freqMax: 1150,
+        dur: 0.42,
+        gainMin: 0.04,
+        gainMax: 0.07,
+        rateMin: 2.2,
+        rateVar: 2.8,
+        attack: 0.1,
+      },
     ],
     gate: "attendance",
   },
@@ -193,9 +314,29 @@ export const CROWD_SCENES: Record<CrowdSceneKey, CrowdSceneSpec> = {
     murmur: { maxTalkers: 2, pauseMin: 1.6, pauseVar: 2.8, muffleHz: 520, gain: 0.3 },
     elements: [
       // Warm two-note bird chirps.
-      { kind: "ping", freqMin: 1300, freqMax: 1550, dur: 0.09, gainMin: 0.05, gainMax: 0.07, rateMin: 3, rateVar: 4.5, pair: { ratio: 1.25, delayS: 0.11, gainScale: 0.7 } },
+      {
+        kind: "ping",
+        freqMin: 1300,
+        freqMax: 1550,
+        dur: 0.09,
+        gainMin: 0.05,
+        gainMax: 0.07,
+        rateMin: 3,
+        rateVar: 4.5,
+        pair: { ratio: 1.25, delayS: 0.11, gainScale: 0.7 },
+      },
       // A distant car horn, rare (a warm dual tone).
-      { kind: "ping", freqMin: 365, freqMax: 375, dur: 0.35, gainMin: 0.07, gainMax: 0.09, rateMin: 14, rateVar: 12, pair: { ratio: 1.26, delayS: 0, gainScale: 0.8 } },
+      {
+        kind: "ping",
+        freqMin: 365,
+        freqMax: 375,
+        dur: 0.35,
+        gainMin: 0.07,
+        gainMax: 0.09,
+        rateMin: 14,
+        rateVar: 12,
+        pair: { ratio: 1.26, delayS: 0, gainScale: 0.8 },
+      },
     ],
     gate: "always",
     crowdFloor: 0.35,
@@ -310,12 +451,7 @@ export function computeCalmMask(samples: Float32Array, sampleRate: number): Uint
 
 /** True when the segment starting at `startS` for `lenS` seconds is at least
  *  85 percent calm windows. */
-export function segmentIsCalm(
-  mask: Uint8Array,
-  sampleRate: number,
-  startS: number,
-  lenS: number,
-): boolean {
+export function segmentIsCalm(mask: Uint8Array, sampleRate: number, startS: number, lenS: number): boolean {
   const win = Math.max(1, Math.floor(CALM_WINDOW_S * sampleRate));
   const w0 = Math.floor((startS * sampleRate) / win);
   const w1 = Math.floor(((startS + lenS) * sampleRate) / win);

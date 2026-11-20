@@ -63,11 +63,23 @@ class Cell {
   }
 }
 
-const tile = (kind: "floor" | "lobby", floor: number, x: number): UnitView => ({ id: NaN, kind, floor, x, width: 1, state: "empty", occupants: 0 }) as unknown as UnitView;
-const office: UnitView = { id: 7, kind: "office", floor: 2, x: 10, width: 6, state: "occupied", occupants: 0 } as unknown as UnitView;
+const tile = (kind: "floor" | "lobby", floor: number, x: number): UnitView =>
+  ({ id: NaN, kind, floor, x, width: 1, state: "empty", occupants: 0 }) as unknown as UnitView;
+const office: UnitView = {
+  id: 7,
+  kind: "office",
+  floor: 2,
+  x: 10,
+  width: 6,
+  state: "occupied",
+  occupants: 0,
+} as unknown as UnitView;
 
 /** Lobby graphics named by lighting, so a test can read which one a cell got. */
-const lobbyGfx = (lit: number): string[][] => [Array.from({ length: 16 }, (_, v) => `upper ${lit}:${v}`), Array.from({ length: 16 }, (_, v) => `ground ${lit}:${v}`)];
+const lobbyGfx = (lit: number): string[][] => [
+  Array.from({ length: 16 }, (_, v) => `upper ${lit}:${v}`),
+  Array.from({ length: 16 }, (_, v) => `ground ${lit}:${v}`),
+];
 
 function fakeEngine(state: { units: UnitView[]; revision: number; tall?: LobbyHalls }) {
   const cells = new Map<string, Cell>();
@@ -261,7 +273,9 @@ describe("the scene sync walks the structure tiles only when what they draw from
     expect(cell(8, 2)?.gfx).toHaveLength(1);
     expect(cell(8, 3)).toBeUndefined();
     // The structure pass hands the door layer the one wall between the halls.
-    expect(vi.mocked(syncHallDoors)).toHaveBeenLastCalledWith(engine, [{ floor: 1, x: 8, tall: 3, short: 2, tallOnLeft: true }]);
+    expect(vi.mocked(syncHallDoors)).toHaveBeenLastCalledWith(engine, [
+      { floor: 1, x: 8, tall: 3, short: 2, tallOnLeft: true },
+    ]);
     // The halls level out: the next full pass hands over no door.
     state.tall = lobbyHalls([1, 4, 11, 3]);
     state.revision = 6;

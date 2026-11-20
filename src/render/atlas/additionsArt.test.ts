@@ -47,7 +47,21 @@ function recordingCtx(): { ctx: CanvasRenderingContext2D; log: string[] } {
 }
 
 function room(kind: FacilityKind, extra: Partial<UnitPaint>): UnitPaint {
-  return { p: "unit", kind, state: "occupied", floor: 5, x: 17, id: 3, width: kindFacts(kind).width, occupants: 0, outForMeal: 0, lit: false, hour: 14, anim: 0, ...extra };
+  return {
+    p: "unit",
+    kind,
+    state: "occupied",
+    floor: 5,
+    x: 17,
+    id: 3,
+    width: kindFacts(kind).width,
+    occupants: 0,
+    outForMeal: 0,
+    lit: false,
+    hour: 14,
+    anim: 0,
+    ...extra,
+  };
 }
 
 function calls(s: UnitPaint): string[] {
@@ -109,13 +123,28 @@ describe("the recycling center's fill breaks", () => {
 
   it("paint the same calls as the chain step a fill lands on, at every eighth and in between", () => {
     const starts = [0, ...RECYCLE_BREAKS];
-    const fills = [0.01, 0.2, 0.37, 0.5, 0.55, 0.7, 0.70001, 0.99, 1, ...Array.from({ length: RECYCLE_STEPS + 1 }, (_, k) => k / RECYCLE_STEPS)];
+    const fills = [
+      0.01,
+      0.2,
+      0.37,
+      0.5,
+      0.55,
+      0.7,
+      0.70001,
+      0.99,
+      1,
+      ...Array.from({ length: RECYCLE_STEPS + 1 }, (_, k) => k / RECYCLE_STEPS),
+    ];
     for (const fill of fills) {
       const n = recyclingFillStep(RECYCLE_BREAKS, fill);
-      expect(calls(room("recycling", { recycleFill: fill })), `fill ${fill}`).toEqual(calls(room("recycling", { recycleFill: starts[n] })));
+      expect(calls(room("recycling", { recycleFill: fill })), `fill ${fill}`).toEqual(
+        calls(room("recycling", { recycleFill: starts[n] })),
+      );
     }
     // And a different step paints differently.
-    expect(calls(room("recycling", { recycleFill: 0.37 }))).not.toEqual(calls(room("recycling", { recycleFill: 0.38 })));
+    expect(calls(room("recycling", { recycleFill: 0.37 }))).not.toEqual(
+      calls(room("recycling", { recycleFill: 0.38 })),
+    );
   });
 
   it("bake as an alternative to the eighths on every recycling frame", () => {

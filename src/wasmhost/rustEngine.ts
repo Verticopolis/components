@@ -18,7 +18,10 @@ import { loadEngineModule, type LoadEngineOptions } from "./loadEngineModule";
  *  (see scripts/wasm-build.ts). Resolved against the page, so a relocated
  *  deployment finds it under its own base. Every file the package loads at
  *  run time is listed in engineAssets.ts, which the precache check reads. */
-export function enginePackageUrl(base = import.meta.env.BASE_URL, href = globalThis.location?.href ?? "http://localhost/"): string {
+export function enginePackageUrl(
+  base = import.meta.env.BASE_URL,
+  href = globalThis.location?.href ?? "http://localhost/",
+): string {
   return new URL(`${base}${ENGINE_DIR}${ENGINE_GLUE}`, href).href;
 }
 
@@ -26,7 +29,11 @@ export function enginePackageUrl(base = import.meta.env.BASE_URL, href = globalT
  *  (loadEngineModule). A package that passes it but lacks what this shell
  *  calls is a mismatched package too (a shell and an engine from different
  *  builds), coded so analytics tells it from a broken engine. */
-export async function loadWasmEngine(url = enginePackageUrl(), signal?: AbortSignal, opts: Omit<LoadEngineOptions, "signal"> = {}): Promise<WasmModule> {
+export async function loadWasmEngine(
+  url = enginePackageUrl(),
+  signal?: AbortSignal,
+  opts: Omit<LoadEngineOptions, "signal"> = {},
+): Promise<WasmModule> {
   const { mod } = await loadEngineModule(url, { ...opts, signal });
   try {
     return checkBinding(mod, { tooling: __TOOLING_ENGINE__ });
@@ -73,7 +80,10 @@ export interface RustEngineHandle {
 
 /** Say that the Rust engine runs the game. Published before the app is
  *  built, so the title screen's version line reads it as it renders. */
-export function publishRustEngine(port: EnginePort, g: { __vcEngine?: RustEngineHandle } = globalThis as { __vcEngine?: RustEngineHandle }): RustEngineHandle {
+export function publishRustEngine(
+  port: EnginePort,
+  g: { __vcEngine?: RustEngineHandle } = globalThis as { __vcEngine?: RustEngineHandle },
+): RustEngineHandle {
   const handle: RustEngineHandle = { status: { engine: "wasm", hosted: true, lastError: null }, port };
   g.__vcEngine = handle;
   return handle;

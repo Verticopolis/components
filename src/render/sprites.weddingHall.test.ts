@@ -19,7 +19,16 @@ function countingCtx() {
   return { ctx, fills: () => fills };
 }
 
-const hall = { id: 1, kind: "weddingHall", floor: 100, x: 40, width: 28, state: "occupied", satisfaction: 1, occupants: 2 } as Unit;
+const hall = {
+  id: 1,
+  kind: "weddingHall",
+  floor: 100,
+  x: 40,
+  width: 28,
+  state: "occupied",
+  satisfaction: 1,
+  occupants: 2,
+} as Unit;
 
 describe("the five story wedding hall sprite", () => {
   it("paints its garden crown at any x, including left of the sprite origin", () => {

@@ -14,7 +14,13 @@ import { recyclingLook, type RecyclingLook } from "../sprites/facilities/recycli
  */
 
 function sameLook(a: RecyclingLook, b: RecyclingLook): boolean {
-  return a.bags === b.bags && a.stacked === b.stacked && a.amber === b.amber && a.full === b.full && a.gaugeRows === b.gaugeRows;
+  return (
+    a.bags === b.bags &&
+    a.stacked === b.stacked &&
+    a.amber === b.amber &&
+    a.full === b.full &&
+    a.gaugeRows === b.gaugeRows
+  );
 }
 
 const view = new DataView(new ArrayBuffer(8));

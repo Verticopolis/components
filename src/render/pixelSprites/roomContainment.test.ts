@@ -18,14 +18,32 @@ function spyCtx() {
   const log: string[] = [];
   const ctx: Record<string, unknown> = {};
   for (const m of [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc",
-    "fill", "stroke", "fillRect", "strokeRect", "fillText", "translate", "scale",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "fillText",
+    "translate",
+    "scale",
   ]) {
     ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   }
   for (const q of ["fillStyle", "strokeStyle", "lineWidth", "font", "textAlign", "globalAlpha"]) {
     let v: unknown;
-    Object.defineProperty(ctx, q, { get: () => v, set: (nv) => { v = nv; log.push(`${q}=${String(nv)}`); } });
+    Object.defineProperty(ctx, q, {
+      get: () => v,
+      set: (nv) => {
+        v = nv;
+        log.push(`${q}=${String(nv)}`);
+      },
+    });
   }
   return { ctx: ctx as unknown as CanvasRenderingContext2D, log };
 }
@@ -33,8 +51,12 @@ function spyCtx() {
 /** An hour each kind is actually open. A closed venue paints its shutter and
  *  nobody at all, so measuring a bar at noon measures nothing. */
 const OPEN_HOUR: Record<string, number> = { skyBar: 20, nightclub: 22 };
-const room = (ctx: CanvasRenderingContext2D, kind?: string): RoomCtx =>
-  ({ ctx, lit: false, anim: 0, hour: OPEN_HOUR[kind ?? ""] ?? 12 });
+const room = (ctx: CanvasRenderingContext2D, kind?: string): RoomCtx => ({
+  ctx,
+  lit: false,
+  anim: 0,
+  hour: OPEN_HOUR[kind ?? ""] ?? 12,
+});
 
 /** Every fillRect the log recorded, as [x, w] pairs. */
 function rectSpans(log: string[]): [number, number][] {
@@ -73,20 +95,29 @@ function unit(over: Partial<Unit>): Unit {
 
 /** Office layout selector: `geoVariant(u, 3, 5)` picks 0-2 cubicle row, 3
  *  meeting, 4 executive. */
-const officeLayout = (n: number) => (u: Pick<Unit, "kind" | "floor" | "x">): boolean => geoVariant(u, 3, 5) === n;
+const officeLayout =
+  (n: number) =>
+  (u: Pick<Unit, "kind" | "floor" | "x">): boolean =>
+    geoVariant(u, 3, 5) === n;
 
 // Widths start at 6 tiles. Below that these kinds have never been drawable:
 // their fixed-size wall art alone is wider than the room, which is older than
 // this change and is not what these rows are about.
 const KINDS: [string, number, Partial<Unit>][] = [
   ["office", 6, { kind: "office" }],
-  ...Object.keys(AMUSEMENTS_LOOKS).map((s) => [`amusements ${s}`, 25, { kind: "amusements", subtype: s }] as [string, number, Partial<Unit>]),
-  ...Object.keys(BOUTIQUE_LOOKS).map((s) => [`boutiqueBay ${s}`, 22, { kind: "boutiqueBay", subtype: s }] as [string, number, Partial<Unit>]),
+  ...Object.keys(AMUSEMENTS_LOOKS).map(
+    (s) => [`amusements ${s}`, 25, { kind: "amusements", subtype: s }] as [string, number, Partial<Unit>],
+  ),
+  ...Object.keys(BOUTIQUE_LOOKS).map(
+    (s) => [`boutiqueBay ${s}`, 22, { kind: "boutiqueBay", subtype: s }] as [string, number, Partial<Unit>],
+  ),
   ["skyBar", 22, { kind: "skyBar" }],
   ["nightclub", 30, { kind: "nightclub" }],
   ["daycare", 14, { kind: "daycare" }],
   ["spa", 18, { kind: "spa" }],
-  ...Object.keys(FITNESS_LOOKS).map((s) => [`fitnessClub ${s}`, 20, { kind: "fitnessClub", subtype: s }] as [string, number, Partial<Unit>]),
+  ...Object.keys(FITNESS_LOOKS).map(
+    (s) => [`fitnessClub ${s}`, 20, { kind: "fitnessClub", subtype: s }] as [string, number, Partial<Unit>],
+  ),
 ];
 
 // The office picks one column per geo layout so all five are swept; the other
@@ -159,22 +190,24 @@ describe("a full room's figures stand beside each other, never through each othe
   it.each(KINDS)("%s never overlaps two figures on one baseline", (label, occupants, over) => {
     for (let W = 6 * TILE; W <= 300; W += 3) {
       const tiles = Math.round(W / TILE);
-      for (const x of columnsFor(over)) for (const ox of [0, 0.5]) {
-        const s = spyCtx();
-        drawRoom(room(s.ctx, String(over.kind)), unit({ ...over, width: tiles, occupants, x }), ox, 0, W, FLOOR);
-        const rows = new Map<number, { x0: number; x1: number }[]>();
-        for (const f of figures(s.log)) rows.set(f.foot, [...(rows.get(f.foot) ?? []), f]);
-        for (const [foot, row] of rows) {
-          const sorted = [...row].sort((a, b) => a.x0 - b.x0);
-          for (let i = 1; i < sorted.length; i++) {
-            const prev = sorted[i - 1], cur = sorted[i];
-            expect(
-              cur.x0,
-              `${label} at ${W}px, column ${x}, origin ${ox}, baseline ${foot}: a figure at ${cur.x0}-${cur.x1} overlaps the one at ${prev.x0}-${prev.x1}`,
-            ).toBeGreaterThan(prev.x1);
+      for (const x of columnsFor(over))
+        for (const ox of [0, 0.5]) {
+          const s = spyCtx();
+          drawRoom(room(s.ctx, String(over.kind)), unit({ ...over, width: tiles, occupants, x }), ox, 0, W, FLOOR);
+          const rows = new Map<number, { x0: number; x1: number }[]>();
+          for (const f of figures(s.log)) rows.set(f.foot, [...(rows.get(f.foot) ?? []), f]);
+          for (const [foot, row] of rows) {
+            const sorted = [...row].sort((a, b) => a.x0 - b.x0);
+            for (let i = 1; i < sorted.length; i++) {
+              const prev = sorted[i - 1],
+                cur = sorted[i];
+              expect(
+                cur.x0,
+                `${label} at ${W}px, column ${x}, origin ${ox}, baseline ${foot}: a figure at ${cur.x0}-${cur.x1} overlaps the one at ${prev.x0}-${prev.x1}`,
+              ).toBeGreaterThan(prev.x1);
+            }
           }
         }
-      }
     }
   });
 });

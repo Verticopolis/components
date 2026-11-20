@@ -75,12 +75,45 @@ const UNIT = { id: 7, kind: "parking", x: 0, floor: 1, width: 4, state: "occupie
 /** The six sprites, each with the tile footprint its reference was authored for.
  *  Signatures differ, so each carries its own caller. */
 const SPRITES = [
-  { name: "parking", tiles: 4, floors: 1, draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawParking(dc(c), UNIT, 0, 0, w, h) },
-  { name: "parkingRamp", tiles: 16, floors: 1, draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawParkingRamp(c, UNIT, 0, 0, w, h) },
-  { name: "security", tiles: 8, floors: 1, draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawSecurity(dc(c), { ...UNIT, kind: "security" }, 0, 0, w, h) },
-  { name: "medical", tiles: 16, floors: 1, draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawMedical(dc(c), { ...UNIT, kind: "medical" }, 0, 0, w, h) },
-  { name: "housekeeping", tiles: 8, floors: 1, draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawHousekeeping(dc(c), { ...UNIT, kind: "housekeeping" }, 0, 0, w, h) },
-  { name: "recycling", tiles: 20, floors: 2, draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawRecycling(dc(c), UNIT, 0, 0, w, h) },
+  {
+    name: "parking",
+    tiles: 4,
+    floors: 1,
+    draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawParking(dc(c), UNIT, 0, 0, w, h),
+  },
+  {
+    name: "parkingRamp",
+    tiles: 16,
+    floors: 1,
+    draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawParkingRamp(c, UNIT, 0, 0, w, h),
+  },
+  {
+    name: "security",
+    tiles: 8,
+    floors: 1,
+    draw: (c: CanvasRenderingContext2D, w: number, h: number) =>
+      drawSecurity(dc(c), { ...UNIT, kind: "security" }, 0, 0, w, h),
+  },
+  {
+    name: "medical",
+    tiles: 16,
+    floors: 1,
+    draw: (c: CanvasRenderingContext2D, w: number, h: number) =>
+      drawMedical(dc(c), { ...UNIT, kind: "medical" }, 0, 0, w, h),
+  },
+  {
+    name: "housekeeping",
+    tiles: 8,
+    floors: 1,
+    draw: (c: CanvasRenderingContext2D, w: number, h: number) =>
+      drawHousekeeping(dc(c), { ...UNIT, kind: "housekeeping" }, 0, 0, w, h),
+  },
+  {
+    name: "recycling",
+    tiles: 20,
+    floors: 2,
+    draw: (c: CanvasRenderingContext2D, w: number, h: number) => drawRecycling(dc(c), UNIT, 0, 0, w, h),
+  },
 ];
 
 /** The RETIRED footprint the references used to be drawn against, kept as
@@ -168,15 +201,25 @@ describe("service sprites on the grid they are authored for", () => {
     ["housekeeping linen", "housekeeping", ["#F4F0EC", "#CFE0FF", "#E8D8C0"], [4, 31], 12, "5x5", 6],
     ["medical bottles", "medical", ["#9FD0C8", "#E8C9A0", "#5DB4E8", "#F4A0A0", "#DCE8C0"], [95, 116], 10, "3x4", 4],
   ] as const;
-  it.each(SHELVES)("%s renders every copy at one size on one pitch", (_label, name, colors, [x0, x1], copies, size, pitch) => {
-    const sp = sprite(name);
-    const rects = paint(sp, sp.tiles * TILE, sp.floors * FLOOR);
-    const fam = rects.filter((r) => (colors as readonly string[]).includes(r.c.toUpperCase()) && r.x >= x0 && r.x + r.w <= x1 && r.w > 1 && r.h > 1);
-    expect(fam.length).toBe(copies);
-    expect(new Set(fam.map((r) => `${r.w}x${r.h}`))).toEqual(new Set([size]));
-    const xs = [...new Set(fam.map((r) => r.x))].sort((a, b) => a - b);
-    expect(new Set(xs.slice(1).map((x, i) => x - xs[i]))).toEqual(new Set([pitch]));
-  });
+  it.each(SHELVES)(
+    "%s renders every copy at one size on one pitch",
+    (_label, name, colors, [x0, x1], copies, size, pitch) => {
+      const sp = sprite(name);
+      const rects = paint(sp, sp.tiles * TILE, sp.floors * FLOOR);
+      const fam = rects.filter(
+        (r) =>
+          (colors as readonly string[]).includes(r.c.toUpperCase()) &&
+          r.x >= x0 &&
+          r.x + r.w <= x1 &&
+          r.w > 1 &&
+          r.h > 1,
+      );
+      expect(fam.length).toBe(copies);
+      expect(new Set(fam.map((r) => `${r.w}x${r.h}`))).toEqual(new Set([size]));
+      const xs = [...new Set(fam.map((r) => r.x))].sort((a, b) => a - b);
+      expect(new Set(xs.slice(1).map((x, i) => x - xs[i]))).toEqual(new Set([pitch]));
+    },
+  );
 
   it.each(SPRITES.map((s) => [s.name, s] as const))(
     "%s draws the same rect count at the shipped scale as at the retired one",
@@ -191,7 +234,8 @@ describe("service sprites on the grid they are authored for", () => {
       // change in the other scale, so also require the paint to be real: some
       // rects, none of them empty, at both scales.
       expect(now.length).toBeGreaterThan(0);
-      for (const r of [...ref, ...now]) expect(Math.min(r.w, r.h), `${sp.name} ${r.x},${r.y} ${r.w}x${r.h} ${r.c}`).toBeGreaterThan(0);
+      for (const r of [...ref, ...now])
+        expect(Math.min(r.w, r.h), `${sp.name} ${r.x},${r.y} ${r.w}x${r.h} ${r.c}`).toBeGreaterThan(0);
     },
   );
 
@@ -211,7 +255,8 @@ describe("service sprites on the grid they are authored for", () => {
       refMapCalls.length = 0;
       paint(sp, boxW, sp.floors * FLOOR);
       expect(refMapCalls.length).toBeGreaterThan(0);
-      for (const c of refMapCalls) expect(c).toEqual({ RW: sp.tiles * TILE, RH: sp.floors * FLOOR, w: boxW, h: sp.floors * FLOOR });
+      for (const c of refMapCalls)
+        expect(c).toEqual({ RW: sp.tiles * TILE, RH: sp.floors * FLOOR, w: boxW, h: sp.floors * FLOOR });
     },
   );
 
@@ -219,18 +264,23 @@ describe("service sprites on the grid they are authored for", () => {
     ["the security monitor bodies", "security", "#0E1420", 10],
     ["the recycling baled recyclables", "recycling", "#2E323A", 5],
     ["the recycling sign letters", "recycling", "#DCE8C0", 5],
-  ] as const)("%s still render at one size at the retired footprint, where the map resamples", (_label, name, color, atLeast) => {
-    // The shipped scale is identity, so `F` and `Fu` agree there and the
-    // uniform-size tests above could not tell them apart. Off identity is where
-    // `Fu` earns its keep. No shipped path hands the painters another size (the
-    // gallery and preview draw at world size and zoom with `ctx.scale`), so this
-    // holds the families to one size for a caller that does. Swapping `Fu` for
-    // `F` in one of these motifs breaks it.
-    const sp = sprite(name);
-    const fam = paint(sp, sp.tiles * REF_TILE, sp.floors * REF_FLOOR).filter((r) => r.c.toUpperCase() === color.toUpperCase());
-    expect(fam.length).toBeGreaterThanOrEqual(atLeast);
-    expect(new Set(fam.map((r) => `${r.w}x${r.h}`)).size).toBe(1);
-  });
+  ] as const)(
+    "%s still render at one size at the retired footprint, where the map resamples",
+    (_label, name, color, atLeast) => {
+      // The shipped scale is identity, so `F` and `Fu` agree there and the
+      // uniform-size tests above could not tell them apart. Off identity is where
+      // `Fu` earns its keep. No shipped path hands the painters another size (the
+      // gallery and preview draw at world size and zoom with `ctx.scale`), so this
+      // holds the families to one size for a caller that does. Swapping `Fu` for
+      // `F` in one of these motifs breaks it.
+      const sp = sprite(name);
+      const fam = paint(sp, sp.tiles * REF_TILE, sp.floors * REF_FLOOR).filter(
+        (r) => r.c.toUpperCase() === color.toUpperCase(),
+      );
+      expect(fam.length).toBeGreaterThanOrEqual(atLeast);
+      expect(new Set(fam.map((r) => `${r.w}x${r.h}`)).size).toBe(1);
+    },
+  );
 
   it.each(SHELVES)("%s still render at one size at the retired footprint", (_label, name, colors, [x0, x1], copies) => {
     // The same swap guard for the shelf families: they are checked only at
@@ -308,13 +358,24 @@ describe("service sprites on the grid they are authored for", () => {
     // art. At identity the two sizing rules must agree exactly, and every sprite
     // now ships at its authored footprint, so this is the case they all run in.
     const probe: Array<[number, number, number, number]> = [
-      [0, 0, 80, 45], [6, 6, 7, 9], [15, 6, 7, 9], [53, 31, 24, 8],
-      [71, 13, 1, 2], [0, 0, 1, 1], [79, 44, 1, 1], [3, 7, 5, 13],
+      [0, 0, 80, 45],
+      [6, 6, 7, 9],
+      [15, 6, 7, 9],
+      [53, 31, 24, 8],
+      [71, 13, 1, 2],
+      [0, 0, 1, 1],
+      [79, 44, 1, 1],
+      [3, 7, 5, 13],
     ];
     // Every footprint this file draws, parking's 40 x 45 included. This probes
     // the map at each size; that each painter really passes its own size is the
     // call-site test above.
-    for (const [RW, RH] of [[40, 45], [80, 45], [160, 45], [200, 90]] as const) {
+    for (const [RW, RH] of [
+      [40, 45],
+      [80, 45],
+      [160, 45],
+      [200, 90],
+    ] as const) {
       const a = recorder();
       const b = recorder();
       const fa = refMap(a.ctx, 0, 0, RW, RH, RW, RH);

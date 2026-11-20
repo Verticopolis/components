@@ -1,7 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { SKY_HEADROOM_FLOORS } from "../cameraBounds";
 import { extentFloors, fitLayout, mapExtent } from "./geometry";
-import { HEAT_BAD_FROM, HEAT_MIDDLING_FROM, HEAT_MODE_OF_VIEW, HEAT_VIEW_STYLE, HeatMarks, heatBand, OCCUPANCY_LEGEND, paintHeatMarks, TRAFFIC_LEGEND, type HeatBand } from "./heatView";
+import {
+  HEAT_BAD_FROM,
+  HEAT_MIDDLING_FROM,
+  HEAT_MODE_OF_VIEW,
+  HEAT_VIEW_STYLE,
+  HeatMarks,
+  heatBand,
+  OCCUPANCY_LEGEND,
+  paintHeatMarks,
+  TRAFFIC_LEGEND,
+  type HeatBand,
+} from "./heatView";
 import type { MapPaintContext, PatternSource } from "./paint";
 import { contrastRatio, hexLuminance, patternInk } from "./style";
 import { MAP_BACKDROP } from "./viewMark";
@@ -38,14 +49,24 @@ describe("the heat views' bands", () => {
     for (const band of BANDS) {
       const { fill, pattern } = HEAT_VIEW_STYLE[band];
       const lum = hexLuminance(fill)!;
-      if (pattern !== "solid") expect(contrastRatio(lum, hexLuminance(patternInk(fill))!), band).toBeGreaterThanOrEqual(3);
-      for (const [where, color] of Object.entries(MAP_BACKDROP)) expect(contrastRatio(lum, hexLuminance(color)!), `${band} on the ${where}`).toBeGreaterThanOrEqual(3);
+      if (pattern !== "solid")
+        expect(contrastRatio(lum, hexLuminance(patternInk(fill))!), band).toBeGreaterThanOrEqual(3);
+      for (const [where, color] of Object.entries(MAP_BACKDROP))
+        expect(contrastRatio(lum, hexLuminance(color)!), `${band} on the ${where}`).toBeGreaterThanOrEqual(3);
     }
   });
 
   it("lists each band once in each legend, best first", () => {
-    expect(TRAFFIC_LEGEND.map((e) => [e.label, e.band])).toEqual([["Clear", "good"], ["Busy", "middling"], ["Jammed", "bad"]]);
-    expect(OCCUPANCY_LEGEND.map((e) => [e.label, e.band])).toEqual([["Mostly full", "good"], ["Half full", "middling"], ["Mostly empty", "bad"]]);
+    expect(TRAFFIC_LEGEND.map((e) => [e.label, e.band])).toEqual([
+      ["Clear", "good"],
+      ["Busy", "middling"],
+      ["Jammed", "bad"],
+    ]);
+    expect(OCCUPANCY_LEGEND.map((e) => [e.label, e.band])).toEqual([
+      ["Mostly full", "good"],
+      ["Half full", "middling"],
+      ["Mostly empty", "bad"],
+    ]);
     for (const e of [...TRAFFIC_LEGEND, ...OCCUPANCY_LEGEND]) expect(e.style).toBe(HEAT_VIEW_STYLE[e.band]);
   });
 });
@@ -70,7 +91,9 @@ describe("HeatMarks", () => {
     expect([marks.floorsIn("good"), marks.floorsIn("middling"), marks.floorsIn("bad")]).toEqual([1, 1, 2]);
     expect(marks.bandAt(1)).toBe("middling");
     const rect = marks.rectAt(0);
-    expect(rect.w).toBe(Math.round((41 - EXTENT.leftTile) * layout.pxPerTile) - Math.round((10 - EXTENT.leftTile) * layout.pxPerTile));
+    expect(rect.w).toBe(
+      Math.round((41 - EXTENT.leftTile) * layout.pxPerTile) - Math.round((10 - EXTENT.leftTile) * layout.pxPerTile),
+    );
     expect(rect.h).toBeGreaterThan(0);
     expect(marks.rectAt(1).y).toBeLessThan(rect.y);
   });

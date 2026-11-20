@@ -1,7 +1,15 @@
 import { catalogFor } from "../../tests/catalogFixture";
 import { strFromU8, strToU8, unzipSync } from "fflate";
 import { describe, expect, it } from "vitest";
-import { buildArchive, checkLayers, checkPages, kindsWithoutFurniture, signature, softLayerDrift, ARCHIVE_ROOT } from "./archive";
+import {
+  buildArchive,
+  checkLayers,
+  checkPages,
+  kindsWithoutFurniture,
+  signature,
+  softLayerDrift,
+  ARCHIVE_ROOT,
+} from "./archive";
 import { bake, ImageStore, type Renderer } from "./bake";
 import type { Job, StillJob } from "./catalog";
 import type { PaintSpec } from "./paint";
@@ -34,7 +42,14 @@ const fake: Renderer = {
 };
 
 const solid = (css: string): PaintSpec => ({ p: "solid", css });
-const car = (riders: number): PaintSpec => ({ p: "car", kind: "elevatorStandard", seed: 0, riders, arrow: null, full: false });
+const car = (riders: number): PaintSpec => ({
+  p: "car",
+  kind: "elevatorStandard",
+  seed: 0,
+  riders,
+  arrow: null,
+  full: false,
+});
 
 describe("bake", () => {
   const jobs: Job[] = [
@@ -52,7 +67,17 @@ describe("bake", () => {
       chains: { riders: { input: "riders", steps: [car(0), car(1), car(2), car(2), car(9), car(9)] } },
       overlays: { same: car(0), one: car(1) },
     },
-    { type: "anim", name: "loop", w: 1, h: 1, anchor: { x: 0, y: 0 }, keys: { k: 1 }, dt: 0.5, loop: true, frames: [solid("1"), solid("2")] },
+    {
+      type: "anim",
+      name: "loop",
+      w: 1,
+      h: 1,
+      anchor: { x: 0, y: 0 },
+      keys: { k: 1 },
+      dt: 0.5,
+      loop: true,
+      frames: [solid("1"), solid("2")],
+    },
   ];
   const r = bake(jobs, fake);
 
@@ -142,7 +167,8 @@ describe("bake", () => {
     for (const f of r2.frames) {
       const rec = a.manifest.frames[f.name];
       const rebuilt = blank(f.w, f.h);
-      for (const p of rec.parts) blit(rebuilt, a.pages[p.rect.page], p.rect.x, p.rect.y, p.rect.w, p.rect.h, p.dx, p.dy);
+      for (const p of rec.parts)
+        blit(rebuilt, a.pages[p.rect.page], p.rect.x, p.rect.y, p.rect.w, p.rect.h, p.dx, p.dy);
       expect(sameImage(rebuilt, composeFrame(r2, f)), f.name).toBe(true);
       for (const [k, c] of Object.entries(rec.chains ?? {})) {
         c.steps.forEach((p, i) => {
@@ -179,13 +205,24 @@ describe("bake", () => {
     expect(wide.h).toBe(plain.h);
     expect(Array.from(wide.data.subarray(0, 4))).toEqual(Array.from(plain.data.subarray(0, 4)));
     const last = (plain.w - 1) * 4;
-    expect(Array.from(wide.data.subarray((wide.w - 1) * 4, wide.w * 4))).toEqual(Array.from(plain.data.subarray(last, last + 4)));
+    expect(Array.from(wide.data.subarray((wide.w - 1) * 4, wide.w * 4))).toEqual(
+      Array.from(plain.data.subarray(last, last + 4)),
+    );
     expect(compareImages(two, two)).toEqual({ mismatches: 0, box: undefined });
     expect(compareImages(two, blank(4, 1))).toMatchObject({ mismatches: 2, box: { x0: 0, x1: 1 } });
     expect(compareImages(two, blank(2, 1)).mismatches).toBe(4);
   });
   it("refuses a layer too wide for one page", () => {
-    const wide: Job = { type: "still", name: "w", w: 60, h: 1, anchor: { x: 0, y: 0 }, keys: {}, paint: car(0), overlays: { o: car(60) } };
+    const wide: Job = {
+      type: "still",
+      name: "w",
+      w: 60,
+      h: 1,
+      anchor: { x: 0, y: 0 },
+      keys: {},
+      paint: car(0),
+      overlays: { o: car(60) },
+    };
     const info = { version: "1", commit: "x", attribution: "a", licenseText: "", catalog: catalogFor("modern") };
     expect(() => buildArchive(bake([wide], fake), info, undefined, 32)).toThrow(/layers must fit one page/);
   });
@@ -194,7 +231,10 @@ describe("bake", () => {
 /** A fake room for the depth split: spec `room:<shell>:<furniture>[:haze]`
  *  paints a w x h block in the shell color, then its last pixel in the
  *  furniture color (translucent with `haze`); its shell pass is the block. */
-const room = (shell: number, furniture: number, haze = false): PaintSpec => ({ p: "solid", css: `room:${shell}:${furniture}${haze ? ":haze" : ""}` });
+const room = (shell: number, furniture: number, haze = false): PaintSpec => ({
+  p: "solid",
+  css: `room:${shell}:${furniture}${haze ? ":haze" : ""}`,
+});
 function roomPixels(spec: PaintSpec, w: number, h: number, withFurniture: boolean): Image | null {
   if (spec.p !== "solid" || !spec.css.startsWith("room:")) return null;
   const [, a, b, haze] = spec.css.split(":");
@@ -210,7 +250,16 @@ const layeredFake: Renderer = {
 const flatFake: Renderer = { render: layeredFake.render };
 
 describe("depth layers", () => {
-  const still = (name: string, paint: PaintSpec, layers = true): Job => ({ type: "still", name, w: 4, h: 2, anchor: { x: 0, y: 0 }, keys: {}, paint, layers });
+  const still = (name: string, paint: PaintSpec, layers = true): Job => ({
+    type: "still",
+    name,
+    w: 4,
+    h: 2,
+    anchor: { x: 0, y: 0 },
+    keys: {},
+    paint,
+    layers,
+  });
   const jobs: Job[] = [
     still("r1", room(5, 6)),
     still("plain", solid("3")),
@@ -239,12 +288,15 @@ describe("depth layers", () => {
     expect(flat.frames.some((f) => f.layers)).toBe(false);
   });
   it("gives back every layered frame from its shell plus its furniture", () => {
-    for (const f of layered.frames.filter((fr) => fr.layers)) expect(sameImage(composeLayered(layered, f), composeFrame(layered, f)), f.name).toBe(true);
+    for (const f of layered.frames.filter((fr) => fr.layers))
+      expect(sameImage(composeLayered(layered, f), composeFrame(layered, f)), f.name).toBe(true);
     expect(() => composeLayered(layered, byName(layered, "plain"))).toThrow(/no depth layers/);
   });
   it("stores every frame image exactly as a bake without layers does", () => {
     expect(layered.frameImages).toBe(flat.images.length);
-    flat.images.forEach((img, i) => expect(sameImage(layered.images[i], img) && sameImage(layered.normals[i], flat.normals[i])).toBe(true));
+    flat.images.forEach((img, i) =>
+      expect(sameImage(layered.images[i], img) && sameImage(layered.normals[i], flat.normals[i])).toBe(true),
+    );
     layered.frames.forEach((f, i) => {
       const { layers: _layers, ...rest } = f;
       expect(rest).toEqual(flat.frames[i]);
@@ -267,7 +319,9 @@ describe("depth layers", () => {
     const a = buildArchive(layered, info, undefined, 32);
     const b = buildArchive(flat, info, undefined, 32);
     expect(a.pages.length).toBeGreaterThan(b.pages.length);
-    b.pages.forEach((page, i) => expect(sameImage(a.pages[i], page) && sameImage(a.normalPages[i], b.normalPages[i])).toBe(true));
+    b.pages.forEach((page, i) =>
+      expect(sameImage(a.pages[i], page) && sameImage(a.normalPages[i], b.normalPages[i])).toBe(true),
+    );
     for (const [name, rec] of Object.entries(b.manifest.frames)) {
       const { layers, ...rest } = a.manifest.frames[name];
       expect(rest).toEqual(rec);
@@ -287,12 +341,35 @@ describe("depth layers", () => {
   });
   it("names a split kind whose frames never hold furniture", () => {
     const placed = { rect: { page: 0, x: 0, y: 0, w: 1, h: 1 }, dx: 0, dy: 0 };
-    const rec = (kind: string, furniture: (typeof placed)[]) => ({ w: 1, h: 1, anchor: { x: 0, y: 0 }, parts: [placed], keys: { kind }, layers: { shell: [placed], furniture } });
-    const frames = { a: rec("office", []), b: rec("office", [placed]), c: rec("spa", []), d: { ...rec("shop", []), layers: undefined } };
+    const rec = (kind: string, furniture: (typeof placed)[]) => ({
+      w: 1,
+      h: 1,
+      anchor: { x: 0, y: 0 },
+      parts: [placed],
+      keys: { kind },
+      layers: { shell: [placed], furniture },
+    });
+    const frames = {
+      a: rec("office", []),
+      b: rec("office", [placed]),
+      c: rec("spa", []),
+      d: { ...rec("shop", []), layers: undefined },
+    };
     expect(kindsWithoutFurniture({ frames })).toEqual(["spa"]);
   });
   it("splits every frame of an animation that asks for it, and leaves its frame images alone", () => {
-    const anim: Job = { type: "anim", name: "door", w: 4, h: 2, anchor: { x: 0, y: 0 }, keys: { kind: "lobby" }, dt: 1, loop: true, frames: [room(5, 6), room(5, 7)], layers: true };
+    const anim: Job = {
+      type: "anim",
+      name: "door",
+      w: 4,
+      h: 2,
+      anchor: { x: 0, y: 0 },
+      keys: { kind: "lobby" },
+      dt: 1,
+      loop: true,
+      frames: [room(5, 6), room(5, 7)],
+      layers: true,
+    };
     const split = bake([anim], layeredFake);
     const plain = bake([{ ...anim, layers: false }], layeredFake);
     expect(split.frames.map((f) => [f.name, !!f.layers])).toEqual([
@@ -301,7 +378,8 @@ describe("depth layers", () => {
     ]);
     expect(split.frames.map((f) => f.image)).toEqual(plain.frames.map((f) => f.image));
     expect(split.animations).toEqual(plain.animations);
-    for (const f of split.frames) expect(sameImage(composeLayered(split, f), composeFrame(split, f)), f.name).toBe(true);
+    for (const f of split.frames)
+      expect(sameImage(composeLayered(split, f), composeFrame(split, f)), f.name).toBe(true);
     expect(checkLayers(buildArchive(split, info, undefined, 32))).toEqual([]);
   });
   it("packs a family on pages of its own after the earlier families, leaving their pages as they were", () => {
@@ -311,7 +389,8 @@ describe("depth layers", () => {
     const a = buildArchive(layered, info, undefined, 32);
     const b = buildArchive(both, info, undefined, 32);
     // The earlier frame pages come out the same, the new family after them.
-    const framePages = Math.max(...Object.values(a.manifest.frames).flatMap((f) => f.parts.map((p) => p.rect.page))) + 1;
+    const framePages =
+      Math.max(...Object.values(a.manifest.frames).flatMap((f) => f.parts.map((p) => p.rect.page))) + 1;
     for (let p = 0; p < framePages; p++) expect(sameImage(a.pages[p], b.pages[p]), `page ${p}`).toBe(true);
     expect(b.manifest.frames.later.parts[0].rect.page).toBeGreaterThanOrEqual(framePages);
     expect(() => bake([later, ...jobs], layeredFake)).toThrow(/comes after a family on pages of its own/);
@@ -321,12 +400,15 @@ describe("depth layers", () => {
     expect(three.groups).toEqual([layered.frameImages!, layered.frameImages! + 1]);
     const c = buildArchive(three, info, undefined, 32);
     // Every frame page so far (the layers' own pages come after all of them).
-    const laterPages = Math.max(...Object.values(b.manifest.frames).flatMap((f) => f.parts.map((p) => p.rect.page))) + 1;
+    const laterPages =
+      Math.max(...Object.values(b.manifest.frames).flatMap((f) => f.parts.map((p) => p.rect.page))) + 1;
     for (let p = 0; p < laterPages; p++) expect(sameImage(b.pages[p], c.pages[p]), `page ${p}`).toBe(true);
     expect(c.manifest.frames.last.parts[0].rect.page).toBeGreaterThan(c.manifest.frames.later.parts[0].rect.page);
   });
   it("refuses a frame-image count outside the images", () => {
-    expect(() => buildArchive({ ...layered, frameImages: layered.images.length + 1 }, info, undefined, 32)).toThrow(/frameImages/);
+    expect(() => buildArchive({ ...layered, frameImages: layered.images.length + 1 }, info, undefined, 32)).toThrow(
+      /frameImages/,
+    );
   });
 });
 
@@ -366,7 +448,9 @@ describe("depth layers on occupant steps", () => {
     anchor: { x: 0, y: 0 },
     keys: { kind: "office" },
     paint: lit(0, fade),
-    chains: { occupants: { input: "visibleOccupants", steps: [lit(0, fade), lit(1, fade), lit(2, fade), lit(2, fade)] } },
+    chains: {
+      occupants: { input: "visibleOccupants", steps: [lit(0, fade), lit(1, fade), lit(2, fade), lit(2, fade)] },
+    },
     layers: true,
   });
   const stats = { softDropped: [] as string[] };
@@ -385,7 +469,10 @@ describe("depth layers on occupant steps", () => {
   });
   it("gives back the flat frame plus its steps exactly at every occupant count", () => {
     for (let n = 0; n <= 4; n++) {
-      expect(sameImage(composeLayered(r, lit0, { occupants: n }), composeFrame(r, lit0, { occupants: n })), `n = ${n}`).toBe(true);
+      expect(
+        sameImage(composeLayered(r, lit0, { occupants: n }), composeFrame(r, lit0, { occupants: n })),
+        `n = ${n}`,
+      ).toBe(true);
     }
     const a = buildArchive(r, info, undefined, 32);
     expect(checkLayers(a)).toEqual([]);
@@ -399,7 +486,8 @@ describe("depth layers on occupant steps", () => {
     const viaSoft = composeLayered(r, lit0, { occupants: 2 }, [], true);
     const flat2 = composeFrame(r, lit0, { occupants: 2 });
     const off: number[] = [];
-    for (let i = 0; i < 8; i++) if (viaSoft.data.slice(i * 4, i * 4 + 4).some((v, c) => v !== flat2.data[i * 4 + c])) off.push(i);
+    for (let i = 0; i < 8; i++)
+      if (viaSoft.data.slice(i * 4, i * 4 + 4).some((v, c) => v !== flat2.data[i * 4 + c])) off.push(i);
     expect(off).toEqual([1]);
     const drift = softLayerDrift(buildArchive(r, info, undefined, 32));
     expect(drift.frames).toBe(1);
@@ -418,13 +506,21 @@ describe("depth layers on occupant steps", () => {
   });
   it("refuses a layered frame with two chains, or a step whose paint marks no break, and keeps its overlays", () => {
     const steps = room("x").chains!.occupants;
-    expect(() => bake([{ ...room("two"), chains: { a: steps, b: steps } }], litFake)).toThrow(/two: depth layers need at most one chain/);
+    expect(() => bake([{ ...room("two"), chains: { a: steps, b: steps } }], litFake)).toThrow(
+      /two: depth layers need at most one chain/,
+    );
     // Overlays are fine: they draw last, over the furniture, as over the flat frame.
     const over = bake([{ ...room("over"), overlays: { lamp: lit(1) } }], litFake);
     const f = over.frames[0];
     expect(f.layers).toBeDefined();
-    expect(sameImage(composeLayered(over, f, { occupants: 2 }, ["lamp"]), composeFrame(over, f, { occupants: 2 }, ["lamp"]))).toBe(true);
-    const noBreak: Renderer = { ...litFake, renderShell: (spec, w, h) => (spec.p === "solid" && spec.css === "lit:1" ? null : litFake.renderShell!(spec, w, h)) };
+    expect(
+      sameImage(composeLayered(over, f, { occupants: 2 }, ["lamp"]), composeFrame(over, f, { occupants: 2 }, ["lamp"])),
+    ).toBe(true);
+    const noBreak: Renderer = {
+      ...litFake,
+      renderShell: (spec, w, h) =>
+        spec.p === "solid" && spec.css === "lit:1" ? null : litFake.renderShell!(spec, w, h),
+    };
     expect(() => bake([room("gap")], noBreak)).toThrow(/gap: chain occupants step 1 marks no layer break/);
   });
   it("names a layered frame whose chain has no depth split, or no soft steps", () => {
@@ -437,7 +533,12 @@ describe("depth layers on occupant steps", () => {
     expect(checkLayers(b)).toEqual(["lit"]);
   });
   it("leaves out the soft furniture, and counts the frame, when the soft pass fails or gives nothing", () => {
-    for (const renderSoft of [() => null, () => { throw new LayerError("soft marks"); }] as Renderer["renderSoft"][]) {
+    for (const renderSoft of [
+      () => null,
+      () => {
+        throw new LayerError("soft marks");
+      },
+    ] as Renderer["renderSoft"][]) {
       const got = { softDropped: [] as string[] };
       const out = bake([room("bare")], { ...litFake, renderSoft }, undefined, got);
       expect(out.frames[0].layers!.soft).toBeUndefined();
@@ -448,7 +549,14 @@ describe("depth layers on occupant steps", () => {
   it("measures the soft furniture of a layered frame with no chain", () => {
     const { chains: _, ...still } = room("still");
     const one = bake([still], litFake);
-    expect(softLayerDrift(buildArchive(one, info, undefined, 32))).toMatchObject({ frames: 1, pictures: 1, pixels: 2, differing: 1, outside: 0, worst: "still" });
+    expect(softLayerDrift(buildArchive(one, info, undefined, 32))).toMatchObject({
+      frames: 1,
+      pictures: 1,
+      pixels: 2,
+      differing: 1,
+      outside: 0,
+      worst: "still",
+    });
   });
   it("names a layered frame that breaks the manifest's depth rules", () => {
     const step0 = buildArchive(r, info, undefined, 32);

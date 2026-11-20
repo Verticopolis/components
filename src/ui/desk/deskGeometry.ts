@@ -52,7 +52,12 @@ export const TOOLS_WIDTH = 184;
  *  Info down the right. `infoH` and `mapH` are the heights Info and the Map
  *  really have once measured. Fixed-size windows take their own size, so
  *  only their corner counts, and Info its width. */
-export function defaultLayout(deskW: number, deskH: number, infoH = INFO_HEIGHT, mapH = MAP_HEIGHT): Record<DeskWindowId, DeskRect> {
+export function defaultLayout(
+  deskW: number,
+  deskH: number,
+  infoH = INFO_HEIGHT,
+  mapH = MAP_HEIGHT,
+): Record<DeskWindowId, DeskRect> {
   const g = DESK_GAP;
   const sideX = Math.max(g, deskW - SIDE_COLUMN - g);
   const towerX = TOOLS_WIDTH + 2 * g;
@@ -91,7 +96,15 @@ export function fitRect(rect: DeskRect, deskW: number, deskH: number, limits: Si
 
 /** The size a resize drag asks for, held to the window's limits and to what
  *  is left of the desk past the window's corner. `heightOnly` keeps the width. */
-export function resizedTo(start: DeskRect, dx: number, dy: number, limits: SizeLimits, deskW: number, deskH: number, heightOnly: boolean): DeskRect {
+export function resizedTo(
+  start: DeskRect,
+  dx: number,
+  dy: number,
+  limits: SizeLimits,
+  deskW: number,
+  deskH: number,
+  heightOnly: boolean,
+): DeskRect {
   const w = heightOnly ? start.w : Math.max(limits.minW, Math.min(start.w + dx, deskW - start.x));
   const h = Math.max(limits.minH, Math.min(start.h + dy, deskH - start.y));
   return { x: start.x, y: start.y, w: Math.round(w), h: Math.round(h) };

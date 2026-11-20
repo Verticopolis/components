@@ -9,7 +9,10 @@ import { syncMotion } from "./towerCrowd";
 vi.mock("./towerReconcile", () => ({ syncScene: vi.fn(), syncFacade: vi.fn() }));
 vi.mock("./towerCrowd", () => ({ syncMotion: vi.fn() }));
 // The frame prelude (towerFrame) calls the overlay's event-visual sync directly.
-vi.mock("./towerOverlay", async (orig) => ({ ...(await orig<typeof import("./towerOverlay")>()), syncEventFx: vi.fn() }));
+vi.mock("./towerOverlay", async (orig) => ({
+  ...(await orig<typeof import("./towerOverlay")>()),
+  syncEventFx: vi.fn(),
+}));
 
 /** A whitebox stand-in for the scene the frame pump runs on. */
 function fakeEngine(updateMotion: () => void, reconcileCrowd: () => void): any {

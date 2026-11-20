@@ -35,12 +35,8 @@ export function createRain(dryBus: Tone.ToneAudioNode): RainVoices {
     const lfo = track(new Tone.LFO({ frequency: 0.3, min: 0.7, max: 1 }));
     lfo.connect(swell.gain);
     lfo.start();
-    const bandLp = track(
-      new Tone.Filter({ type: "lowpass", frequency: 3000, Q: 0.5 }).connect(swell),
-    );
-    const bandHp = track(
-      new Tone.Filter({ type: "highpass", frequency: 600, Q: 0.5 }).connect(bandLp),
-    );
+    const bandLp = track(new Tone.Filter({ type: "lowpass", frequency: 3000, Q: 0.5 }).connect(swell));
+    const bandHp = track(new Tone.Filter({ type: "highpass", frequency: 600, Q: 0.5 }).connect(bandLp));
     const noise = track(new Tone.Noise({ type: "pink", playbackRate: 1.3 }).connect(bandHp));
     noise.volume.value = -12;
     noise.start();

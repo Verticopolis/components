@@ -29,9 +29,43 @@ import { VENDORED_ICON_PATHS } from "./iconPaths.generated";
  */
 
 export type IconName =
-  | "brand" | "save" | "sound" | "mute" | "stats" | "map" | "settings" | "inspect" | "bulldoze" | "milestone" | "trophy" | "fire" | "bomb" | "rescue" | "car" | "money" | "security" | "housekeeping" | "cockroach" | "santa" | "garbage" | "warning"
-  | "pause" | "speed1" | "speed2" | "speed3" | "undo" | "redo" | "menu" | "update" | "install" | "back"
-  | "play" | "help" | "folder" | "plus" | "heart";
+  | "brand"
+  | "save"
+  | "sound"
+  | "mute"
+  | "stats"
+  | "map"
+  | "settings"
+  | "inspect"
+  | "bulldoze"
+  | "milestone"
+  | "trophy"
+  | "fire"
+  | "bomb"
+  | "rescue"
+  | "car"
+  | "money"
+  | "security"
+  | "housekeeping"
+  | "cockroach"
+  | "santa"
+  | "garbage"
+  | "warning"
+  | "pause"
+  | "speed1"
+  | "speed2"
+  | "speed3"
+  | "undo"
+  | "redo"
+  | "menu"
+  | "update"
+  | "install"
+  | "back"
+  | "play"
+  | "help"
+  | "folder"
+  | "plus"
+  | "heart";
 
 interface IconPath {
   d: string;
@@ -57,8 +91,15 @@ const CUSTOM: Partial<Record<IconName, IconPath[]>> = {
   // The muted speaker shares the exact `sound` speaker (pixelarticons volume-2,
   // waves removed) so the toggle only swaps the two waves for an X, and the
   // speaker never shifts under the glyph as it flips.
-  mute: [{ d: "M13 22h-2v-2H9v-2h2V6H9V4h2V2h2v20ZM9 18H7v-2h2v2ZM7 10H5v4h2v2H3V8h4v2ZM9 8H7V6h2v2Z" }, { d: "M15 8h2v2h-2zM19 8h2v2h-2zM17 10h2v2h-2zM15 12h2v2h-2zM19 12h2v2h-2z" }],
-  bomb: [{ d: "M8 12h8v2H8zM6 14h12v6H6zM8 20h8v2H8zM15 10h2v2h-2zM17 8h2v2h-2zM19 6h2v2h-2zM19 2h2v2h-2zM17 4h2v2h-2zM21 4h2v2h-2z" }],
+  mute: [
+    { d: "M13 22h-2v-2H9v-2h2V6H9V4h2V2h2v20ZM9 18H7v-2h2v2ZM7 10H5v4h2v2H3V8h4v2ZM9 8H7V6h2v2Z" },
+    { d: "M15 8h2v2h-2zM19 8h2v2h-2zM17 10h2v2h-2zM15 12h2v2h-2zM19 12h2v2h-2z" },
+  ],
+  bomb: [
+    {
+      d: "M8 12h8v2H8zM6 14h12v6H6zM8 20h8v2H8zM15 10h2v2h-2zM17 8h2v2h-2zM19 6h2v2h-2zM19 2h2v2h-2zM17 4h2v2h-2zM21 4h2v2h-2z",
+    },
+  ],
   // A two-tone wrecking ball for demolish: an amber chain slung from the top
   // corner down to a red iron ball. The red matches the tool palette's bulldoze
   // swatch; unlike the old hammer (which read as build/fix) it clearly tears
@@ -67,14 +108,27 @@ const CUSTOM: Partial<Record<IconName, IconPath[]>> = {
     { d: "M3 3h5v2H3zM6 5h2v2H6zM8 7h2v2H8zM10 9h2v2h-2z", fill: "#ffb454" },
     { d: "M8 12h6v6H8zM9 11h4v1H9zM9 18h4v1H9zM7 13h1v4H7zM14 13h1v4h-1z", fill: "#ff6b6b" },
   ],
-  warning: [{ d: "M11 2h2v2h-2zM10 4h4v2h-4zM9 6h6v2H9zM8 8h8v2H8zM7 10h10v2H7zM6 12h12v2H6zM5 14h14v2H5zM4 16h16v2H4zM3 18h18v2H3zM11 8h2v6h-2zM11 15h2v2h-2z", evenodd: true }],
+  warning: [
+    {
+      d: "M11 2h2v2h-2zM10 4h4v2h-4zM9 6h6v2H9zM8 8h8v2H8zM7 10h10v2H7zM6 12h12v2H6zM5 14h14v2H5zM4 16h16v2H4zM3 18h18v2H3zM11 8h2v6h-2zM11 15h2v2h-2z",
+      evenodd: true,
+    },
+  ],
   // The transport row: a pause bar, then one/two/three matching right triangles
   // for slow/medium/fast, mirroring the old ⏸ ▶ ▶▶ ▶▶▶ escalation. Narrower than
   // the standalone `play` (vendored) so the three-triangle glyph still fits.
   pause: [{ d: "M7 4h4v16h-4zM13 4h4v16h-4z" }],
   speed1: [{ d: "M8 4h2v16h-2zM10 6h2v12h-2zM12 9h2v6h-2zM14 11h2v2h-2z" }],
-  speed2: [{ d: "M4 4h2v16h-2zM6 6h2v12h-2zM8 9h2v6h-2zM10 11h2v2h-2zM12 4h2v16h-2zM14 6h2v12h-2zM16 9h2v6h-2zM18 11h2v2h-2z" }],
-  speed3: [{ d: "M0 4h2v16h-2zM2 6h2v12h-2zM4 9h2v6h-2zM6 11h2v2h-2zM8 4h2v16h-2zM10 6h2v12h-2zM12 9h2v6h-2zM14 11h2v2h-2zM16 4h2v16h-2zM18 6h2v12h-2zM20 9h2v6h-2zM22 11h2v2h-2z" }],
+  speed2: [
+    {
+      d: "M4 4h2v16h-2zM6 6h2v12h-2zM8 9h2v6h-2zM10 11h2v2h-2zM12 4h2v16h-2zM14 6h2v12h-2zM16 9h2v6h-2zM18 11h2v2h-2z",
+    },
+  ],
+  speed3: [
+    {
+      d: "M0 4h2v16h-2zM2 6h2v12h-2zM4 9h2v6h-2zM6 11h2v2h-2zM8 4h2v16h-2zM10 6h2v12h-2zM12 9h2v6h-2zM14 11h2v2h-2zM16 4h2v16h-2zM18 6h2v12h-2zM20 9h2v6h-2zM22 11h2v2h-2z",
+    },
+  ],
   // A question mark for How to Play (the pixelarticons set has no help glyph).
   help: [{ d: "M8 4h8v2H8zM6 6h2v3H6zM16 6h2v5h-2zM12 11h4v2h-4zM11 13h2v3h-2zM11 18h2v2h-2z" }],
 };
@@ -136,7 +190,9 @@ export function iconTemplate(name: IconName, opts: IconOpts = {}): SVGTemplateRe
   const size = opts.size ?? 16;
   return svg`<svg viewBox="0 0 24 24" width=${size} height=${size} fill="currentColor" aria-hidden="true" focusable="false" data-icon=${name} class=${opts.className ? `vc-icon ${opts.className}` : "vc-icon"}>${ICONS[
     name
-  ].map((p) => svg`<path d=${p.d} fill=${p.fill ?? nothing} fill-rule=${p.evenodd ? "evenodd" : nothing}></path>`)}</svg>`;
+  ].map(
+    (p) => svg`<path d=${p.d} fill=${p.fill ?? nothing} fill-rule=${p.evenodd ? "evenodd" : nothing}></path>`,
+  )}</svg>`;
 }
 
 /**

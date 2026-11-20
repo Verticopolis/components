@@ -57,10 +57,7 @@ export interface PinchMove {
  *  - `"ended"`: the pinch is over. `survivor` is the last tracked position of
  *    the one remaining contact (the caller hands it a pan continuation), or
  *    null when no contact remains. */
-export type PinchUp =
-  | { pinch: "none" }
-  | { pinch: "continues" }
-  | { pinch: "ended"; survivor: ContactPoint | null };
+export type PinchUp = { pinch: "none" } | { pinch: "continues" } | { pinch: "ended"; survivor: ContactPoint | null };
 
 /**
  * Tracks live pointer contacts by a caller-supplied STABLE id and owns the

@@ -58,7 +58,11 @@ export interface TierLegendEntry<T extends string> {
   readonly style: MapKindStyle;
 }
 
-function entry<T extends string>(label: string, tier: T, styles: Readonly<Record<T, MapKindStyle | null>>): TierLegendEntry<T> {
+function entry<T extends string>(
+  label: string,
+  tier: T,
+  styles: Readonly<Record<T, MapKindStyle | null>>,
+): TierLegendEntry<T> {
   const style = styles[tier];
   if (!style) throw new Error(`the ${tier} tier has no style`);
   return { label, tier, style };
@@ -119,7 +123,15 @@ export class TierMarks {
       const x = tiers.x(i);
       const evalTier = tiers.evalTier(i);
       const rentTier = tiers.rentTier(i);
-      if (!changed && this.ids[i] === id && this.floors[i] === floor && this.xs[i] === x && this.evals[i] === evalTier && this.rents[i] === rentTier) continue;
+      if (
+        !changed &&
+        this.ids[i] === id &&
+        this.floors[i] === floor &&
+        this.xs[i] === x &&
+        this.evals[i] === evalTier &&
+        this.rents[i] === rentTier
+      )
+        continue;
       changed = true;
       this.ids[i] = id;
       this.floors[i] = floor;
@@ -225,7 +237,12 @@ export class TierMarks {
  * small for a pattern paints plain, and a room the view does not rate keeps
  * its Edit look. Returns how many `fillRect` calls it took.
  */
-export function paintTierMarks(ctx: MapPaintContext, marks: TierMarks, view: TierViewId, patterns: PatternSource): number {
+export function paintTierMarks(
+  ctx: MapPaintContext,
+  marks: TierMarks,
+  view: TierViewId,
+  patterns: PatternSource,
+): number {
   let fills = 0;
   let last: string | CanvasPattern | null = null;
   // Each style's two fills, asked of the pattern source once per repaint.

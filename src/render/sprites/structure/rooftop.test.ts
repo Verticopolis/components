@@ -1,5 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
-import { CRANE_MAST_ANCHOR_X, CRANE_MIN_ROOF_TILES, CRANE_SCALE, CRANE_W, CRANE_H, craneRoof, drawCrane } from "./rooftop";
+import {
+  CRANE_MAST_ANCHOR_X,
+  CRANE_MIN_ROOF_TILES,
+  CRANE_SCALE,
+  CRANE_W,
+  CRANE_H,
+  craneRoof,
+  drawCrane,
+} from "./rooftop";
 import { FLOOR, TILE } from "../../scale";
 
 /**

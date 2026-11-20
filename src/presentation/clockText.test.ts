@@ -4,7 +4,12 @@ import { dayName, formatClock, formatRetroDate, type DateReading } from "./clock
 const REAL_WORLD = { weekDays: 7, weekendDays: 2 };
 const CANON = { weekDays: 3, weekendDays: 1 };
 
-const at = (calendar: { weekDays: number; weekendDays: number }, dayOfWeek: number, quarter = 0, year = 0): DateReading => ({
+const at = (
+  calendar: { weekDays: number; weekendDays: number },
+  dayOfWeek: number,
+  quarter = 0,
+  year = 0,
+): DateReading => ({
   ...calendar,
   dayOfWeek,
   isWeekend: dayOfWeek >= calendar.weekDays - calendar.weekendDays,
@@ -14,7 +19,15 @@ const at = (calendar: { weekDays: number; weekendDays: number }, dayOfWeek: numb
 
 describe("clock text", () => {
   it("names the days of a seven-day week", () => {
-    expect([0, 1, 2, 3, 4, 5, 6].map((d) => dayName(at(REAL_WORLD, d)))).toEqual(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+    expect([0, 1, 2, 3, 4, 5, 6].map((d) => dayName(at(REAL_WORLD, d)))).toEqual([
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun",
+    ]);
   });
 
   it("names the slots of the canon week by weekday and weekend, never Mon/Tue/Wed", () => {

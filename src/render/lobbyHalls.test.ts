@@ -44,13 +44,30 @@ describe("hallDoors finds every wall between halls of different heights", () => 
   it("puts no door at a hall's end with no lobby beyond it, nor between halls of one height", () => {
     // 10..19 ends at the lot's lobby; a gap at 20 parts it from 21..29.
     const halls = lobbyHalls([1, 10, 19, 2, 1, 21, 29, 2]);
-    expect(hallDoors(halls, lobbyAt({ 1: [[10, 19], [21, 29]] }))).toEqual([]);
+    expect(
+      hallDoors(
+        halls,
+        lobbyAt({
+          1: [
+            [10, 19],
+            [21, 29],
+          ],
+        }),
+      ),
+    ).toEqual([]);
     expect(hallDoors(NO_TALL_HALLS, lobbyAt({ 1: [[0, 40]] }))).toEqual([]);
   });
 
   it("sorts the doors by floor, then column", () => {
     const halls = lobbyHalls([15, 4, 9, 2, 1, 30, 39, 3, 1, 10, 19, 2]);
     const doors = hallDoors(halls, lobbyAt({ 1: [[0, 50]], 15: [[0, 20]] }));
-    expect(doors.map((d) => [d.floor, d.x])).toEqual([[1, 10], [1, 20], [1, 30], [1, 40], [15, 4], [15, 10]]);
+    expect(doors.map((d) => [d.floor, d.x])).toEqual([
+      [1, 10],
+      [1, 20],
+      [1, 30],
+      [1, 40],
+      [15, 4],
+      [15, 10],
+    ]);
   });
 });

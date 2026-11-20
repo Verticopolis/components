@@ -44,7 +44,15 @@ export type Fill = (rx: number, ry: number, rw: number, rh: number, color: strin
  *    of one authored size renders at one size wherever it sits. Right for a
  *    DISCRETE object: a monitor in a wall of monitors, a bottle in a row. It can
  *    leave a 1px gap against a neighbor, which is why it is not the default. */
-export function refMap(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, RW: number, RH: number) {
+export function refMap(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  RW: number,
+  RH: number,
+) {
   const sx = (rx: number): number => x + Math.round((rx * w) / RW);
   const sy = (ry: number): number => y + Math.round((ry * h) / RH);
   const paint = (x0: number, y0: number, pw: number, ph: number, color: string, alpha: number): void => {

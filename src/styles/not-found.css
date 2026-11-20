@@ -155,16 +155,8 @@ body.nf-page > #app {
   content: "";
   position: absolute;
   inset: 8px 6px 6px;
-  background: repeating-linear-gradient(
-    to bottom,
-    #ffd47a 0 4px,
-    transparent 4px 11px
-  );
-  -webkit-mask: repeating-linear-gradient(
-    to right,
-    #000 0 5px,
-    transparent 5px 10px
-  );
+  background: repeating-linear-gradient(to bottom, #ffd47a 0 4px, transparent 4px 11px);
+  -webkit-mask: repeating-linear-gradient(to right, #000 0 5px, transparent 5px 10px);
   mask: repeating-linear-gradient(to right, #000 0 5px, transparent 5px 10px);
   opacity: var(--lit, 0.5);
 }
@@ -269,8 +261,7 @@ body.nf-page > #app {
   white-space: nowrap;
   box-shadow: var(--bevel-in);
   background: var(--r-light);
-  background: repeating-conic-gradient(var(--r-hi) 0 25%, var(--r-face) 0 50%) 0
-    0 / 2px 2px;
+  background: repeating-conic-gradient(var(--r-hi) 0 25%, var(--r-face) 0 50%) 0 0 / 2px 2px;
   font-weight: 700;
 }
 .nf-task svg {

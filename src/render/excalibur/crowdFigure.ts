@@ -4,7 +4,15 @@ import { Z } from "../depthPlanes";
 import { castIndex, crewIndex } from "../pixelSprites/people";
 import { TILE } from "../scale";
 import {
-  beatFrame, figureKey, gliding, shuffling, strideFrame, waitMood, waitPose, type Glide, type StepClock,
+  beatFrame,
+  figureKey,
+  gliding,
+  shuffling,
+  strideFrame,
+  waitMood,
+  waitPose,
+  type Glide,
+  type StepClock,
 } from "./crowdLook";
 
 /**
@@ -76,7 +84,13 @@ export function waitFacesLeft(x: number, mid: number | null, walkedLeft: boolean
   return x > mid;
 }
 
-export function personFigure(p: PersonView, g: Glide, look: CrowdLook, through?: -1 | 1, shaftMid: number | null = null): number {
+export function personFigure(
+  p: PersonView,
+  g: Glide,
+  look: CrowdLook,
+  through?: -1 | 1,
+  shaftMid: number | null = null,
+): number {
   const t = look.clock.clockMs;
   const offset = Math.abs(p.seed);
   const moving = gliding(g);
@@ -84,13 +98,22 @@ export function personFigure(p: PersonView, g: Glide, look: CrowdLook, through?:
   // Inside a revolving door, everyone leans into a wing the way they walk.
   if (through !== undefined) {
     const who = p.staff ? crewIndex(p.seed, false) : castIndex(p.seed);
-    return figureKey(who, "push", stride, p.staff ? "content" : waitMood(p.wait, look.fedUpWait), through === -1, look.lit);
+    return figureKey(
+      who,
+      "push",
+      stride,
+      p.staff ? "content" : waitMood(p.wait, look.fedUpWait),
+      through === -1,
+      look.lit,
+    );
   }
   if (p.staff) {
     // A housekeeper dwelling at a room is cleaning it (the engine's 8-minute
     // clean); walking, it pushes its cart; riding, it stands in the car.
-    if (p.state === "dwelling") return figureKey(crewIndex(p.seed, true), "push", beatFrame(t, offset), "content", g.left, look.lit);
-    if (moving && p.state !== "riding") return figureKey(crewIndex(p.seed, false), "push", stride, "content", g.left, look.lit);
+    if (p.state === "dwelling")
+      return figureKey(crewIndex(p.seed, true), "push", beatFrame(t, offset), "content", g.left, look.lit);
+    if (moving && p.state !== "riding")
+      return figureKey(crewIndex(p.seed, false), "push", stride, "content", g.left, look.lit);
     return figureKey(crewIndex(p.seed, false), "stand", 1, "content", g.left, look.lit);
   }
   const who = castIndex(p.seed);
@@ -99,7 +122,8 @@ export function personFigure(p: PersonView, g: Glide, look: CrowdLook, through?:
   if (p.state === "climbing") return figureKey(who, "climb", beatFrame(t, offset), mood, g.left, look.lit);
   // A waiting line closing up shuffles by a fraction of a tile: the person
   // keeps waiting, facing the shaft, rather than walking in place.
-  if (p.state === "waiting" && (!moving || shuffling(g))) return figureKey(who, waitPose(p.wait, look.fedUpWait), 1, mood, waitFacesLeft(g.x, shaftMid, g.left), look.lit);
+  if (p.state === "waiting" && (!moving || shuffling(g)))
+    return figureKey(who, waitPose(p.wait, look.fedUpWait), 1, mood, waitFacesLeft(g.x, shaftMid, g.left), look.lit);
   if (moving) return figureKey(who, "walk", stride, mood, g.left, look.lit);
   return figureKey(who, "stand", 1, mood, g.left, look.lit);
 }

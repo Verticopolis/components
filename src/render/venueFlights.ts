@@ -82,7 +82,11 @@ export function besideVenue(t: Flight, v: VenueBox): boolean {
  *  one of `venues`, and returns it. Runs only when the structure or the mode
  *  moves (`FlightPass`), never per frame: a tower holds at most 64 flights
  *  and a few dozen venues. */
-export function windingFlights(transports: ReadonlyArray<TransportView>, venues: ReadonlyArray<VenueBox>, out: Set<number>): Set<number> {
+export function windingFlights(
+  transports: ReadonlyArray<TransportView>,
+  venues: ReadonlyArray<VenueBox>,
+  out: Set<number>,
+): Set<number> {
   out.clear();
   if (venues.length === 0) return out;
   for (const t of transports) {

@@ -60,8 +60,10 @@ export const DESK_ACTIVE_CLASS = "desk-active";
 const GLYPH: Record<"min" | "max" | "restore" | "close", string> = {
   min: '<svg width="10" height="9" viewBox="0 0 10 9" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="7" width="6" height="2"/></svg>',
   max: '<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h9v9H0zM1 2v6h7V2z" fill-rule="evenodd"/></svg>',
-  restore: '<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h7v6H7V2H2zM0 3h7v6H0zM1 5v3h5V5z" fill-rule="evenodd"/></svg>',
-  close: '<svg width="8" height="7" viewBox="0 0 8 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z"/></svg>',
+  restore:
+    '<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h7v6H7V2H2zM0 3h7v6H0zM1 5v3h5V5z" fill-rule="evenodd"/></svg>',
+  close:
+    '<svg width="8" height="7" viewBox="0 0 8 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z"/></svg>',
 };
 
 /** A title-bar button with a pixel glyph. */
@@ -88,7 +90,11 @@ function titleIcon(doc: Document): HTMLImageElement {
 
 /** Build a frame for content that has no window of its own (the tower, Info):
  *  a `.win` with the game's title bar and an empty body. */
-export function buildFrame(doc: Document, id: string, title: string): { root: HTMLElement; body: HTMLElement; titleText: HTMLElement } {
+export function buildFrame(
+  doc: Document,
+  id: string,
+  title: string,
+): { root: HTMLElement; body: HTMLElement; titleText: HTMLElement } {
   const root = doc.createElement("section");
   root.id = id;
   root.className = "win win-closable desk-win desk-frame";
@@ -272,10 +278,19 @@ export class DeskWindow {
       outline.className = "desk-outline";
       desk.appendChild(outline);
       let next = start;
-      const draw = (r: DeskRect) => Object.assign(outline.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
+      const draw = (r: DeskRect) =>
+        Object.assign(outline.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
       draw(start);
       const move = (ev: PointerEvent) => {
-        next = resizedTo(start, ev.clientX - sx, ev.clientY - sy, limits, desk.clientWidth, desk.clientHeight, !!this.spec.heightOnly);
+        next = resizedTo(
+          start,
+          ev.clientX - sx,
+          ev.clientY - sy,
+          limits,
+          desk.clientWidth,
+          desk.clientHeight,
+          !!this.spec.heightOnly,
+        );
         draw(next);
       };
       const end = () => {

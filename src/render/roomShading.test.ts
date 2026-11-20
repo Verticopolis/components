@@ -10,7 +10,8 @@ describe("Modern's room shading (#2097)", () => {
       expect(shadesRoom(false, { state }), `Classic stays flat (${state})`).toBe(false);
     }
     // A state read by its color keeps that color.
-    for (const state of ["vacant", "construction", "fire", "gutted"] as UnitState[]) expect(shadesRoom(true, { state })).toBe(false);
+    for (const state of ["vacant", "construction", "fire", "gutted"] as UnitState[])
+      expect(shadesRoom(true, { state })).toBe(false);
   });
 
   it("lights from above and the left, inside the room's rect", () => {

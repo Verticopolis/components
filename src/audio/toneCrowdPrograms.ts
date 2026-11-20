@@ -51,9 +51,7 @@ export class PartyBand implements Program {
 
   constructor(dest: Tone.InputNode) {
     this.gain = new Tone.Gain(0);
-    this.wall = new Tone.Filter({ type: "lowpass", frequency: 1150, rolloff: -48 }).connect(
-      this.gain,
-    );
+    this.wall = new Tone.Filter({ type: "lowpass", frequency: 1150, rolloff: -48 }).connect(this.gain);
     this.gain.connect(dest);
     this.kick = new LightMembraneSynth({ octaves: 4, pitchDecay: 0.04 }).connect(this.wall);
     this.kick.volume.value = -6;
@@ -105,15 +103,18 @@ export class PartyBand implements Program {
     safe(() => {
       this.stop();
       const beat = 60 / PARTY_BPM;
-      const part = new Tone.Part((time, ev) => {
-        safe(() => {
-          if (ev.voice === "kick") this.kick.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.9);
-          else if (ev.voice === "thud") this.thud.triggerAttackRelease(210, ev.dur, time, 0.6);
-          else if (ev.voice === "bass") this.bass.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.7);
-          else if (ev.voice === "stab") this.stabs.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.35);
-          else this.hook.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.5);
-        });
-      }, this.buildEvents().map((e) => [e.t, e] as [number, typeof e]));
+      const part = new Tone.Part(
+        (time, ev) => {
+          safe(() => {
+            if (ev.voice === "kick") this.kick.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.9);
+            else if (ev.voice === "thud") this.thud.triggerAttackRelease(210, ev.dur, time, 0.6);
+            else if (ev.voice === "bass") this.bass.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.7);
+            else if (ev.voice === "stab") this.stabs.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.35);
+            else this.hook.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, 0.5);
+          });
+        },
+        this.buildEvents().map((e) => [e.t, e] as [number, typeof e]),
+      );
       part.loop = true;
       part.loopEnd = 16 * beat;
       part.start(0);
@@ -151,9 +152,7 @@ export class CinemaProgram implements Program {
 
   constructor(dest: Tone.InputNode) {
     this.gain = new Tone.Gain(0);
-    this.muffle = new Tone.Filter({ type: "lowpass", frequency: 1000, rolloff: -48 }).connect(
-      this.gain,
-    );
+    this.muffle = new Tone.Filter({ type: "lowpass", frequency: 1000, rolloff: -48 }).connect(this.gain);
     this.gain.connect(dest);
     this.plucks = new LightPolySynth({
       oscillator: { type: "triangle" },
@@ -250,9 +249,7 @@ export class MetroProgram implements Program {
     // The rumble is the one broadband source here, and it obeys the noise
     // rule: steep lowpass at 140 Hz, seated low, swelled by its own gain.
     this.rumbleGain = new Tone.Gain(0).connect(this.gain);
-    this.rumbleFilter = new Tone.Filter({ type: "lowpass", frequency: 140, rolloff: -48 }).connect(
-      this.rumbleGain,
-    );
+    this.rumbleFilter = new Tone.Filter({ type: "lowpass", frequency: 140, rolloff: -48 }).connect(this.rumbleGain);
     this.rumble = new Tone.Noise("brown").connect(this.rumbleFilter);
     this.rumble.volume.value = -6;
   }

@@ -53,7 +53,12 @@ function drawReindeer(ctx: CanvasRenderingContext2D, x: number, y: number, s: nu
 function drawSantaFigure(ctx: CanvasRenderingContext2D, x: number, footY: number, s: number): void {
   const px = (ax: number, ay: number, aw: number, ah: number, c: string): void => {
     ctx.fillStyle = c;
-    ctx.fillRect(Math.round(x + ax * s), Math.round(footY + ay * s), Math.max(1, Math.round(aw * s)), Math.max(1, Math.round(ah * s)));
+    ctx.fillRect(
+      Math.round(x + ax * s),
+      Math.round(footY + ay * s),
+      Math.max(1, Math.round(aw * s)),
+      Math.max(1, Math.round(ah * s)),
+    );
   };
   // Toy sack behind Santa, with a gift poking out the top.
   px(-6, -11, 4, 10, "#8A5A3A");
@@ -133,7 +138,13 @@ export function drawSanta(ctx: CanvasRenderingContext2D, x: number, y: number, s
  * A bomb-blast starburst centered at (x, y), expanding to `radius`. `phase`
  * runs 0→1 over the flash's lifetime; the whole thing fades as it grows.
  */
-export function drawExplosion(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, phase: number): void {
+export function drawExplosion(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  phase: number,
+): void {
   const alpha = Math.max(0, 1 - phase);
   if (alpha <= 0 || radius <= 0) return;
   ctx.save();
@@ -180,15 +191,32 @@ export interface EventFigureState {
 /** The static red alert beacon over a guard on a call (a functional cue). */
 function drawBeacon(ctx: CanvasRenderingContext2D, x: number, footY: number, s: number): void {
   ctx.fillStyle = "rgba(255,64,64,0.92)";
-  ctx.fillRect(Math.round(x + 4 * s), Math.round(footY - 29 * s), Math.max(1, Math.round(2 * s)), Math.max(1, Math.round(2 * s)));
+  ctx.fillRect(
+    Math.round(x + 4 * s),
+    Math.round(footY - 29 * s),
+    Math.max(1, Math.round(2 * s)),
+    Math.max(1, Math.round(2 * s)),
+  );
 }
 
 /** A guard sweeping a floor for Classic's bomb, feet at (x, footY), sized by
  *  `s`: the cast's security guard (#2097), climbing on the emergency stairs
  *  and walking the floor's rooms. */
-export function drawSearchGuard(ctx: CanvasRenderingContext2D, x: number, footY: number, s: number, climbing = false, state: EventFigureState = {}): void {
+export function drawSearchGuard(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  footY: number,
+  s: number,
+  climbing = false,
+  state: EventFigureState = {},
+): void {
   ctx.save();
-  drawPerson(ctx, x, footY, STAFF_LOOK.security, { lit: state.lit ?? false, frame: state.frame ?? 1, pose: climbing ? "climb" : "walk", scale: s });
+  drawPerson(ctx, x, footY, STAFF_LOOK.security, {
+    lit: state.lit ?? false,
+    frame: state.frame ?? 1,
+    pose: climbing ? "climb" : "walk",
+    scale: s,
+  });
   drawBeacon(ctx, x, footY, s);
   ctx.restore();
 }
@@ -199,7 +227,14 @@ export function drawSearchGuard(ctx: CanvasRenderingContext2D, x: number, footY:
  * guard stands close behind him with an alert light. Drawn in screen space
  * on the overlay (in front of the tower).
  */
-export function drawThief(ctx: CanvasRenderingContext2D, x: number, y: number, scale = 1, caught = false, state: EventFigureState = {}): void {
+export function drawThief(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  scale = 1,
+  caught = false,
+  state: EventFigureState = {},
+): void {
   const s = scale;
   const lit = state.lit ?? false;
   ctx.save();
@@ -207,7 +242,13 @@ export function drawThief(ctx: CanvasRenderingContext2D, x: number, y: number, s
     drawPerson(ctx, x - 13 * s, y, STAFF_LOOK.security, { lit, frame: 1, pose: "stand", scale: s, empty: true });
     drawBeacon(ctx, x - 13 * s, y, s);
   }
-  drawPerson(ctx, x, y, STAFF_LOOK.thief, { lit, frame: caught ? 1 : (state.frame ?? 0), pose: caught ? "caught" : "run", scale: s, empty: caught });
+  drawPerson(ctx, x, y, STAFF_LOOK.thief, {
+    lit,
+    frame: caught ? 1 : (state.frame ?? 0),
+    pose: caught ? "caught" : "run",
+    scale: s,
+    empty: caught,
+  });
   ctx.restore();
 }
 

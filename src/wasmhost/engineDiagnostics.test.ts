@@ -5,9 +5,7 @@ import type { ExpectedEnginePackage } from "./enginePackageRecord";
 import { IDENTITY_FIXTURE } from "./engineIdentity.fixture";
 
 const identity = JSON.stringify(IDENTITY_FIXTURE);
-const expected = (
-  version = IDENTITY_FIXTURE.crate.version,
-): ExpectedEnginePackage => ({
+const expected = (version = IDENTITY_FIXTURE.crate.version): ExpectedEnginePackage => ({
   package: "0123456789abcdef".repeat(4),
   files: {},
   crate: { name: IDENTITY_FIXTURE.crate.name, version },
@@ -63,9 +61,7 @@ describe("buildDiagnostics", () => {
     expect(r.text).not.toMatch(/wasm-only/i);
     expect(row(r, "Save version")).toEqual(["7 (loads back to 1)"]);
     expect(row(r, "Frame layout")).toEqual(["2"]);
-    expect(row(r, "Catalog")).toEqual([
-      "3 (classic aaaa1111aaaa1111, modern bbbb2222bbbb2222)",
-    ]);
+    expect(row(r, "Catalog")).toEqual(["3 (classic aaaa1111aaaa1111, modern bbbb2222bbbb2222)"]);
     expect(row(r, "Conformance lock")).toEqual(["cccc3333cccc3333"]);
     expect(row(r, "Package id this page expects")).toEqual(["0123456789ab"]);
     expect(row(r, "Mismatch")).toEqual([]);
@@ -99,9 +95,7 @@ describe("buildDiagnostics", () => {
       expected: expected("0.0.1"),
     });
     expect(r.state).toBe("mismatch");
-    expect(row(r, "Mismatch")).toEqual([
-      "crate version (engine 9.8.7, this page was built for 0.0.1)",
-    ]);
+    expect(row(r, "Mismatch")).toEqual(["crate version (engine 9.8.7, this page was built for 0.0.1)"]);
   });
 
   it("skips the comparison when BUILD.json predates the crate key", () => {
@@ -265,7 +259,10 @@ describe("the source hash stamped in the engine binary", () => {
   });
 
   it("lets a crate mismatch outrank missing metadata", () => {
-    const r = run(wasmBoot({ binary: { state: "missing" } }), { ...withSources(), crate: { name: "example-engine", version: "0.0.1" } });
+    const r = run(wasmBoot({ binary: { state: "missing" } }), {
+      ...withSources(),
+      crate: { name: "example-engine", version: "0.0.1" },
+    });
     expect(r.state).toBe("mismatch");
   });
 
@@ -352,7 +349,11 @@ describe("which engine is running, by the host's status", () => {
     ["start", "did not take the first tower"],
     ["host", "stopped after a fault"],
   ] as const)("words a %s failure as '%s'", (stage, words) => {
-    const boot: EngineBootState = { build: "wasm-only", engine: "none", failure: { stage, reason: "boot-error", message: "x" } };
+    const boot: EngineBootState = {
+      build: "wasm-only",
+      engine: "none",
+      failure: { stage, reason: "boot-error", message: "x" },
+    };
     const r = buildDiagnostics({ ...base, boot, host: { hosted: false } });
     expect(r.state).toBe("not-loaded");
     expect(r.summary).toContain(words);
@@ -361,7 +362,11 @@ describe("which engine is running, by the host's status", () => {
   });
 
   it("says a wasm-only build has no other engine after a fault", () => {
-    const boot: EngineBootState = { build: "wasm-only", engine: "none", failure: { stage: "host", reason: "trap-tick", message: "trap" } };
+    const boot: EngineBootState = {
+      build: "wasm-only",
+      engine: "none",
+      failure: { stage: "host", reason: "trap-tick", message: "trap" },
+    };
     const r = buildDiagnostics({ ...base, boot, host: { hosted: false } });
     expect(r.summary).toBe("The Rust engine stopped after a fault, and this build has no other engine.");
   });
@@ -405,4 +410,3 @@ describe("which engine is running, by the host's status", () => {
     expect(buildDiagnostics(base).rows.some((x) => x.label === "Browser" || x.label === "Date")).toBe(false);
   });
 });
-

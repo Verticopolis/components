@@ -56,9 +56,30 @@ describe("iconElement", () => {
     // ▶ ⏸ ↩ ☰), so ALL_NAMES above does not reach them. Pin that each still
     // resolves to real path data.
     const names: IconName[] = [
-      "brand", "save", "sound", "mute", "stats", "map", "settings", "inspect", "bulldoze",
-      "pause", "speed1", "speed2", "speed3", "undo", "redo", "menu", "update", "install", "back",
-      "play", "help", "folder", "plus", "heart",
+      "brand",
+      "save",
+      "sound",
+      "mute",
+      "stats",
+      "map",
+      "settings",
+      "inspect",
+      "bulldoze",
+      "pause",
+      "speed1",
+      "speed2",
+      "speed3",
+      "undo",
+      "redo",
+      "menu",
+      "update",
+      "install",
+      "back",
+      "play",
+      "help",
+      "folder",
+      "plus",
+      "heart",
     ];
     for (const name of names) {
       const svg = iconElement(name);

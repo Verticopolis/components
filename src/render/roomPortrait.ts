@@ -28,7 +28,15 @@ export interface RoomPose {
 }
 
 /** A unit for the painters, standing alone at the left edge of its box. */
-export function portraitUnit(facts: FactsOf, kind: FacilityKind, state: UnitState, occupants: number, id = 1, subtype?: string, floorOverride?: number): Unit {
+export function portraitUnit(
+  facts: FactsOf,
+  kind: FacilityKind,
+  state: UnitState,
+  occupants: number,
+  id = 1,
+  subtype?: string,
+  floorOverride?: number,
+): Unit {
   const f = facts(kind);
   return {
     id,
@@ -53,7 +61,18 @@ export function portraitUnit(facts: FactsOf, kind: FacilityKind, state: UnitStat
  * Draw a room centered in the cell `cx, cy, cw, ch`, leaving `captionH` free at
  * the bottom, at up to `mag` whole multiples of the world scale.
  */
-export function drawRoomPortrait(d: DrawCtx, facts: FactsOf, kind: FacilityKind, pose: RoomPose, cx: number, cy: number, cw: number, ch: number, captionH: number, mag: number): void {
+export function drawRoomPortrait(
+  d: DrawCtx,
+  facts: FactsOf,
+  kind: FacilityKind,
+  pose: RoomPose,
+  cx: number,
+  cy: number,
+  cw: number,
+  ch: number,
+  captionH: number,
+  mag: number,
+): void {
   const f = facts(kind);
   const state = pose.state ?? "occupied";
   // Size the cell by the facility's own floor count so a genuinely multi-
@@ -104,7 +123,18 @@ export function drawRoomPortrait(d: DrawCtx, facts: FactsOf, kind: FacilityKind,
  * Draw a shaft of `kind` over `span` floors of travel (plus the floor it lands
  * on), centered in the cell like a room, with two cars for an elevator.
  */
-export function drawTransportPortrait(d: DrawCtx, facts: FactsOf, kind: FacilityKind, span: number, cx: number, cy: number, cw: number, ch: number, captionH: number, mag: number): void {
+export function drawTransportPortrait(
+  d: DrawCtx,
+  facts: FactsOf,
+  kind: FacilityKind,
+  span: number,
+  cx: number,
+  cy: number,
+  cw: number,
+  ch: number,
+  captionH: number,
+  mag: number,
+): void {
   const f = facts(kind);
   // A shaft is drawn as its span plus the floor it lands on, so it is sized
   // as a `span + 1` floor footprint and its per-floor pitch falls out of the

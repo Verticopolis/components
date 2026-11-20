@@ -88,7 +88,12 @@ export function encodePng(img: Image): Uint8Array {
   ihdr.set(u32(img.h), 4);
   ihdr.set([8, 6, 0, 0, 0], 8); // 8-bit, RGBA, deflate, adaptive filter, no interlace
   const sig = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
-  const parts = [sig, chunk("IHDR", ihdr), chunk("IDAT", zlibSync(raw, { level: 9 })), chunk("IEND", new Uint8Array(0))];
+  const parts = [
+    sig,
+    chunk("IHDR", ihdr),
+    chunk("IDAT", zlibSync(raw, { level: 9 })),
+    chunk("IEND", new Uint8Array(0)),
+  ];
   const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
   let o = 0;
   for (const p of parts) {

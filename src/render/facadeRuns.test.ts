@@ -33,7 +33,11 @@ describe("the facade's runs: one per tower on each floor", () => {
   });
 
   it("joins tiles that touch, and rooms standing on them, into one run", () => {
-    const units = [...tiles(3, 100, 119), ...tiles(3, 120, 139), { floor: 3, x: 110, width: 9, kind: "office" } as unknown as Unit];
+    const units = [
+      ...tiles(3, 100, 119),
+      ...tiles(3, 120, 139),
+      { floor: 3, x: 110, width: 9, kind: "office" } as unknown as Unit,
+    ];
     expect(facadeGeometry(units, 3, MODERN).runs.get(3)).toEqual([{ min: 100, max: 140 }]);
   });
 

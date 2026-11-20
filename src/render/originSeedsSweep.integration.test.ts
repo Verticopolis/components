@@ -21,7 +21,16 @@ import type { DrawCtx } from "./sprites";
  *  person, or full, a basement placement, and a dead parking space (the mark
  *  only applies to parking). The on-notice ribbon (`vacating`) fills a triangle the raster does not
  *  model; it is drawn from the room's own corner. */
-type Look = { state: Unit["state"]; lit: boolean; hour: number; occ?: number; basement?: boolean; dead?: boolean; satisfaction?: number; scene?: Partial<DrawCtx> };
+type Look = {
+  state: Unit["state"];
+  lit: boolean;
+  hour: number;
+  occ?: number;
+  basement?: boolean;
+  dead?: boolean;
+  satisfaction?: number;
+  scene?: Partial<DrawCtx>;
+};
 
 /** Besides those, the scene inputs a `DrawCtx` carries (every parking space in
  *  use, the recycling centers most of the way full, a tower with nobody in
@@ -63,15 +72,20 @@ describe("room details follow the room wherever it is painted (#915), every kind
       const moved: string[] = [];
       for (const subtype of [undefined, ...(kindFacts(kind).subtypes ?? [])]) {
         for (const look of SWEEP) {
-          const occupants = look.occ ?? (kindFacts(kind).population);
+          const occupants = look.occ ?? kindFacts(kind).population;
           // A deep basement floor (floor 0 is B1, so -3 is B4) at a small
           // column, where the raw geography seed is negative (#1029).
           const where = look.basement ? { floor: -3, x: 2 } : {};
           const mood = look.satisfaction === undefined ? {} : { satisfaction: look.satisfaction };
           const unit = unitOf(kind, { subtype, state: look.state, occupants, ...where, ...mood });
           const dead = kind === "parking" && look.dead === true;
-          const [first, ...rest] = OFFSETS.map(([ox, oy]) => paintAt(unit, ox, oy, look.lit, look.hour, dead, look.scene));
-          expect(first.some((v) => v !== 0), `${kind}/${subtype ?? "-"} painted`).toBe(true);
+          const [first, ...rest] = OFFSETS.map(([ox, oy]) =>
+            paintAt(unit, ox, oy, look.lit, look.hour, dead, look.scene),
+          );
+          expect(
+            first.some((v) => v !== 0),
+            `${kind}/${subtype ?? "-"} painted`,
+          ).toBe(true);
           const key = first.join(",");
           if (rest.some((r) => r.join(",") !== key)) moved.push(`${subtype ?? "-"} ${JSON.stringify(look)}`);
         }
@@ -94,7 +108,8 @@ describe("room details follow the room wherever it is painted (#915), every kind
           if (rest.some((r) => r.join(",") !== first.join(","))) moved.push(`${at} across offsets`);
           for (const [dx, dy] of SEAMS) {
             if (dy >= h || dx >= w) continue;
-            if (paintPastSeam(unit, dx, dy, true).join(",") !== tail(first, w, h, dx, dy).join(",")) moved.push(`${at} past a seam at ${dx},${dy}`);
+            if (paintPastSeam(unit, dx, dy, true).join(",") !== tail(first, w, h, dx, dy).join(","))
+              moved.push(`${at} past a seam at ${dx},${dy}`);
           }
         }
       }

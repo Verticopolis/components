@@ -9,7 +9,16 @@ import { UNIT_STATES, hourFor, occupantCap, roomJobs, roomKinds, variantPlacemen
 import { paint, cloudOrigin, unitOf, type PaintSpec } from "./paint";
 
 /** The context calls that put pixels on the canvas. */
-const DRAWS = new Set(["fill", "fillRect", "stroke", "strokeRect", "fillText", "strokeText", "drawImage", "putImageData"]);
+const DRAWS = new Set([
+  "fill",
+  "fillRect",
+  "stroke",
+  "strokeRect",
+  "fillText",
+  "strokeText",
+  "drawImage",
+  "putImageData",
+]);
 
 /** A 2D context that accepts every call; `draws` counts the ones that paint.
  *  This covers the paint dispatch; the e2e comparison spec checks the pixels
@@ -19,7 +28,8 @@ function sinkCtx(draws: { count: number } = { count: 0 }): CanvasRenderingContex
   return new Proxy({} as Record<string, unknown>, {
     get(target, prop) {
       if (prop in target) return target[prop as string];
-      if (prop === "createLinearGradient" || prop === "createRadialGradient" || prop === "createPattern") return () => grad;
+      if (prop === "createLinearGradient" || prop === "createRadialGradient" || prop === "createPattern")
+        return () => grad;
       if (prop === "measureText") return () => ({ width: 10 });
       if (prop === "getLineDash") return () => [];
       if (typeof prop === "string" && DRAWS.has(prop)) return () => void draws.count++;
@@ -42,7 +52,10 @@ describe("room catalog", () => {
         if (state === "fire" || state === "construction") {
           expect(jobs.some((j) => j.type === "anim" && j.name === `${state}/${kind}`)).toBe(true);
         } else {
-          expect(stills.some((j) => j.keys.kind === kind && j.keys.state === state), `${kind} ${state}`).toBe(true);
+          expect(
+            stills.some((j) => j.keys.kind === kind && j.keys.state === state),
+            `${kind} ${state}`,
+          ).toBe(true);
         }
       }
     }
@@ -54,7 +67,9 @@ describe("room catalog", () => {
     expect(new Set(names).size).toBe(names.length);
     expect(names).toContain("room/office/occupied/-/w9/unlit/always/any/v0/home");
     expect(names).toContain("room/condo/occupied/-/w16/lit/always/late/v0/home");
-    expect(names).toContain("room/shop/occupied/Book Store/w12/lit/closed/any/v3/away".replace("w12", `w${kindFacts("shop").width}`));
+    expect(names).toContain(
+      "room/shop/occupied/Book Store/w12/lit/closed/any/v3/away".replace("w12", `w${kindFacts("shop").width}`),
+    );
   });
   it("sizes rooms by catalog width and floors", () => {
     for (const j of stills) {
@@ -81,7 +96,16 @@ describe("room catalog", () => {
     expect(occupantCap("condo")).toBe(5); // the largest Modern household
     expect(occupantCap("office")).toBe(kindFacts("office").population);
     const parking = stills.find((j) => j.keys.kind === "parking")!;
-    expect(Object.keys(parking.overlays!).sort()).toEqual(["car0", "car1", "car2", "car3", "car4", "car5", "car6", "dead"]);
+    expect(Object.keys(parking.overlays!).sort()).toEqual([
+      "car0",
+      "car1",
+      "car2",
+      "car3",
+      "car4",
+      "car5",
+      "car6",
+      "dead",
+    ]);
     const recycling = stills.find((j) => j.keys.kind === "recycling")!;
     expect(recycling.chains!.fill.steps).toHaveLength(9);
   });
@@ -107,7 +131,14 @@ describe("paint", () => {
   it("paints every spec in the catalog onto the canvas", () => {
     const blank: string[] = [];
     for (const j of allJobs()) {
-      const specs = j.type === "anim" ? j.frames : [j.paint, ...Object.values(j.overlays ?? {}), ...Object.values(j.chains ?? {}).flatMap((c) => c.steps.slice(0, 3))];
+      const specs =
+        j.type === "anim"
+          ? j.frames
+          : [
+              j.paint,
+              ...Object.values(j.overlays ?? {}),
+              ...Object.values(j.chains ?? {}).flatMap((c) => c.steps.slice(0, 3)),
+            ];
       specs.forEach((s, i) => {
         const draws = { count: 0 };
         paint(sinkCtx(draws), s, j.w, j.h);
@@ -120,7 +151,22 @@ describe("paint", () => {
     expect(() => paint(sinkCtx(), { p: "nope" } as unknown as PaintSpec, 1, 1)).toThrow(/unknown paint spec/);
   });
   it("builds engine-shaped units and cloud canvases that hold every puff", () => {
-    expect(unitOf({ p: "unit", kind: "office", state: "empty", floor: 3, x: 4, id: 7, width: 9, occupants: 2, outForMeal: 1, lit: false, hour: 12, anim: 0 })).toMatchObject({
+    expect(
+      unitOf({
+        p: "unit",
+        kind: "office",
+        state: "empty",
+        floor: 3,
+        x: 4,
+        id: 7,
+        width: 9,
+        occupants: 2,
+        outForMeal: 1,
+        lit: false,
+        hour: 12,
+        anim: 0,
+      }),
+    ).toMatchObject({
       id: 7,
       kind: "office",
       occupants: 2,

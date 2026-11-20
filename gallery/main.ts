@@ -175,15 +175,19 @@ function sprites(cat: Catalog): Sprite[] {
     const kind = f.key;
     if (f.transport) {
       const span = f.fixedSpan ? 1 : 3;
-      return [{ label: f.name, draw: (d, w, h) => drawTransportPortrait(d, facts, kind, span, 0, 0, w, h, CAPTION_H, MAG) }];
+      return [
+        { label: f.name, draw: (d, w, h) => drawTransportPortrait(d, facts, kind, span, 0, 0, w, h, CAPTION_H, MAG) },
+      ];
     }
-    const base: Sprite = { label: f.name, draw: (d, w, h) => drawRoomPortrait(d, facts, kind, { state: "occupied" }, 0, 0, w, h, CAPTION_H, MAG) };
-    const variants = (f.subtypes ?? []).map(
-      (name): Sprite => ({
-        label: `${f.name}: ${name}`,
-        draw: (d, w, h) => drawRoomPortrait(d, facts, kind, { state: "occupied", subtype: name }, 0, 0, w, h, CAPTION_H, MAG),
-      }),
-    );
+    const base: Sprite = {
+      label: f.name,
+      draw: (d, w, h) => drawRoomPortrait(d, facts, kind, { state: "occupied" }, 0, 0, w, h, CAPTION_H, MAG),
+    };
+    const variants = (f.subtypes ?? []).map((name): Sprite => ({
+      label: `${f.name}: ${name}`,
+      draw: (d, w, h) =>
+        drawRoomPortrait(d, facts, kind, { state: "occupied", subtype: name }, 0, 0, w, h, CAPTION_H, MAG),
+    }));
     return [base, ...variants];
   });
 }
@@ -227,7 +231,8 @@ async function start(): Promise<void> {
   spritesHolder.textContent = "Loading the engine's catalog…";
   const menu = fromMarkup(MENU);
   const menuNote = document.createElement("p");
-  menuNote.textContent = "The bar at the top of this page: open File or Options to see the menus, with the keyboard too (Alt and the underlined letter).";
+  menuNote.textContent =
+    "The bar at the top of this page: open File or Options to see the menus, with the keyboard too (Alt and the underlined letter).";
   body.append(
     lede,
     schemeSwitcher(),

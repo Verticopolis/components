@@ -46,7 +46,7 @@ export function drawParking(d: DrawCtx, u: UnitView, x: number, y: number, w: nu
   // is not dead. `parkingUse` and `parkingDead` are prepared inputs; a stable
   // per-space roll versus the tower-wide usage fraction fills the same spaces
   // first as the lot loads, and a dead (unchained) space never shows a car.
-  const rawUse = d.parkingDead ? 0 : d.parkingUse ?? 0;
+  const rawUse = d.parkingDead ? 0 : (d.parkingUse ?? 0);
   const use = Number.isFinite(rawUse) ? rawUse : 0;
   if (rand((u.id * 31) | 0) < use) {
     const body = ACCENTS[u.id % ACCENTS.length];
@@ -92,7 +92,14 @@ export function drawDeadParkingX(ctx: CanvasRenderingContext2D, x: number, y: nu
 
 // ---- Parking ramp -----------------------------------------------------------
 
-export function drawParkingRamp(ctx: CanvasRenderingContext2D, u: UnitView, x: number, y: number, w: number, h: number): void {
+export function drawParkingRamp(
+  ctx: CanvasRenderingContext2D,
+  u: UnitView,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): void {
   const RW = 16 * TILE;
   const RH = FLOOR;
   // Repeated objects (joists, chevrons, hazard stripes, wheels) take the

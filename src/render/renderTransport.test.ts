@@ -65,7 +65,8 @@ describe("transport sprite geometry", () => {
     expect(rects.length).toBeGreaterThan(0); // treads were drawn
     // Every tread sits in the BOTTOM band: the top band is the arrival
     // landing. Two stacked flights would put treads above this line.
-    expect(rects.every((r) => r.y >= TOP_Y + FLOOR_H - RAIL_OVERHANG)).toBe(true);  });
+    expect(rects.every((r) => r.y >= TOP_Y + FLOOR_H - RAIL_OVERHANG)).toBe(true);
+  });
 
   // Tall lobbies (#308): a stairway climbing more than one story only ever
   // rises out of a tall lobby, and winds up the whole hall as one spiral
@@ -73,15 +74,15 @@ describe("transport sprite geometry", () => {
   it("a tall stairway winds one spiral through every band below the landing", () => {
     const { ctx, rects } = recordingCtx();
     drawTransport(ctx, transport("stairs", 1, 4), 0, TOP_Y, 40, FLOOR_H);
-    const bands = new Set(
-        rects.filter((r) => r.y >= TOP_Y + FLOOR_H).map((r) => Math.floor((r.y - TOP_Y) / FLOOR_H)),
-    );
+    const bands = new Set(rects.filter((r) => r.y >= TOP_Y + FLOOR_H).map((r) => Math.floor((r.y - TOP_Y) / FLOOR_H)));
     expect([...bands].sort()).toEqual([1, 2, 3]);
     // The pole runs the hall's height in one piece, from the landing to the floor.
     const pole = rects.find((r) => r.w === 3 && r.h > 2 * FLOOR_H);
     expect(pole).toBeDefined();
     // Only the rail and the pole's cap rise past the arrival deck.
-    expect(rects.filter((r) => r.y < TOP_Y + FLOOR_H).every((r) => r.y >= TOP_Y + FLOOR_H - RAIL_OVERHANG - 4)).toBe(true);
+    expect(rects.filter((r) => r.y < TOP_Y + FLOOR_H).every((r) => r.y >= TOP_Y + FLOOR_H - RAIL_OVERHANG - 4)).toBe(
+      true,
+    );
   });
 
   it("the escalator run rises through the bottom band, not the arrival landing", () => {

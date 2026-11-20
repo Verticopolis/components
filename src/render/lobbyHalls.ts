@@ -74,7 +74,14 @@ export function hallDoors(halls: LobbyHalls, lobbyAt: (floor: number, x: number)
     if (!lobbyAt(floor, left) || !lobbyAt(floor, right)) return;
     const a = halls.heightAt(floor, left);
     const b = halls.heightAt(floor, right);
-    if (a !== b) doors.set(`${floor}:${right}`, { floor, x: right, tall: Math.max(a, b), short: Math.min(a, b), tallOnLeft: a > b });
+    if (a !== b)
+      doors.set(`${floor}:${right}`, {
+        floor,
+        x: right,
+        tall: Math.max(a, b),
+        short: Math.min(a, b),
+        tallOnLeft: a > b,
+      });
   };
   for (const r of halls.runs) {
     meet(r.floor, r.x0 - 1);

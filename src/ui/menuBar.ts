@@ -104,7 +104,9 @@ export class MenuBar {
       // A keyboard press on a focused title arrives as a click with no
       // pointer behind it (`detail` 0).
       title.addEventListener("click", (e) =>
-        this.openTitle === title ? this.close(true, "title") : this.open(title, false, e.detail === 0 ? "keys" : "click"),
+        this.openTitle === title
+          ? this.close(true, "title")
+          : this.open(title, false, e.detail === 0 ? "keys" : "click"),
       );
       // A mouse switches menus by pointing. A finger's tap also fires
       // pointerenter just before its click, which would open the menu and
@@ -305,15 +307,23 @@ export class MenuBar {
       e.stopPropagation();
       return;
     }
-    const menu = inSub ? this.subOf(this.openSubTitle!) ?? top : top;
+    const menu = inSub ? (this.subOf(this.openSubTitle!) ?? top) : top;
     const items = this.items(menu);
     const at = items.indexOf(this.root.ownerDocument.activeElement as HTMLElement);
     const focusAt = (i: number) => items[(i + items.length) % items.length]?.focus();
     switch (e.key) {
-      case "ArrowDown": focusAt(at + 1); break;
-      case "ArrowUp": focusAt(at < 0 ? -1 : at - 1); break;
-      case "Home": focusAt(0); break;
-      case "End": focusAt(-1); break;
+      case "ArrowDown":
+        focusAt(at + 1);
+        break;
+      case "ArrowUp":
+        focusAt(at < 0 ? -1 : at - 1);
+        break;
+      case "Home":
+        focusAt(0);
+        break;
+      case "End":
+        focusAt(-1);
+        break;
       case "ArrowRight":
       case "ArrowLeft": {
         const next = this.neighbor(title, e.key === "ArrowRight" ? 1 : -1);

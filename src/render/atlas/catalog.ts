@@ -92,7 +92,15 @@ export const UNIT_STATES: readonly UnitState[] = [
 
 /** Kinds whose art ignores `occupants` entirely, so they carry no presence
  *  split and no occupant chain. */
-export const OCCUPANT_FREE = new Set<FacilityKind>(["parking", "parkingRamp", "security", "medical", "housekeeping", "recycling", "metro"]);
+export const OCCUPANT_FREE = new Set<FacilityKind>([
+  "parking",
+  "parkingRamp",
+  "security",
+  "medical",
+  "housekeeping",
+  "recycling",
+  "metro",
+]);
 
 /** The web's re-bake bucket for the recycling pile (`r${round(fill * 8)}`). */
 export const RECYCLE_STEPS = 8;
@@ -193,7 +201,16 @@ export function roomJobs(): Job[] {
                   hour: hourFor(kind, hours === "open", late === "late"),
                   anim: 0,
                 };
-                const keys: Keys = { kind, state, subtype: subtypeToken(subtype), width: f.width, lit, hours, late, variant: v };
+                const keys: Keys = {
+                  kind,
+                  state,
+                  subtype: subtypeToken(subtype),
+                  width: f.width,
+                  lit,
+                  hours,
+                  late,
+                  variant: v,
+                };
                 const stem = `room/${kind}/${state}/${subtypeToken(subtype)}/w${f.width}/${lit ? "lit" : "unlit"}/${hours}/${late}/v${v}`;
                 jobs.push(...roomStills(kind, stem, w, h, base, keys));
               });
@@ -228,7 +245,10 @@ function withCinemaCycles(job: StillJob): StillJob {
   };
   const cycles: NonNullable<StillJob["cycles"]> = {};
   for (const [key, c] of Object.entries(CINEMA_CYCLES)) {
-    cycles[key] = { rate: c.rate, steps: Array.from({ length: c.frames }, (_, k) => (k === 0 ? job.paint : at(job.paint, clock({ [key]: k })))) };
+    cycles[key] = {
+      rate: c.rate,
+      steps: Array.from({ length: c.frames }, (_, k) => (k === 0 ? job.paint : at(job.paint, clock({ [key]: k })))),
+    };
   }
   const [mk, sk] = Object.keys(CINEMA_CYCLES);
   const chain = Object.entries(job.chains ?? {})[0];
@@ -246,13 +266,22 @@ function withCinemaCycles(job: StillJob): StillJob {
   // Every count in between, at one pairing with neither cycle at step 0.
   if (chain) {
     const want = { [mk]: 1, [sk]: 3 };
-    for (let n = 1; n < chain[1].steps.length - 1; n++) cycleChecks.push({ at: want, chains: { [chain[0]]: n }, paint: at(chain[1].steps[n], clock(want)) });
+    for (let n = 1; n < chain[1].steps.length - 1; n++)
+      cycleChecks.push({ at: want, chains: { [chain[0]]: n }, paint: at(chain[1].steps[n], clock(want)) });
   }
   return { ...job, cycles, cycleChecks };
 }
 
 /** The presence split and the composed layers each kind carries. */
-function roomStillJobs(kind: FacilityKind, stem: string, w: number, h: number, base: UnitPaint, keys: Keys, anchor: { x: number; y: number }): StillJob[] {
+function roomStillJobs(
+  kind: FacilityKind,
+  stem: string,
+  w: number,
+  h: number,
+  base: UnitPaint,
+  keys: Keys,
+  anchor: { x: number; y: number },
+): StillJob[] {
   if (kind === "parking") {
     const overlays: Record<string, PaintSpec> = { dead: { ...base, dead: true } };
     for (let c = 0; c < PARKING_CAR_COLORS; c++) overlays[`car${c}`] = { ...base, id: c, parkingUse: 1 };
@@ -263,11 +292,22 @@ function roomStillJobs(kind: FacilityKind, stem: string, w: number, h: number, b
     for (let k = 0; k <= RECYCLE_STEPS; k++) steps.push({ ...base, recycleFill: k / RECYCLE_STEPS });
     // The exact chain: one step per fill where the picture changes.
     const exact: PaintSpec[] = [base, ...RECYCLE_BREAKS.map((fill) => ({ ...base, recycleFill: fill }))];
-    const chains = { fill: { input: "recyclingFill", steps }, fillExact: { input: "recyclingFillExact", steps: exact, alternativeTo: "fill" } };
+    const chains = {
+      fill: { input: "recyclingFill", steps },
+      fillExact: { input: "recyclingFillExact", steps: exact, alternativeTo: "fill" },
+    };
     return [{ type: "still", name: stem, w, h, anchor, keys, paint: base, chains }];
   }
   if (OCCUPANT_FREE.has(kind)) return [{ type: "still", name: stem, w, h, anchor, keys, paint: base }];
-  const away: StillJob = { type: "still", name: `${stem}/away`, w, h, anchor, keys: { ...keys, presence: "away" }, paint: base };
+  const away: StillJob = {
+    type: "still",
+    name: `${stem}/away`,
+    w,
+    h,
+    anchor,
+    keys: { ...keys, presence: "away" },
+    paint: base,
+  };
   // Present: raw occupants > 0. The chain walks the VISIBLE count (occupants
   // minus those out for a meal); step 0 is everyone out, which only a meal
   // origin can reach.

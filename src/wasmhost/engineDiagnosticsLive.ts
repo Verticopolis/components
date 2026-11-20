@@ -1,9 +1,5 @@
 import { settleEngineIdentity, type EngineBootState } from "./engineBoot";
-import {
-  buildDiagnostics,
-  type DiagnosticsHost,
-  type DiagnosticsReport,
-} from "./engineDiagnostics";
+import { buildDiagnostics, type DiagnosticsHost, type DiagnosticsReport } from "./engineDiagnostics";
 
 /** The page globals the report reads: what boot published and the host's handle. */
 export interface DiagnosticsGlobals {
@@ -16,21 +12,17 @@ export interface DiagnosticsGlobals {
  *  be built at all comes back as an unavailable one with the reason, so this
  *  never throws: Copy diagnostics has to work when the engine is the thing
  *  that failed. */
-export function liveDiagnostics(
-  g: DiagnosticsGlobals = globalThis as DiagnosticsGlobals,
-): DiagnosticsReport {
+export function liveDiagnostics(g: DiagnosticsGlobals = globalThis as DiagnosticsGlobals): DiagnosticsReport {
   try {
     // Boot reads the engine's identity record after the first frame (#1254);
     // a report asked for sooner reads it now.
     settleEngineIdentity(g);
     return buildDiagnostics({
-      appVersion:
-        typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "dev",
+      appVersion: typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "dev",
       appSha: typeof __APP_SHA__ !== "undefined" ? __APP_SHA__ : undefined,
       boot: g.__vcEngineBoot,
       host: g.__vcEngine?.status,
-      expected:
-        typeof __ENGINE_PACKAGE__ !== "undefined" ? __ENGINE_PACKAGE__ : null,
+      expected: typeof __ENGINE_PACKAGE__ !== "undefined" ? __ENGINE_PACKAGE__ : null,
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
       date: new Date().toISOString(),
     });

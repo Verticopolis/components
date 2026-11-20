@@ -19,8 +19,7 @@ const MODERN = catalogFor("modern");
  * take plain values, so unlike buildWalkers they run without a canvas bake.
  */
 
-const unit = (kind: string, floor: number, x: number, width: number) =>
-  ({ kind, floor, x, width } as unknown as Unit);
+const unit = (kind: string, floor: number, x: number, width: number) => ({ kind, floor, x, width }) as unknown as Unit;
 
 describe("coveredUpperStories marks the upper floors of multi-floor facilities", () => {
   it("returns no rows when every unit is single-story", () => {
@@ -45,7 +44,10 @@ describe("coveredUpperStories marks the upper floors of multi-floor facilities",
 
   it("accumulates spans from several facilities sharing a covered row", () => {
     const rows = coveredUpperStories([unit("recycling", -1, 10, 20), unit("cinema", -1, 60, 31)], MODERN);
-    expect(rows.get(0)).toEqual([[10, 30], [60, 91]]);
+    expect(rows.get(0)).toEqual([
+      [10, 30],
+      [60, 91],
+    ]);
   });
 });
 

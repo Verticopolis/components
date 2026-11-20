@@ -32,10 +32,15 @@ vi.mock("excalibur", async (importOriginal) => {
 vi.mock("./towerScenery", () => ({ syncScenery: vi.fn() }));
 vi.mock("./roomSignature", () => ({ roomSignature: () => "sig", isDeadParking: () => false }));
 vi.mock("../regionPaint", () => ({ paintAnimatedUnit: vi.fn() }));
-vi.mock("../sprites", async (importOriginal) => ({ ...(await importOriginal<typeof import("../sprites")>()), drawTransport: vi.fn() }));
+vi.mock("../sprites", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../sprites")>()),
+  drawTransport: vi.fn(),
+}));
 const rules = { venueFlights: true };
 vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules }) }));
-vi.mock("../../catalog/catalogTypes", () => ({ catalogFacility: (_: unknown, kind: string) => ({ floors: kind === "cinema" ? 2 : 1 }) }));
+vi.mock("../../catalog/catalogTypes", () => ({
+  catalogFacility: (_: unknown, kind: string) => ({ floors: kind === "cinema" ? 2 : 1 }),
+}));
 vi.mock("./towerCrowd", () => ({
   reap: <K, V>(map: Map<K, V>, seen: ReadonlySet<K>, dispose: (v: V, k: K) => void): void => {
     for (const [k, v] of map) {
@@ -50,9 +55,37 @@ vi.mock("./towerRegions", () => ({
   dropRegionUnit: vi.fn((engine: TowerEngine, id: number) => void engine.regionUnits.delete(id)),
 }));
 
-const cinema = { id: 7, kind: "cinema", floor: 2, x: 100, width: 31, state: "occupied", occupants: 0 } as unknown as UnitView;
-const stairs = { id: 40, kind: "stairs", x: 92, width: 8, bottom: 2, top: 3, cars: 0, carPositions: [], carDir: [] } as TransportView;
-const lift = { id: 41, kind: "elevatorStandard", x: 96, width: 4, bottom: 2, top: 3, cars: 1, carPositions: [2], carDir: [0] } as TransportView;
+const cinema = {
+  id: 7,
+  kind: "cinema",
+  floor: 2,
+  x: 100,
+  width: 31,
+  state: "occupied",
+  occupants: 0,
+} as unknown as UnitView;
+const stairs = {
+  id: 40,
+  kind: "stairs",
+  x: 92,
+  width: 8,
+  bottom: 2,
+  top: 3,
+  cars: 0,
+  carPositions: [],
+  carDir: [],
+} as TransportView;
+const lift = {
+  id: 41,
+  kind: "elevatorStandard",
+  x: 96,
+  width: 4,
+  bottom: 2,
+  top: 3,
+  cars: 1,
+  carPositions: [2],
+  carDir: [0],
+} as TransportView;
 
 /** Just the engine surface `syncScene` reads: `units` and `transports` are
  *  live arrays, and an edit bumps the revision the way the view does. */
@@ -75,7 +108,9 @@ function fakeSim(units: UnitView[]) {
 
 /** The canvas the actor of flight `id` draws, run on a stand-in context. */
 function rasterOf(engine: TowerEngine, id: number): void {
-  const actor = engine.transportActors.get(id) as unknown as { graphics: { use: { mock: { calls: [{ options: { draw: (ctx: unknown) => void } }][] } } } };
+  const actor = engine.transportActors.get(id) as unknown as {
+    graphics: { use: { mock: { calls: [{ options: { draw: (ctx: unknown) => void } }][] } } };
+  };
   actor.graphics.use.mock.calls[0][0].options.draw({});
 }
 

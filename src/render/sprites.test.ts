@@ -1,13 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { subtypesOf } from "../tests/catalogKinds";
 import type { Unit } from "../model/types";
-import {
-  drawUnit,
-  craneAnchorTile,
-  lobbyVariant,
-  LOBBY_VARIANTS,
-  type DrawCtx,
-} from "./sprites";
+import { drawUnit, craneAnchorTile, lobbyVariant, LOBBY_VARIANTS, type DrawCtx } from "./sprites";
 import { shade, rand, ACCENTS } from "./sprites/common";
 import { SKIN } from "./pixelSprites/common";
 import { PAL, person, drawRoom, sampleState } from "./pixelSprites";
@@ -29,16 +23,48 @@ function spyCtx() {
   const grad = { addColorStop: (...a: unknown[]) => log.push("stop:" + JSON.stringify(a)) };
   const ctx: any = {};
   const methods = [
-    "save", "restore", "beginPath", "closePath", "moveTo", "lineTo", "arc", "arcTo",
-    "quadraticCurveTo", "bezierCurveTo", "rect", "roundRect", "ellipse", "fill", "stroke",
-    "fillRect", "strokeRect", "clearRect", "fillText", "strokeText", "translate", "scale",
-    "rotate", "clip", "setLineDash", "drawImage",
+    "save",
+    "restore",
+    "beginPath",
+    "closePath",
+    "moveTo",
+    "lineTo",
+    "arc",
+    "arcTo",
+    "quadraticCurveTo",
+    "bezierCurveTo",
+    "rect",
+    "roundRect",
+    "ellipse",
+    "fill",
+    "stroke",
+    "fillRect",
+    "strokeRect",
+    "clearRect",
+    "fillText",
+    "strokeText",
+    "translate",
+    "scale",
+    "rotate",
+    "clip",
+    "setLineDash",
+    "drawImage",
   ];
   for (const m of methods) ctx[m] = (...a: unknown[]) => log.push(`${m}:${JSON.stringify(a)}`);
   ctx.createLinearGradient = (...a: unknown[]) => (log.push(`grad:${JSON.stringify(a)}`), grad);
   ctx.createRadialGradient = (...a: unknown[]) => (log.push(`rgrad:${JSON.stringify(a)}`), grad);
   ctx.measureText = () => ({ width: 10 });
-  for (const p of ["fillStyle", "strokeStyle", "lineWidth", "globalAlpha", "font", "textAlign", "textBaseline", "lineCap", "lineJoin"]) {
+  for (const p of [
+    "fillStyle",
+    "strokeStyle",
+    "lineWidth",
+    "globalAlpha",
+    "font",
+    "textAlign",
+    "textBaseline",
+    "lineCap",
+    "lineJoin",
+  ]) {
     let v: unknown = "";
     Object.defineProperty(ctx, p, { get: () => v, set: (nv) => (log.push(`${p}=${String(nv)}`), void (v = nv)) });
   }
@@ -46,12 +72,25 @@ function spyCtx() {
     ctx: ctx as CanvasRenderingContext2D,
     log,
     sig: () => log.join("|"),
-    painted: () => log.some((l) => l.startsWith("fillRect") || l.startsWith("fill:") || l.startsWith("stroke:") || l.startsWith("fillText")),
+    painted: () =>
+      log.some(
+        (l) => l.startsWith("fillRect") || l.startsWith("fill:") || l.startsWith("stroke:") || l.startsWith("fillText"),
+      ),
   };
 }
 
 function unit(over: Partial<Unit> = {}): Unit {
-  return { id: 1, kind: "office", floor: 3, x: 5, width: 8, state: "occupied", satisfaction: 1, occupants: 2, ...over } as Unit;
+  return {
+    id: 1,
+    kind: "office",
+    floor: 3,
+    x: 5,
+    width: 8,
+    state: "occupied",
+    satisfaction: 1,
+    occupants: 2,
+    ...over,
+  } as Unit;
 }
 function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
   return { ctx, lit: true, anim: 0.5, hour: 20, ...over };
@@ -95,7 +134,9 @@ describe("drawUnit — every facility/state paints without throwing", () => {
   ];
   it.each(cases)("paints %s", (_label, over) => {
     const s = spyCtx();
-    expect(() => drawUnit(draw({ recycleFill: 0.5, parkingUse: 0.5 }, s.ctx), unit(over), 10, 20, 60, 34)).not.toThrow();
+    expect(() =>
+      drawUnit(draw({ recycleFill: 0.5, parkingUse: 0.5 }, s.ctx), unit(over), 10, 20, 60, 34),
+    ).not.toThrow();
     expect(s.painted()).toBe(true);
   });
 });
@@ -159,7 +200,9 @@ describe("drawUnit — state actually changes the drawing (behavioral, not just 
     const sigs = new Set<string>();
     for (const name of subtypesOf("amusements")) {
       const s = spyCtx();
-      expect(() => drawUnit(draw({}, s.ctx), unit({ kind: "amusements", subtype: name, occupants: 3 }), 0, 0, 132, 44)).not.toThrow();
+      expect(() =>
+        drawUnit(draw({}, s.ctx), unit({ kind: "amusements", subtype: name, occupants: 3 }), 0, 0, 132, 44),
+      ).not.toThrow();
       expect(s.painted()).toBe(true);
       sigs.add(s.sig());
     }
@@ -187,7 +230,9 @@ describe("drawUnit — state actually changes the drawing (behavioral, not just 
     // occupant count, so a corrupt save with a huge `occupants` paints a bounded
     // number of figures and returns instead of spinning.
     const s = spyCtx();
-    expect(() => drawUnit(draw({}, s.ctx), unit({ kind: "amusements", subtype: "Mini Golf", occupants: 1e9 }), 0, 0, 132, 44)).not.toThrow();
+    expect(() =>
+      drawUnit(draw({}, s.ctx), unit({ kind: "amusements", subtype: "Mini Golf", occupants: 1e9 }), 0, 0, 132, 44),
+    ).not.toThrow();
     // A 132px bay fits only a handful of watchers; nowhere near a billion.
     const people = s.log.filter((l) => l === "fillStyle=rgba(0,0,0,0.24)").length;
     expect(people).toBeLessThan(20);
@@ -199,7 +244,9 @@ describe("drawUnit — state actually changes the drawing (behavioral, not just 
     const sigs = new Set<string>();
     for (const name of subtypesOf("boutiqueBay")) {
       const s = spyCtx();
-      expect(() => drawUnit(draw({}, s.ctx), unit({ kind: "boutiqueBay", subtype: name, occupants: 2 }), 0, 0, 132, 44)).not.toThrow();
+      expect(() =>
+        drawUnit(draw({}, s.ctx), unit({ kind: "boutiqueBay", subtype: name, occupants: 2 }), 0, 0, 132, 44),
+      ).not.toThrow();
       expect(s.painted()).toBe(true);
       sigs.add(s.sig());
     }
@@ -210,7 +257,9 @@ describe("drawUnit — state actually changes the drawing (behavioral, not just 
     const sigs = new Set<string>();
     for (const name of subtypesOf("fitnessClub")) {
       const s = spyCtx();
-      expect(() => drawUnit(draw({}, s.ctx), unit({ kind: "fitnessClub", subtype: name, occupants: 3 }), 0, 0, 176, 44)).not.toThrow();
+      expect(() =>
+        drawUnit(draw({}, s.ctx), unit({ kind: "fitnessClub", subtype: name, occupants: 3 }), 0, 0, 176, 44),
+      ).not.toThrow();
       expect(s.painted()).toBe(true);
       sigs.add(s.sig());
     }
@@ -268,7 +317,9 @@ describe("drawUnit — state actually changes the drawing (behavioral, not just 
     for (const name of subtypesOf("clinic")) {
       const busy = spyCtx();
       const empty = spyCtx();
-      expect(() => drawUnit(draw({}, busy.ctx), unit({ kind: "clinic", subtype: name, occupants: 2 }), 0, 0, 88, 44)).not.toThrow();
+      expect(() =>
+        drawUnit(draw({}, busy.ctx), unit({ kind: "clinic", subtype: name, occupants: 2 }), 0, 0, 88, 44),
+      ).not.toThrow();
       drawUnit(draw({}, empty.ctx), unit({ kind: "clinic", subtype: name, occupants: 0 }), 0, 0, 88, 44);
       expect(busy.painted()).toBe(true);
       expect(busy.log, `${name} drew no patient while occupied`).toContain(occupant);
@@ -289,17 +340,28 @@ describe("service facilities — reserved colors, integer pixels, and state cues
   // Reserved state colors must never appear as decoration, every rectangle must
   // land on integer coordinates, and the recycling FULL gauge is a state cue.
   const RESERVED = ["#C24A3A", "#C9CCC4", "#B2B0A4", "#E8A030", "#D4623A", "#FFD86A", "#E0556B"];
-  const KINDS: Array<Partial<Unit>> = (["security", "medical", "housekeeping", "recycling", "metro", "parking", "parkingRamp"] as const).map((kind) => ({ kind }));
+  const KINDS: Array<Partial<Unit>> = (
+    ["security", "medical", "housekeeping", "recycling", "metro", "parking", "parkingRamp"] as const
+  ).map((kind) => ({ kind }));
 
   it("no reserved decoration color, integer pixels only, across fill/lit/dead states", () => {
     for (const over of KINDS) {
-      for (const [rf, pd, lit] of [[0, false, true], [0.8, false, false], [1, false, true], [0.5, true, true]] as const) {
+      for (const [rf, pd, lit] of [
+        [0, false, true],
+        [0.8, false, false],
+        [1, false, true],
+        [0.5, true, true],
+      ] as const) {
         const s = spyCtx();
         drawUnit(draw({ recycleFill: rf, parkingUse: 1, parkingDead: pd, lit }, s.ctx), unit(over), 0, 0, 176, 88);
-        const fills = s.log.filter((x) => x.startsWith("fillStyle=")).map((x) => x.slice("fillStyle=".length).toLowerCase());
-        for (const r of RESERVED) expect(fills, `${String(over.kind)} painted reserved ${r}`).not.toContain(r.toLowerCase());
+        const fills = s.log
+          .filter((x) => x.startsWith("fillStyle="))
+          .map((x) => x.slice("fillStyle=".length).toLowerCase());
+        for (const r of RESERVED)
+          expect(fills, `${String(over.kind)} painted reserved ${r}`).not.toContain(r.toLowerCase());
         for (const l of s.log.filter((x) => x.startsWith("fillRect:")))
-          for (const n of JSON.parse(l.slice("fillRect:".length)) as number[]) expect(Number.isInteger(n), `${String(over.kind)} non-integer ${l}`).toBe(true);
+          for (const n of JSON.parse(l.slice("fillRect:".length)) as number[])
+            expect(Number.isInteger(n), `${String(over.kind)} non-integer ${l}`).toBe(true);
       }
     }
   });
@@ -333,7 +395,10 @@ describe("service facilities — reserved colors, integer pixels, and state cues
 
 describe("pixel-art room module", () => {
   it("person paints a figure (seated and standing, with and without a tint)", () => {
-    for (const [seated, tint] of [[false, undefined], [true, "#ff0000"]] as const) {
+    for (const [seated, tint] of [
+      [false, undefined],
+      [true, "#ff0000"],
+    ] as const) {
       const s = spyCtx();
       expect(() => person(s.ctx, 10, 30, 2, 7, seated, tint)).not.toThrow();
       expect(s.painted()).toBe(true);
@@ -439,7 +504,14 @@ describe("retail subtype looks paint distinctly (drawRoom)", () => {
   it("an unknown (non-canon) subtype falls back to the default look, not a crash", () => {
     for (const [kind, , hour] of cases) {
       const withUnknown = spyCtx();
-      drawRoom(draw({ hour, lit: false }, withUnknown.ctx), unit({ kind, subtype: "Not A Real Variety", occupants: 5 }), 0, 0, 144, 26);
+      drawRoom(
+        draw({ hour, lit: false }, withUnknown.ctx),
+        unit({ kind, subtype: "Not A Real Variety", occupants: 5 }),
+        0,
+        0,
+        144,
+        26,
+      );
       const withNone = spyCtx();
       drawRoom(draw({ hour, lit: false }, withNone.ctx), unit({ kind, occupants: 5 }), 0, 0, 144, 26);
       expect(withUnknown.sig()).toBe(withNone.sig());
@@ -478,13 +550,34 @@ describe("per-unit geo-seeded variety (party law: geometry first)", () => {
   it("hotel state cues survive every variant (asleep z, dirty tray, ready lamp)", () => {
     for (let ux = 0; ux < 48; ux += 8) {
       const asleep = spyCtx();
-      drawRoom(draw({ hour: 1, lit: false }, asleep.ctx), at("hotelDouble", 12, ux, { state: "asleep", occupants: 2 }), 0, 0, 144, 26);
+      drawRoom(
+        draw({ hour: 1, lit: false }, asleep.ctx),
+        at("hotelDouble", 12, ux, { state: "asleep", occupants: 2 }),
+        0,
+        0,
+        144,
+        26,
+      );
       expect(asleep.log.some((l) => l.startsWith("fillText"))).toBe(true); // the z
       const dirty = spyCtx();
-      drawRoom(draw({ hour: 10 }, dirty.ctx), at("hotelDouble", 12, ux, { state: "dirty", occupants: 0 }), 0, 0, 144, 26);
+      drawRoom(
+        draw({ hour: 10 }, dirty.ctx),
+        at("hotelDouble", 12, ux, { state: "dirty", occupants: 0 }),
+        0,
+        0,
+        144,
+        26,
+      );
       expect(dirty.log.some((l) => l.includes("#D4623A"))).toBe(true); // the tray
       const ready = spyCtx();
-      drawRoom(draw({ hour: 20, lit: true }, ready.ctx), at("hotelDouble", 12, ux, { state: "empty", occupants: 0 }), 0, 0, 144, 26);
+      drawRoom(
+        draw({ hour: 20, lit: true }, ready.ctx),
+        at("hotelDouble", 12, ux, { state: "empty", occupants: 0 }),
+        0,
+        0,
+        144,
+        26,
+      );
       expect(ready.log.some((l) => l.includes("#FFD86A"))).toBe(true); // the lamp
     }
   });

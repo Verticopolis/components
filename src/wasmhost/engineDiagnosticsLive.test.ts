@@ -22,13 +22,13 @@ describe("liveDiagnostics", () => {
       __vcEngine: { status: { hosted: false } },
     });
     expect(r.rows.find((x) => x.label === "Engine in use")?.value).toBe("not running");
-    expect(r.rows.find((x) => x.label === "Engine crate")?.value).toBe(
-      "example-engine 9.8.7",
-    );
+    expect(r.rows.find((x) => x.label === "Engine crate")?.value).toBe("example-engine 9.8.7");
   });
 
   it("reads an identity record boot left for later before it reports (#1254)", () => {
-    const g: { __vcEngineBoot?: EngineBootState; __vcEngine?: { status: { hosted: boolean } } } = { __vcEngine: { status: { hosted: true } } };
+    const g: { __vcEngineBoot?: EngineBootState; __vcEngine?: { status: { hosted: boolean } } } = {
+      __vcEngine: { status: { hosted: true } },
+    };
     deferEngineIdentity({ engineIdentity: () => JSON.stringify(IDENTITY_FIXTURE) });
     publishBootState({ build: "wasm-only", engine: "wasm", failure: null }, g);
     const r = liveDiagnostics(g);

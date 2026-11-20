@@ -40,7 +40,14 @@ export function drawHelicopter(ctx: CanvasRenderingContext2D, x: number, y: numb
 
 /** Water falling from (x, fromY) to the fire at footY, as a few streaks
  *  that drift with `phase` (0 to 1, held still under reduced motion). */
-export function drawWaterSpray(ctx: CanvasRenderingContext2D, x: number, fromY: number, footY: number, s: number, phase: number): void {
+export function drawWaterSpray(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  fromY: number,
+  footY: number,
+  s: number,
+  phase: number,
+): void {
   if (footY <= fromY) return;
   ctx.save();
   ctx.strokeStyle = "rgba(120,180,255,0.75)";

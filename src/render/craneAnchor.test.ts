@@ -158,7 +158,7 @@ function range(lo: number, hi: number): number[] {
  *  reads are set; the rest are irrelevant to silhouette geometry. */
 function tiles(floor: number, lo: number, hi: number, kind: FacilityKind = "floor", width = 1): Unit[] {
   if (width > 1) return [{ floor, x: lo, width, kind } as unknown as Unit];
-  return range(lo, hi).map((x) => ({ floor, x, width: 1, kind } as unknown as Unit));
+  return range(lo, hi).map((x) => ({ floor, x, width: 1, kind }) as unknown as Unit);
 }
 
 /**

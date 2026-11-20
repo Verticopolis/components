@@ -171,7 +171,9 @@ describe("towerScenery", () => {
     const sim = newSeededGame(SEED);
     const { eng, added } = fakeEngine(sim);
     syncScenery(eng);
-    const canvases = [...new Set(added.map((a) => a.graphics.current).filter((g): g is ex.Canvas => g instanceof ex.Canvas))];
+    const canvases = [
+      ...new Set(added.map((a) => a.graphics.current).filter((g): g is ex.Canvas => g instanceof ex.Canvas)),
+    ];
     // Every static is a canvas actor, plus a canvas per plant, plus exactly
     // TWO shared skyline fills: the whole skyline must reuse one tiny raster
     // per depth (the texture-memory contract), so unique canvases stay flat
@@ -194,7 +196,12 @@ describe("towerScenery", () => {
       stripLogs.push(...s.log);
     }
     expect(stripLogs).toContain("fillStyle=#b0b0a8"); // cement
-    expect(stripLogs.some((l) => l.startsWith("fillStyle=#4e7a34") || l.startsWith("fillStyle=#5b8a3c") || l.startsWith("fillStyle=#446c2e"))).toBe(true); // grass shades
+    expect(
+      stripLogs.some(
+        (l) =>
+          l.startsWith("fillStyle=#4e7a34") || l.startsWith("fillStyle=#5b8a3c") || l.startsWith("fillStyle=#446c2e"),
+      ),
+    ).toBe(true); // grass shades
   });
 
   it("building outward repaints the strip and fells the plant it reaches; a no-op sync stays silent", () => {

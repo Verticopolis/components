@@ -149,13 +149,13 @@ function pointerDown(engine: TowerEngine, ev: ex.PointerEvent): void {
   // Pan key: the game's Space hold (spacePanKey) as this press went down, or Shift alone (Ctrl+Shift
   // or Cmd+Shift is the three-story lobby, #308). Down-only: releasing it mid-drag keeps the pan.
   const native = ev.nativeEvent as (Event & { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean }) | undefined;
-  const panKey = engine.spacePanKey?.(native) === true || (native?.shiftKey === true && !native.ctrlKey && !native.metaKey);
+  const panKey =
+    engine.spacePanKey?.(native) === true || (native?.shiftKey === true && !native.ctrlKey && !native.metaKey);
   // Left-click on a selected elevator's extend arrow grows the shaft. A held
   // pan key skips the arrow: the modifier promises the drag only pans.
   if (buttonNum(ev) === 0 && !panKey && engine.onExtendTo) {
     const ps = ev.screenPos;
-    const inRect = (r?: ScreenRect) =>
-      !!r && ps.x >= r.x && ps.x <= r.x + r.w && ps.y >= r.y && ps.y <= r.y + r.h;
+    const inRect = (r?: ScreenRect) => !!r && ps.x >= r.x && ps.x <= r.x + r.w && ps.y >= r.y && ps.y <= r.y + r.h;
     let end: "up" | "down" | null = null;
     if (inRect(engine.arrowHit.up)) end = "up";
     else if (inRect(engine.arrowHit.down)) end = "down";
@@ -343,7 +343,14 @@ function clamp(engine: TowerEngine): void {
   const x = Math.max(0, Math.min(viewWorld().lotWidth * TILE, engine.cam.pos.x));
   // Zoom-aware vertical clamp on the visible top/bottom edges, so zooming out
   // never shows void below the deepest basement. See {@link clampCameraY}.
-  const y = clampCameraY(engine.cam.pos.y, engine.viewHeight, engine.cam.zoom, FLOOR, viewWorld().minFloor, viewWorld().maxFloor);
+  const y = clampCameraY(
+    engine.cam.pos.y,
+    engine.viewHeight,
+    engine.cam.zoom,
+    FLOOR,
+    viewWorld().minFloor,
+    viewWorld().maxFloor,
+  );
   engine.cam.pos = ex.vec(x, y);
 }
 export function center(engine: TowerEngine): void {
@@ -410,7 +417,12 @@ const CENSUS_REFRESH_MS = 1000;
  *  (lobbies, the street), 24 visible people a full house. While culled the view
  *  carries nobody (#2151), so the fallback keeps `seen`, its last people count. */
 type Bounds = { t0: number; t1: number; f0: number; f1: number };
-function censusCrowd(engine: TowerEngine, dominant: ViewFocus["dominant"], bounds: Bounds, seen: number): { crowd: number; seen: number } {
+function censusCrowd(
+  engine: TowerEngine,
+  dominant: ViewFocus["dominant"],
+  bounds: Bounds,
+  seen: number,
+): { crowd: number; seen: number } {
   let occ = 0;
   let cap = 0;
   if (dominant !== "empty" && dominant !== "outside") {
@@ -475,9 +487,7 @@ export function focus(engine: TowerEngine): ViewFocus {
   // slowly, so a 1 s census is plenty. Use a monotonic clock (`performance.now()`,
   // else `Date.now()`): a constant 0 would freeze `now - cached.at` forever.
   const now =
-    typeof performance !== "undefined" && typeof performance.now === "function"
-      ? performance.now()
-      : Date.now();
+    typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
   const cached = censusCache.get(engine);
   let crowd: number;
   if (cached && cached.dominant === dominant && now - cached.at < CENSUS_REFRESH_MS) {

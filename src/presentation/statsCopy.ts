@@ -10,7 +10,15 @@ import type { LedgerCat } from "../model/engineTypes";
  */
 
 /** The income categories in display order. */
-export const LEDGER_CATS: readonly LedgerCat[] = ["offices", "condos", "hotels", "retail", "food", "entertainment", "upkeep"];
+export const LEDGER_CATS: readonly LedgerCat[] = [
+  "offices",
+  "condos",
+  "hotels",
+  "retail",
+  "food",
+  "entertainment",
+  "upkeep",
+];
 
 /** The income categories' names in the readout. */
 export const LEDGER_LABELS: Readonly<Record<LedgerCat, string>> = {
@@ -40,6 +48,12 @@ export const MILESTONE_COPY: ReadonlyMap<string, MilestoneCopy> = new Map<string
   ["cinema", { label: "Showtime", desc: "Run an operational cinema." }],
   ["metro", { label: "On the Map", desc: "Connect an operational Metro Station." }],
   ["skyline", { label: "Touch the Sky", desc: "Build up to the 100th floor." }],
-  ["well-served", { label: "Smooth Operator", desc: "Reach 5,000 population with every occupied, tenant-bearing floor reachable." }],
-  ["full-house", { label: "No Vacancy", desc: "Reach 2,000 population with no vacant offices, condos, or hotel rooms." }],
+  [
+    "well-served",
+    { label: "Smooth Operator", desc: "Reach 5,000 population with every occupied, tenant-bearing floor reachable." },
+  ],
+  [
+    "full-house",
+    { label: "No Vacancy", desc: "Reach 2,000 population with no vacant offices, condos, or hotel rooms." },
+  ],
 ]);

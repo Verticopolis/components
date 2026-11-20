@@ -202,7 +202,11 @@ const NO_VENUES: readonly VenueBox[] = [];
  *  redoing a venue beside it restyles it in the same sync. Runs only when the
  *  structure or the mode moved (`FlightPass`): every input here is structural,
  *  and every transport edit bumps the tower revision. */
-function syncTransports(engine: TowerEngine, transports: ReadonlyArray<TransportView>, winding: ReadonlySet<number>): void {
+function syncTransports(
+  engine: TowerEngine,
+  transports: ReadonlyArray<TransportView>,
+  winding: ReadonlySet<number>,
+): void {
   const seenT = new Set<number>();
   for (const t of transports) {
     seenT.add(t.id);
@@ -252,36 +256,37 @@ export function syncFacade(engine: TowerEngine): void {
  *  run, slid in place when the run's edges move. */
 function syncEscapes(engine: TowerEngine, runs: Map<number, FloorEdge[]>): void {
   const kept = new Set<string>();
-  for (const [floor, row] of runs) row.forEach((e, i) => {
-    const key = `${floor}:${i}`;
-    kept.add(key);
-    // Floor 1 wears awnings over its frontage instead of the fire escape;
-    // they are wider than an escape segment, so the outer offset differs.
-    const ground = floor === 1;
-    const segW = ground ? AWNING_W : ESCAPE_W;
-    const sig = `${e.min}:${e.max}`;
-    const y = engine.worldYTop(floor);
-    const lx = e.min * TILE - segW;
-    const rx = e.max * TILE;
-    const rec = engine.escapeActors.get(key);
-    if (rec) {
-      // Same graphic (parity/style is fixed per floor), just follow the edge.
-      if (rec.sig !== sig) {
-        rec.l.pos = ex.vec(lx, y);
-        rec.r.pos = ex.vec(rx, y);
-        rec.sig = sig;
+  for (const [floor, row] of runs)
+    row.forEach((e, i) => {
+      const key = `${floor}:${i}`;
+      kept.add(key);
+      // Floor 1 wears awnings over its frontage instead of the fire escape;
+      // they are wider than an escape segment, so the outer offset differs.
+      const ground = floor === 1;
+      const segW = ground ? AWNING_W : ESCAPE_W;
+      const sig = `${e.min}:${e.max}`;
+      const y = engine.worldYTop(floor);
+      const lx = e.min * TILE - segW;
+      const rx = e.max * TILE;
+      const rec = engine.escapeActors.get(key);
+      if (rec) {
+        // Same graphic (parity/style is fixed per floor), just follow the edge.
+        if (rec.sig !== sig) {
+          rec.l.pos = ex.vec(lx, y);
+          rec.r.pos = ex.vec(rx, y);
+          rec.sig = sig;
+        }
+        return;
       }
-      return;
-    }
-    const parity = (floor % 2) as 0 | 1;
-    const hang = (x: number, side: "left" | "right"): ex.Actor => {
-      const a = new ex.Actor({ pos: ex.vec(x, y), width: segW, height: FLOOR, anchor: ex.vec(0, 0), z: Z.hang });
-      a.graphics.use(ground ? engine.awningGfx[side] : engine.escGfx[side][parity]);
-      engine.engine.add(a);
-      return a;
-    };
-    engine.escapeActors.set(key, { l: hang(lx, "left"), r: hang(rx, "right"), sig });
-  });
+      const parity = (floor % 2) as 0 | 1;
+      const hang = (x: number, side: "left" | "right"): ex.Actor => {
+        const a = new ex.Actor({ pos: ex.vec(x, y), width: segW, height: FLOOR, anchor: ex.vec(0, 0), z: Z.hang });
+        a.graphics.use(ground ? engine.awningGfx[side] : engine.escGfx[side][parity]);
+        engine.engine.add(a);
+        return a;
+      };
+      engine.escapeActors.set(key, { l: hang(lx, "left"), r: hang(rx, "right"), sig });
+    });
   reap(engine.escapeActors, kept, (rec) => {
     rec.l.kill();
     rec.r.kill();
@@ -381,7 +386,10 @@ function addTransport(engine: TowerEngine, t: TransportView, winds: boolean): vo
   const totalFloors = t.top - t.bottom + 1;
   const h = totalFloors * FLOOR;
   const gfx = transportGraphic(engine, t, w, totalFloors, winds);
-  engine.transportActors.set(t.id, addBoxActor(engine, ex.vec(engine.worldX(t.x), engine.worldYTop(t.top)), w, h, Z.transport, gfx));
+  engine.transportActors.set(
+    t.id,
+    addBoxActor(engine, ex.vec(engine.worldX(t.x), engine.worldYTop(t.top)), w, h, Z.transport, gfx),
+  );
 }
 
 /**
@@ -392,7 +400,13 @@ function addTransport(engine: TowerEngine, t: TransportView, winds: boolean): vo
  * each its own small cached Canvas, composed onto one GraphicsGroup, a single
  * actor, so the rest of the engine (sync, removal, collider) is unchanged.
  */
-function transportGraphic(engine: TowerEngine, t: TransportView, w: number, totalFloors: number, winds: boolean): ex.Graphic {
+function transportGraphic(
+  engine: TowerEngine,
+  t: TransportView,
+  w: number,
+  totalFloors: number,
+  winds: boolean,
+): ex.Graphic {
   const band = (fromTop: number, floors: number): ex.Canvas =>
     new ex.Canvas({
       width: w,

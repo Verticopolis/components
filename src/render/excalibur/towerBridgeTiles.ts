@@ -28,7 +28,10 @@ export const NO_BRIDGE_LOOKS: ReadonlyMap<number, BridgeCell> = new Map();
 
 /** Each bridge tile drawn in a look, keyed by {@link bridgeCellKey}. Built
  *  once per full structure pass from the view's bridges, a handful of runs. */
-export function bridgeLookCells(bridges: readonly SkyBridgeView[], looks: readonly string[] | undefined): Map<number, BridgeCell> {
+export function bridgeLookCells(
+  bridges: readonly SkyBridgeView[],
+  looks: readonly string[] | undefined,
+): Map<number, BridgeCell> {
   const cells = new Map<number, BridgeCell>();
   if (!looks) return cells;
   for (const b of bridges) {
@@ -53,7 +56,12 @@ export function bridgeTileGfx(cell: BridgeCell, lit: boolean, part: BridgePart =
   const key = `${name}|${lit ? 1 : 0}|${i}|${n}|${part}`;
   let gfx = baked.get(key);
   if (!gfx) {
-    gfx = new ex.Canvas({ width: TILE, height: FLOOR, cache: true, draw: (ctx) => drawBridgeTile(ctx, name, i, n, lit, TILE, FLOOR, part) });
+    gfx = new ex.Canvas({
+      width: TILE,
+      height: FLOOR,
+      cache: true,
+      draw: (ctx) => drawBridgeTile(ctx, name, i, n, lit, TILE, FLOOR, part),
+    });
     baked.set(key, gfx);
   }
   return gfx;

@@ -56,7 +56,8 @@ export function patternCells(pattern: MapPattern): ReadonlyArray<readonly [numbe
       }
       break;
     case "checker":
-      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (Math.floor(x / 2) % 2 === Math.floor(y / 2) % 2) cells.push([x, y]);
+      for (let y = 0; y < n; y++)
+        for (let x = 0; x < n; x++) if (Math.floor(x / 2) % 2 === Math.floor(y / 2) % 2) cells.push([x, y]);
       break;
     case "outline":
       for (let i = 0; i < n; i++) {
@@ -141,7 +142,12 @@ export function paintMapMarks(
  * so this walks back over them alone. Returns how many `fillRect` calls it
  * took.
  */
-export function paintGapsAndShafts(ctx: MapPaintContext, marks: ReadonlyArray<MapMark>, gaps: ReadonlyArray<MapRect>, patterns: PatternSource): number {
+export function paintGapsAndShafts(
+  ctx: MapPaintContext,
+  marks: ReadonlyArray<MapMark>,
+  gaps: ReadonlyArray<MapRect>,
+  patterns: PatternSource,
+): number {
   clearGaps(ctx, gaps);
   return paintMarkRange(ctx, marks, transportStart(marks), marks.length, patterns);
 }
@@ -158,7 +164,13 @@ function clearGaps(ctx: MapPaintContext, gaps: ReadonlyArray<MapRect>): void {
 }
 
 /** Paint `marks[from]` up to `marks[to - 1]` in order. */
-function paintMarkRange(ctx: MapPaintContext, marks: ReadonlyArray<MapMark>, from: number, to: number, patterns: PatternSource): number {
+function paintMarkRange(
+  ctx: MapPaintContext,
+  marks: ReadonlyArray<MapMark>,
+  from: number,
+  to: number,
+  patterns: PatternSource,
+): number {
   let last: string | CanvasPattern | null = null;
   let kind: MapMark["kind"] | null = null;
   let styled: string | CanvasPattern = "";

@@ -98,13 +98,19 @@ export function syncEventFx(engine: TowerEngine, animating: boolean): void {
   if (engine.sim.explosionFx.seq !== engine.lastExplosionSeq) {
     engine.lastExplosionSeq = engine.sim.explosionFx.seq;
     if (animating && engine.explosions.length < MAX_EXPLOSIONS) {
-      engine.explosions.push({ x: engine.sim.explosionFx.x, floor: engine.sim.explosionFx.floor, start: engine.d.anim });
+      engine.explosions.push({
+        x: engine.sim.explosionFx.x,
+        floor: engine.sim.explosionFx.floor,
+        start: engine.d.anim,
+      });
     }
   }
   if (engine.sim.thiefFx.seq !== engine.lastThiefSeq) {
     engine.lastThiefSeq = engine.sim.thiefFx.seq;
     // He runs the floor's rooms; a floor with none has nowhere to prowl.
-    const span = animating ? floorRoomSpan(engine.sim.tower.units, engine.sim.thiefFx.floor, engine.sim.thiefFx.x) : null;
+    const span = animating
+      ? floorRoomSpan(engine.sim.tower.units, engine.sim.thiefFx.floor, engine.sim.thiefFx.x)
+      : null;
     if (span) {
       engine.thiefStart = engine.d.anim;
       engine.thiefCaught = engine.sim.thiefFx.caught;
@@ -206,7 +212,12 @@ function renderBombSearch(engine: TowerEngine, ctx: CanvasRenderingContext2D): v
     drawSearchGuard(ctx, x, y, scale, at.climbing, { frame, lit });
   });
   const minutesLeft = search.deadline - engine.sim.clock.minutes;
-  drawEdgeGlow(ctx, engine.viewWidth, engine.viewHeight, bombPulseAlpha(engine.d.anim, minutesLeft, engine.reducedMotion));
+  drawEdgeGlow(
+    ctx,
+    engine.viewWidth,
+    engine.viewHeight,
+    bombPulseAlpha(engine.d.anim, minutesLeft, engine.reducedMotion),
+  );
   const text = bombCountdownText(minutesLeft);
   ctx.save();
   ctx.font = "bold 14px sans-serif";
@@ -276,7 +287,8 @@ function renderVip(engine: TowerEngine, ctx: CanvasRenderingContext2D): void {
   // The limo faces right, so it drives rightward: in from the left, hold, out
   // to the right (otherwise it moon-walks).
   let x = centerSx;
-  if (p < 0.25) x = centerSx - (1 - p / 0.25) * off; // arrive from the left
+  if (p < 0.25)
+    x = centerSx - (1 - p / 0.25) * off; // arrive from the left
   else if (p > 0.75) x = centerSx + ((p - 0.75) / 0.25) * off; // depart to the right
   drawVipLimo(ctx, x, groundSy, Math.max(0.9, engine.cam.zoom));
 }
@@ -291,7 +303,10 @@ function renderThief(engine: TowerEngine, ctx: CanvasRenderingContext2D): void {
   const x = engine.worldToScreenX(thiefX(engine.thiefSpan, p));
   const y = engine.worldToScreenY(engine.thiefFloor) + FLOOR * engine.cam.zoom;
   const lit = towerCatalog(engine.sim).rules.shadedLook;
-  drawThief(ctx, x, y, floorFigureScale(engine.cam.zoom), engine.thiefCaught, { frame: strideFrame(lit, thiefX(engine.thiefSpan, p) * TILE, 0), lit });
+  drawThief(ctx, x, y, floorFigureScale(engine.cam.zoom), engine.thiefCaught, {
+    frame: strideFrame(lit, thiefX(engine.thiefSpan, p) * TILE, 0),
+    lit,
+  });
 }
 
 /** Rain falls on the open sky on rainy days (overlay layer), never on the
@@ -324,7 +339,14 @@ function paintRain(ctx: CanvasRenderingContext2D, W: number, H: number, t: numbe
 
 /** The translucent placement ghost: gold when valid, red when not, with one
  *  explicit stroke width so no ghost inherits the overlay context's last one. */
-function drawGhostRect(ctx: CanvasRenderingContext2D, sx: number, sy: number, sw: number, sh: number, valid: boolean): void {
+function drawGhostRect(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  sy: number,
+  sw: number,
+  sh: number,
+  valid: boolean,
+): void {
   ctx.globalAlpha = 0.5;
   ctx.fillStyle = valid ? "#ffd24a" : "#cc3333";
   ctx.fillRect(sx, sy, sw, sh);

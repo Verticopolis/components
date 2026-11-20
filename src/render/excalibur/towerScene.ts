@@ -16,7 +16,18 @@ import {
   LOBBY_VARIANTS,
 } from "../sprites";
 import { drawSanta } from "../sprites/events";
-import { CLOUD_COUNT, CLOUD_DRIFT, SUN_ARC, cloudFill, cloudMotion, cloudRadius, cloudSeed, drawCloud, drawSunDisc, skyColor } from "../sprites/sky";
+import {
+  CLOUD_COUNT,
+  CLOUD_DRIFT,
+  SUN_ARC,
+  cloudFill,
+  cloudMotion,
+  cloudRadius,
+  cloudSeed,
+  drawCloud,
+  drawSunDisc,
+  skyColor,
+} from "../sprites/sky";
 import { disposeRegions } from "./towerRegions";
 import { teardownEngine } from "./engineTeardown";
 import { emptyStructPass } from "./towerStructTiles";
@@ -181,24 +192,36 @@ export function bakeSharedGraphics(engine: TowerEngine): void {
   // fixed per canvas so the lit and unlit versions don't get swapped on the
   // evening flip (that path re-issues use() to swap between them). Service
   // tiles are static so they use the same cache-true bake as normal variants.
-  const bakeGrand = (kind: "grand-left" | "grand-right" | "grand-solo") => (lit: boolean): ex.Canvas =>
-    new ex.Canvas({
-      width: TILE,
-      height: FLOOR,
-      cache: false,
-      // The staffed slice: a tower nobody is in shows its empty slice instead
-      // (`entranceEmptyGfx`), which the structure cells swap to per tower.
-      draw: (ctx) =>
-        drawLobbyEntrance({ ctx, lit, anim: engine.d.anim, hour: lit ? 20 : 12, staffed: true }, kind, 0, 0, TILE, FLOOR),
-    });
+  const bakeGrand =
+    (kind: "grand-left" | "grand-right" | "grand-solo") =>
+    (lit: boolean): ex.Canvas =>
+      new ex.Canvas({
+        width: TILE,
+        height: FLOOR,
+        cache: false,
+        // The staffed slice: a tower nobody is in shows its empty slice instead
+        // (`entranceEmptyGfx`), which the structure cells swap to per tower.
+        draw: (ctx) =>
+          drawLobbyEntrance(
+            { ctx, lit, anim: engine.d.anim, hour: lit ? 20 : 12, staffed: true },
+            kind,
+            0,
+            0,
+            TILE,
+            FLOOR,
+          ),
+      });
   // No doorman or attendant, so nothing moves: a static bake.
-  const bakeEmpty = (kind: "grand-left" | "grand-right" | "grand-solo") => (lit: boolean): ex.Canvas =>
-    new ex.Canvas({
-      width: TILE,
-      height: FLOOR,
-      cache: true,
-      draw: (ctx) => drawLobbyEntrance({ ctx, lit, anim: 0, hour: lit ? 20 : 12, staffed: false }, kind, 0, 0, TILE, FLOOR),
-    });
+  const bakeEmpty =
+    (kind: "grand-left" | "grand-right" | "grand-solo") =>
+    (lit: boolean): ex.Canvas =>
+      new ex.Canvas({
+        width: TILE,
+        height: FLOOR,
+        cache: true,
+        draw: (ctx) =>
+          drawLobbyEntrance({ ctx, lit, anim: 0, hour: lit ? 20 : 12, staffed: false }, kind, 0, 0, TILE, FLOOR),
+      });
   const bakeService = (lit: boolean): ex.Canvas =>
     new ex.Canvas({
       width: TILE,
@@ -322,7 +345,7 @@ function drawClouds(engine: TowerEngine, ctx: CanvasRenderingContext2D): void {
     const { speed, row, offset } = cloudMotion(seed);
     const { pad, top, band } = CLOUD_DRIFT;
     const y = H * top + row * H * band;
-    const x = ((offset % (W + pad)) + t * speed) % (W + pad) - pad / 2;
+    const x = (((offset % (W + pad)) + t * speed) % (W + pad)) - pad / 2;
     drawCloud(ctx, x, y, cloudRadius(seed));
   }
 }
@@ -333,7 +356,9 @@ function drawSun(engine: TowerEngine, ctx: CanvasRenderingContext2D): void {
   // so both rise in the east, climb, and set in the west.
   const { rise, set, baseY, lift } = SUN_ARC;
   const day = hour >= rise && hour < set;
-  const arc = day ? ((hour - rise) / (set - rise)) * Math.PI : (((hour - set + 24) % 24) / (24 - (set - rise))) * Math.PI;
+  const arc = day
+    ? ((hour - rise) / (set - rise)) * Math.PI
+    : (((hour - set + 24) % 24) / (24 - (set - rise))) * Math.PI;
   const cx = (arc / Math.PI) * engine.viewWidth;
   const cy = engine.viewHeight * baseY - Math.sin(arc) * engine.viewHeight * lift;
   drawSunDisc(ctx, cx, cy, day);

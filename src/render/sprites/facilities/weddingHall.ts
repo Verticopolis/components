@@ -276,9 +276,18 @@ function shoulderTop(px: number, acx: number, flatHalf: number, wallHalf: number
  * `flatHalf` set the roof has curved shoulders: flat over the middle (where the
  * story above stands) and sweeping down to the walls on both sides.
  */
-function glassStory(ctx: CanvasRenderingContext2D, tx: number, ty: number, tw: number, h: number, trees: number, flatHalf?: number): void {
+function glassStory(
+  ctx: CanvasRenderingContext2D,
+  tx: number,
+  ty: number,
+  tw: number,
+  h: number,
+  trees: number,
+  flatHalf?: number,
+): void {
   const acx = tx + tw / 2;
-  const topAt = (px: number) => (flatHalf === undefined ? ty : shoulderTop(px, acx, flatHalf, tw / 2, ty, WEDDING_SHOULDER_DROP));
+  const topAt = (px: number) =>
+    flatHalf === undefined ? ty : shoulderTop(px, acx, flatHalf, tw / 2, ty, WEDDING_SHOULDER_DROP);
   for (let px = tx; px < tx + tw; px++) {
     const top = topAt(px);
     ctx.fillStyle = GLASS;
@@ -340,8 +349,10 @@ function drawWeddingGarden(d: DrawCtx, x: number, y: number, w: number, h: numbe
     if (curved) {
       // The roof sweeps down from a flat crown under the story above; flowers line the curve.
       roofSlab(ctx, acx - above / 2 - 2, ty, above);
-      for (let px = tx + 1; px + 3 < acx - above / 2 - 2; px += 8) bloom(ctx, px, shoulderTop(px, acx, above / 2 + 2, tw / 2, ty, WEDDING_SHOULDER_DROP) - 3, bloomColor(px >> 3));
-      for (let px = acx + above / 2 + 3; px + 3 < tx + tw; px += 8) bloom(ctx, px, shoulderTop(px, acx, above / 2 + 2, tw / 2, ty, WEDDING_SHOULDER_DROP) - 3, bloomColor(px >> 3));
+      for (let px = tx + 1; px + 3 < acx - above / 2 - 2; px += 8)
+        bloom(ctx, px, shoulderTop(px, acx, above / 2 + 2, tw / 2, ty, WEDDING_SHOULDER_DROP) - 3, bloomColor(px >> 3));
+      for (let px = acx + above / 2 + 3; px + 3 < tx + tw; px += 8)
+        bloom(ctx, px, shoulderTop(px, acx, above / 2 + 2, tw / 2, ty, WEDDING_SHOULDER_DROP) - 3, bloomColor(px >> 3));
     } else {
       roofSlab(ctx, tx, ty, tw);
       // The strip of this roof left outside the story above is a planted terrace.
@@ -385,7 +396,8 @@ function drawWeddingGarden(d: DrawCtx, x: number, y: number, w: number, h: numbe
   ctx.fillRect(acx + 7, cy - r - 6, 1, 2);
   ctx.fillStyle = LEAF[2]; // flowers bank the foot of the rings so they sit in the plinth
   ctx.fillRect(acx - plinthW / 2 + 1, base - 11, plinthW - 2, 3);
-  for (let bx = acx - plinthW / 2 + 1; bx < acx + plinthW / 2 - 3; bx += 4) bloom(ctx, bx, base - 13, (bx >> 2) % 2 ? "#E88AB0" : "#F0F0F0");
+  for (let bx = acx - plinthW / 2 + 1; bx < acx + plinthW / 2 - 3; bx += 4)
+    bloom(ctx, bx, base - 13, (bx >> 2) % 2 ? "#E88AB0" : "#F0F0F0");
 }
 
 /**

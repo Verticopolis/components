@@ -32,10 +32,19 @@ describe("the view world (#921)", () => {
     resetViewWorldForTests();
     const world = catalogFor("modern").world;
     bindViewWorld(world);
-    expect(() => bindViewWorld({ ...world, lotWidth: world.lotWidth + 1 })).toThrow(/differs from the one the view was built for/);
+    expect(() => bindViewWorld({ ...world, lotWidth: world.lotWidth + 1 })).toThrow(
+      /differs from the one the view was built for/,
+    );
     expect(() => bindViewWorld({ ...world, minFloor: world.minFloor - 1 })).toThrow(/lowest floor/);
-    expect(() => bindViewWorld({ ...world, lotWidth: world.lotWidth - 1, maxFloor: world.maxFloor + 20 }), "a taller top does not excuse a wider lot").toThrow(/differs/);
-    expect(viewWorld(), "each refused bind left the original world in place").toEqual({ lotWidth: world.lotWidth, minFloor: world.minFloor, maxFloor: world.maxFloor });
+    expect(
+      () => bindViewWorld({ ...world, lotWidth: world.lotWidth - 1, maxFloor: world.maxFloor + 20 }),
+      "a taller top does not excuse a wider lot",
+    ).toThrow(/differs/);
+    expect(viewWorld(), "each refused bind left the original world in place").toEqual({
+      lotWidth: world.lotWidth,
+      minFloor: world.minFloor,
+      maxFloor: world.maxFloor,
+    });
   });
 
   it("moves to a later world with another top floor, for a taller lot (#1985)", () => {

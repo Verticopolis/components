@@ -19,7 +19,11 @@ export function shadesRoom(shadedLook: boolean, u: { readonly state: UnitState }
 
 /** The light from above: a warm lift at the ceiling, clear through the
  *  middle, a cool shadow at the floor. */
-export const ROOM_LIGHT = { ceiling: "rgba(255,248,230,0.10)", clear: "rgba(255,255,255,0)", floor: "rgba(20,16,30,0.14)" } as const;
+export const ROOM_LIGHT = {
+  ceiling: "rgba(255,248,230,0.10)",
+  clear: "rgba(255,255,255,0)",
+  floor: "rgba(20,16,30,0.14)",
+} as const;
 /** The lit left wall edge and the shaded right one. */
 export const ROOM_EDGE = { lit: "rgba(255,248,230,0.16)", shaded: "rgba(20,16,30,0.18)" } as const;
 /** Where the ceiling's lift has faded out, as a share of the room's height. */

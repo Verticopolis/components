@@ -29,11 +29,11 @@ export interface ClinicLook {
 
 export const CLINIC_DEFAULT: ClinicLook = { wall: "#E8F0F2", floor: "#C8D0D4", accent: "#4AB0C0", practice: "dental" };
 export const CLINIC_LOOKS: Record<string, ClinicLook> = {
-  "Dental": { wall: "#E8F0F2", floor: "#C8D0D4", accent: "#4AB0C0", practice: "dental" },
+  Dental: { wall: "#E8F0F2", floor: "#C8D0D4", accent: "#4AB0C0", practice: "dental" },
   "Urgent Care": { wall: "#F0ECE4", floor: "#D0C8BC", accent: "#D04A4A", practice: "urgent" },
-  "Optometry": { wall: "#E4E8F0", floor: "#C4C8D4", accent: "#5A6AC0", practice: "optometry" },
-  "Pharmacy": { wall: "#E8F0E4", floor: "#C8D0C0", accent: "#4AA85A", practice: "pharmacy" },
-  "Physio": { wall: "#F0E8EC", floor: "#D0C4C8", accent: "#E08A4A", practice: "physio" },
+  Optometry: { wall: "#E4E8F0", floor: "#C4C8D4", accent: "#5A6AC0", practice: "optometry" },
+  Pharmacy: { wall: "#E8F0E4", floor: "#C8D0C0", accent: "#4AA85A", practice: "pharmacy" },
+  Physio: { wall: "#F0E8EC", floor: "#D0C4C8", accent: "#E08A4A", practice: "physio" },
 };
 
 /** A stable per-room seed from GEOGRAPHY (floor, x), so the figures survive a
@@ -59,7 +59,16 @@ function clinicalBand(ctx: CanvasRenderingContext2D, x: number, y: number, w: nu
   return y + band + 2;
 }
 
-function drawDental(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: ClinicLook, occ: number, seed: number): void {
+function drawDental(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: ClinicLook,
+  occ: number,
+  seed: number,
+): void {
   // A reclined dental chair under an overhead lamp, a tool tray beside it.
   const chX = x + Math.round(w * 0.28);
   ctx.fillStyle = "#B8C4C8"; // chair
@@ -84,7 +93,16 @@ function drawDental(ctx: CanvasRenderingContext2D, x: number, floorY: number, w:
   castShadow(ctx, chX, floorY, 12);
 }
 
-function drawUrgent(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: ClinicLook, occ: number, seed: number): void {
+function drawUrgent(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: ClinicLook,
+  occ: number,
+  seed: number,
+): void {
   // An exam bed behind a half-drawn curtain, an IV pole, a wall monitor.
   const bX = x + 3;
   ctx.fillStyle = "#DCE0E0"; // bed
@@ -110,7 +128,16 @@ function drawUrgent(ctx: CanvasRenderingContext2D, x: number, floorY: number, w:
   ctx.fillRect(x + 4, top + 5, 6, 1);
 }
 
-function drawOptometry(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: ClinicLook, occ: number, seed: number): void {
+function drawOptometry(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: ClinicLook,
+  occ: number,
+  seed: number,
+): void {
   // A phoropter (the twin-lens device) on a stand, an eye chart, a glasses shelf.
   const pX = x + 4;
   ctx.fillStyle = "#7A8288"; // phoropter body
@@ -131,7 +158,16 @@ function drawOptometry(ctx: CanvasRenderingContext2D, x: number, floorY: number,
   }
 }
 
-function drawPharmacy(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: ClinicLook, occ: number, seed: number): void {
+function drawPharmacy(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: ClinicLook,
+  occ: number,
+  seed: number,
+): void {
   // Back-wall shelves of medicine bottles, a counter, an Rx sign.
   const shelfShift = Math.floor(hash(seed) * 3); // per room, in 0..2
   for (let sy = top + 2, r = 0; sy + 3 < floorY - 6; sy += 4, r++) {
@@ -156,7 +192,16 @@ function drawPharmacy(ctx: CanvasRenderingContext2D, x: number, floorY: number, 
   if (occ > 0) personStanding(ctx, x + 5, floorY, seed); // a pharmacist/customer
 }
 
-function drawPhysio(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, look: ClinicLook, occ: number, seed: number): void {
+function drawPhysio(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  look: ClinicLook,
+  occ: number,
+  seed: number,
+): void {
   // A padded therapy table, a therapy ball, resistance bands on a rack.
   const tX = x + 3;
   ctx.fillStyle = look.accent; // padded table top

@@ -75,7 +75,16 @@ describe("the engine-backed slot population reader", () => {
 
   it("hands a trap in the free to onThrow instead of losing it behind a good read", () => {
     const trap = new WebAssembly.RuntimeError("memory access out of bounds");
-    const mod = { Engine: { fromSave: () => ({ towerStats: () => JSON.stringify({ population: 9 }), free: () => { throw trap; } }) } } as unknown as Pick<WasmModule, "Engine">;
+    const mod = {
+      Engine: {
+        fromSave: () => ({
+          towerStats: () => JSON.stringify({ population: 9 }),
+          free: () => {
+            throw trap;
+          },
+        }),
+      },
+    } as unknown as Pick<WasmModule, "Engine">;
     const heard: unknown[] = [];
     const read = populationReaderFromModule(mod, (e) => heard.push(e));
     expect(() => read("a save")).toThrow(trap);
@@ -85,7 +94,16 @@ describe("the engine-backed slot population reader", () => {
 
   it("names the trap first when the read fails plainly and the free traps", () => {
     const trap = new WebAssembly.RuntimeError("unreachable");
-    const mod = { Engine: { fromSave: () => ({ towerStats: () => "not json", free: () => { throw trap; } }) } } as unknown as Pick<WasmModule, "Engine">;
+    const mod = {
+      Engine: {
+        fromSave: () => ({
+          towerStats: () => "not json",
+          free: () => {
+            throw trap;
+          },
+        }),
+      },
+    } as unknown as Pick<WasmModule, "Engine">;
     const heard: unknown[] = [];
     expect(() => populationReaderFromModule(mod, (e) => heard.push(e))("a save")).toThrow(/unreachable/);
     expect(heard).toHaveLength(1);

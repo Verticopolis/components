@@ -66,7 +66,8 @@ describe("insideDrum", () => {
 
 describe("drawRevolvingDoorBack", () => {
   /** The wall's rectangles that reach above row `y`. */
-  const wallAbove = (log: ReturnType<typeof recorded>, y: number) => log.filter(([fill, , top]) => fill === DAY_WALL && top < y);
+  const wallAbove = (log: ReturnType<typeof recorded>, y: number) =>
+    log.filter(([fill, , top]) => fill === DAY_WALL && top < y);
 
   it("stands the wall over the taller hall alone above the shorter hall's ceiling", () => {
     const stepY = 45;

@@ -32,7 +32,13 @@ export const RIDER_H = 29;
 /** Paint the standing figure `figure` names (`figureKey`) at its spot. */
 export function paintRider(ctx: CanvasRenderingContext2D, figure: number): void {
   const f = figureOf(figure);
-  drawPerson(ctx, RIDER_X, RIDER_FOOT, LOOKS[f.look], { lit: f.lit, frame: f.frame, pose: f.pose, empty: true, mood: f.mood });
+  drawPerson(ctx, RIDER_X, RIDER_FOOT, LOOKS[f.look], {
+    lit: f.lit,
+    frame: f.frame,
+    pose: f.pose,
+    empty: true,
+    mood: f.mood,
+  });
 }
 
 function picture(w: number, h: number, paint: (ctx: CanvasRenderingContext2D) => void): HTMLCanvasElement {

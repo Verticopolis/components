@@ -4,7 +4,10 @@ import { watchAway, type AwayWatchTarget } from "./awayWatch";
 /** A page whose focus and visibility the test sets, then announces. */
 function fakePage() {
   const win = new EventTarget();
-  const doc = Object.assign(new EventTarget(), { visibilityState: "visible" as DocumentVisibilityState, focused: true });
+  const doc = Object.assign(new EventTarget(), {
+    visibilityState: "visible" as DocumentVisibilityState,
+    focused: true,
+  });
   const target: AwayWatchTarget = {
     win: win as unknown as AwayWatchTarget["win"],
     doc: Object.assign(doc, { hasFocus: () => doc.focused }) as unknown as AwayWatchTarget["doc"],

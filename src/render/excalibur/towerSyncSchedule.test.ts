@@ -50,11 +50,23 @@ describe("planSceneSync (pure one-step scheduler)", () => {
   });
 
   it("a meal-overlay bump that is not due yet waits, booking nothing (#1747)", () => {
-    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false })).toEqual({ syncNow: false, nextPending: false });
-    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false, simCrossedHour: true })).toEqual({ syncNow: false, nextPending: false });
+    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false })).toEqual({
+      syncNow: false,
+      nextPending: false,
+    });
+    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false, simCrossedHour: true })).toEqual({
+      syncNow: false,
+      nextPending: false,
+    });
     // Anything else that syncs still covers it, since the sync reads live state.
-    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false, structural: true })).toEqual({ syncNow: true, nextPending: false });
-    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false, hourChanged: true })).toEqual({ syncNow: false, nextPending: true });
+    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false, structural: true })).toEqual({
+      syncNow: true,
+      nextPending: false,
+    });
+    expect(planSceneSync({ ...quiet, mealOverlay: true, mealDue: false, hourChanged: true })).toEqual({
+      syncNow: false,
+      nextPending: true,
+    });
   });
 
   it("structural changes sync now even on an hour-crossing frame (the player just acted)", () => {
@@ -108,7 +120,11 @@ describe("runSceneSync (engine wiring)", () => {
   // The live clock (sim.clock.hour) matching d.hour means this frame's sim
   // advance crossed no hour; tests that need a crossing set them apart.
   const eng = (over: Record<string, unknown> = {}, clockHour = 9) => ({
-    sim: { tower: { revision: 1, mealOverlayRevision: 0 }, clock: { hour: clockHour }, ...(over.sim as object | undefined) },
+    sim: {
+      tower: { revision: 1, mealOverlayRevision: 0 },
+      clock: { hour: clockHour },
+      ...(over.sim as object | undefined),
+    },
     d: { lit: false, hour: 9 },
     litState: false,
     lastSyncHour: 9,

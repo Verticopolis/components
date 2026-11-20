@@ -41,7 +41,11 @@ export function windowMenuState(w: DeskWindow | undefined, active: DeskWindow | 
 
 /** Run `command` on `w`; `bringUp` puts it in front, back from the taskbar
  *  when minimized. Restore and Maximize bring it up first, as 1995 did. */
-export function runWindowCommand(w: DeskWindow | undefined, command: WindowCommand, bringUp: (w: DeskWindow) => void): void {
+export function runWindowCommand(
+  w: DeskWindow | undefined,
+  command: WindowCommand,
+  bringUp: (w: DeskWindow) => void,
+): void {
   if (!w) return;
   if (command === "minimize") w.minimize();
   else if (command === "close") w.spec.close?.();

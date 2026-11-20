@@ -1,4 +1,3 @@
-
 /**
  * The cast of people the web draws (#2097): a dozen varied builds of office
  * workers, residents, hotel guests and shoppers, plus the staff and the thief,
@@ -19,7 +18,8 @@
  * Everything draws at integer pixels with `fillRect`, like `personFigure`.
  */
 
-export type HairStyle = "short" | "crop" | "long" | "bob" | "bun" | "curly" | "bald" | "cap" | "guardCap" | "beanie" | "hardhat";
+export type HairStyle =
+  "short" | "crop" | "long" | "bob" | "bun" | "curly" | "bald" | "cap" | "guardCap" | "beanie" | "hardhat";
 export type TopKind = "suit" | "blouse" | "tee" | "sweater" | "uniform";
 export type Carry = "none" | "briefcase" | "bag" | "suitcase" | "coffee" | "cart" | "flashlight" | "vacuum" | "sack";
 export type Build = "slim" | "average" | "broad";
@@ -90,7 +90,14 @@ export interface Dims {
 }
 
 export const SKIN_TONES = ["#F1D3B3", "#E8C9A0", "#D2A57A", "#B07F55", "#8A5A3A", "#5E3B26"] as const;
-export const HAIR_COLORS = { black: "#1E1A1A", brown: "#5A3A26", blonde: "#D8B860", red: "#A0482A", gray: "#B8B4B0", auburn: "#7A3A2A" } as const;
+export const HAIR_COLORS = {
+  black: "#1E1A1A",
+  brown: "#5A3A26",
+  blonde: "#D8B860",
+  red: "#A0482A",
+  gray: "#B8B4B0",
+  auburn: "#7A3A2A",
+} as const;
 
 const EYE = "#2A2228";
 /** The ink the shared sprites use for wheels and suitcase feet (`INK`). */
@@ -102,7 +109,10 @@ const INK = "#2A2E38";
 function shade(hex: string, amt: number): string {
   if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return hex;
   const n = parseInt(hex.slice(1), 16);
-  const c = (v: number) => Math.max(0, Math.min(255, v + amt)).toString(16).padStart(2, "0");
+  const c = (v: number) =>
+    Math.max(0, Math.min(255, v + amt))
+      .toString(16)
+      .padStart(2, "0");
   return `#${c((n >> 16) & 255)}${c((n >> 8) & 255)}${c(n & 255)}`;
 }
 const SHIRT_WHITE = "#EDEBE6";
@@ -122,24 +132,187 @@ export function walkFrame(lit: boolean, step: number): number {
 
 /** The civilian cast. Index 0 to 9 are drawn for tenants and visitors. */
 export const CAST: readonly Look[] = [
-  { skin: SKIN_TONES[1], hair: HAIR_COLORS.brown, hairStyle: "short", top: "#3E4654", topKind: "suit", bottom: "#3E4654", shoe: "#1E1A1A", build: "average", height: "tall", carry: "briefcase", tie: "#B03A3A" },
-  { skin: SKIN_TONES[3], hair: HAIR_COLORS.black, hairStyle: "bun", top: "#E8E2D6", topKind: "blouse", bottom: "#5A6E8C", skirt: true, shoe: "#2A2E38", build: "slim", height: "average", carry: "coffee" },
-  { skin: SKIN_TONES[5], hair: HAIR_COLORS.black, hairStyle: "crop", top: "#5A6E8C", topKind: "suit", bottom: "#3E4654", shoe: "#1E1A1A", build: "broad", height: "tall", carry: "none", tie: "#3F6E8C" },
-  { skin: SKIN_TONES[0], hair: HAIR_COLORS.red, hairStyle: "long", top: "#3F8C84", topKind: "tee", bottom: "#3E5A8A", shoe: "#E8E4DA", build: "slim", height: "average", carry: "none" },
-  { skin: SKIN_TONES[2], hair: HAIR_COLORS.gray, hairStyle: "bald", top: "#6E5A4A", topKind: "sweater", bottom: "#5A5048", shoe: "#3A2E28", build: "broad", height: "short", carry: "none" },
-  { skin: SKIN_TONES[4], hair: HAIR_COLORS.black, hairStyle: "curly", top: "#D8B05A", topKind: "tee", bottom: "#3E5A8A", shoe: "#E8E4DA", build: "average", height: "average", carry: "bag", carryColor: "#E8E4DA" },
-  { skin: SKIN_TONES[1], hair: HAIR_COLORS.blonde, hairStyle: "bob", top: "#9A5FB0", topKind: "tee", bottom: "#3E4654", shoe: "#2A2E38", build: "slim", height: "average", carry: "suitcase" },
-  { skin: SKIN_TONES[3], hair: HAIR_COLORS.brown, hairStyle: "cap", top: "#4FA0C8", topKind: "tee", bottom: "#6E5A4A", shoe: "#E8E4DA", build: "average", height: "tall", carry: "suitcase", carryColor: "#6E4A30" },
-  { skin: SKIN_TONES[2], hair: HAIR_COLORS.auburn, hairStyle: "long", top: "#5AA85A", topKind: "blouse", bottom: "#3E4654", skirt: true, shoe: "#3A2E28", build: "slim", height: "short", carry: "bag", carryColor: "#3F8C84" },
-  { skin: SKIN_TONES[5], hair: HAIR_COLORS.black, hairStyle: "short", top: "#C8C0B0", topKind: "tee", bottom: "#2A2E38", shoe: "#E8E4DA", build: "average", height: "average", carry: "coffee" },
+  {
+    skin: SKIN_TONES[1],
+    hair: HAIR_COLORS.brown,
+    hairStyle: "short",
+    top: "#3E4654",
+    topKind: "suit",
+    bottom: "#3E4654",
+    shoe: "#1E1A1A",
+    build: "average",
+    height: "tall",
+    carry: "briefcase",
+    tie: "#B03A3A",
+  },
+  {
+    skin: SKIN_TONES[3],
+    hair: HAIR_COLORS.black,
+    hairStyle: "bun",
+    top: "#E8E2D6",
+    topKind: "blouse",
+    bottom: "#5A6E8C",
+    skirt: true,
+    shoe: "#2A2E38",
+    build: "slim",
+    height: "average",
+    carry: "coffee",
+  },
+  {
+    skin: SKIN_TONES[5],
+    hair: HAIR_COLORS.black,
+    hairStyle: "crop",
+    top: "#5A6E8C",
+    topKind: "suit",
+    bottom: "#3E4654",
+    shoe: "#1E1A1A",
+    build: "broad",
+    height: "tall",
+    carry: "none",
+    tie: "#3F6E8C",
+  },
+  {
+    skin: SKIN_TONES[0],
+    hair: HAIR_COLORS.red,
+    hairStyle: "long",
+    top: "#3F8C84",
+    topKind: "tee",
+    bottom: "#3E5A8A",
+    shoe: "#E8E4DA",
+    build: "slim",
+    height: "average",
+    carry: "none",
+  },
+  {
+    skin: SKIN_TONES[2],
+    hair: HAIR_COLORS.gray,
+    hairStyle: "bald",
+    top: "#6E5A4A",
+    topKind: "sweater",
+    bottom: "#5A5048",
+    shoe: "#3A2E28",
+    build: "broad",
+    height: "short",
+    carry: "none",
+  },
+  {
+    skin: SKIN_TONES[4],
+    hair: HAIR_COLORS.black,
+    hairStyle: "curly",
+    top: "#D8B05A",
+    topKind: "tee",
+    bottom: "#3E5A8A",
+    shoe: "#E8E4DA",
+    build: "average",
+    height: "average",
+    carry: "bag",
+    carryColor: "#E8E4DA",
+  },
+  {
+    skin: SKIN_TONES[1],
+    hair: HAIR_COLORS.blonde,
+    hairStyle: "bob",
+    top: "#9A5FB0",
+    topKind: "tee",
+    bottom: "#3E4654",
+    shoe: "#2A2E38",
+    build: "slim",
+    height: "average",
+    carry: "suitcase",
+  },
+  {
+    skin: SKIN_TONES[3],
+    hair: HAIR_COLORS.brown,
+    hairStyle: "cap",
+    top: "#4FA0C8",
+    topKind: "tee",
+    bottom: "#6E5A4A",
+    shoe: "#E8E4DA",
+    build: "average",
+    height: "tall",
+    carry: "suitcase",
+    carryColor: "#6E4A30",
+  },
+  {
+    skin: SKIN_TONES[2],
+    hair: HAIR_COLORS.auburn,
+    hairStyle: "long",
+    top: "#5AA85A",
+    topKind: "blouse",
+    bottom: "#3E4654",
+    skirt: true,
+    shoe: "#3A2E28",
+    build: "slim",
+    height: "short",
+    carry: "bag",
+    carryColor: "#3F8C84",
+  },
+  {
+    skin: SKIN_TONES[5],
+    hair: HAIR_COLORS.black,
+    hairStyle: "short",
+    top: "#C8C0B0",
+    topKind: "tee",
+    bottom: "#2A2E38",
+    shoe: "#E8E4DA",
+    build: "average",
+    height: "average",
+    carry: "coffee",
+  },
 ];
 
 /** The staff and the thief. */
 export const STAFF_LOOK = {
-  housekeeper: { skin: SKIN_TONES[4], hair: HAIR_COLORS.black, hairStyle: "bun", top: "#E8E4DA", topKind: "uniform", bottom: "#5A6E8C", shoe: "#2A2E38", build: "average", height: "average", carry: "cart" },
-  security: { skin: SKIN_TONES[2], hair: HAIR_COLORS.brown, hairStyle: "guardCap", top: "#2E3A5A", topKind: "uniform", badge: true, bottom: "#1E2638", shoe: "#1E1A1A", build: "broad", height: "tall", carry: "flashlight" },
-  maintenance: { skin: SKIN_TONES[2], hair: HAIR_COLORS.brown, hairStyle: "hardhat", top: "#3F5A7A", topKind: "uniform", hiVis: true, bottom: "#3E5A8A", shoe: "#3A2E28", build: "broad", height: "tall", carry: "none" },
-  thief: { skin: SKIN_TONES[1], hair: "#1E1A1A", hairStyle: "beanie", top: "#3A3448", topKind: "tee", bottom: "#2A2E38", shoe: "#E8E4DA", build: "slim", height: "average", carry: "sack" },
+  housekeeper: {
+    skin: SKIN_TONES[4],
+    hair: HAIR_COLORS.black,
+    hairStyle: "bun",
+    top: "#E8E4DA",
+    topKind: "uniform",
+    bottom: "#5A6E8C",
+    shoe: "#2A2E38",
+    build: "average",
+    height: "average",
+    carry: "cart",
+  },
+  security: {
+    skin: SKIN_TONES[2],
+    hair: HAIR_COLORS.brown,
+    hairStyle: "guardCap",
+    top: "#2E3A5A",
+    topKind: "uniform",
+    badge: true,
+    bottom: "#1E2638",
+    shoe: "#1E1A1A",
+    build: "broad",
+    height: "tall",
+    carry: "flashlight",
+  },
+  maintenance: {
+    skin: SKIN_TONES[2],
+    hair: HAIR_COLORS.brown,
+    hairStyle: "hardhat",
+    top: "#3F5A7A",
+    topKind: "uniform",
+    hiVis: true,
+    bottom: "#3E5A8A",
+    shoe: "#3A2E28",
+    build: "broad",
+    height: "tall",
+    carry: "none",
+  },
+  thief: {
+    skin: SKIN_TONES[1],
+    hair: "#1E1A1A",
+    hairStyle: "beanie",
+    top: "#3A3448",
+    topKind: "tee",
+    bottom: "#2A2E38",
+    shoe: "#E8E4DA",
+    build: "slim",
+    height: "average",
+    carry: "sack",
+  },
 } as const satisfies Record<string, Look>;
 
 /** The cast member for a seed, as an index into `LOOKS`. */
@@ -187,7 +360,13 @@ export function crewIndex(seed: number, cleaning: boolean): number {
 
 /** Every outfit color a look can wear, for the palette guard. */
 export function outfitColors(look: Look): string[] {
-  return [look.top, look.bottom, look.shoe, ...(look.carryColor ? [look.carryColor] : []), ...(look.tie ? [look.tie] : [])];
+  return [
+    look.top,
+    look.bottom,
+    look.shoe,
+    ...(look.carryColor ? [look.carryColor] : []),
+    ...(look.tie ? [look.tie] : []),
+  ];
 }
 
 const TORSO_W: Record<Build, number> = { slim: 5, average: 6, broad: 7 };
@@ -239,7 +418,14 @@ export function drawPerson(ctx: CanvasRenderingContext2D, x: number, foot: numbe
 
   // Legs: the stride moves the back leg left and the front leg right on frame
   // 0, the other way on frame 2, and together on the passing frames.
-  const still = pose === "climb" || pose === "stand" || pose === "watch" || pose === "hips" || pose === "armsUp" || pose === "caught" || pose === "bend";
+  const still =
+    pose === "climb" ||
+    pose === "stand" ||
+    pose === "watch" ||
+    pose === "hips" ||
+    pose === "armsUp" ||
+    pose === "caught" ||
+    pose === "bend";
   const reach = pose === "run" ? 1 : 0;
   const swing = still ? 0 : strideSwing(frame);
   const inset = Math.floor((W - 4) / 2);
@@ -373,7 +559,12 @@ function strideSwing(frame: number): number {
 
 type Px = (c: string, dx: number, dy: number, w?: number, h?: number) => void;
 
-function drawCarry(px: Px, look: Look, o: DrawOptions, at: { ox: number; ax: number; tt: number; hand: number; frame: number }): void {
+function drawCarry(
+  px: Px,
+  look: Look,
+  o: DrawOptions,
+  at: { ox: number; ax: number; tt: number; hand: number; frame: number },
+): void {
   const { ox, ax, tt, hand } = at;
   const lit = o.lit;
   const pose = o.pose ?? "walk";

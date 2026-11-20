@@ -17,7 +17,10 @@ const OFFICE: CatalogNoise[] = [
 ];
 
 /** Floors `built` laid from tile 0 to 199, with a lobby run on `lobbies`. */
-function tower(built: number[], lobbies: Array<[number, number]> = []): NoiseTiles & { reads: ReturnType<typeof vi.fn> } {
+function tower(
+  built: number[],
+  lobbies: Array<[number, number]> = [],
+): NoiseTiles & { reads: ReturnType<typeof vi.fn> } {
   const reads = vi.fn();
   const inLot = (floor: number, x: number) => built.includes(floor) && x >= 0 && x < 200;
   return {
@@ -40,7 +43,9 @@ function recorder() {
     fillStyle: "",
     strokeStyle: "",
     lineWidth: 1,
-    fillRect: vi.fn((x: number, y: number, w: number) => fills.push({ x, y, w, color: ctx.fillStyle, alpha: ctx.globalAlpha })),
+    fillRect: vi.fn((x: number, y: number, w: number) =>
+      fills.push({ x, y, w, color: ctx.fillStyle, alpha: ctx.globalAlpha }),
+    ),
     strokeRect: vi.fn(),
     setLineDash: vi.fn(),
   };
@@ -63,7 +68,12 @@ describe("noise reach while placing", () => {
     const t = tower([5]);
     expect(openTiles(t, 5, 100, 9, 22)).toEqual({ left: 22, right: 22 });
     expect(t.unitAt).not.toHaveBeenCalled();
-    const bridged = { ...tower([]), unitAt: vi.fn((_f: number, x: number) => (x === 109 ? ({ kind: "office" } as ReturnType<NoiseTiles["unitAt"]>) : undefined)) };
+    const bridged = {
+      ...tower([]),
+      unitAt: vi.fn((_f: number, x: number) =>
+        x === 109 ? ({ kind: "office" } as ReturnType<NoiseTiles["unitAt"]>) : undefined,
+      ),
+    };
     expect(openTiles(bridged, 5, 100, 9, 22)).toEqual({ left: 0, right: 1 });
   });
 

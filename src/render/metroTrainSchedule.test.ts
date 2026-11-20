@@ -48,7 +48,8 @@ describe("metroTrainAt: one station", () => {
 
 describe("metroTrainAt: one train along a line of stations", () => {
   const LINE = [0, 400, 900];
-  const where = (minute: number, line: readonly number[] = LINE): number => metroTrainAt(12 * 60 + minute, line, SPAN, TIMETABLE);
+  const where = (minute: number, line: readonly number[] = LINE): number =>
+    metroTrainAt(12 * 60 + minute, line, SPAN, TIMETABLE);
   /** The stations the train stands in (overlaps) at `minute`. */
   const calling = (minute: number, line: readonly number[] = LINE): number[] =>
     line.flatMap((x, i) => (Math.abs(where(minute, line) - x) < SPAN ? [i] : []));

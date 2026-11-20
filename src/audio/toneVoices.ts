@@ -78,37 +78,51 @@ function buildSfxVoices(bus: Tone.ToneAudioNode, built: Array<{ dispose(): void 
     built.push(n);
     return n;
   };
-  const jingle = track(new LightPolySynth({
-    envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.12 },
-  }).connect(bus));
+  const jingle = track(
+    new LightPolySynth({
+      envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.12 },
+    }).connect(bus),
+  );
   jingle.maxPolyphony = 12;
   // The bloop is a mono voice because its swoop is a scheduled frequency ramp.
-  const bloop = track(new LightMonoSynth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.008, decay: 0.2, sustain: 0, release: 0.08 },
-  }).connect(bus));
-  const bloop2 = track(new LightMonoSynth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.008, decay: 0.2, sustain: 0, release: 0.08 },
-  }).connect(bus));
-  const tick = track(new LightMonoSynth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.02 },
-  }).connect(bus));
-  const bloopPartial = track(new LightPolySynth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.008, decay: 0.18, sustain: 0, release: 0.06 },
-  }).connect(bus));
+  const bloop = track(
+    new LightMonoSynth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.008, decay: 0.2, sustain: 0, release: 0.08 },
+    }).connect(bus),
+  );
+  const bloop2 = track(
+    new LightMonoSynth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.008, decay: 0.2, sustain: 0, release: 0.08 },
+    }).connect(bus),
+  );
+  const tick = track(
+    new LightMonoSynth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.02 },
+    }).connect(bus),
+  );
+  const bloopPartial = track(
+    new LightPolySynth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.008, decay: 0.18, sustain: 0, release: 0.06 },
+    }).connect(bus),
+  );
   bloopPartial.maxPolyphony = 8;
-  const bell = track(new LightPolySynth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.002, decay: 1.1, sustain: 0, release: 0.4 },
-  }).connect(bus));
+  const bell = track(
+    new LightPolySynth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.002, decay: 1.1, sustain: 0, release: 0.4 },
+    }).connect(bus),
+  );
   bell.maxPolyphony = 12;
-  const bellPartial = track(new LightPolySynth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.002, decay: 0.5, sustain: 0, release: 0.2 },
-  }).connect(bus));
+  const bellPartial = track(
+    new LightPolySynth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.002, decay: 0.5, sustain: 0, release: 0.2 },
+    }).connect(bus),
+  );
   bellPartial.maxPolyphony = 12;
   return { jingle, bloop, bloop2, tick, bloopPartial, bell, bellPartial };
 }

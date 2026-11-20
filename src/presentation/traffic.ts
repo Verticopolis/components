@@ -79,7 +79,10 @@ export function nextTrafficTier(shown: TrafficTier, pressure: number): TrafficTi
 
 /** The landings a queue projection holds: shaft id → floor → count and tier
  *  (`ElevatorQueueView.landings`). */
-export type LandingLines = ReadonlyMap<number, ReadonlyMap<number, { readonly count: number; readonly tier: LineWaitTier }>>;
+export type LandingLines = ReadonlyMap<
+  number,
+  ReadonlyMap<number, { readonly count: number; readonly tier: LineWaitTier }>
+>;
 
 /** The worst waiting line in `landings`: the most pressure, then the most
  *  people, then the lowest floor, then the first shaft listed. Null when no

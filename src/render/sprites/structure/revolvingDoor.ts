@@ -20,7 +20,6 @@
  * Every piece keys on `angle` and `lit` only. Integer pixels.
  */
 
-
 /** The drum's radius in world pixels: wide enough for one walker (7 px) per
  *  compartment with room to push. */
 export const DOOR_RADIUS = 12;
@@ -175,7 +174,13 @@ export function drawRevolvingDoorBack(
 
 /** The center post and the wings on the near side of it. People walking left
  *  are drawn before this, people walking right after it. */
-export function drawRevolvingDoorMiddle(ctx: CanvasRenderingContext2D, cx: number, foot: number, angle: number, lit: boolean): void {
+export function drawRevolvingDoorMiddle(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  foot: number,
+  angle: number,
+  lit: boolean,
+): void {
   const c = colors(lit);
   const x = Math.round(cx);
   const top = Math.round(foot) - DOOR_HEIGHT;

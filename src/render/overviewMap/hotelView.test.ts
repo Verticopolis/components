@@ -22,7 +22,12 @@ const EXTENT = mapExtent(WORLD, SKY_HEADROOM_FLOORS);
 const layout = fitLayout(EXTENT, 375, extentFloors(EXTENT) * 5);
 const yOfLine = (line: number): number => (EXTENT.topLine - line) * 5;
 
-function room(kind: FacilityKind, x: number, state: UnitState = "occupied", floor = 2): HotelRoom & { state: UnitState } {
+function room(
+  kind: FacilityKind,
+  x: number,
+  state: UnitState = "occupied",
+  floor = 2,
+): HotelRoom & { state: UnitState } {
   return { kind, floor, x, width: 4, state };
 }
 
@@ -50,7 +55,16 @@ describe("the Hotel view's rooms", () => {
   it("marks dirty and infested rooms and nothing else", () => {
     expect(housekeepingNeed("dirty")).toBe("dirty");
     expect(housekeepingNeed("infested")).toBe("infested");
-    for (const state of ["construction", "empty", "occupied", "moving_in", "vacating", "asleep", "fire", "gutted"] as UnitState[]) {
+    for (const state of [
+      "construction",
+      "empty",
+      "occupied",
+      "moving_in",
+      "vacating",
+      "asleep",
+      "fire",
+      "gutted",
+    ] as UnitState[]) {
       expect(housekeepingNeed(state), state).toBeNull();
     }
     // A forged state from a foreign save is not a need.
@@ -113,7 +127,11 @@ describe("HotelWatch", () => {
 
 describe("paintHotelMarks", () => {
   it("paints only the rooms needing housekeeping, in each need's style", () => {
-    const rooms = [room("hotelSingle", 40, "dirty"), room("hotelSingle", 50, "occupied"), room("hotelDouble", 60, "infested")];
+    const rooms = [
+      room("hotelSingle", 40, "dirty"),
+      room("hotelSingle", 50, "occupied"),
+      room("hotelDouble", 60, "infested"),
+    ];
     const watch = new HotelWatch();
     watch.watch(buildHotelMarks(layout, rooms, () => 1));
     watch.check();
@@ -152,7 +170,10 @@ describe("the Hotel view's styles", () => {
   it("keeps every mark 3:1 against what it covers, so it reads without color", () => {
     for (const need of ["dirty", "infested"] as const) {
       for (const kind of ["hotelSingle", "hotelDouble", "hotelSuite"] as const) {
-        expect(contrastRatio(lum(HOTEL_VIEW_STYLE[need].fill), lum(FACILITY_PRESENTATION[kind].color)), `${need} on ${kind}`).toBeGreaterThanOrEqual(3);
+        expect(
+          contrastRatio(lum(HOTEL_VIEW_STYLE[need].fill), lum(FACILITY_PRESENTATION[kind].color)),
+          `${need} on ${kind}`,
+        ).toBeGreaterThanOrEqual(3);
       }
     }
   });

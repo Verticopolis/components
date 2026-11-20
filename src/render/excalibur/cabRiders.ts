@@ -7,7 +7,10 @@ import { figureKey, IMPATIENT_SHARE } from "./crowdLook";
 export interface CabSource {
   readonly sim: {
     readonly crowd: { readonly people: ReadonlyArray<PersonView> };
-    readonly tower: { readonly transports: ReadonlyArray<TransportView>; readonly elevators?: ReadonlyArray<TransportView> };
+    readonly tower: {
+      readonly transports: ReadonlyArray<TransportView>;
+      readonly elevators?: ReadonlyArray<TransportView>;
+    };
   };
 }
 
@@ -70,7 +73,10 @@ export function loadFigures(load: CabLoad): number[] {
  *  shading, worked out once here instead of per rider per step: content,
  *  impatient and fed up, each flat then shaded. */
 const LOOK_STEP = figureKey(1, "stand", 1, "content", false, false) - figureKey(0, "stand", 1, "content", false, false);
-const STAND: readonly number[] = (["content", "impatient", "fedUp"] as const).flatMap((m) => [figureKey(0, "stand", 1, m, false, false), figureKey(0, "stand", 1, m, false, true)]);
+const STAND: readonly number[] = (["content", "impatient", "fedUp"] as const).flatMap((m) => [
+  figureKey(0, "stand", 1, m, false, false),
+  figureKey(0, "stand", 1, m, false, true),
+]);
 const STAND_FED_UP = 4;
 const STAND_IMPATIENT = 2;
 const STAND_CONTENT = 0;
@@ -226,7 +232,8 @@ export function cabRidersOf(engine: CabSource, stepped: boolean, look: RiderLook
   const people = engine.sim.crowd.people;
   let c = counted.get(engine);
   if (!c) counted.set(engine, (c = { people: undefined, counts: new Map() }));
-  if (stepped || c.people !== people) countCabRiders(people ?? [], engine.sim.tower.elevators ?? engine.sim.tower.transports ?? [], c.counts, look);
+  if (stepped || c.people !== people)
+    countCabRiders(people ?? [], engine.sim.tower.elevators ?? engine.sim.tower.transports ?? [], c.counts, look);
   c.people = people;
   return c.counts;
 }

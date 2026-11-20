@@ -53,7 +53,8 @@ function makeDoor(engine: TowerEngine, door: HallDoor): DoorRec {
   const wx = engine.worldX(door.x);
   const rec = { door, wx, angle: QUARTER_TURN / 2, lit: engine.litState, push: 0 } as DoorRec;
   const step = { y: (door.tall - door.short) * FLOOR, side: door.tallOnLeft ? -1 : 1 } as const;
-  const canvas = (draw: (ctx: CanvasRenderingContext2D) => void) => new ex.Canvas({ width: DOOR_W, height: h, cache: true, draw });
+  const canvas = (draw: (ctx: CanvasRenderingContext2D) => void) =>
+    new ex.Canvas({ width: DOOR_W, height: h, cache: true, draw });
   rec.canvases = [
     canvas((ctx) => drawRevolvingDoorBack(ctx, cx, foot, 0, rec.angle, rec.lit, step)),
     canvas((ctx) => drawRevolvingDoorMiddle(ctx, cx, foot, rec.angle, rec.lit)),

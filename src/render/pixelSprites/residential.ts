@@ -1,8 +1,32 @@
 import type { UnitView } from "../../simport/view";
 import { isLateHour } from "../lateNight";
-import { PAL, ceilingFixture, dado, geoVariant, maybeMirrored, personSeated, roomGlow, roomOccupants, shade, sleeper as sleeperFigure, vacancy, windowView, type RoomCtx } from "./common";
+import {
+  PAL,
+  ceilingFixture,
+  dado,
+  geoVariant,
+  maybeMirrored,
+  personSeated,
+  roomGlow,
+  roomOccupants,
+  shade,
+  sleeper as sleeperFigure,
+  vacancy,
+  windowView,
+  type RoomCtx,
+} from "./common";
 import { artRow, authoredWidth, screenLength } from "./artScale";
-import { bevelBox, ceilingCap, curtain, downlights, fill, framedArt, glow, interiorWall, plankFloor } from "./dollhouse";
+import {
+  bevelBox,
+  ceilingCap,
+  curtain,
+  downlights,
+  fill,
+  framedArt,
+  glow,
+  interiorWall,
+  plankFloor,
+} from "./dollhouse";
 import { layerBreak, layerEnd } from "./layers";
 import { ROACH_AMBER, ROACH_CHESTNUT, drawRoach } from "./residential.roaches";
 import { CONDO_PICTURES, CONDO_WALLS, HOTEL_WALLS, OFFICE_WALLS, SUITE_WALLS } from "./residential.looks";
@@ -150,7 +174,8 @@ export function office(d: RoomCtx, u: UnitView, x: number, y: number, w: number,
       if (filled > 0) personSeated(ctx, ax(22), floorY - 1, (u.id * 7) | 0);
       bevelBox(ctx, ax(36), floorY - 18, 14, 18, "#5A4436"); // binder cabinet
       const spines = ["#8C3A32", "#3E5A8C", "#B08A3E", "#4A7A4A"];
-      for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) fill(ctx, ax(38) + k * 3, floorY - 16 + r * 4, 2, 3, spines[(k + r) % 4]);
+      for (let r = 0; r < 4; r++)
+        for (let k = 0; k < 4; k++) fill(ctx, ax(38) + k * 3, floorY - 16 + r * 4, 2, 3, spines[(k + r) % 4]);
       for (let i = 0; i < 2; i++) {
         const cx = ax(54 + i * 22);
         if (cx + 18 > x + w - 2) break;

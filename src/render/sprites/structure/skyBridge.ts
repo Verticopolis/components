@@ -14,7 +14,12 @@ import { lobbyFloor } from "./lobby";
 
 /** The catalog's look names (`rules.skyBridge.looks`) this file draws. The
  *  plain lobby draws as a lobby tile. */
-export const BRIDGE_LOOK = { glass: "Glass Skywalk", truss: "Steel Truss", deco: "Deco Arcade", garden: "Garden Walk" } as const;
+export const BRIDGE_LOOK = {
+  glass: "Glass Skywalk",
+  truss: "Steel Truss",
+  deco: "Deco Arcade",
+  garden: "Garden Walk",
+} as const;
 
 /** Which part of a bridge tile a cell shows: the bridge's own story, or the
  *  underside in the open-air cell below it. */
@@ -23,7 +28,9 @@ export type BridgePart = "deck" | "under";
 /** Whether this file draws the look named `look`; the plain lobby and an
  *  unknown name do not. */
 export function drawsBridgeLook(look: string): boolean {
-  return look === BRIDGE_LOOK.glass || look === BRIDGE_LOOK.truss || look === BRIDGE_LOOK.deco || look === BRIDGE_LOOK.garden;
+  return (
+    look === BRIDGE_LOOK.glass || look === BRIDGE_LOOK.truss || look === BRIDGE_LOOK.deco || look === BRIDGE_LOOK.garden
+  );
 }
 
 /** The size of one cell and the bridge's lighting, shared by every draw. */
@@ -67,7 +74,16 @@ function bays(n: number, tiles: number): number {
 
 /** Draw tile `i` of an `n`-tile bridge in look `look`, part `part`, into a
  *  `w` by `h` cell at the origin. */
-export function drawBridgeTile(g: CanvasRenderingContext2D, look: string, i: number, n: number, lit: boolean, w: number, h: number, part: BridgePart = "deck"): void {
+export function drawBridgeTile(
+  g: CanvasRenderingContext2D,
+  look: string,
+  i: number,
+  n: number,
+  lit: boolean,
+  w: number,
+  h: number,
+  part: BridgePart = "deck",
+): void {
   const draw = part === "deck" ? DECKS[look] : UNDERS[look];
   if (!draw) return;
   g.save();

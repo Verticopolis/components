@@ -42,12 +42,7 @@ import { shop } from "./pixelSprites/shop";
 export function drawRoom(d: RoomCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
   const { ctx } = d;
   // Commercial shows its shutter whenever it's outside business hours.
-  if (
-    hasBusinessHours(u.kind) &&
-    u.state !== "empty" &&
-    u.state !== "construction" &&
-    !isOpenAt(u.kind, d.hour)
-  ) {
+  if (hasBusinessHours(u.kind) && u.state !== "empty" && u.state !== "construction" && !isOpenAt(u.kind, d.hour)) {
     closedShutter(d, x, y, w, h, facilityColor(u.kind));
     return;
   }
@@ -162,7 +157,13 @@ export function sampleState(kind: FacilityKind): UnitState {
 
 // ---- Barrel: preserve the original public surface of this module. ----
 export { PAL, SHIRTS, SKIN, person, personSeated, personStanding, type RoomCtx } from "./pixelSprites/common";
-export { FASTFOOD_LOOKS, RESTAURANT_LOOKS, FOODHALL_LOOKS, type FastFoodLook, type RestaurantLook } from "./pixelSprites/food";
+export {
+  FASTFOOD_LOOKS,
+  RESTAURANT_LOOKS,
+  FOODHALL_LOOKS,
+  type FastFoodLook,
+  type RestaurantLook,
+} from "./pixelSprites/food";
 export { AMUSEMENTS_LOOKS, type AmusementsLook } from "./pixelSprites/amusements";
 export { BOUTIQUE_LOOKS, type BoutiqueLook } from "./pixelSprites/boutique";
 export { FITNESS_LOOKS, type FitnessLook } from "./pixelSprites/fitness";

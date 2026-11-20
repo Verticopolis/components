@@ -55,7 +55,8 @@ export function daycare(d: RoomCtx, u: UnitView, x: number, y: number, w: number
   // A checkered soft play mat covering most of the floor. The mat is drawn at
   // its screen size, but its AUTHORED width is what decides how many children it
   // seats, so that is worked out separately and handed to the row.
-  const matX0 = x + 3, matX1 = x + Math.round(w * 0.62);
+  const matX0 = x + 3,
+    matX1 = x + Math.round(w * 0.62);
   const matArtW = Math.round(authoredWidth(u.width) * 0.62) - 3;
   for (let mx = matX0, k = 0; mx + 4 < matX1; mx += 5, k++) {
     ctx.fillStyle = shade(MAT[(k + seed) % MAT.length], -8);
@@ -70,14 +71,18 @@ export function daycare(d: RoomCtx, u: UnitView, x: number, y: number, w: number
   ctx.fillStyle = SHELF;
   ctx.fillRect(shX, floorY - 12, shW, 12);
   ctx.fillStyle = shade(SHELF, 20);
-  ctx.fillRect(shX, floorY - 12, shW, 1); ctx.fillRect(shX, floorY - 7, shW, 1);
+  ctx.fillRect(shX, floorY - 12, shW, 1);
+  ctx.fillRect(shX, floorY - 7, shW, 1);
   for (let bx = shX + 1, i = 0; bx + 2 < shX + shW; bx += 4, i++) {
     ctx.fillStyle = MAT[(i + seed + 1) % MAT.length];
     ctx.fillRect(bx, floorY - 11, 3, 3); // upper bin of toys
     ctx.fillRect(bx, floorY - 6, 3, 3); // lower bin
   }
   // A stack of blocks on the mat.
-  for (let i = 0; i < 3; i++) { ctx.fillStyle = MAT[(seed + i) % MAT.length]; ctx.fillRect(matX0 + 2, floorY - 4 - i * 2, 3, 2); }
+  for (let i = 0; i < 3; i++) {
+    ctx.fillStyle = MAT[(seed + i) % MAT.length];
+    ctx.fillRect(matX0 + 2, floorY - 4 - i * 2, 3, 2);
+  }
 
   // The caregiver (a standing adult) is present whenever the room is open. She
   // is staff, not one of the children the room is counted in, so she does not

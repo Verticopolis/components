@@ -41,7 +41,12 @@ export function metroLineTimes(timetable: CatalogMetroTrain, stops: number): Rea
  * has the train at a time. Outside the timetable's hours, and once it has
  * gone, it waits in the tunnel `span` left of the first station.
  */
-export function metroTrainAt(minuteOfDay: number, stops: readonly number[], span: number, timetable: CatalogMetroTrain): number {
+export function metroTrainAt(
+  minuteOfDay: number,
+  stops: readonly number[],
+  span: number,
+  timetable: CatalogMetroTrain,
+): number {
   const first = stops[0] ?? 0;
   const hour = Math.floor((((minuteOfDay % 1440) + 1440) % 1440) / 60);
   if (hour < timetable.firstHour || hour > timetable.lastHour || stops.length === 0) return first - span;

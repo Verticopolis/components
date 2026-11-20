@@ -1,7 +1,17 @@
 import { describe, it, expect } from "vitest";
 import type { FacilityKind } from "../../model/types";
 import { FACILITY_PRESENTATION } from "../../presentation/facilityPresentation";
-import { GROUP_PATTERN, KIND_GROUP, SHAFT_FILL, UNKNOWN_KIND_STYLE, contrastRatio, hexLuminance, mapStyleFor, patternInk, type MapGroup } from "./style";
+import {
+  GROUP_PATTERN,
+  KIND_GROUP,
+  SHAFT_FILL,
+  UNKNOWN_KIND_STYLE,
+  contrastRatio,
+  hexLuminance,
+  mapStyleFor,
+  patternInk,
+  type MapGroup,
+} from "./style";
 import { MAP_BACKDROP } from "./viewMark";
 
 const KINDS = Object.keys(FACILITY_PRESENTATION) as FacilityKind[];
@@ -51,7 +61,9 @@ describe("overview map style table", () => {
     for (const [group, shaft] of Object.entries(SHAFT_FILL)) {
       for (const kind of rooms) {
         const room = mapStyleFor(kind).fill;
-        expect(labDifference(shaft, room), `${group} ${shaft} against ${kind} ${room}`).toBeGreaterThanOrEqual(MIN_SHAFT_ROOM_DIFFERENCE);
+        expect(labDifference(shaft, room), `${group} ${shaft} against ${kind} ${room}`).toBeGreaterThanOrEqual(
+          MIN_SHAFT_ROOM_DIFFERENCE,
+        );
       }
     }
   });
@@ -115,6 +127,6 @@ function toLab(color: string): [number, number, number] {
   const x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
   const y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   const z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
-  const f = (t: number): number => (t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27 * t + 16) / 116);
+  const f = (t: number): number => (t > 216 / 24389 ? Math.cbrt(t) : ((24389 / 27) * t + 16) / 116);
   return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
 }

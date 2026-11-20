@@ -69,7 +69,18 @@ function shaftCase(kind: FacilityKind, skip: number[], pieces: string[], tiles =
     },
     game: (doc) => {
       const ctx = canvas(doc, w, floors * FLOOR);
-      const t: TransportView = { id: 1, kind, x: 0, width: w / TILE, bottom: 1, top: floors, cars: 1, carPositions: [1], carDir: [0], skipFloors: skip };
+      const t: TransportView = {
+        id: 1,
+        kind,
+        x: 0,
+        width: w / TILE,
+        bottom: 1,
+        top: floors,
+        cars: 1,
+        carPositions: [1],
+        carDir: [0],
+        skipFloors: skip,
+      };
       drawTransport(ctx, t, 0, 0, w, FLOOR);
       return read(ctx, w, floors * FLOOR);
     },
@@ -77,7 +88,14 @@ function shaftCase(kind: FacilityKind, skip: number[], pieces: string[], tiles =
 }
 
 export function extraCases(): Case[] {
-  const cab = (kind: FacilityKind, s: number, riders: number, arrow: "up" | "down" | null, full: boolean, tiles = kindWidth(kind)): Case => {
+  const cab = (
+    kind: FacilityKind,
+    s: number,
+    riders: number,
+    arrow: "up" | "down" | null,
+    full: boolean,
+    tiles = kindWidth(kind),
+  ): Case => {
     const w = tiles * TILE;
     const seg = tiles === kindWidth(kind) ? "" : `/w${tiles}`;
     const name = `car/${kind}${seg}/${arrow ?? "idle"}/${full ? "full" : "notfull"}/s${s}`;
@@ -113,7 +131,18 @@ export function extraCases(): Case[] {
       game: (doc) => {
         const w = 4 * TILE;
         const ctx = canvas(doc, w, 2 * FLOOR);
-        const t: TransportView = { id: 1, kind, x: 0, width: 4, bottom: 1, top: 2, cars: 0, carPositions: [], carDir: [], skipFloors: [] };
+        const t: TransportView = {
+          id: 1,
+          kind,
+          x: 0,
+          width: 4,
+          bottom: 1,
+          top: 2,
+          cars: 0,
+          carPositions: [],
+          carDir: [],
+          skipFloors: [],
+        };
         drawTransport(ctx, t, 0, 0, w, FLOOR);
         return read(ctx, w, 2 * FLOOR);
       },
@@ -295,7 +324,9 @@ export function extraCases(): Case[] {
  *  frame name (`<animation>/<i>`); their job is the animation. */
 export function verifyExtras(doc: Document, jobs: readonly Job[], renderer: Renderer): SampleResult[] {
   return extraCases().flatMap((c) => {
-    const jobNames = new Set(c.frames.map((f) => (jobs.some((j) => j.name === f) ? f : f.slice(0, f.lastIndexOf("/")))));
+    const jobNames = new Set(
+      c.frames.map((f) => (jobs.some((j) => j.name === f) ? f : f.slice(0, f.lastIndexOf("/")))),
+    );
     const r = bake(
       jobs.filter((j) => jobNames.has(j.name)),
       renderer,
@@ -308,9 +339,22 @@ export function verifyExtras(doc: Document, jobs: readonly Job[], renderer: Rend
     const theirs = c.game(doc);
     const result = (label: string, mine: Image): SampleResult => {
       const cmp = compareImages(theirs, mine);
-      return { label, frame: c.frames.join(", "), pixels: theirs.w * theirs.h, mismatches: cmp.mismatches, box: cmp.box, offset: { x: 0, y: 0 }, control: c.control };
+      return {
+        label,
+        frame: c.frames.join(", "),
+        pixels: theirs.w * theirs.h,
+        mismatches: cmp.mismatches,
+        box: cmp.box,
+        offset: { x: 0, y: 0 },
+        control: c.control,
+      };
     };
-    const out = [result(c.label, c.atlas((name, chains = {}) => composeFrame(r, recOf(name), chains)))];
+    const out = [
+      result(
+        c.label,
+        c.atlas((name, chains = {}) => composeFrame(r, recOf(name), chains)),
+      ),
+    ];
     // The lobby tiles and entrances are split for depth, so (outside the
     // control) they are composed through their shell and furniture as well,
     // and a lobby case that came back flat fails.
@@ -319,7 +363,10 @@ export function verifyExtras(doc: Document, jobs: readonly Job[], renderer: Rend
       const split = c.frames.every((f) => recOf(f).layers);
       out.push(
         split
-          ? result(`${c.label} (depth layers)`, c.atlas((name, chains = {}) => composeLayered(r, recOf(name), chains)))
+          ? result(
+              `${c.label} (depth layers)`,
+              c.atlas((name, chains = {}) => composeLayered(r, recOf(name), chains)),
+            )
           : { ...result(`${c.label} (depth layers missing)`, theirs), mismatches: theirs.w * theirs.h },
       );
     }

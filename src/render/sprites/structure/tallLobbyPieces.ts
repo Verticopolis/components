@@ -12,7 +12,15 @@ import { skyGlass } from "./lobby";
 /** A glazed opening with a gold frame and, when `head` is set, a round
  *  head: dark warm glass with a few city lights after dark, pale sky by day.
  *  A transom bar every story-ish keeps a tall window reading as glazing. */
-export function archedWindow(d: DrawCtx, x: number, y: number, w: number, h: number, head: boolean, seed: number): void {
+export function archedWindow(
+  d: DrawCtx,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  head: boolean,
+  seed: number,
+): void {
   const { ctx, lit } = d;
   if (w < 3 || h < 6) return;
   ctx.fillStyle = "#C9A24B";
@@ -60,7 +68,11 @@ export function globePendants(d: DrawCtx, cx: number, top: number, bottom: numbe
   const { ctx, lit } = d;
   const span = bottom - top;
   if (span < 10) return;
-  for (const [dx, drop] of [[-3, 0.6], [0, 0.85], [3, 0.7]] as const) {
+  for (const [dx, drop] of [
+    [-3, 0.6],
+    [0, 0.85],
+    [3, 0.7],
+  ] as const) {
     const gy = top + Math.round(span * drop);
     ctx.fillStyle = "#5A5448";
     ctx.fillRect(cx + dx, top, 1, gy - top);

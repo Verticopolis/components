@@ -28,15 +28,20 @@ export interface BoutiqueLook {
   trade: "florist" | "barber" | "phone" | "vintage" | "tattoo" | "records" | "gallery";
 }
 
-export const BOUTIQUE_DEFAULT: BoutiqueLook = { wall: "#E8F0E0", floor: "#C8B89A", accent: "#E86A8A", trade: "florist" };
+export const BOUTIQUE_DEFAULT: BoutiqueLook = {
+  wall: "#E8F0E0",
+  floor: "#C8B89A",
+  accent: "#E86A8A",
+  trade: "florist",
+};
 export const BOUTIQUE_LOOKS: Record<string, BoutiqueLook> = {
-  "Florist": { wall: "#E8F0E0", floor: "#C8B89A", accent: "#E86A8A", trade: "florist" },
-  "Barber": { wall: "#E0E4EC", floor: "#8A6E50", accent: "#C0392B", trade: "barber" },
+  Florist: { wall: "#E8F0E0", floor: "#C8B89A", accent: "#E86A8A", trade: "florist" },
+  Barber: { wall: "#E0E4EC", floor: "#8A6E50", accent: "#C0392B", trade: "barber" },
   "Phone Repair": { wall: "#DCE4EC", floor: "#B0B4BC", accent: "#3AC0E0", trade: "phone" },
-  "Vintage": { wall: "#EBE0D0", floor: "#9A7A5A", accent: "#A85A8C", trade: "vintage" },
-  "Tattoo": { wall: "#2A2A32", floor: "#3A3A42", accent: "#C83A5A", trade: "tattoo" },
+  Vintage: { wall: "#EBE0D0", floor: "#9A7A5A", accent: "#A85A8C", trade: "vintage" },
+  Tattoo: { wall: "#2A2A32", floor: "#3A3A42", accent: "#C83A5A", trade: "tattoo" },
   "Record Store": { wall: "#E4DAC8", floor: "#6A5A48", accent: "#E08A3A", trade: "records" },
-  "Gallery": { wall: "#F0EEE8", floor: "#C4BCB0", accent: "#4A6A9A", trade: "gallery" },
+  Gallery: { wall: "#F0EEE8", floor: "#C4BCB0", accent: "#4A6A9A", trade: "gallery" },
 };
 
 /** A stable per-room seed from GEOGRAPHY (floor, x), so the figures and prop
@@ -73,7 +78,14 @@ function counter(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: nu
   return top;
 }
 
-function drawFlorist(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, seed: number): void {
+function drawFlorist(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  seed: number,
+): void {
   // Buckets of cut flowers along the floor, a hanging planter above.
   for (let bx = x + 4, i = 0; bx + 6 < x + w - 2; bx += 9, i++) {
     ctx.fillStyle = "#5A6E5A"; // zinc bucket
@@ -94,7 +106,16 @@ function drawFlorist(ctx: CanvasRenderingContext2D, x: number, floorY: number, w
   for (let i = 0; i < 5; i++) ctx.fillRect(px - 4 + i * 2, top + 5, 1, 3 + (i % 2) * 2);
 }
 
-function drawBarber(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, accent: string, occ: number, seed: number): void {
+function drawBarber(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  accent: string,
+  occ: number,
+  seed: number,
+): void {
   // A barber chair facing a wall mirror, and the striped pole.
   const chX = x + Math.round(w * 0.34);
   ctx.fillStyle = "#3A3A44"; // chair base + seat
@@ -110,19 +131,27 @@ function drawBarber(ctx: CanvasRenderingContext2D, x: number, floorY: number, w:
   // The barber pole by the door.
   const pX = x + w - 6;
   for (let py = top + 2; py < floorY - 2; py += 3) {
-    ctx.fillStyle = (Math.floor((py - top) / 3) % 2 === 0) ? accent : "#F0F0F0";
+    ctx.fillStyle = Math.floor((py - top) / 3) % 2 === 0 ? accent : "#F0F0F0";
     ctx.fillRect(pX, py, 3, 3);
   }
   castShadow(ctx, chX, floorY, 10);
 }
 
-function drawPhone(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, accent: string, seed: number): void {
+function drawPhone(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  accent: string,
+  seed: number,
+): void {
   // A glass counter of glowing devices, and a wall of parts bins.
   const cTop = counter(ctx, x, floorY, w, "#3A4048");
   for (let dx = x + 6, i = 0; dx + 3 < x + w - 4; dx += 6, i++) {
     ctx.fillStyle = "#14181E"; // device body
     ctx.fillRect(dx, cTop - 4, 3, 4);
-    ctx.fillStyle = (i % 2 === 0) ? accent : shade(accent, 30); // lit screen
+    ctx.fillStyle = i % 2 === 0 ? accent : shade(accent, 30); // lit screen
     ctx.fillRect(dx, cTop - 4, 3, 2);
   }
   // Parts bins on the back wall. The shade keys on the room's seed and each
@@ -130,13 +159,20 @@ function drawPhone(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: 
   // wherever the room's region starts.
   for (let by = top + 3, r = 0; by + 3 < cTop - 6; by += 5, r++) {
     for (let bx = x + 4, c = 0; bx + 3 < x + w - 3; bx += 6, c++) {
-      ctx.fillStyle = shade("#8A929A", (hash(seed * 31 + r * 131 + c * 17) > 0.5 ? 12 : -12));
+      ctx.fillStyle = shade("#8A929A", hash(seed * 31 + r * 131 + c * 17) > 0.5 ? 12 : -12);
       ctx.fillRect(bx, by, 4, 3);
     }
   }
 }
 
-function drawVintage(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, seed: number): void {
+function drawVintage(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  seed: number,
+): void {
   // Racks of hanging garments and a mannequin.
   const railY = top + 4;
   for (let rx = x + 4, i = 0; rx + 4 < x + w - 8; rx += 5, i++) {
@@ -156,7 +192,16 @@ function drawVintage(ctx: CanvasRenderingContext2D, x: number, floorY: number, w
   ctx.fillRect(mX, floorY - 12, 4, 4); // dressed top
 }
 
-function drawTattoo(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, accent: string, occ: number, seed: number): void {
+function drawTattoo(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  accent: string,
+  occ: number,
+  seed: number,
+): void {
   // A reclined bench under an articulated lamp, framed flash art on the wall.
   const bX = x + 4;
   ctx.fillStyle = "#1E1E26"; // bench
@@ -179,7 +224,15 @@ function drawTattoo(ctx: CanvasRenderingContext2D, x: number, floorY: number, w:
   }
 }
 
-function drawRecords(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, accent: string, seed: number): void {
+function drawRecords(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  accent: string,
+  seed: number,
+): void {
   // Crates of record spines, a wall poster, a turntable station.
   for (let cx = x + 4, i = 0; cx + 10 < x + w - 2; cx += 12, i++) {
     ctx.fillStyle = "#4A3A2A"; // crate
@@ -202,7 +255,15 @@ function drawRecords(ctx: CanvasRenderingContext2D, x: number, floorY: number, w
   ctx.fillRect(tX + 2, top + 7, 2, 2);
 }
 
-function drawGallery(ctx: CanvasRenderingContext2D, x: number, floorY: number, w: number, top: number, accent: string, seed: number): void {
+function drawGallery(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  floorY: number,
+  w: number,
+  top: number,
+  accent: string,
+  seed: number,
+): void {
   // Framed artworks under track-lighting spots, a viewing bench.
   for (let fx = x + 4, i = 0; fx + 8 < x + w - 3; fx += 11, i++) {
     ctx.fillStyle = "#2A2A2E"; // frame

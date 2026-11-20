@@ -211,7 +211,12 @@ export function drawTree(ctx: CanvasRenderingContext2D, w: number, h: number, se
     // layer offset, carries the per-layer variation.
     const jitter = Math.round((hash01(seed + li * T.jitterKey) - 0.5) * 2);
     ctx.fillStyle = color;
-    ctx.fillRect(Math.round(w * (1 - lw) / 2) + jitter, Math.round(h - trunkH - h * ly), Math.round(w * lw), Math.round(h * T.canopyH));
+    ctx.fillRect(
+      Math.round((w * (1 - lw)) / 2) + jitter,
+      Math.round(h - trunkH - h * ly),
+      Math.round(w * lw),
+      Math.round(h * T.canopyH),
+    );
   });
 }
 

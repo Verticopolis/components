@@ -151,7 +151,9 @@
      and the Map is open, the Map card sits above it and keeps its close button.
      The inspector, the editor and the toasts come later in the stage at the
      same level, so they still paint over the card. With the Map closed nothing changes. */
-  body:has(> #onboard.onboard--mobile) #stage:has(> .overview-map:not([hidden])) > :is(.overview-map, #inspector, #editor, #toast-wrap) {
+  body:has(> #onboard.onboard--mobile)
+    #stage:has(> .overview-map:not([hidden]))
+    > :is(.overview-map, #inspector, #editor, #toast-wrap) {
     z-index: 26;
   }
   .overview-map-body {
@@ -175,7 +177,8 @@
   .overview-map-toggle .vc-icon {
     display: none;
   }
-  #stage:has(> .overview-map-toggle:not([hidden])):has(> #editor:not(.hidden)) > :is(.overview-map-toggle, #inspector, #toast-wrap) {
+  #stage:has(> .overview-map-toggle:not([hidden])):has(> #editor:not(.hidden))
+    > :is(.overview-map-toggle, #inspector, #toast-wrap) {
     z-index: 1;
   }
 }

@@ -65,7 +65,14 @@ describe("guardPointerButtons", () => {
     canvas.addEventListener("pointerup", (e) => ups.push(e));
 
     canvas.dispatchEvent(
-      new PointerEvent("pointerup", { button: MOUSE_FORWARD_BUTTON, buttons: 0, pointerId: 7, clientX: 30, clientY: 40, bubbles: true }),
+      new PointerEvent("pointerup", {
+        button: MOUSE_FORWARD_BUTTON,
+        buttons: 0,
+        pointerId: 7,
+        clientX: 30,
+        clientY: 40,
+        bubbles: true,
+      }),
     );
 
     expect(ups).toHaveLength(1);
@@ -81,7 +88,9 @@ describe("guardPointerButtons", () => {
     const handler = vi.fn();
     canvas.addEventListener("pointerup", handler);
     const LEFT_HELD = 1; // `buttons` bit for the primary button
-    canvas.dispatchEvent(new PointerEvent("pointerup", { button: MOUSE_FORWARD_BUTTON, buttons: LEFT_HELD, bubbles: true }));
+    canvas.dispatchEvent(
+      new PointerEvent("pointerup", { button: MOUSE_FORWARD_BUTTON, buttons: LEFT_HELD, bubbles: true }),
+    );
     expect(handler).not.toHaveBeenCalled();
   });
 
