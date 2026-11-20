@@ -37,10 +37,9 @@ Closes #
 ## Versioning
 
 <!--
-Only a release PR edits `version` in package.json (with
-`npm version <x.y.z> --no-git-tag-version`) and renames `## Unreleased`
-in CHANGELOG.md to `## <version> (<date>)`; merging it releases that
-version. A change to what the package ships adds a line under
+Only a release PR, which the Cut release workflow opens, edits `version`
+in package.json and renames `## Unreleased` in CHANGELOG.md to
+`## <version> (<date>)`; merging it releases that version. A change to what the package ships adds a line under
 `## Unreleased`, led by its level (**major**, **minor** or **patch**).
 -->
 

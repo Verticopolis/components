@@ -11,8 +11,9 @@ A pull request that changes what the package ships adds a line under
 `## Unreleased`, led by the level it needs: **major** for a breaking change to
 an export or a stylesheet's selectors, **minor** for a new export, component
 or look, **patch** for a fix. A change to the repository alone (CI, the
-gallery, the screenshot tests) needs no line. The release PR renames
-`## Unreleased` to `## <version> (<date>)`, and **Release components** puts
+gallery, the screenshot tests) needs no line. **Cut release** picks the
+version from those levels and its release PR renames `## Unreleased` to
+`## <version> (<date>)`, and **Release components** puts
 that section in the GitHub release; it refuses a version with no section
 (README, "Releasing").
 
