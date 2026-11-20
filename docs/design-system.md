@@ -177,3 +177,9 @@ splash. It shares interaction grammar only: bevel press states and a visible
    tools as a column on the left instead of the bottom strip and stays inside
    the phone tier; under 340px tall, or under 540px wide where the top bar
    wraps further, a further block puts the category tabs back on one row.
+   The desk on a touchscreen has its own file, `styles/game/desk-pocket.css`,
+   keyed on the game's classes rather than the tiers: `body.desk-touch`
+   (44 px taskbar, menu rows and title-bar touch areas) and `body.desk-pocket`
+   (the full-screen tower window whose `.desk-pocket-body` grid holds Info,
+   Tools and the tower, arranged by orientation and width, with the Map
+   floating over the tower at its phone size).

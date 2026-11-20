@@ -1,0 +1,305 @@
+/* The desk on touch screens (owner's pick, 2026-11-20: "Pocket desk").
+   body.desk-touch: the desk on a touchscreen, a sideways tablet's full desk
+   included: a 44 px taskbar, 44 px menu rows and title-bar buttons with a
+   44 px touch area.
+   body.desk-pocket: phones and upright tablets. The tower window fills the
+   desk with Info and Tools inside it, and the Map floats over the tower at
+   the size it has on phones today (overview-map.css), so the minimap and
+   the tower always show together. The Bulletin, Tower
+   Info and the Control Panel open over the whole desk, one at a time, the
+   way Windows CE did, and the taskbar switches between them.
+   The game builds .desk-pocket-body inside the tower window and moves
+   #topbar, #palette and #stage into it; the Map stays in #stage.
+   Part of the game's stylesheet: src/styles.css imports it after desk.css. */
+
+@layer vc.tokens, vc.base, vc.components, vc.page;
+
+@layer vc.page {
+  /* ---- Touch chrome ---- */
+  body.desk-touch {
+    --desk-taskbar-h: calc(44px + env(safe-area-inset-bottom, 0px));
+  }
+  body.desk-touch .desk-area {
+    inset: env(safe-area-inset-top, 0px) 0 var(--desk-taskbar-h) 0;
+  }
+  body.desk-touch .desk-taskbar {
+    height: var(--desk-taskbar-h);
+    gap: 3px;
+    padding: 3px max(3px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px)
+      max(3px, env(safe-area-inset-left, 0px));
+    align-items: flex-start;
+    font-size: 13px;
+  }
+  body.desk-touch .desk-start,
+  body.desk-touch .desk-task,
+  body.desk-touch .desk-tray {
+    height: 38px;
+  }
+  body.desk-touch .desk-start,
+  body.desk-touch .desk-task {
+    padding: 0 8px;
+  }
+  body.desk-touch .desk-start {
+    min-width: 48px;
+    justify-content: center;
+  }
+  body.desk-touch .desk-start img {
+    width: 22px;
+    height: 22px;
+  }
+  body.desk-touch .desk-task img {
+    width: 18px;
+    height: 18px;
+  }
+  body.desk-touch .desk-start-list .mb-item,
+  body.desk-touch .desk-win-menu .mb-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 12px;
+    font-size: 15px;
+  }
+  body.desk-touch .desk-win > .win-title {
+    min-height: 26px;
+    font-size: 13px;
+  }
+  body.desk-touch .desk-win > .win-title > .desk-btn,
+  body.desk-touch .desk-win > .win-title > .btn.xs {
+    position: relative;
+    width: 24px;
+    height: 21px;
+  }
+  /* The buttons look 24 px wide; a finger gets 44 px. */
+  body.desk-touch .desk-win > .win-title > .desk-btn::after,
+  body.desk-touch .desk-win > .win-title > .btn.xs::after {
+    content: "";
+    position: absolute;
+    inset: -12px -10px;
+  }
+  /* The title of a window without the focus, readable on the gray bar. */
+  body.desk-touch .desk-win:not(.desk-active) > .win-title {
+    color: var(--r-hi);
+  }
+  body.desk-touch .desk-grip {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ---- Pocket: the tower window fills the desk ---- */
+  /* !important: a drag or the desk's resize pass writes inline places, and a
+     pocket window never moves. */
+  body.desk-pocket #desk-win-tower {
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    box-shadow: none;
+  }
+  body.desk-pocket #desk-win-tower > .win-title > .desk-btn-max,
+  body.desk-pocket #desk-win-tower > .desk-grip,
+  body.desk-pocket #statusbar {
+    display: none;
+  }
+  /* Phones show the Verticopolis logo alone on the Start button (its word
+     stays its accessible name) and a word alone on each task. */
+  body.desk-pocket .desk-start {
+    font-size: 0;
+    gap: 0;
+  }
+  body.desk-pocket .desk-task img {
+    display: none;
+  }
+  body.desk-pocket .desk-task {
+    justify-content: center;
+  }
+
+  .desk-pocket-body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "info"
+      "stage"
+      "tools";
+  }
+  .desk-pocket-body > #topbar {
+    grid-area: info;
+  }
+  .desk-pocket-body > #stage {
+    grid-area: stage;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+  }
+  .desk-pocket-body > #palette {
+    grid-area: tools;
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    box-shadow: var(--bevel-in);
+  }
+  .desk-pocket-body > #palette > .win-title {
+    display: none;
+  }
+  /* Info in two rows on an upright phone. */
+  @media (orientation: portrait) and (max-width: 767px) {
+    .desk-pocket-body > #topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.85fr);
+      gap: 3px;
+      padding: 3px;
+    }
+    .desk-pocket-body > #topbar #status {
+      display: contents;
+    }
+    .desk-pocket-body > #topbar .stat {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      gap: 4px;
+      padding: 2px 4px;
+      min-height: 0;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .desk-pocket-body > #topbar .stat .label {
+      font-size: 9px;
+    }
+    .desk-pocket-body > #topbar .stat .value {
+      font-size: 13px;
+    }
+    /* The meters size to their cell here, not to their longest value. */
+    .desk-pocket-body > #topbar :is(#stat-time, #stat-date, #stat-money, #stat-pop) {
+      width: auto;
+    }
+    .desk-pocket-body > #topbar .stat-date,
+    .desk-pocket-body > #topbar #speed {
+      grid-column: span 2;
+    }
+    .desk-pocket-body > #topbar #speed {
+      display: flex;
+      justify-content: space-between;
+      gap: 3px;
+      margin: 0;
+    }
+    .desk-pocket-body > #topbar #speed .btn {
+      flex: 1;
+      height: 26px;
+      min-height: 0;
+      min-width: 0;
+      padding: 0;
+    }
+    .desk-pocket-body > #topbar #traffic-floor {
+      display: none;
+    }
+
+    /* Tools in one strip: a row of tabs and a row of tools, each with its
+       price beside it, faded at the edge where they scroll. */
+    .desk-pocket-body > #palette .palette-tabs {
+      min-height: 0;
+      padding: 2px 2px 0;
+      gap: 2px;
+    }
+    /* A 30 px tab, the tallest the tab row has room for: the row clips
+       anything taller, and the tools strip sits right below it. */
+    .desk-pocket-body > #palette .pal-tab {
+      height: 30px;
+      min-height: 0;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+    .desk-pocket-body > #palette .palette-scroll {
+      height: 52px;
+      flex: none;
+      overflow-x: auto;
+      overflow-y: hidden;
+      align-items: center;
+      padding: 3px;
+    }
+    .desk-pocket-body > #palette .palette-tabs,
+    .desk-pocket-body > #palette .palette-scroll {
+      mask-image: linear-gradient(to right, #000 82%, transparent);
+    }
+    .desk-pocket-body > #palette :is(.pal-pinned, .pal-groups, .pal-group.tab-active) {
+      height: 46px;
+      align-items: stretch;
+    }
+    .desk-pocket-body > #palette .pal-item {
+      width: auto;
+      height: 46px;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 20px auto;
+      column-gap: 6px;
+      align-content: center;
+      align-items: center;
+      text-align: left;
+      padding: 0 10px 0 8px;
+    }
+    .desk-pocket-body > #palette .pal-swatch {
+      grid-row: 1 / span 2;
+      width: 20px;
+      height: 20px;
+    }
+    .desk-pocket-body > #palette .pal-name {
+      font-size: 13px;
+      line-height: 15px;
+      max-height: none;
+      white-space: nowrap;
+    }
+    .desk-pocket-body > #palette .pal-cost {
+      grid-column: 2;
+      font-size: 11px;
+      line-height: 13px;
+    }
+    .desk-pocket-body > #palette .pal-desc {
+      display: none;
+    }
+  }
+
+  /* Sideways phone: Tools at the left, the tower at the right. */
+  @media (orientation: landscape) {
+    .desk-pocket-body {
+      grid-template-columns: 200px minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-areas:
+        "info info"
+        "tools stage";
+    }
+    .desk-pocket-body > #palette {
+      min-height: 0;
+      overflow: auto;
+    }
+  }
+
+  /* Upright tablet: Tools at the left, the tower at the right. */
+  @media (orientation: portrait) and (min-width: 768px) {
+    .desk-pocket-body {
+      grid-template-columns: 220px minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-areas:
+        "info info"
+        "tools stage";
+    }
+    .desk-pocket-body > #palette {
+      min-height: 0;
+      overflow: auto;
+    }
+  }
+
+  /* Bulletin, Tower Info and the Control Panel cover the desk while open;
+     the tower stays laid out under them. */
+  body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control).desk-win {
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none;
+    max-height: none;
+  }
+  body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control) > .desk-grip {
+    display: none;
+  }
+}
