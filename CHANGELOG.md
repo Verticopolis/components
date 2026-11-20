@@ -7,32 +7,19 @@ The player-facing notes live in the game's
 and the engine's in
 [`engine-rs/CHANGELOG.md`](https://github.com/Verticopolis/engine/blob/main/engine-rs/CHANGELOG.md).
 
-A pull request that changes what the package ships adds a line under
-`## Unreleased`, led by the level it needs: **major** for a breaking change to
-an export or a stylesheet's selectors, **minor** for a new export, component
-or look, **patch** for a fix. A change to the repository alone (CI, the
-gallery, the screenshot tests) needs no line. **Cut release** picks the
-version from those levels and its release PR renames `## Unreleased` to
-`## <version> (<date>)`, and **Release components** puts
-that section in the GitHub release; it refuses a version with no section
-(README, "Releasing").
+A pull request that changes what the package ships adds its entries as a
+change note under
+[`.changes/`](https://github.com/Verticopolis/components/blob/main/.changes/README.md),
+with the level it needs: **major** for a breaking change to an export or a
+stylesheet's selectors, **minor** for a new export, component or look,
+**patch** for a fix. A change to the repository alone (CI, the gallery, the
+screenshot tests) needs no note. **Cut release** picks the version from
+those levels and writes the notes into the version's section, each entry led
+by its level, and **Release components** puts that section in the GitHub
+release; it refuses a version with no section (README, "Releasing").
 
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
-
-## Unreleased
-
-- **patch**: the renderer's context-loss handler stops the Excalibur engine
-  with its public `stop()`, which also stops the texture collector and pauses
-  the browser listeners, instead of stopping only the clock. The rebuild's
-  teardown (`render/excalibur/engineTeardown`) still stops the collector for
-  a context lost while the screen saver held the frames, and a test against
-  the real Excalibur now fails if an upgrade moves that private field.
-
-- **minor**: `src/shared/` is now `src/model/`, exported as `model/*`: the
-  tower model types and the small helpers over them. `shared/*` stays as an
-  alias for the same files until 1.0, so existing imports keep working; move
-  them to `model/*`.
 
 ## 0.2.2 (2026-11-19)
 

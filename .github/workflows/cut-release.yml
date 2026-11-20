@@ -4,12 +4,13 @@ name: Cut release
 # raising the version by hand, the way the game's Cut release does in
 # Verticopolis/web. Run it from the Actions tab (Run workflow) on main: it
 # runs scripts/cut-release.ts, which picks the version from the levels of the
-# `## Unreleased` entries in CHANGELOG.md (the highest of major, minor and
-# patch; while the package is 0.x a major entry raises the minor version),
-# raises package.json and package-lock.json with `npm version` and dates the
-# changelog section. It commits the result to release/<version> and opens the
-# "Release components <version>" PR. Leave "version" empty for the level the
-# entries ask for, or name a later one, such as 1.0.0.
+# change notes in .changes/ (the highest of major, minor and patch; while the
+# package is 0.x a major note raises the minor version), raises package.json
+# and package-lock.json with `npm version`, writes the notes into a dated
+# changelog section and deletes them. It commits the result to
+# release/<version> and opens the "Release components <version>" PR. Leave
+# "version" empty for the level the notes ask for, or name a later one, such
+# as 1.0.0.
 #
 # Merging the PR is still a person's call, and components-release.yml tags
 # and publishes the release once it merges; its npm publish waits for the
@@ -30,7 +31,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Name the version (for example 1.0.0); leave empty for the level the Unreleased entries ask for"
+        description: "Name the version (for example 1.0.0); leave empty for the level the change notes ask for"
         required: false
         default: ""
 
@@ -97,7 +98,7 @@ jobs:
           git commit -m "$title"
           git push origin "$branch"
           {
-            echo "Cut by the **Cut release** workflow from the \`## Unreleased\` entries of \`CHANGELOG.md\` on main $base."
+            echo "Cut by the **Cut release** workflow from the change notes in \`.changes/\` on main $base."
             echo
             echo "- Package: $version"
             echo
