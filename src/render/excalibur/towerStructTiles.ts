@@ -122,7 +122,7 @@ export function syncStructureTiles(engine: TowerEngine): readonly RenderUnit[] {
     if (u.kind === "lobby") hallFloors.get(u.floor)?.add(u.x);
     // Floor/lobby units are one tile wide, so a unit maps to one cell.
     const cell = engine.structTileMap.getTile(u.x, topFloor - u.floor);
-    if (!cell) continue; // outside the grid; the engine never places there
+    if (!cell) continue; // outside the grid; the simulation never places there
     seenS.add(cell);
     engine.structTiles.add(cell);
     if (u.kind !== "lobby") {
