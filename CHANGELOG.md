@@ -21,6 +21,63 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.1.0 (2026-11-20)
+
+- **minor**: `astro/TitleBar.astro` and `astro/TitleScreen.astro` are the docs title bar and title screen
+  as Astro components, for a Starlight site's `Header` and `Hero` overrides. They take
+  everything they show as props and read nothing from Starlight. The package lists the
+  `astro-component` keyword so Astro compiles them from `node_modules`.
+- **minor**: The build writes `styles/splash-skyline.svg`, the title screen's skyline as an image, and
+  `styles/starlight-theme.css` tiles it from beside itself, so a docs site no longer serves its
+  own `/splash-skyline.svg`. The theme also styles the wordmark's ™ (`.ts-word .tm`).
+- **minor**: `windows/fileDialog/fileDialog` is the Open and Save As windows: `showFileDialog(shell, ctx)` opens one
+  in a `ModalShell` over a folder the caller lists, with sortable columns, a File name box, a type list,
+  Rename, Duplicate, Delete, Copy and Paste, a row menu on a right-click or a held finger, a question
+  before replacing or deleting, files dropped to add, From a folder…, and a linked folder on the
+  player's computer where the caller offers one. The caller names its files (`words`, `kinds`,
+  `saveKind`) and its name rules (`cleanName`, `freeName`, `nameMax`), and runs every command.
+- **minor**: `windows/fileDialog/versionsDialog` is Previous Versions (`showVersionsDialog`), which can put the
+  window it was opened from back as the player left it.
+- **minor**: `windows/fileDialog/fileIcons` draws the 16-pixel file icons (`fileIcon(mark)` with `towerMark`,
+  `oldTowerMark` and `clockMark`, the folder icons and the warning sign).
+- **minor**: `styles/game/file-dialog.css` now sizes the windows from their own markup inside the modal box.
+- **minor**: `windows/messageBox` is the message box as a view for `ModalShell`: `messageBoxView({ title,
+  icon, iconSize, text, buttons })` draws an optional icon before the title, one paragraph or
+  several, and the buttons in the footer strip, each with its own `onPress` (and `primary`,
+  `act` for `data-act`, `autofocus`). `messageBoxTemplate` is the body alone and
+  `messageActionsTemplate` the button row alone, for a dialog with a body of its own.
+- **minor**: `windows/screenSaver/*` is the screen saver. `skyScenes` (Skyline Starfield, Express
+  Elevators, Bulletin Marquee) and `towerScenes` (Night Shift from a `TowerSnapshot`, Endless
+  Tower) are its scenes over `saverScene`'s `SaverScene`. `screenSaver` puts one up over the
+  whole page (`showScreenSaver({ makeScene, still, onEnd, hint })`, which keeps the input that
+  ends it from the page) or drives one on a canvas (`runScene`). `saverTriggers`'
+  `watchForSaver` starts it after a paused, untouched wait or on the way back to the tab.
+  `saverPrefs` holds the choices (`loadSaverPrefs(key, touchScreen)`,
+  `saveSaverPrefs(key, prefs)`). `saverDialog`'s `openScreenSaverDialog(shell, start, ports,
+  { waitCaption, note })` is the Screen Saver dialog in a `ModalShell`; its OK and Cancel carry
+  `data-act`.
+- **minor**: `windows/siteMenu` is the Win95 menu bar a Starlight docs site wears: File (the site's items,
+  then Print), Edit (Find, Copy Link to This Page), Options (the look and, when offered, the
+  appearance schemes) and Help (the site's items). `mountSiteMenu(root, deps, items)` draws it,
+  `siteMenuModel` is its model, `starlightDeps()` wires the built-in items to a Starlight page
+  and `schemeDeps(key)` adds the schemes. Each built-in item carries a `data-site-item` code that
+  a `picked` dep hears.
+- **minor**: `windows/titleScreen/titleScreen` draws the game's title screen: `titleScreenTemplate(view)`
+  takes the premise, the buttons (`TitleAction`), the small print and the optional mute,
+  install and sponsor corners, and `titleSceneTemplate` and `wordmarkTemplate` draw the sky and
+  the wordmark on their own. `windows/titleScreen/titleSkyline` holds the skyline's shapes. It
+  imports `styles/game/splash.css`.
+- **minor**: `windows/schemes` lists the appearance schemes (`SCHEMES`, `SCHEME_NAMES`, `DEFAULT_SCHEME`,
+  `isScheme`) and dresses a page in one (`applyScheme`, `schemeOf`, and `loadScheme` and
+  `saveScheme` under a key the page names). It imports no stylesheet and no lit.
+- **minor**: `windows/appearance` is the Appearance dialog: `openAppearanceDialog(shell, current, save,
+  { note, displaceable })` opens it in a `ModalShell`; `appearanceView` and
+  `appearanceTemplate` are its view and body for a caller that drives the shell itself. It
+  imports `styles/game/appearance.css`.
+- **minor**: `windows/desk/deskWindow` takes the title bar's icon from the page: `DeskWindowSpec.icon`, and a last `icon` argument on `buildFrame` and `deskFrameTemplate`, name its URL. `DESK_ICON` (`./favicon.png`, the icon a window wore before) is the default when none is named.
+- **minor**: New `windows/desk/deskTaskbar`: `DeskTaskbar` draws the desk's taskbar with lit: the Verticopolis button and its menu (items named by the game, Up and Down, Escape, a press outside), a button per open window that opens its window menu on a right-click or Shift+F10, and the tray with the Control Panel's monitor, the speaker and a clock that wakes once a minute. A game that drew its own taskbar over `desk.css` passes its items and handlers instead.
+- **patch**: On the pocket desk, Tower Info and the Control Panel open across the top of the desk at the height of what they hold, with the tower showing below, instead of stretching to the whole screen with empty gray under them.
+
 ## 2.0.0 (2026-11-20)
 
 - **major**: `windows/desk/deskWindow` draws the desk's pieces with lit-html: the
