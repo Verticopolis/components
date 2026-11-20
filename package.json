@@ -109,7 +109,7 @@
     "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.6.6",
-    "@verticopolis/engine": "https://github.com/Verticopolis/engine/releases/download/v1.60.0/verticopolis-engine-1.60.0.tgz",
+    "@verticopolis/engine": "1.60.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-lit": "^2.3.1",
