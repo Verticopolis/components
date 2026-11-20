@@ -1,7 +1,7 @@
-// The gallery site's shared constants: its address, the side menu, and the
-// color schemes the Options menu offers.
+// The gallery site's shared constants: its address, its links, the side menu,
+// and the script that puts the kept scheme on the page before it paints.
 
-import { DEFAULT_SCHEME, SCHEMES as SCHEME_IDS, SCHEME_NAMES } from "../lib/ui/schemes.js";
+import { DEFAULT_SCHEME, SCHEMES as SCHEME_IDS } from "../lib/ui/schemes.js";
 import { SCHEME_KEY } from "./schemeKey.mjs";
 
 export const SITE_ORIGIN = "https://components.verticopolis.com";
@@ -12,10 +12,6 @@ export const GITHUB_ISSUES = `${GITHUB}/issues/new/choose`;
 export const NPM = "https://www.npmjs.com/package/@verticopolis/components";
 export const ENGINE_DOCS = "https://docs.verticopolis.com/";
 export const PLAYER_HELP = "https://help.verticopolis.com/";
-
-/** The color schemes, from the package (`windows/schemes`), by the value each
- *  sets on `html[data-scheme]` (none for Standard). */
-export const SCHEMES = SCHEME_IDS.map((value) => ({ label: SCHEME_NAMES[value], value }));
 
 /** Where the picked scheme is kept between pages. */
 export { SCHEME_KEY };
