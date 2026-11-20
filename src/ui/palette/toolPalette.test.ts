@@ -139,6 +139,21 @@ describe("ToolPalette", () => {
     expect(document.activeElement).toBe(office);
   });
 
+  it("writes nothing to the page on an update that changes nothing", () => {
+    const p = make();
+    p.update(view(1));
+    const watch = new MutationObserver(() => {});
+    for (const root of [list, tabs])
+      watch.observe(root, { subtree: true, childList: true, characterData: true, attributes: true });
+    p.update(view(1));
+    expect(watch.takeRecords()).toHaveLength(0);
+    p.update({ ...view(1), pinned: [{ ...PINNED[0], color: "#123456" }, PINNED[1]] });
+    const records = watch.takeRecords();
+    watch.disconnect();
+    expect(records.map((r) => r.attributeName)).toEqual(["style"]);
+    expect(item("inspect").querySelector<HTMLElement>(".pal-swatch")?.style.background).toBe("#123456");
+  });
+
   it("picks a tool on a click, on Enter, and on a Space release that began on it", () => {
     make().update(view(2));
     item("shop").click();

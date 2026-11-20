@@ -1,7 +1,6 @@
 import { html, nothing, render, type TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map.js";
 import { repeat } from "lit-html/directives/repeat.js";
-import { styleMap } from "lit-html/directives/style-map.js";
 import { iconTemplate, type IconName } from "../icons";
 import { loadFolded, saveFolded } from "./paletteFolds";
 import { pressKeys, type PressKeys } from "./pressKeys";
@@ -207,7 +206,7 @@ export class ToolPalette {
     return html`<div class=${classMap({ "pal-item": true, "pal-mod": !!tool.modern, active: this.view.active === tool.key, locked: !!tool.locked, unaffordable: !tool.locked && !!tool.unaffordable })} data-kind=${tool.attr === "kind" ? tool.key : nothing} data-tool=${tool.attr === "tool" ? tool.key : nothing} data-group=${group ?? nothing} tabindex="0" role="button" aria-label=${tool.label} aria-describedby=${descriptionId(tool.key)} @click=${() => pick(tool)} @keydown=${keys.keydown} @keyup=${keys.keyup} @blur=${() => {
       keys.blur();
       hint?.(null);
-    }} @focus=${() => hint?.(tool)} @pointerenter=${enter} @pointerleave=${leave}><span class="pal-swatch" style=${styleMap({ background: tool.color })}></span><span class="pal-name">${tool.icon ? iconTemplate(tool.icon, { size: 14, className: "pal-ic" }) : nothing}${tool.name}</span>${tool.cost ? html`<span class="pal-cost">${tool.cost}</span>` : nothing}<span class="pal-desc" id=${descriptionId(tool.key)} hidden>${tool.description}</span></div>`;
+    }} @focus=${() => hint?.(tool)} @pointerenter=${enter} @pointerleave=${leave}><span class="pal-swatch" style="background: ${tool.color}"></span><span class="pal-name">${tool.icon ? iconTemplate(tool.icon, { size: 14, className: "pal-ic" }) : nothing}${tool.name}</span>${tool.cost ? html`<span class="pal-cost">${tool.cost}</span>` : nothing}<span class="pal-desc" id=${descriptionId(tool.key)} hidden>${tool.description}</span></div>`;
   }
 
   /** The tool under `key` in the view drawn last. */
