@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { html } from "lit-html";
+import { html, type TemplateResult } from "lit-html";
 import { MODAL_TITLE_ID, ModalShell, type ModalView } from "./uiModal";
 
 function shell(stopped = false) {
@@ -9,8 +9,10 @@ function shell(stopped = false) {
   return { modal: new ModalShell(dialog, deps), dialog, deps };
 }
 
-const view = (title: unknown, body = html`<p class="body">Body</p><button type="button" class="ok">OK</button>`) =>
-  ({ title, body }) satisfies ModalView;
+const view = (
+  title: string,
+  body: TemplateResult = html`<p class="body">Body</p><button type="button" class="ok">OK</button>`,
+) => ({ title, body }) satisfies ModalView;
 
 afterEach(() => {
   document.body.innerHTML = "";

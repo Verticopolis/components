@@ -21,6 +21,23 @@ describe("renderDetached", () => {
     document.createElement("div").append(...drawn.elements);
     expect(() => drawn.update(html`<i>other</i>`)).toThrow(/keep the template's shape/);
     const empty = renderDetached(document, html`${nothing}`);
-    expect(() => empty.update(html`${label("late")}`)).toThrow();
+    expect(() => empty.update(html`${label("late")}`)).toThrow(/keep the template's shape/);
+  });
+
+  it("throws when an update turns a top-level value into text", () => {
+    const drawn = renderDetached(document, html`<b>a</b>${nothing}`);
+    document.createElement("div").append(...drawn.elements);
+    expect(() => drawn.update(html`<b>a</b>${"late"}`)).toThrow(/keep the template's shape/);
+  });
+
+  it("refuses top-level text, which would never be placed, and allows blank text between elements", () => {
+    expect(() => renderDetached(document, html`<b>a</b>${"text"}`)).toThrow(/text at its top level/);
+    expect(() => renderDetached(document, html`<b>a</b> words`)).toThrow(/text at its top level/);
+    const spaced = renderDetached(
+      document,
+      html` <b>a</b>
+      <i>b</i> `,
+    );
+    expect(spaced.elements.map((e) => e.tagName)).toEqual(["B", "I"]);
   });
 });
