@@ -1,0 +1,18 @@
+---
+title: The desk
+description: The 1994 desk's windows, live on a sample desk with a taskbar.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+On a computer the game runs as a 1994 desktop: each part of the game is its own window on a teal desk, with a taskbar along the bottom. This sample desk uses the package's desk windows (`windows/desk/deskWindow`) and window menu (`windows/desk/deskWindowMenu`) with the desk's stylesheet.
+
+- Drag a window by its title bar. A press anywhere on a window brings it to the front and lights its title bar.
+- Minimize sends a window to the taskbar; press its taskbar button to bring it back, or press the front window's button to minimize it.
+- The tower window maximizes with its button or a double-click on its title bar, and resizes by the grip at its bottom right corner: a dotted outline follows the pointer and the window takes the size on release. Tools resizes in height only.
+- Right-click a title bar or a taskbar button (or press Shift+F10 on a taskbar button) for the window menu: Restore, Minimize, Maximize and Close, each grayed when it does not apply.
+- Close the tower or the Bulletin with its ✕ and open it again from the Verticopolis menu. Info and Tools never close. Arrange Windows puts every window back.
+
+The taskbar here is a sample drawn over the package's stylesheet: a game draws its own taskbar and decides what the Verticopolis menu holds. The desk is fixed at 720 by 460 pixels, so a narrow screen scrolls it. The rules are in [the desk doc](../../docs/desk/).
+
+<Demo name="desk" />

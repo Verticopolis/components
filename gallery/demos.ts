@@ -2,12 +2,13 @@
  * The gallery's demos: every reusable piece of the package, built from lib/
  * the way a consumer would, each mounted where a site page asks for it by
  * name (`site/src/components/Demo.astro`). The chrome (windows, buttons,
- * wells, key-value rows, a sample menu bar and the icons) is lit templates
- * over the package's stylesheets. The rooms and the tower scenes are painted
- * by the package's own painters from the components' hand-written render
- * catalog (`src/tests/catalogFixture.ts`), the stand-in for the catalog a
- * game hands the renderer. The overview map is left out: it draws a running
- * tower, and the gallery has none.
+ * wells, key-value rows, a sample menu bar, message boxes and the icons) is
+ * lit templates over the package's stylesheets, and the desk (`desk.ts`) is
+ * the package's desk windows and window menu on a sample desk. The rooms and
+ * the tower scenes are painted by the package's own painters from the
+ * components' hand-written render catalog (`src/tests/catalogFixture.ts`),
+ * the stand-in for the catalog a game hands the renderer. The overview map is
+ * left out: it draws a running tower, and the gallery has none.
  */
 import { catalogFor } from "../src/tests/catalogFixture.js";
 import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/renderModel.js";
@@ -25,6 +26,9 @@ import { soundBoard } from "./sounds.js";
 import { canvasTemplate, figure } from "./canvas.js";
 import { ROOM_MANUAL, manualLink } from "./manual.js";
 import { people } from "./people.js";
+import { deskDemo } from "./desk.js";
+import { deskLayouts } from "./deskLayout.js";
+import { messageBoxes } from "./messageBoxes.js";
 
 /** Room cell size in CSS px. */
 const CELL_W = 260;
@@ -171,6 +175,9 @@ export const DEMOS = {
   windows: shows(() => WINDOWS),
   wells: shows(() => WELLS),
   "menu-bar": shows(sampleMenu),
+  "message-boxes": shows(messageBoxes),
+  desk: (holder) => deskDemo(holder, towerFacts().facts),
+  "desk-layout": shows(deskLayouts),
   icons: shows(icons),
   sounds: soundBoard,
   people: shows(people),

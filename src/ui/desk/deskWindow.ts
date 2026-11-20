@@ -25,6 +25,9 @@ export interface DeskWindowSpec {
   readonly el: HTMLElement;
   /** The name on its taskbar button and in its buttons' labels. */
   readonly label: () => string;
+  /** The icon at the left of its title bar, for a window that draws its own
+   *  title bar; {@link DESK_ICON} when absent. */
+  readonly icon?: string;
   /** The tower sits below the small windows, so they stay on top of it even
    *  when it is maximized; the small windows stack among themselves. */
   readonly layer: "app" | "tool";
@@ -81,8 +84,13 @@ function titleButtonTemplate(
   return html`<button type="button" class=${`btn xs desk-btn desk-btn-${kind}`} aria-label=${label} title=${label} @click=${onClick}>${GLYPH[glyph]}</button>`;
 }
 
-/** The Verticopolis icon at the left of a desk window's title bar. */
-const TITLE_ICON = html`<img class="desk-title-icon" src="./favicon.png" alt="" width="16" height="16" />`;
+/** The icon at the left of a desk window's title bar when the page names
+ *  none: the app icon served beside the page, as the game serves it. */
+export const DESK_ICON = "./favicon.png";
+
+/** The icon at the left of a desk window's title bar. */
+const titleIconTemplate = (src: string): TemplateResult =>
+  html`<img class="desk-title-icon" src=${src} alt="" width="16" height="16" />`;
 
 /** A desk frame's ✕: its label and what it does. */
 export interface FrameClose {
@@ -91,10 +99,11 @@ export interface FrameClose {
 }
 
 /** The frame for content that has no window of its own (the tower, Info): a
- *  `.win` with the game's title bar, an optional ✕, and an empty body. */
-export function deskFrameTemplate(id: string, title: string, close?: FrameClose): TemplateResult {
+ *  `.win` with the game's title bar, an optional ✕, and an empty body.
+ *  `icon` is the title bar's icon. */
+export function deskFrameTemplate(id: string, title: string, close?: FrameClose, icon = DESK_ICON): TemplateResult {
   const titleId = `${id}-title`;
-  return html`<section id=${id} class="win win-closable desk-win desk-frame" aria-labelledby=${titleId}><div class="win-title">${TITLE_ICON}<span class="desk-title-text" id=${titleId}>${title}</span>${close ? titleButtonTemplate("close", close.label, close.onClick) : nothing}</div><div class="desk-body"></div></section>`;
+  return html`<section id=${id} class="win win-closable desk-win desk-frame" aria-labelledby=${titleId}><div class="win-title">${titleIconTemplate(icon)}<span class="desk-title-text" id=${titleId}>${title}</span>${close ? titleButtonTemplate("close", close.label, close.onClick) : nothing}</div><div class="desk-body"></div></section>`;
 }
 
 /** A desk frame, drawn by {@link deskFrameTemplate}. */
@@ -106,14 +115,15 @@ export interface DeskFrame {
   setTitle(title: string): void;
 }
 
-/** Draw a desk frame, ready for the page to place on the desk. */
-export function buildFrame(doc: Document, id: string, title: string, close?: FrameClose): DeskFrame {
-  const drawn = renderDetached(doc, deskFrameTemplate(id, title, close));
+/** Draw a desk frame, ready for the page to place on the desk; `icon` is the
+ *  title bar's icon. */
+export function buildFrame(doc: Document, id: string, title: string, close?: FrameClose, icon = DESK_ICON): DeskFrame {
+  const drawn = renderDetached(doc, deskFrameTemplate(id, title, close, icon));
   const root = drawn.elements[0] as HTMLElement;
   return {
     root,
     body: root.querySelector<HTMLElement>(":scope > .desk-body")!,
-    setTitle: (next) => drawn.update(deskFrameTemplate(id, next, close)),
+    setTitle: (next) => drawn.update(deskFrameTemplate(id, next, close, icon)),
   };
 }
 
@@ -154,7 +164,7 @@ export class DeskWindow {
     if (bar) {
       // The game's own windows wear the desk's icon too, while on the desk.
       if (!bar.querySelector(":scope > .desk-title-icon")) {
-        const icon = renderDetached(doc, TITLE_ICON).elements;
+        const icon = renderDetached(doc, titleIconTemplate(spec.icon ?? DESK_ICON)).elements;
         this.added.push(...icon);
         bar.prepend(...icon);
       }

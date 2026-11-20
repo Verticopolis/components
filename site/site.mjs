@@ -44,7 +44,15 @@ export const sidebar = [
       { label: "Windows", link: "/controls/windows/" },
       { label: "Wells, fields and key-value rows", link: "/controls/wells/" },
       { label: "Menu bar", link: "/controls/menu-bar/" },
+      { label: "Message boxes", link: "/controls/message-boxes/" },
       { label: "Icons", link: "/controls/icons/" },
+    ],
+  },
+  {
+    label: "Desktop",
+    items: [
+      { label: "The desk", link: "/desktop/desk/" },
+      { label: "Where windows open", link: "/desktop/layout/" },
     ],
   },
   { label: "Sounds", link: "/sounds/" },
@@ -63,6 +71,7 @@ export const sidebar = [
     items: [
       { label: "Architecture", link: "/docs/architecture/" },
       { label: "Design system", link: "/docs/design-system/" },
+      { label: "The desk", link: "/docs/desk/" },
       { label: "Audio", link: "/docs/audio/" },
       { label: "Sprite atlas", link: "/docs/atlas/" },
     ],

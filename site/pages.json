@@ -14,6 +14,12 @@
       "description": "The tokens, the components and the window grammar of the Win95 chrome."
     },
     {
+      "source": "docs/desk.md",
+      "slug": "desk",
+      "title": "The desk",
+      "description": "The 1994 desk: its windows, their rules, the window menu, the layout and the stylesheet."
+    },
+    {
       "source": "docs/audio.md",
       "slug": "audio",
       "title": "Audio",
