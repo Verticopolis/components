@@ -1,10 +1,9 @@
 /**
  * `String.prototype.toWellFormed`: the string with every lone UTF-16
  * surrogate replaced by U+FFFD. A name typed into a box that limits length in
- * UTF-16 units can end in half of an emoji's pair; the Rust engine cannot hold
- * that half and reads it as U+FFFD (`load::parse_save_json`, and wasm-bindgen
- * for strings passed to it), so the TypeScript engine repairs the same strings
- * the same way and both engines keep one tower name.
+ * UTF-16 units can end in half of an emoji's pair, which a save cannot hold
+ * and reads as U+FFFD, so the name is repaired the same way before it is
+ * kept, and the tower keeps one name.
  *
  * Written as "match a well-formed pair or a lone half, keep the pair" rather
  * than with lookbehind, which is a parse-time SyntaxError on Safari below

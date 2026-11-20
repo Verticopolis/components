@@ -97,7 +97,7 @@ function draw(over: Partial<DrawCtx>, ctx: CanvasRenderingContext2D): DrawCtx {
 const FIGURE = "fillStyle=rgba(0,0,0,0.24)";
 
 describe("venue figures are gated on real occupancy (#552)", () => {
-  // The wedding hall used to take no RenderUnit at all, so it painted the couple and
+  // The wedding hall used to take no unit at all, so it painted the couple and
   // two full rows of guests into every hall, tenanted or not.
   it("a wedding hall with no attendees draws its chairs but nobody in them", () => {
     const s = spyCtx();

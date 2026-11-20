@@ -1,8 +1,8 @@
 /**
  * What the renderer reads from a simulation, declared by the components and
- * by nothing else (engine#89, option C). The renderer, the scene modules and
- * the presentation code are typed by these shapes, so the compiler lists the
- * read surface, and the package imports no engine type.
+ * by nothing else. The renderer, the scene modules and the presentation code
+ * are typed by these shapes, so the compiler lists the read surface, and the
+ * package imports no simulation type.
  *
  * An app hands the engine's own objects in with no copy: each shape here is a
  * subset of what the engine's frame reader and catalog produce, and the app's

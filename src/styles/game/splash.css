@@ -154,8 +154,7 @@
       animation: none;
     }
   }
-  /* The loading line the boot flow adds after a short wait on the WASM engine
-   (src/engineLoading.ts). */
+  /* The loading line a game's boot adds after a short wait on its simulation. */
   .boot-loading {
     position: absolute;
     left: 50%;

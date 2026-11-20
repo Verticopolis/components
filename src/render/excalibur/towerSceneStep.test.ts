@@ -184,8 +184,8 @@ describe("following an undo or redo step", () => {
   it("finds the change on the next frame by the revision the step raised", () => {
     const { engine } = sceneUnderStep();
     followStep(engine as unknown as TowerEngine);
-    // The Rust engine raises the tower revision on every done step (enginePort
-    // `undo`), and the scene's view reads it through the reader.
+    // A game raises the tower revision on every done step, and the scene's
+    // view reads it through the render model.
     engine.sim.tower.revision = 43;
     runSceneSync(engine as unknown as TowerEngine);
     expect([syncScene, syncMotion, syncFacade].map((sync) => vi.mocked(sync).mock.calls.length)).toEqual([1, 1, 1]);

@@ -16,7 +16,7 @@ import { CRANE_H } from "./sprites/structure/rooftop";
 // render scale changes (the helper itself is parameterized by floorPx).
 import { FLOOR } from "./scale";
 
-/** The lot's geometry, from the Rust engine's catalog (`engine-rs/src/catalog.rs` world). */
+/** The lot's geometry, from the test catalog's world. */
 const WORLD = catalogFor("classic").world;
 const GRID = { width: WORLD.lotWidth, minFloor: WORLD.minFloor, maxFloor: WORLD.maxFloor };
 const MIN_FLOOR = GRID.minFloor; // deepest buildable (B10)

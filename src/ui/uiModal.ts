@@ -20,7 +20,7 @@ export interface ModalDeps {
   titleBarClose(className: string, onClick: () => void): HTMLButtonElement;
   closeModal(): void;
   drainNotice(box: HTMLElement): void;
-  /** A wasm-only engine-failure message is up (`isEngineStopped`,
+  /** A game-failure message is up (`isEngineStopped`,
    *  `game/interactionState.ts`), so no modal may open over it. */
   engineStopped(): boolean;
 }
@@ -31,7 +31,7 @@ export interface ModalDeps {
  *  {@link MODAL_TITLE_ID} and point the dialog's `aria-labelledby` at that SPAN
  *  (never at the h2 itself, since the h2 also ends up holding the ✕ below;
  *  labeling the h2 would fold the ✕'s own accessible name, "Close", into the
- *  announced title), show the dialog (unless a wasm-only engine-failure
+ *  announced title), show the dialog (unless a game-failure
  *  message is up; see the gate below), then append the win-style ✕ into the h2
  *  as a sibling of the span so it stays excluded from the accessible name.
  *  Cleared when a modal renders no top-level h2, so the reference is never
@@ -61,7 +61,7 @@ export function finishModal(dialog: HTMLDialogElement, box: HTMLElement, deps: M
   } else {
     dialog.removeAttribute("aria-labelledby");
   }
-  // Behind a wasm-only engine-failure message a late modal (an import
+  // Behind a game-failure message a late modal (an import
   // report that finished after the stop) would sit in the top layer and
   // cover the message's Reload button, so it never opens there.
   if (!dialog.open && !deps.engineStopped()) dialog.showModal();

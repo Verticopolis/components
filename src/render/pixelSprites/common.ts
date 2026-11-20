@@ -94,14 +94,12 @@ export function hash(seed: number): number {
  * finite reads as nobody, and a corrupt `outForMeal` reads as nobody out, again
  * as the atlas reads them. `roomOccupants.test.ts` holds the two in step.
  *
- * Every room painter reads its crowd through here, so none of them imports the
- * TypeScript engine for it and a corrupt `outForMeal` reads the same in each.
+ * Every room painter reads its crowd through here, so a corrupt `outForMeal`
+ * reads the same in each.
  *
- * The gameplay rule itself, who is out for a meal and how many people a room
- * shows, lives in the Rust engine (`Unit::visible_occupants` in
- * `engine-rs/src/tower_query_state.rs`, which gates spawns on it). The frame
- * carries both of its inputs, so this subtraction is drawing, not a second copy
- * of the rule: the `ceil` only matters for counts the engine never reports.
+ * Who is out for a meal is the game's to say; the frame carries both inputs,
+ * so this subtraction is drawing: the `ceil` only matters for counts a game
+ * never reports.
  */
 export function roomOccupants(u: { occupants: number; outForMeal?: number }): number {
   const occupants = Number.isFinite(u.occupants) ? Math.max(0, u.occupants) : 0;

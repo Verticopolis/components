@@ -20,8 +20,7 @@
 export type TrafficTier = 0 | 1 | 2 | 3;
 
 /** The wait tiers a landing's line carries (`QueueLanding.tier`): the
- *  engine's worst wait among its riders. Impatient is half the stress wait,
- *  fed up the whole of it (`wait_tier`, `engine-rs/src/render_reads.rs`). */
+ *  game's worst wait among its riders: content, impatient or fed up. */
 export const LINE_WAIT = { content: 0, impatient: 1, fedUp: 2 } as const;
 export type LineWaitTier = (typeof LINE_WAIT)[keyof typeof LINE_WAIT];
 

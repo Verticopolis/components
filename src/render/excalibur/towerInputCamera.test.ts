@@ -406,8 +406,8 @@ describe("pickEntityAt: transports by collider, every unit by grid lookup", () =
 
   it("resolves rooms through the tower's cell lookup with zero render actors, at exact pixel edges", () => {
     // Picking reads only the sim's tile index (unitAt), never the room actor
-    // layer. That the index covers every story of a tall room is the engine's,
-    // checked on the Rust engine in src/tests/integration/towerPick.integration.test.ts.
+    // layer. That the index covers every story of a tall room is the game's to
+    // check.
     const cells = new Map<string, { id: number; kind: string }>();
     for (let x = 140; x < 149; x++) cells.set(`2:${x}`, { id: 7, kind: "office" });
     cells.set("2:149", { id: 0, kind: "floor" });

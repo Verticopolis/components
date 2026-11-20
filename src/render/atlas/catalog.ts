@@ -75,7 +75,7 @@ export interface AnimJob {
 
 export type Job = StillJob | AnimJob;
 
-/** Every state the engine names (engine-rs `UnitState::as_str`). Fire and
+/** Every unit state the render model names (`UnitState`). Fire and
  *  construction ship as animations; the rest bake as stills. */
 export const UNIT_STATES: readonly UnitState[] = [
   "construction",

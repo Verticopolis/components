@@ -160,8 +160,8 @@ the point the game positions them by.
 
 ### Frame names
 
-Names follow the engine's own strings: the facility keys from
-`engine-rs/src/facilities.rs` and the `UnitState` names.
+Names follow the render model's strings: the `FacilityKind` keys and the
+`UnitState` names (`render/renderModel.ts`).
 
 | Family | Name |
 | --- | --- |

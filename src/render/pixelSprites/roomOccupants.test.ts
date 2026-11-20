@@ -26,14 +26,9 @@ import { FLOOR, TILE } from "../scale";
 
 const DAY: LiveScene = { hour: 12, lit: false, parkingUse: 0, recycleFill: 0, dead: false };
 
-/**
- * The rule is the engine's (`RenderUnit::visible_occupants` in
- * `engine-rs/src/tower_query_state.rs`: occupants minus the ones out for a
- * meal, never below zero). These are the whole-number rows its own test
- * holds, so the drawing copy and the engine cannot drift. Keep the two
- * tables identical.
- */
-const ENGINE_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number | undefined, shown: number]> = [
+/** The people a room shows: occupants minus the ones out for a meal, never
+ *  below zero. */
+const SHOWN_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number | undefined, shown: number]> = [
   [0, undefined, 0],
   [4, undefined, 4],
   [4, 0, 4],
@@ -45,7 +40,7 @@ const ENGINE_ROWS: ReadonlyArray<readonly [occupants: number, outForMeal: number
 ];
 
 describe("roomOccupants matches the engine's visible_occupants", () => {
-  it.each(ENGINE_ROWS)("occupants %s, out %s shows %s", (occupants, outForMeal, shown) => {
+  it.each(SHOWN_ROWS)("occupants %s, out %s shows %s", (occupants, outForMeal, shown) => {
     expect(roomOccupants({ occupants, outForMeal })).toBe(shown);
   });
 });

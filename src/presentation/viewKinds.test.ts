@@ -21,9 +21,8 @@ describe("the view's kind facts", () => {
   beforeEach(() => bindViewKinds(catalogFor("modern")));
   afterEach(() => bindViewKinds(catalogFor("modern")));
 
-  // The kind sets and posted hours the Rust engine states (`engine-rs/src/facilities.rs`:
-  // the kind predicates and `Kind::is_open_at`), pinned so a catalog that moved a
-  // kind across a line, or a binding that read the wrong field, fails here.
+  // The kind sets and posted hours the test catalog states, pinned so a
+  // binding that read the wrong field fails here.
   const SETS: Record<
     string,
     { readonly ask: (kind: FacilityKind) => boolean; readonly kinds: readonly FacilityKind[] }

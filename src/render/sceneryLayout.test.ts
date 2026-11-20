@@ -18,7 +18,7 @@ import {
   skylineRects,
 } from "./sceneryLayout";
 
-/** The lot's geometry, from the Rust engine's catalog (`engine-rs/src/catalog.rs` world). */
+/** The lot's geometry, from the test catalog's world. */
 const WORLD = catalogFor("classic").world;
 const GRID = { width: WORLD.lotWidth, minFloor: WORLD.minFloor, maxFloor: WORLD.maxFloor };
 
