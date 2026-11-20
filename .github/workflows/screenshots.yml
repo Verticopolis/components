@@ -28,17 +28,6 @@ on:
       - ".github/workflows/screenshots.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "src/**"
-      - "gallery/**"
-      - "e2e/**"
-      - "playwright.config.ts"
-      - "scripts/build-lib.sh"
-      - "vite.lib.config.ts"
-      - "tsconfig*.json"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/screenshots.yml"
   workflow_dispatch:
 
 permissions: {}
@@ -58,10 +47,29 @@ jobs:
       contents: read
     outputs:
       image: ${{ steps.pin.outputs.image }}
+      run: ${{ steps.scope.outputs.run }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
+      # Every pull request reports this check, so the branch rules can
+      # require it. When the PR touches none of the paths the push trigger
+      # lists, the steps below are skipped.
+      - name: Decide whether this change needs the screenshot comparison
+        id: scope
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT" != pull_request ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if git diff --name-only "$BASE" "$HEAD" | grep -qE '^(src/|gallery/|e2e/|playwright\.config\.ts$|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/screenshots\.yml$)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No file the screenshot comparison reads changed; skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
       - id: pin
         run: |
           ver=$(node -e "process.stdout.write(require('./package-lock.json').packages['node_modules/playwright'].version)")
@@ -77,23 +85,32 @@ jobs:
     container:
       image: ${{ needs.resolve-image.outputs.image }}
     steps:
+      - name: Nothing the screenshots read changed
+        if: ${{ needs.resolve-image.outputs.run != 'true' }}
+        run: echo "Skipped; see the resolve-image job."
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ needs.resolve-image.outputs.run == 'true' }}
         with:
           persist-credentials: false
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: ${{ needs.resolve-image.outputs.run == 'true' }}
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
 
       - run: npm ci
+        if: ${{ needs.resolve-image.outputs.run == 'true' }}
 
       - name: Typecheck the specs
+        if: ${{ needs.resolve-image.outputs.run == 'true' }}
         run: npx tsc -p e2e/tsconfig.json --noEmit
 
       # The web server in playwright.config.ts builds the package and the
       # gallery before it serves the page.
       - name: Compare the screenshots
+        if: ${{ needs.resolve-image.outputs.run == 'true' }}
         run: npx playwright test
 
       - name: Upload the diffs on failure
