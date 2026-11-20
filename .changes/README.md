@@ -13,8 +13,9 @@ package: minor    # major | minor | patch | none
 ```
 
 - `package` is the level from the README's "Releasing": **major** for a
-  breaking change to an export or a stylesheet's selectors, **minor** for a
-  new export, component or look, **patch** for a fix. While the package is
+  breaking change to a stable subpath's exports or a stylesheet's selectors,
+  **minor** for a new export, component or look, or any change to an
+  internal subpath, **patch** for a fix. While the package is
   0.x a major note raises the minor version. `none` says the pull request
   changes nothing the package ships; such a note has no entries.
 - Each entry is one `- ` bullet, written for people who build on the package
