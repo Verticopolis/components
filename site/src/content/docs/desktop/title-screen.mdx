@@ -1,0 +1,17 @@
+---
+title: Title screen
+description: The game's title screen, with its dusk skyline, wordmark, buttons and corners.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+The title screen is the first thing a player sees: a dusk sky over an art-deco skyline, the VERTICO/POLIS wordmark and its tagline, a line about the game, a column of buttons, and the small print in the corners. It comes from `windows/titleScreen/titleScreen` and its stylesheet, `styles/game/splash.css`.
+
+- The game hands in everything the screen says and does: the premise line, the buttons top to bottom (each with an icon and a look, "primary" for the amber plate or "ghost" for the quiet one), the small print, the version and a badge.
+- The mute, install and sponsor corners are optional. The mute button keeps its name and carries its state in `aria-pressed`.
+- The wordmark and tagline are drawn as fitted SVG text, so they fit any screen with no web font. The sky, sun and skyline are decoration and are hidden from screen readers.
+- The Tab order runs the buttons first and the corners last.
+
+In the game the screen fills the window. Here it sits in a frame, and each button and corner only says it was pressed.
+
+<Demo name="title-screen" />

@@ -266,4 +266,26 @@
     text-align: center;
     font-family: inherit;
   }
+  /* The title screen (gallery/titleScreen.ts) in a 16:10 frame: the game
+     pins #splash to the whole window, so the frame holds it instead. */
+  .g-title {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    max-width: 720px;
+    overflow: hidden;
+    border: 1px solid var(--r-ink);
+  }
+  /* On a phone the game's title screen is a tall one, so the frame is too. */
+  @media (max-width: 600px) {
+    .g-title {
+      aspect-ratio: 9 / 16;
+    }
+  }
+  .g-title #splash {
+    position: absolute;
+    z-index: 0;
+  }
+  .g-title-said {
+    font-size: 12px;
+  }
 }
