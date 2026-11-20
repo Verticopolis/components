@@ -62,6 +62,9 @@ function build(facts: Facts, draft: Draft): Scene {
       }
       if (!placed) x += run;
     }
+    // A floor the draft asked to fill that took no room is a layout mistake.
+    if (!rooms.some((r) => r.floor === floor))
+      console.warn(`Gallery scene "${draft.title}": floor ${floor} has no room.`);
   }
   return {
     title: draft.title,
@@ -75,13 +78,16 @@ function build(facts: Facts, draft: Draft): Scene {
   };
 }
 
+/** A hall's height in words, for the scene titles. */
+const STORIES: Record<number, string> = { 1: "one story", 2: "two stories", 3: "three stories" };
+
 const OFFICES: FacilityKind[] = ["office"];
 const HOTEL: FacilityKind[] = ["hotelDouble", "hotelSingle", "hotelSuite"];
 const RETAIL: FacilityKind[] = ["shop", "fastFood"];
 
 /** A ground lobby `height` stories tall with offices on the floor above it. */
 function groundLobby(height: number): Draft {
-  const stories = height === 1 ? "one story" : `${height} stories`;
+  const stories = STORIES[height];
   return {
     title: `Ground lobby, ${stories}`,
     caption:
@@ -97,7 +103,7 @@ function groundLobby(height: number): Draft {
 
 /** A sky lobby on floor 15, `height` stories tall, between offices and hotel rooms. */
 function skyLobby(height: number): Draft {
-  const stories = height === 1 ? "one story" : `${height} stories`;
+  const stories = STORIES[height];
   return {
     title: `Sky lobby, ${stories}`,
     caption:
@@ -162,8 +168,8 @@ export function stairScenes(facts: Facts): Scene[] {
       top: 4,
       halls: [{ floor: 1, x0: 0, x1: W - 1, height: 3 }],
       shafts: [
-        { kind: "stairs", x: 3, bottom: 1, top: 4 },
-        { kind: "escalator", x: 18, bottom: 1, top: 4 },
+        { kind: "stairs", x: 0, bottom: 1, top: 4 },
+        { kind: "escalator", x: 22, bottom: 1, top: 4 },
       ],
       fill: { 4: OFFICES },
     },

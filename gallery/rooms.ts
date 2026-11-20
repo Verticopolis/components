@@ -14,6 +14,10 @@ export const GALLERY_HOUR = 19;
 /** The share of a visitor room's capacity the gallery shows inside it. */
 const VISITOR_SHARE = 0.3;
 
+/** At most one visitor per this many columns of room, so a narrow shop shows
+ *  a few browsers spread out instead of a crowd at its door. */
+const COLUMNS_PER_VISITOR = 4;
+
 /** Sprite magnification, a whole multiple so world pixels stay square blocks. */
 const MAG = 3;
 
@@ -32,7 +36,7 @@ export interface RoomCell {
 export function openHourFor(f: Pick<RenderFacility, "openHours">): number {
   const hours = f.openHours;
   if (!hours || hours[GALLERY_HOUR]) return GALLERY_HOUR;
-  for (let step = 1; step < 12; step++) {
+  for (let step = 1; step <= 12; step++) {
     const later = (GALLERY_HOUR + step) % 24;
     if (hours[later]) return later;
     const earlier = (GALLERY_HOUR - step + 24) % 24;
@@ -43,13 +47,14 @@ export function openHourFor(f: Pick<RenderFacility, "openHours">): number {
 
 /** How many people the cell shows. Homes, hotel rooms and offices show their
  *  full household or staff. A room that fills with visitors (a shop, a
- *  restaurant, a venue with a show) shows a share of its capacity, so its
- *  furniture stays in view. */
+ *  restaurant, a venue with a show) shows a share of its capacity, capped by
+ *  its width, so its furniture stays in view. */
 export function galleryOccupants(f: RenderFacility): number {
   const capacity = f.population > 0 ? f.population : (f.attendance ?? 0);
   const visitors = f.commercial || f.leaseAmenity || (f.population === 0 && capacity > 0);
   if (!visitors) return capacity;
-  return Math.max(1, Math.round(capacity * VISITOR_SHARE));
+  const share = Math.round(capacity * VISITOR_SHARE);
+  return Math.max(1, Math.min(share, Math.floor(f.width / COLUMNS_PER_VISITOR)));
 }
 
 /** Every room in the catalog, in its own order, with each named variant after

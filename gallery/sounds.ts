@@ -5,6 +5,7 @@
  * press, as browsers only allow sound after one.
  */
 import { AudioEngine, type ProgramKind, type SfxName } from "../lib/audio/Audio.js";
+import { watchAway } from "../lib/audio/awayWatch.js";
 import type { ViewFocus } from "../lib/render/excalibur/towerInputCamera.js";
 
 const EFFECTS: ReadonlyArray<{ name: SfxName; label: string }> = [
@@ -48,7 +49,7 @@ const BASE_FOCUS: ViewFocus = {
   crowd: 0.7,
 };
 
-/** How often the place's focus is handed to the engine again while it plays,
+/** How often the place's focus is handed to the audio engine again while it plays,
  *  as the game does every frame. */
 const FOCUS_EVERY_MS = 250;
 
@@ -58,6 +59,13 @@ function button(label: string, onPress: () => void): HTMLButtonElement {
   b.className = "btn";
   b.textContent = label;
   b.addEventListener("click", onPress);
+  return b;
+}
+
+/** A button that stays pressed while its sound plays, unpressed at first. */
+function toggle(label: string, onPress: () => void): HTMLButtonElement {
+  const b = button(label, onPress);
+  b.setAttribute("aria-pressed", "false");
   return b;
 }
 
@@ -82,6 +90,8 @@ function press(group: HTMLButtonElement[], on: HTMLButtonElement | null): void {
 
 export function soundBoard(): HTMLElement {
   const audio = new AudioEngine();
+  // Fall silent while the page is hidden or out of focus, as the game does.
+  watchAway({ win: window, doc: document }, (away) => audio.setAway(away));
   let music = 0;
   let ambience = 0;
   let focus: ViewFocus = BASE_FOCUS;
@@ -100,7 +110,7 @@ export function soundBoard(): HTMLElement {
 
   const musicButtons: HTMLButtonElement[] = [];
   for (const { program, label } of MUSIC) {
-    const b = button(label, () => {
+    const b = toggle(label, () => {
       music = 1;
       audio.setProgram(program);
       apply();
@@ -116,7 +126,7 @@ export function soundBoard(): HTMLElement {
 
   const placeButtons: HTMLButtonElement[] = [];
   for (const { label, focus: f } of PLACES) {
-    const b = button(label, () => {
+    const b = toggle(label, () => {
       ambience = 1;
       focus = { ...BASE_FOCUS, ...f };
       apply();
