@@ -6,7 +6,7 @@ import { resizedTo, type DeskRect, type DeskWindowId, type SizeLimits } from "./
 
 /**
  * One window on the 1994 desk (option C, owner 2026-11-15): the tower, Info,
- * Tools, the Map, the Bulletin or Tower Info. The desk either builds the
+ * Tools, the Map, the Bulletin, Tower Info or Help. The desk either builds the
  * window's frame (the tower and Info have none of their own) or takes over a
  * window the game already draws with its own title bar (Tools and the small
  * windows), and then adds what a 1995 window has: minimize, maximize where it

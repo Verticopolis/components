@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   BULLETIN_HEIGHT,
   DESK_GAP,
+  HELP_HEIGHT,
+  HELP_LIMITS,
+  HELP_WIDTH,
   SHORT_DESK_BULLETIN_DROP,
   SHORT_DESK_BULLETIN_INSET,
   SIDE_COLUMN,
@@ -78,6 +81,23 @@ describe("defaultLayout", () => {
     expect(l.tower.w).toBe(TOWER_LIMITS.minW);
     expect(l.tower.h).toBe(TOWER_LIMITS.minH);
   });
+
+  it("opens Help at its own size in the middle of a big desk", () => {
+    const l = defaultLayout(1440, 872);
+    expect(l.help).toEqual({
+      x: (1440 - HELP_WIDTH) / 2,
+      y: (872 - HELP_HEIGHT) / 2,
+      w: HELP_WIDTH,
+      h: HELP_HEIGHT,
+    });
+  });
+
+  it("shrinks Help to fit a small desk, but never below its limits", () => {
+    const l = defaultLayout(640, 480);
+    expect(l.help).toEqual({ x: DESK_GAP, y: DESK_GAP, w: 640 - 2 * DESK_GAP, h: 480 - 2 * DESK_GAP });
+    const tiny = defaultLayout(300, 200);
+    expect([tiny.help.x, tiny.help.y, tiny.help.w, tiny.help.h]).toEqual([0, 0, HELP_LIMITS.minW, HELP_LIMITS.minH]);
+  });
 });
 
 describe("fitRect", () => {
@@ -130,9 +150,13 @@ describe("parseLayout", () => {
       map: { x: "1", y: 2, w: 3, h: 4 },
       info: { x: -1, y: 0, w: 0, h: 0 },
       tools: null,
+      help: { x: 40, y: 30, w: 700, h: 500 },
       other: { x: 1, y: 1, w: 1, h: 1 },
     });
-    expect(parseLayout(raw)).toEqual({ tower: { x: 10, y: 20, w: 800, h: 600 } });
+    expect(parseLayout(raw)).toEqual({
+      tower: { x: 10, y: 20, w: 800, h: 600 },
+      help: { x: 40, y: 30, w: 700, h: 500 },
+    });
   });
 
   it("opens the default layout for a missing or damaged store", () => {

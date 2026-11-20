@@ -20,7 +20,7 @@ Verticopolis menu holds and does. The component gallery shows
 | `windows/desk/deskPocket` | `deskMode` (which desk a screen gets), `pocketBody` (the grid inside the pocket tower window), the body classes `DESK_TOUCH_CLASS` and `DESK_POCKET_CLASS`, `POCKET_BODY_CLASS`, and the media queries `TOUCH_MQ` and `TOUCH_DESK_MQ`. |
 | `windows/desk/deskControlPanel` | `ControlPanel`, the Control Panel's window: the large icons the game picks from the four the package draws (`ControlIcon`), their names and tooltips, an object count, and a ✕. Each press goes to the game; `setLabel` renames an icon, such as "Sounds: Off". |
 | `windows/desk/deskWindowMenu` | `WindowMenu`, the menu a right-click on a title bar or a taskbar button opens (Restore, Minimize, Maximize, Close), with `windowMenuState` and `runWindowCommand`. |
-| `windows/desk/deskGeometry` | Pure functions over plain numbers: `defaultLayout` (where each window opens the first time), `fitRect` (a saved place kept on a smaller screen), `resizedTo` (a resize held to its limits) and `parseLayout` (a saved layout read back safely), with the size limits and the layout constants. |
+| `windows/desk/deskGeometry` | Pure functions over plain numbers: `defaultLayout` (where each window opens the first time), `fitRect` (a saved place kept on a smaller screen), `resizedTo` (a resize held to its limits) and `parseLayout` (a saved layout read back safely), with `DESK_WINDOW_IDS`, the size limits and the layout constants. |
 | `windows/movableWindow` | `MovableWindow`, the drag by the title bar that every movable window uses, the desk's included. |
 | `styles/game/desk.css` | The look: every desk window, the taskbar, the Verticopolis menu, the tray, the window menu and the Control Panel's icons. Part of `styles.css`. |
 | `styles/game/desk-pocket.css` | The desk on a touchscreen: the touch chrome and the pocket desk. Part of `styles.css`. |
@@ -79,9 +79,9 @@ A game hands `DeskWindow` a `DeskWindowSpec` for each window:
 - `layer`: `app` for the tower, which stays under the small windows even when
   maximized, or `tool` for the small windows, which stack among themselves.
 - `limits`: the smallest size for a window that resizes (`TOWER_LIMITS`,
-  `TOOLS_LIMITS`), or null for a window of one size. `heightOnly` keeps the
-  width (Tools).
-- `canMax`: whether it maximizes (only the tower does in the game).
+  `TOOLS_LIMITS`, `HELP_LIMITS`), or null for a window of one size.
+  `heightOnly` keeps the width (Tools).
+- `canMax`: whether it maximizes (the tower and Help do in the game).
 - `isOpen`, `open`, `close`: whether the game has it open, and how the game
   opens and closes it. A window without `close` never closes on the desk
   (Info and Tools, so nothing the player plays with can be lost).
