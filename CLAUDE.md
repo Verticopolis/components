@@ -34,14 +34,20 @@ loop, UI and audio are hot paths and also get the hot-path checklist.
   Prettier owns code layout; run `npm run format` before committing.
 - **Unit tests mock the engine** (`vi.fn` spies with the JSON fixtures in
   `src/simport/fixtures` as canned answers) and assert what they name.
-- **No guard tests.** Never add a test that reads source, workflow or
-  configuration files. Check workflows with actionlint and real CI runs.
-- **A 500-line ceiling per source file.**
+- **No guard tests.** Never add a test that reads source, CSS, workflow
+  or configuration files. Check workflows with actionlint and real CI runs.
+- **A 500-line ceiling per source file.** Test files and generated files
+  are exempt. Nothing checks it yet, and some files are already over: don't
+  make one longer, and split it when you change it.
 - **American English everywhere. No em-dashes in prose** (docs, comments,
   commit and PR text, player-facing copy); use commas, colons, parentheses or
   separate sentences. Skip the "X, not Y" emphatic pattern and marketing
   vocabulary.
-- **Merge commits only** to `main`, never a squash. Keep a branch's own
+- **An independent GO before every merge.** The review comes from a
+  separate thread or person, never the PR's author, on the PR's head
+  commit, with every review thread resolved.
+- **Merge commits only** to `main`, never a squash, and never force-push
+  `main`. Force-pushing your own PR branch is fine. Keep a branch's own
   history readable before it merges.
 - **PR descriptions follow `.github/PULL_REQUEST_TEMPLATE.md`:** keep every
   `## ` heading and fill each one.
