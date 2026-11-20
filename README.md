@@ -257,14 +257,21 @@ built package from `lib/` the way a consumer would:
 | Lobbies, Stairs and escalators, Elevators | hand-written slices of a tower: ground and sky lobbies one to three stories tall, halls of two heights, stairs, escalators and elevators |
 | Rooms | every room and variant at an hour it is open, with a share of its capacity inside so its furniture shows |
 | People | every look a figure wears (the visitors, the housekeeping crew, the staff and the thief), each walk frame, pose and mood, and the room builds |
+| Docs | [ARCHITECTURE.md](ARCHITECTURE.md) and the pages in `docs/`, copied from the repository at build time |
 
 ```mermaid
 flowchart LR
   lib["lib/ (npm run build)"] --> demos["gallery/demos.ts"]
   fixture["src/tests/catalogFixture.ts"] --> demos
   demos --> pages["site/src/content/docs/*.mdx"]
+  docs["ARCHITECTURE.md · docs/*.md"] -->|"sync-pages.mjs"| pages
   pages --> dist["site/dist/"]
 ```
+
+The Docs pages have one source, the Markdown files in this repository:
+`site/scripts/sync-pages.mjs` copies the pages listed in `site/pages.json`
+into the site before each build, points their links at the site or at
+GitHub, and turns each mermaid block into a diagram drawn in the browser.
 
 The scenes, rooms and people are painted from the components' own render
 catalog (`src/tests/catalogFixture.ts`). The overview map is not on it, since

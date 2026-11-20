@@ -5,6 +5,7 @@
 import Search from "@astrojs/starlight/components/Search.astro";
 import ThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
 import MenuBar from "./MenuBar.astro";
+import Mermaid from "./Mermaid.astro";
 import { GAME, GITHUB } from "../../site.mjs";
 import logo from "../../../assets/app-icon/pwa-192x192.png";
 
@@ -39,3 +40,4 @@ const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
     <div class="vc-bar-theme"><ThemeSelect /></div>
   </div>
 </div>
+<Mermaid />

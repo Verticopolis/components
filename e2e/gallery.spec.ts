@@ -3,7 +3,8 @@
  * gallery/demos.ts): the site's header and its own menu bar, each control
  * demo (buttons, windows, wells, icons, the sound board, the sample menu bar
  * closed and open) in each color scheme, and every tower scene and room
- * sprite once, and every figure on the people page. The projects in playwright.config.ts run it on a desktop and a
+ * sprite once, every figure on the people page, and a check that each docs
+ * page draws its diagrams. The projects in playwright.config.ts run it on a desktop and a
  * phone screen.
  */
 import { test, expect, type Locator, type Page } from "@playwright/test";
@@ -174,5 +175,17 @@ test("people", async ({ page }) => {
     expect(seen.has(name), `two people figures are both named ${name}`).toBe(false);
     seen.add(name);
     await expect(fig.locator("canvas")).toHaveScreenshot(`npc-${name}.png`);
+  }
+});
+
+// The docs pages are the repository's own Markdown (site/pages.json); each
+// mermaid block on them must come out as a drawn diagram, not an error.
+test("docs pages draw every diagram", async ({ page }) => {
+  for (const slug of ["architecture", "design-system", "audio", "atlas"]) {
+    await page.goto(`/docs/${slug}/`);
+    await expect(page.locator("html")).toHaveAttribute("data-diagrams", "drawn");
+    const blocks = page.locator("pre.mermaid");
+    await expect(blocks.locator("> svg")).toHaveCount(await blocks.count());
+    await expect(page.locator('[aria-roledescription="error"]')).toHaveCount(0);
   }
 });

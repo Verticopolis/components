@@ -1,0 +1,18 @@
+---
+// Draws the mermaid diagrams a docs page carries (scripts/sync-pages.mjs
+// turns each mermaid block into a <pre class="mermaid">). The mermaid
+// library loads only on a page that has one.
+---
+
+<script>
+  const blocks = [...document.querySelectorAll<HTMLElement>("pre.mermaid")];
+  if (blocks.length > 0) {
+    const { default: mermaid } = await import("mermaid");
+    const dark = document.documentElement.dataset.theme === "dark";
+    // Measure and draw labels in the page's own face, so no label overflows its box.
+    const fontFamily = getComputedStyle(document.body).fontFamily;
+    mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "neutral", fontFamily });
+    await mermaid.run({ nodes: blocks });
+  }
+  document.documentElement.dataset.diagrams = "drawn";
+</script>

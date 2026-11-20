@@ -148,4 +148,14 @@
   .g-sound-row .btn[aria-pressed="true"] {
     font-weight: bold;
   }
+  /* A docs page's diagrams (Mermaid.astro): no code-block frame, and a wide
+     one scrolls instead of squeezing. */
+  .sl-markdown-content pre.mermaid {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    overflow-x: auto;
+    text-align: center;
+    font-family: inherit;
+  }
 }

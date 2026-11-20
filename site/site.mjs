@@ -49,4 +49,13 @@ export const sidebar = [
       { label: "People", link: "/tower/people/" },
     ],
   },
+  {
+    label: "Docs",
+    items: [
+      { label: "Architecture", link: "/docs/architecture/" },
+      { label: "Design system", link: "/docs/design-system/" },
+      { label: "Audio", link: "/docs/audio/" },
+      { label: "Sprite atlas", link: "/docs/atlas/" },
+    ],
+  },
 ];

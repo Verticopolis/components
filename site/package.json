@@ -4,14 +4,16 @@
   "description": "The component gallery at the components site: a Starlight site that shows every reusable piece of the package, built from lib/ the way a consumer would",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "sync": "node scripts/sync-pages.mjs",
+    "dev": "node scripts/sync-pages.mjs && astro dev",
+    "build": "node scripts/sync-pages.mjs && astro build",
     "preview": "astro preview",
-    "typecheck": "astro check"
+    "typecheck": "node scripts/sync-pages.mjs && astro check"
   },
   "dependencies": {
     "@astrojs/starlight": "0.42.7",
-    "astro": "7.4.12"
+    "astro": "7.4.12",
+    "mermaid": "12.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
