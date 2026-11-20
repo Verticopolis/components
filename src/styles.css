@@ -20,7 +20,7 @@
    ===================================================================== */
 
 @layer vc.tokens, vc.base, vc.components, vc.page;
-@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 /* ---- 1. TOKENS + SHARED CHROME (extracted for reuse by standalone pages) ---
    The retro tokens and the shared window/button/well/kv components live in

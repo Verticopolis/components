@@ -140,12 +140,14 @@ in this order at the top of every stylesheet:
 
 - `vc.tokens`: `retro-tokens.css`, the custom properties.
 - `vc.base`: `game/base.css`, the reset and the document.
-- `vc.components`: the button, window, well, key/value grid, overview map
-  and menu bar, each in a layer of its own in that order
-  (`vc.components.button` through `vc.components.menu-bar`, declared in a
-  second statement), so a second copy of a sheet cannot change their order.
-- `vc.page`: the game's layout (`styles/game/*`), the color schemes and the
-  standalone pages (`retro-page.css`, `not-found.css`).
+- `vc.components`: the button, window, well, key/value grid and menu bar,
+  each in a layer of its own in that order (`vc.components.button` through
+  `vc.components.menu-bar`, declared in a second statement), so a second copy
+  of a sheet cannot change their order.
+- `vc.page`: the overview map (`overview-map.css`, `overview-map-views.css`,
+  which lay out the game's stage around the map), the game's layout
+  (`styles/game/*`), the color schemes and the standalone pages
+  (`retro-page.css`, `not-found.css`), in the order `styles.css` imports them.
 
 A later layer beats an earlier one whatever the selectors, and a rule a page
 writes outside any layer beats every `vc` rule, wherever the bundler puts the

@@ -4,7 +4,7 @@
    pages like /help and the gallery) both @import it, so no page re-declares the
    palette. Change the theme here once. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
-@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.tokens {
   :root {

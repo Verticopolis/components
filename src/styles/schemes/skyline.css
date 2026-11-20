@@ -3,7 +3,7 @@
    art, fonts or wording. Scoped to html[data-scheme="skyline"]. Style only:
    no images, blur, backdrop-filter or animation; the canvas is untouched. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
-@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {
   html[data-scheme="skyline"] body.desk #app,

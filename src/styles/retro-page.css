@@ -11,7 +11,7 @@
    window chrome, which stays period-correct silver on both grounds. */
 
 @layer vc.tokens, vc.base, vc.components, vc.page;
-@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-tokens.css";
 @import "./retro-components.css";
 
@@ -213,16 +213,17 @@
 
   /* Dark viewer: only the ground and page-level text shift; the window chrome
    stays silver. The media query is the OS default; the [data-theme] hooks let a
-   future in-page toggle win in both directions. */
+   future in-page toggle win in both directions. A color scheme
+   (html[data-scheme]) keeps its own ground. */
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-scheme]) {
       --r-desktop: #05403f;
     }
     body.retro-page {
       color: #eafcfb;
     }
   }
-  :root[data-theme="dark"] {
+  :root[data-theme="dark"]:not([data-scheme]) {
     --r-desktop: #05403f;
   }
   :root[data-theme="dark"] body.retro-page {

@@ -8,11 +8,11 @@
    block in styles.css); its Map pill stays at the bottom-right. The window is placed before #view, so the inspector
    and editor cards paint over it. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
-@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-tokens.css";
 @import "./window.css";
 
-@layer vc.components.overview-map {
+@layer vc.page {
   .overview-map {
     position: absolute;
     right: 10px;

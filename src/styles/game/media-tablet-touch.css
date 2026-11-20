@@ -7,7 +7,7 @@
    the top bar so nothing clips and tightens the columns so the canvas keeps room.
    The base desktop rules apply here except these tweaks. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
-@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.overview-map, vc.components.overview-map-views, vc.components.menu-bar;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {
   @media (min-width: 768px) and (max-width: 1023px) and (min-height: 600px) {
