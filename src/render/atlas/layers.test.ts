@@ -1,17 +1,16 @@
-import { readdirSync, readFileSync } from "node:fs";
 import { keepsHours, openAt } from "../../tests/catalogKinds";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { FacilityKind } from "../../model/types";
 import { withLayerHook } from "../pixelSprites/layers";
-import { roomJobs, roomKinds, type StillJob } from "./catalog";
+import { allJobs } from "./browserEntry";
+import { roomJobs, roomKinds, type Job, type StillJob } from "./catalog";
 import { LOBBY_VARIANTS } from "../sprites";
 import { legacyShaftJobs, structureJobs, transportJobs, vehicleJobs } from "./catalogExtras";
 import { paint, type PaintSpec, type UnitPaint } from "./paint";
 
 /** A 2D context that accepts every call (the pixels are checked in a real
  *  browser by the export and the e2e spec). */
-function sinkCtx(): CanvasRenderingContext2D {
+function sinkCtx(onSet?: (prop: string, value: unknown) => void): CanvasRenderingContext2D {
   const grad = { addColorStop: () => undefined };
   return new Proxy({} as Record<string, unknown>, {
     get(target, prop) {
@@ -23,6 +22,7 @@ function sinkCtx(): CanvasRenderingContext2D {
       return () => undefined;
     },
     set(target, prop, v) {
+      onSet?.(prop as string, v);
       target[prop as string] = v;
       return true;
     },
@@ -316,17 +316,32 @@ describe("the aquatic center's depth split", () => {
 });
 
 describe("the soft furniture pass's assumption", () => {
-  it("holds: no paint routine sets a composite mode", () => {
+  /** Every paint a layered job makes: its frame, chains, cycles and overlays. */
+  function layeredPaints(j: Job): PaintSpec[] {
+    if (j.type === "anim") return j.frames;
+    return [
+      j.paint,
+      ...Object.values(j.chains ?? {}).flatMap((c) => c.steps),
+      ...Object.values(j.cycles ?? {}).flatMap((c) => c.steps),
+      ...Object.values(j.overlays ?? {}),
+    ];
+  }
+
+  // About 220,000 paints (every frame, chain step, cycle step and overlay of
+  // the layered catalog), so it gets more time than the file's default.
+  it("holds: no layered paint sets a composite mode", { timeout: 120_000 }, () => {
     // The soft pass (`browserEntry.ts`) draws the marks after the furniture
-    // with source-atop and puts it back after every restore; a routine with a
-    // composite mode of its own would override that. Only the soft pass
-    // itself may set one.
-    const root = join(__dirname, "..");
-    const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
-      (f) => f.endsWith(".ts") && !f.endsWith(".test.ts") && f !== join("atlas", "browserEntry.ts"),
-    );
-    expect(files.length).toBeGreaterThan(20);
-    const offenders = files.filter((f) => readFileSync(join(root, f), "utf8").includes("globalCompositeOperation"));
-    expect(offenders).toEqual([]);
+    // with source-atop and puts it back after every restore; a paint that set
+    // a composite mode of its own would override that.
+    const jobs = allJobs().filter((j) => j.layers === true);
+    expect(jobs.length).toBeGreaterThan(20);
+    const offenders = new Set<string>();
+    for (const j of jobs) {
+      const ctx = sinkCtx((prop, v) => {
+        if (prop === "globalCompositeOperation") offenders.add(`${j.name}: ${String(v)}`);
+      });
+      for (const spec of layeredPaints(j)) paint(ctx, spec, j.w, j.h);
+    }
+    expect([...offenders]).toEqual([]);
   });
 });

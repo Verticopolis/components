@@ -34,6 +34,23 @@ export default [
     },
   },
   {
+    // Every scene actor takes its draw plane (z) from the shared table
+    // (`depthPlanes.ts`), never from a number.
+    files: ["src/render/excalibur/**/*.ts"],
+    ignores: ["src/**/*.test.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...[
+          // A z with no name in it is a bare number: `z: 3`, `z: -1`, `z: 2 + 0.5`.
+          "Property[key.name='z'] > .value:not(Identifier):not(:has(Identifier))",
+          "AssignmentExpression[left.property.name='z'] > .right:not(Identifier):not(:has(Identifier))",
+          "CallExpression[callee.name='addBoxActor'] > .arguments:nth-child(5):not(Identifier):not(:has(Identifier))",
+        ].map((selector) => ({ selector, message: "Take the actor's z from the draw-plane table in depthPlanes.ts." })),
+      ],
+    },
+  },
+  {
     files: ["src/**/*.test.ts"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
