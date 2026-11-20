@@ -1,47 +1,34 @@
 ---
 // The site's Win95 menu bar across the top of every page, above its title
-// bar, as the player's manual and the game draw theirs. The package's
-// MenuBar draws it here from gallery/siteMenu.ts's model, which also says
-// what each item does. The sample menu bar, with made-up items, is a demo on
-// its own page.
+// bar, as the player's manual and the game draw theirs. It is the package's
+// site menu (windows/siteMenu) with this site's own File and Help items.
+// The sample menu bar, with made-up items, is a demo on its own page.
 ---
 
 <div id="site-menubar-host"></div>
 
 <script>
-  import { mountSiteMenu, type SiteTheme } from "../../../gallery/siteMenu";
-  import { applyScheme, isScheme, saveScheme, schemeOf } from "../../../lib/ui/schemes.js";
-  import { ENGINE_DOCS, GAME, GITHUB, GITHUB_ISSUES, NPM, PLAYER_HELP, SCHEMES, SCHEME_KEY } from "../../site.mjs";
+  import { mountSiteMenu, schemeDeps, starlightDeps } from "../../../lib/ui/siteMenu.js";
+  import { ENGINE_DOCS, GAME, GITHUB, GITHUB_ISSUES, NPM, PLAYER_HELP, SCHEME_KEY } from "../../site.mjs";
 
   const root = document.getElementById("site-menubar-host");
   if (root) {
-    const themeSelect = () => document.querySelector<HTMLSelectElement>("starlight-theme-select select");
     mountSiteMenu(
       root,
+      { ...starlightDeps(), ...schemeDeps(SCHEME_KEY) },
       {
-        print: () => window.print(),
-        openSearch: () => document.querySelector<HTMLButtonElement>("site-search button[data-open-modal]")?.click(),
-        copyLink: (url) => navigator.clipboard.writeText(url),
-        pageUrl: () => location.origin + location.pathname,
-        theme: () => {
-          const value = themeSelect()?.value;
-          return value === "light" || value === "dark" ? value : "auto";
-        },
-        setTheme: (theme: SiteTheme) => {
-          const select = themeSelect();
-          if (!select) return;
-          select.value = theme;
-          select.dispatchEvent(new Event("change"));
-        },
-        scheme: () => schemeOf(document.documentElement),
-        setScheme: (scheme) => {
-          if (!isScheme(scheme)) return;
-          applyScheme(scheme, document.documentElement);
-          saveScheme(SCHEME_KEY, scheme);
-        },
+        file: [
+          { label: "Play Verticopolis", href: GAME },
+          { label: "Get the Package on npm", href: NPM },
+          { label: "View the Source on GitHub", href: GITHUB },
+        ],
+        help: [
+          { label: "Player's Manual", href: PLAYER_HELP },
+          { label: "Engine Docs", href: ENGINE_DOCS },
+          { kind: "separator" },
+          { label: "Report a Problem…", href: GITHUB_ISSUES, target: "_blank", rel: "noopener noreferrer" },
+        ],
       },
-      { game: GAME, npm: NPM, github: GITHUB, playerHelp: PLAYER_HELP, engineDocs: ENGINE_DOCS, issues: GITHUB_ISSUES },
-      SCHEMES,
     );
   }
 </script>

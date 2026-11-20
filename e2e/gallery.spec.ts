@@ -96,6 +96,17 @@ test("site menu bar, with each menu open", async ({ page }) => {
   }
 });
 
+// Edit > Find opens Starlight's search, and the click that picked it does not
+// close it again.
+test("site menu Find opens the search", async ({ page }) => {
+  await openPage(page, "controls/buttons/");
+  const bar = siteMenu(page);
+  await bar.getByRole("button", { name: "Edit", exact: true }).click();
+  await bar.getByRole("menuitem", { name: /^Find/ }).click();
+  await expect(page.locator("site-search dialog[open]")).toBeVisible();
+  await expect(page.locator("site-search dialog[open] input")).toBeFocused();
+});
+
 // The painters draw on a canvas and read no stylesheet, so each scene and
 // sprite is shot once, in the classic scheme; the phone project still shoots
 // them at its own pixel ratio.

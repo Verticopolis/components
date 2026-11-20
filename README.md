@@ -186,9 +186,27 @@ bundle to one copy of each.
 - `styles/starlight-menu-bar.css` puts the game's menu bar (`menu-bar.css`,
   which it imports) across the top of a Starlight site, above the title bar:
   the header grows by the bar's height. A site with the bar adds it as a
-  second `customCss` entry after `starlight.css`, draws the bar's markup with
-  the `starlight-menubar` class first in its Header override, and wires it
-  with `windows/menuBar`. A site without the bar leaves it out.
+  second `customCss` entry after `starlight.css`, gives its Header override a
+  host element with the `starlight-menubar` class first, and draws the bar
+  into it with `windows/siteMenu`. A site without the bar leaves it out.
+- `windows/siteMenu` is that bar. Every docs site wears the same one: File
+  (the site's own items, then Print), Edit (Find, Copy Link to This Page),
+  Options (Light, Dark or Match My Device, and the appearance schemes when the
+  site offers them) and Help (the site's own items). `mountSiteMenu(root,
+  deps, items)` draws it; `starlightDeps()` wires Print, Find, Copy Link and
+  the look to a Starlight page, and `schemeDeps(key)` adds the schemes, kept
+  under `key`. A `picked(code)` dep hears each built-in item's code (`print`,
+  `find`, `copy_link`, `theme_light`, `theme_dark`, `theme_auto`,
+  `scheme_<id>`), so a site can count picks:
+
+  ```ts
+  import { mountSiteMenu, schemeDeps, starlightDeps } from "@verticopolis/components/windows/siteMenu";
+
+  mountSiteMenu(host, { ...starlightDeps(), ...schemeDeps("my-site-scheme") }, {
+    file: [{ label: "Play Verticopolis", href: "https://verticopolis.com/" }],
+    help: [{ label: "Player's Manual", href: "https://help.verticopolis.com/" }],
+  });
+  ```
 - `styles/title-bar.css` is the docs title bar on its own: the `.vc-bar`
   markup a docs site draws in its header, and that a page outside Starlight
   (such as `cargo doc` output) can draw on a navy bar of its own. Such a page
