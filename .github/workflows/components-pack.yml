@@ -82,18 +82,13 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: sh scripts/package-consumer.sh "dist/verticopolis-components-$VERSION.tgz"
 
-      # Components read a render model and import nothing from the engine
-      # (engine#89): outside the deprecated shims, no built module names it,
-      # and the packed tarball loads and type-checks with the engine absent.
-      - name: Check lib/ imports no engine outside the shims
-        if: steps.scope.outputs.run == 'true'
-        run: node scripts/engine-free.ts
-
-      - name: Install the tarball without the engine
+      # Every module the exports map serves loads under Node with only the
+      # peers installed, and its declarations type-check there.
+      - name: Load every module with only the peers installed
         if: steps.scope.outputs.run == 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
-        run: sh scripts/engine-free-consumer.sh "dist/verticopolis-components-$VERSION.tgz"
+        run: sh scripts/node-consumer.sh "dist/verticopolis-components-$VERSION.tgz"
 
       - name: Upload the tarball
         if: steps.scope.outputs.run == 'true'

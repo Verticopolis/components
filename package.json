@@ -1,7 +1,7 @@
 {
   "name": "@verticopolis/components",
   "version": "0.3.0",
-  "description": "Verticopolis's renderer, Excalibur scene, Win95 windows and menus, and audio, with the game's CC BY art. They read a render model each game fills from the engine.",
+  "description": "Verticopolis's renderer, Excalibur scene, Win95 windows and menus, and audio, with the game's CC BY art. They read a render model each game fills from its simulation.",
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -25,29 +25,9 @@
       "types": "./lib/presentation/*.d.ts",
       "default": "./lib/presentation/*.js"
     },
-    "./catalog/*": {
-      "types": "./lib/catalog/*.d.ts",
-      "default": "./lib/catalog/*.js"
-    },
     "./model/*": {
       "types": "./lib/model/*.d.ts",
       "default": "./lib/model/*.js"
-    },
-    "./binding/*": {
-      "types": "./lib/engineBinding/*.d.ts",
-      "default": "./lib/engineBinding/*.js"
-    },
-    "./port/*": {
-      "types": "./lib/simport/*.d.ts",
-      "default": "./lib/simport/*.js"
-    },
-    "./host/*": {
-      "types": "./lib/wasmhost/*.d.ts",
-      "default": "./lib/wasmhost/*.js"
-    },
-    "./events/*": {
-      "types": "./lib/events/*.d.ts",
-      "default": "./lib/events/*.js"
     },
     "./audio/*": {
       "types": "./lib/audio/*.d.ts",
@@ -57,7 +37,6 @@
       "types": "./lib/ui/*.d.ts",
       "default": "./lib/ui/*.js"
     },
-    "./fixtures/*": "./lib/simport/fixtures/*",
     "./styles/*": "./lib/styles/*",
     "./styles.css": "./lib/styles.css",
     "./package.json": "./package.json"
@@ -88,15 +67,9 @@
     "screenshots:update": "playwright test --update-snapshots"
   },
   "peerDependencies": {
-    "@verticopolis/engine": "^1.60.0",
     "excalibur": "^1.0.0",
     "lit-html": "^3.3.3",
     "tone": "^15.1.22"
-  },
-  "peerDependenciesMeta": {
-    "@verticopolis/engine": {
-      "optional": true
-    }
   },
   "dependencies": {
     "fflate": "^0.8.3"
@@ -105,7 +78,6 @@
     "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.6.6",
-    "@verticopolis/engine": "1.60.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-lit": "^2.3.1",
