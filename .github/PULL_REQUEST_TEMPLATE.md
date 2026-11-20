@@ -38,12 +38,14 @@ Closes #
 
 <!--
 Only a release PR edits `version` in package.json (with
-`npm version <x.y.z> --no-git-tag-version`); merging it releases that
-version. Say in "What & why" whether this PR calls for a major, minor or
-patch release, or none.
+`npm version <x.y.z> --no-git-tag-version`) and renames `## Unreleased`
+in CHANGELOG.md to `## <version> (<date>)`; merging it releases that
+version. A change to what the package ships adds a line under
+`## Unreleased`, led by its level (**major**, **minor** or **patch**).
 -->
 
 - [ ] Left `version` alone, **or** this is a release PR
+- [ ] Added a CHANGELOG.md line under `## Unreleased`, **or** this PR changes nothing the package ships
 - [ ] Updated the README where it went stale, **or** read it and it did not
 
 ## Complexity
