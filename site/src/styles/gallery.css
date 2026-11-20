@@ -300,4 +300,17 @@
   .g-title-said {
     font-size: 12px;
   }
+  /* A page of its own in a frame (Frame.astro), as wide as the column. */
+  .g-frame {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--r-ink);
+  }
+  @media (max-width: 600px) {
+    .g-frame {
+      aspect-ratio: 9 / 16;
+    }
+  }
 }

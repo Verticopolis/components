@@ -5,11 +5,11 @@
      reading text on a white well;
    - a page with a hero is the title screen, with the cards as small game
      windows over the skyline. The hero's markup (.title-screen, .ts-*) is
-     the site's own Starlight Hero override.
+     the package's TitleScreen.astro, which a site uses as its Hero override.
    The chrome tokens (--r-*) and the title screen's colors (--splash-*) come
-   from retro-tokens.css. The skyline is /splash-skyline.svg, which the site
-   serves from its own root. Load it through starlight.css, which puts the
-   tokens first and the title bar after it. */
+   from retro-tokens.css. The skyline is splash-skyline.svg beside this file,
+   which the build writes (scripts/gen-splash-skyline.ts). Load it through
+   starlight.css, which puts the tokens first and the title bar after it. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-tokens.css";
@@ -225,7 +225,7 @@
     height: var(--ts-skyline-height);
     /* The title screen's skyline at its own proportions, repeated across a
      wide screen instead of stretched, so the rooftops always show. */
-    background: url("/splash-skyline.svg") repeat-x center bottom / auto 100%;
+    background: url("./splash-skyline.svg") repeat-x center bottom / auto 100%;
   }
   .ts-brand h1 {
     margin: 0;
@@ -252,6 +252,13 @@
   }
   .ts-word .b {
     fill: var(--splash-amber);
+  }
+  /* The trademark mark beside the wordmark (TitleScreen.astro, `trademark`). */
+  .ts-word .tm {
+    font-size: 14px;
+    letter-spacing: 0;
+    stroke: none;
+    fill: var(--splash-wordmark);
   }
   .ts-tag {
     display: block;

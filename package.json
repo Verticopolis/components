@@ -38,9 +38,13 @@
       "default": "./lib/ui/*.js"
     },
     "./styles/*": "./lib/styles/*",
+    "./astro/*": "./lib/astro/*",
     "./styles.css": "./lib/styles.css",
     "./package.json": "./package.json"
   },
+  "keywords": [
+    "astro-component"
+  ],
   "files": [
     "lib",
     "ASSETS-LICENSE.md"

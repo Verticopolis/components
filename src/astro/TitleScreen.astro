@@ -1,0 +1,67 @@
+---
+// A docs site's front page drawn as the game's title screen: the dusk sky,
+// the setting sun, the skyline and the VERTICO/POLIS wordmark, with a caption
+// under it, the page's premise and its buttons. A Starlight site renders it
+// as its Hero override, passing the page's `hero` front matter.
+// styles/starlight-theme.css styles it (.title-screen, .ts-*) and tiles the
+// skyline image the build writes beside it (styles/splash-skyline.svg). The
+// wordmark is the page's title: an h1 with Starlight's `_top` id.
+
+/** One button under the premise. */
+export interface TitleAction {
+  text: string;
+  href: string;
+  /** The one amber button; the rest are cream. */
+  primary?: boolean;
+  /** Marks a button that starts the game (`data-game-link`), so a site can
+   *  turn it into Back to game in a tab the game opened. */
+  gameLink?: boolean;
+}
+
+interface Props {
+  /** The wordmark's name for screen readers, such as "Verticopolis engine". */
+  label: string;
+  /** The small capitals under the wordmark, such as "THE VERTICAL METROPOLIS". */
+  caption: string;
+  /** The line under the caption; none when left out. */
+  premise?: string;
+  actions?: TitleAction[];
+  /** Adds the ™ after the wordmark and narrows the lettering to fit it. */
+  trademark?: boolean;
+}
+
+const { label, caption, premise, actions = [], trademark = false } = Astro.props;
+const word = trademark ? { x: 194, length: 380 } : { x: 200, length: 392 };
+---
+
+<section class="title-screen not-content">
+  <div class="ts-stars" aria-hidden="true"></div>
+  <div class="ts-sun" aria-hidden="true"></div>
+  <div class="ts-skyline" aria-hidden="true"></div>
+  <div class="ts-brand">
+    <h1 id="_top" data-page-title>
+      <svg class="ts-word" viewBox="0 0 400 66" role="img" aria-label={label}>
+        <text x={word.x} y="52" text-anchor="middle" textLength={word.length} lengthAdjust="spacingAndGlyphs"
+          ><tspan class="a">VERTICO</tspan><tspan class="b">POLIS</tspan></text
+        >{trademark && <text class="tm" x="386" y="24">™</text>}
+      </svg>
+    </h1>
+    <svg class="ts-tag" viewBox="0 0 360 20" aria-hidden="true">
+      <text x="180" y="15" text-anchor="middle" textLength="330" lengthAdjust="spacingAndGlyphs">{caption}</text>
+    </svg>
+    {premise && <p class="ts-premise">{premise}</p>}
+    <div class="ts-actions">
+      {
+        actions.map((action) => (
+          <a
+            class:list={["ts-btn", { primary: action.primary }]}
+            href={action.href}
+            data-game-link={action.gameLink ? "" : undefined}
+          >
+            {action.text}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

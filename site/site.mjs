@@ -55,6 +55,7 @@ export const sidebar = [
     ],
   },
   { label: "Sounds", link: "/sounds/" },
+  { label: "Docs sites", link: "/docs-sites/" },
   {
     label: "The tower",
     items: [
