@@ -39,6 +39,7 @@ export default defineConfig({
         "../lib/styles/retro-components.css",
         "../lib/styles/menu-bar.css",
         "../lib/styles/game/dialogs.css",
+        "../lib/styles/game/launch-fireworks.css",
         "../lib/styles/game/desk.css",
         "../lib/styles/schemes/skyline.css",
         "../lib/styles/schemes/high-contrast.css",

@@ -1,0 +1,15 @@
+---
+title: Fireworks
+description: Pixel fireworks behind a dialog, for a celebration such as a new version's welcome.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+The fireworks (`playFireworks` from `windows/fireworks`) are a short show of rockets and bursts on a low-resolution canvas, scaled up without smoothing for the chunky 1990s pixel. A game sets them off behind a dialog to celebrate something, such as the welcome after a new version.
+
+- The canvas goes first inside the dialog the caller names (the shared modal's `#modal`), so it sits under the dialog's box and over its dimmed backdrop. Its stylesheet is `styles/game/launch-fireworks.css`.
+- New rockets go up for the first five and a half seconds, then the sky clears and the show stops on its own. `stop()` ends it sooner and takes the canvas away, as closing the dialog does here.
+- With reduced motion on, one still frame of four bursts shows and nothing moves.
+- The show changes nothing outside its canvas. When it plays, and whether a player has seen it, is the game's business.
+
+<Demo name="fireworks" />

@@ -55,6 +55,8 @@ export const sidebar = [
       { label: "Title screen", link: "/desktop/title-screen/" },
       { label: "Map window", link: "/desktop/map/" },
       { label: "Screen saver", link: "/desktop/screen-saver/" },
+      { label: "Fireworks", link: "/desktop/fireworks/" },
+      { label: "Page not found", link: "/desktop/not-found/" },
     ],
   },
   { label: "Sounds", link: "/sounds/" },

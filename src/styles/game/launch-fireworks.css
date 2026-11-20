@@ -1,5 +1,5 @@
-/* The version 4 welcome fireworks (src/ui/launchFireworks.ts). The welcome
-   itself is the shared #modal; this canvas sits inside that dialog, fixed to
+/* The pixel fireworks (src/ui/fireworks.ts), as a game sets them off behind
+   a welcome in the shared #modal; this canvas sits inside that dialog, fixed to
    the viewport under the window's box and over the dimmed backdrop, so the
    fireworks show through the backdrop and close with the dialog. A low-
    resolution canvas scaled up without smoothing gives the chunky 1990s pixel.
