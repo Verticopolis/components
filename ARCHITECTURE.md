@@ -162,7 +162,7 @@ flowchart LR
 ## Windows and styles
 
 The Win95 chrome is DOM: the menu bar
-(`src/ui/menuBar.ts`), modal message boxes (`uiModal.ts`), movable windows
+(`src/ui/menuBar.ts`), modal message boxes (`ModalShell` in `uiModal.ts`), movable windows
 (`movableWindow.ts`), the 1994 desk's windows (`src/ui/desk/`), the overview
 map's input and the icons. Each window module imports the stylesheet it needs.
 `styles.css` is the whole look in one import; every sheet sits in a cascade

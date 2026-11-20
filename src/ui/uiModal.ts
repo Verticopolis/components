@@ -1,78 +1,162 @@
 /**
- * The shared window grammar every modal is finished with: title-bar skinning,
- * the accessible-name wiring, the ✕, and the dismissal handlers. Extracted from
- * `UI` so that class stays under the file-size ceiling and so the grammar reads
- * as one thing rather than as a private method halfway down a 500-line class.
+ * The shared modal: one `<dialog>` the whole app opens its message boxes in,
+ * drawn with lit. A caller hands it a view (the title bar's text and the
+ * body) and the shell draws the window grammar around it: the title bar, the
+ * ✕, a notice line under the title, and the dismissal handlers. Who may take
+ * the dialog, and what happens to whoever waits for it, is
+ * `modalPrecedence.ts`.
+ *
+ * Cost: nothing runs per frame. A dialog renders on open, again when its
+ * caller redraws it or a notice lands, and clears on close.
  */
-
+import { html, nothing, render, type TemplateResult } from "lit-html";
+import { keyed } from "lit-html/directives/keyed.js";
 import "../styles/window.css"; // the window frame and title bar (with its ✕ button) a modal wears
+import { ModalPrecedence, type ModalOpts, type NoticeKind } from "./modalPrecedence";
 
-/** Id stamped on the shared modal's title-TEXT span so `#modal` can point
- *  `aria-labelledby` at it. It lives on a span wrapping only the title text,
- *  never on the h2 itself: the h2 also holds the ✕ as a sibling, and labeling
- *  the h2 would fold the ✕'s accessible name ("Close") into the dialog's. The
- *  dialog's DOM is fully replaced on every open and only one modal is ever
- *  live, so this constant can never collide with itself. */
+/** Id of the span around the modal's title TEXT, which the dialog's
+ *  `aria-labelledby` points at. It wraps the text alone, never the h2: the h2
+ *  also holds the ✕, and labeling the h2 would fold the ✕'s accessible name
+ *  ("Close") into the dialog's. Only one modal is ever live, so this constant
+ *  never collides with itself. */
 export const MODAL_TITLE_ID = "verticopolis-modal-title";
 
-/** What the grammar needs from `UI`, passed in rather than reached for. */
-export interface ModalDeps {
-  titleBarClose(className: string, onClick: () => void): HTMLButtonElement;
-  closeModal(): void;
-  drainNotice(box: HTMLElement): void;
-  /** A game-failure message is up, so no modal may open over it. */
-  gameStopped(): boolean;
+/** What a dialog shows. */
+export interface ModalView {
+  /** The title bar's text: a string, or a template (an icon and words). */
+  readonly title: unknown;
+  /** Everything under the title bar. */
+  readonly body: unknown;
 }
 
-/** The grammar `UI.openModalTemplate` finishes every modal with: skin the
- *  top-level h2 as the title bar (`:scope > h2` so a nested h2 is never
- *  skinned), wrap its title text alone in a span carrying the shared
- *  {@link MODAL_TITLE_ID} and point the dialog's `aria-labelledby` at that SPAN
- *  (never at the h2 itself, since the h2 also ends up holding the ✕ below;
- *  labeling the h2 would fold the ✕'s own accessible name, "Close", into the
- *  announced title), show the dialog (unless a game-failure
- *  message is up; see the gate below), then append the win-style ✕ into the h2
- *  as a sibling of the span so it stays excluded from the accessible name.
- *  Cleared when a modal renders no top-level h2, so the reference is never
- *  left dangling. The ✕ routes through the dialog's cancel path (same as Esc)
- *  rather than closeModal() directly, so modals that override oncancel to
- *  resolve a pending choice still resolve. It is appended AFTER showModal() so
- *  it is not the first focusable element (keyboard users land on the primary
- *  action, not the ✕). Backdrop click and Esc/cancel close. */
-export function finishModal(dialog: HTMLDialogElement, box: HTMLElement, deps: ModalDeps): HTMLElement {
-  const h2 = box.querySelector(":scope > h2");
-  h2?.classList.add("win-title");
-  if (h2) {
-    // Move the title CONTENTS into their own span and label the dialog at
-    // THAT span, not the h2 (see MODAL_TITLE_ID); a caller-supplied h2.id is
-    // never touched. Idempotent: reuse an existing span rather than nesting
-    // a new one, and never sweep the ✕ (.modal-x) into it, so a repeat call
-    // can't nest spans or fold "Close" into the accessible name.
-    let titleSpan = h2.querySelector<HTMLSpanElement>(`#${MODAL_TITLE_ID}`);
-    if (!titleSpan) {
-      titleSpan = document.createElement("span");
-      titleSpan.id = MODAL_TITLE_ID;
-      const close = h2.querySelector(".modal-x");
-      while (h2.firstChild && h2.firstChild !== close) titleSpan.appendChild(h2.firstChild);
-      h2.appendChild(titleSpan);
-    }
-    dialog.setAttribute("aria-labelledby", titleSpan.id);
-  } else {
+/** What the shell needs from the page around it. */
+export interface ModalShellDeps {
+  /** A game-failure message is up, so no modal may open over it: the top
+   *  layer would cover the message's Reload button. */
+  gameStopped(): boolean;
+  /** Say `text` where no dialog is open. */
+  toast(text: string, kind: NoticeKind): void;
+}
+
+/** A notice line; `serial` makes each new ask a new element, so a screen
+ *  reader announces it again. */
+interface Notice {
+  readonly text: string;
+  readonly kind: NoticeKind;
+  readonly serial: number;
+}
+
+/** A notice under the title bar. A failure is drawn in danger ink with
+ *  `role="alert"`, so it interrupts; plain and good news use ordinary ink and
+ *  `role="status"`, so a late "it finished after all" is neither shown nor
+ *  announced as an error (#785). */
+export function noticeTemplate(text: string, kind: NoticeKind): TemplateResult {
+  const bad = kind === "bad";
+  return html`<p class=${bad ? "modal-notice" : "modal-notice modal-notice-calm"} role=${bad ? "alert" : "status"}>${text}</p>`;
+}
+
+/** The window grammar around a view: the box, the title bar with its title
+ *  span and (once `closeShown`) the ✕, the notice, then the body. */
+function modalTemplate(view: ModalView, notice: Notice | null, closeShown: boolean, onClose: () => void) {
+  const close = closeShown
+    ? html`<button type="button" class="modal-x btn xs" aria-label="Close" @click=${onClose}>✕</button>`
+    : nothing;
+  const line = notice ? keyed(notice.serial, noticeTemplate(notice.text, notice.kind)) : nothing;
+  return html`<div class="modal-box win win-closable"><h2 class="win-title"><span id=${MODAL_TITLE_ID}>${view.title}</span>${close}</h2>${line}${view.body}</div>`;
+}
+
+export class ModalShell {
+  /** Who may take the dialog, and who waits for it. */
+  readonly precedence = new ModalPrecedence();
+  /** What the open dialog shows; null while none is built. */
+  private view: ModalView | null = null;
+  private notice: Notice | null = null;
+  private serial = 0;
+  private closeShown = false;
+
+  constructor(
+    readonly dialog: HTMLDialogElement,
+    private readonly deps: ModalShellDeps,
+  ) {}
+
+  /** Open `view` in the dialog, replacing whatever it showed, and return its
+   *  box. Every open draws fresh elements, so nothing a player typed into the
+   *  last dialog carries over. The ✕ is drawn after `showModal`, so the focus
+   *  lands on the dialog's own first control rather than on the ✕. The ✕
+   *  goes through the dialog's cancel path (as Esc does), so a caller that
+   *  sets its own `oncancel` after opening still hears it. A backdrop click
+   *  and Esc close the dialog. */
+  open(view: ModalView, opts: ModalOpts = {}): HTMLElement {
+    const dialog = this.dialog;
+    const displacing = dialog.open;
+    this.view = null;
+    this.notice = null;
+    this.closeShown = false;
+    render(nothing, dialog);
+    // After the clear, before the draw: a notice raised by a displaced
+    // dialog's goodbye lands in this one.
+    this.precedence.opening(displacing, opts);
+    const held = this.precedence.takeNotice();
+    if (held) this.notice = { ...held, serial: ++this.serial };
+    this.view = view;
+    this.draw();
+    dialog.setAttribute("aria-labelledby", MODAL_TITLE_ID);
+    if (!dialog.open && !this.deps.gameStopped()) dialog.showModal();
+    this.closeShown = true;
+    this.draw();
+    dialog.onclick = (e) => {
+      if (e.target === dialog) this.close();
+    };
+    dialog.oncancel = () => this.close();
+    return dialog.querySelector<HTMLElement>(":scope > .modal-box")!;
+  }
+
+  /** Redraw the open dialog with `view`; lit touches only what changed. */
+  render(view: ModalView): void {
+    if (!this.view) return;
+    this.view = view;
+    this.draw();
+  }
+
+  /** Close the dialog and clear it. Safe to call with nothing open. */
+  close(): void {
+    const dialog = this.dialog;
+    const wasOpen = dialog.open;
+    if (wasOpen) dialog.close();
+    this.view = null;
+    this.notice = null;
+    render(nothing, dialog);
+    // Before the leash fires: a waiting report re-opens from inside
+    // `closed()` and sets its own label on the way in.
     dialog.removeAttribute("aria-labelledby");
+    this.precedence.closed(wasOpen);
   }
-  // Behind a game-failure message a late modal (an import
-  // report that finished after the stop) would sit in the top layer and
-  // cover the message's Reload button, so it never opens there.
-  if (!dialog.open && !deps.gameStopped()) dialog.showModal();
-  if (h2 && !h2.querySelector(".modal-x")) {
-    h2.appendChild(
-      deps.titleBarClose("modal-x btn xs", () => dialog.dispatchEvent(new Event("cancel", { cancelable: true }))),
-    );
+
+  /** Say `text` where the player can read it now: under the open dialog's
+   *  title, held for the next dialog while one is mid-replace, or as a toast
+   *  when none is open. A caller that asks every frame passes `again` false:
+   *  it never rebuilds a line already shown (which would announce it anew),
+   *  never replaces another one (a failure the player has yet to read), and
+   *  is never held, since the next dialog could be the one it waited for. */
+  say(text: string, again = true, kind: NoticeKind = "bad"): void {
+    if (!this.dialog.open) {
+      this.deps.toast(text, kind);
+      return;
+    }
+    if (!this.view) {
+      if (again) this.precedence.deferNotice(text, kind);
+      return;
+    }
+    if (!again && this.notice) return;
+    this.notice = { text, kind, serial: ++this.serial };
+    this.draw();
   }
-  dialog.onclick = (e) => {
-    if (e.target === dialog) deps.closeModal();
+
+  private draw(): void {
+    if (this.view) render(modalTemplate(this.view, this.notice, this.closeShown, this.cancel), this.dialog);
+  }
+
+  private readonly cancel = (): void => {
+    this.dialog.dispatchEvent(new Event("cancel", { cancelable: true }));
   };
-  dialog.oncancel = () => deps.closeModal(); // Esc key
-  deps.drainNotice(box); // a notice raised mid-build lands here
-  return box;
 }

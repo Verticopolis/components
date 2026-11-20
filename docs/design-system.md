@@ -121,9 +121,12 @@ Evalbar = the original-style sunken satisfaction gauge.
 ## 3. The window grammar
 
 Every dismissible floating surface is a **window**: `.win` frame + `.win-title`
-bar + `.btn.xs` ✕. The modal ✕ routes through the dialog's **cancel path**
+bar + `.btn.xs` ✕. The shared modal is `ModalShell` (`src/ui/uiModal.ts`): a
+caller hands it a title and a body as lit templates, and it draws the rest
+of the grammar around them (the box, the title bar, the ✕ and a notice line
+under the title). The modal ✕ routes through the dialog's **cancel path**
 (same as Esc), and keyboard focus lands on the primary action when a dialog
-opens (`src/ui/uiModal.ts`).
+opens, because the ✕ is drawn only after the dialog is shown.
 
 A closable window moves by a drag on its title bar (`src/ui/movableWindow.ts`):
 it stays whole inside the tower view (a dialog, inside the browser window), a
