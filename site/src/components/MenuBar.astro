@@ -10,6 +10,7 @@
 
 <script>
   import { mountSiteMenu, type SiteTheme } from "../../../gallery/siteMenu";
+  import { applyScheme, isScheme, saveScheme, schemeOf } from "../../../lib/ui/schemes.js";
   import { ENGINE_DOCS, GAME, GITHUB, GITHUB_ISSUES, NPM, PLAYER_HELP, SCHEMES, SCHEME_KEY } from "../../site.mjs";
 
   const root = document.getElementById("site-menubar-host");
@@ -32,15 +33,11 @@
           select.value = theme;
           select.dispatchEvent(new Event("change"));
         },
-        scheme: () => document.documentElement.getAttribute("data-scheme") ?? "classic",
+        scheme: () => schemeOf(document.documentElement),
         setScheme: (scheme) => {
-          if (scheme === "classic") document.documentElement.removeAttribute("data-scheme");
-          else document.documentElement.setAttribute("data-scheme", scheme);
-          try {
-            localStorage.setItem(SCHEME_KEY, scheme);
-          } catch {
-            // Private browsing: the pick lasts for this page only.
-          }
+          if (!isScheme(scheme)) return;
+          applyScheme(scheme, document.documentElement);
+          saveScheme(SCHEME_KEY, scheme);
         },
       },
       { game: GAME, npm: NPM, github: GITHUB, playerHelp: PLAYER_HELP, engineDocs: ENGINE_DOCS, issues: GITHUB_ISSUES },

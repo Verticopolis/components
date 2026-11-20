@@ -1,0 +1,12 @@
+---
+title: Appearance
+description: The Appearance dialog, which picks the scheme the windows, menus and buttons wear.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+The Appearance dialog (`openAppearanceDialog` from `windows/appearance`) shows one small window per scheme: Standard, Skyline and High Contrast. Each picture wears its own scheme whatever scheme the page wears. OK hands the pick to the caller, and Cancel, the ✕ and Esc leave the look as it was. The schemes themselves, and the one attribute that dresses a page in one, are `windows/schemes`.
+
+Press OK here to dress this site in the picked scheme. The Options menu shows the same pick, and the next page opens in it.
+
+<Demo name="appearance" />

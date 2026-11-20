@@ -1,4 +1,4 @@
-/* The Appearance dialog (src/ui/appearance/appearanceDialog.ts): a row of
+/* The Appearance dialog (src/ui/appearance.ts): a row of
    three small window pictures, one per scheme, each a radio button. The
    pictures carry their own scheme's colors here, so each one shows its scheme
    whatever scheme the page wears. */

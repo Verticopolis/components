@@ -37,7 +37,9 @@ Everything derives from `:root` custom properties. Swap these to re-theme.
 
 **Rule: never hard-code a color that has a token.** Quote colors from here.
 The full token list is in `src/styles/retro-tokens.css`, and the color schemes
-in `src/styles/schemes/`.
+in `src/styles/schemes/`. The schemes' ids and names, and the
+`html[data-scheme]` attribute that switches them, are `windows/schemes`; the
+Appearance dialog that picks one is `windows/appearance`.
 
 ## 2. Components
 

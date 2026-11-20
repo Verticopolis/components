@@ -4,7 +4,7 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
 export const SCHEMES = [
-  { label: "Classic", value: null, slug: "classic" },
+  { label: "Standard", value: null, slug: "classic" },
   { label: "Skyline", value: "skyline", slug: "skyline" },
   { label: "High Contrast", value: "high_contrast", slug: "high-contrast" },
 ] as const;

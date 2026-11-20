@@ -29,6 +29,7 @@ import { people } from "./people.js";
 import { deskDemo } from "./desk.js";
 import { deskLayouts } from "./deskLayout.js";
 import { messageBoxes } from "./messageBoxes.js";
+import { appearanceDemo } from "./appearance.js";
 
 /** Room cell size in CSS px. */
 const CELL_W = 260;
@@ -176,6 +177,7 @@ export const DEMOS = {
   wells: shows(() => WELLS),
   "menu-bar": shows(sampleMenu),
   "message-boxes": shows(messageBoxes),
+  appearance: shows(appearanceDemo),
   desk: (holder) => deskDemo(holder, towerFacts().facts),
   "desk-layout": shows(deskLayouts),
   icons: shows(icons),

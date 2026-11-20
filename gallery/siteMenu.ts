@@ -25,7 +25,7 @@ export interface SiteMenuDeps {
   readonly pageUrl: () => string;
   readonly theme: () => SiteTheme;
   readonly setTheme: (theme: SiteTheme) => void;
-  /** The color scheme the page wears ("classic" when none is set). */
+  /** The color scheme the page wears ("standard" when none is set). */
   readonly scheme: () => string;
   readonly setScheme: (scheme: string) => void;
 }

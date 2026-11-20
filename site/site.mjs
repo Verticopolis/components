@@ -1,6 +1,9 @@
 // The gallery site's shared constants: its address, the side menu, and the
 // color schemes the Options menu offers.
 
+import { DEFAULT_SCHEME, SCHEMES as SCHEME_IDS, SCHEME_NAMES } from "../lib/ui/schemes.js";
+import { SCHEME_KEY } from "./schemeKey.mjs";
+
 export const SITE_ORIGIN = "https://components.verticopolis.com";
 
 export const GAME = "https://verticopolis.com/";
@@ -10,16 +13,12 @@ export const NPM = "https://www.npmjs.com/package/@verticopolis/components";
 export const ENGINE_DOCS = "https://docs.verticopolis.com/";
 export const PLAYER_HELP = "https://help.verticopolis.com/";
 
-/** The color schemes, by the value each sets on `html[data-scheme]` (none for
- *  the classic look). */
-export const SCHEMES = [
-  { label: "Classic", value: "classic" },
-  { label: "Skyline", value: "skyline" },
-  { label: "High Contrast", value: "high_contrast" },
-];
+/** The color schemes, from the package (`windows/schemes`), by the value each
+ *  sets on `html[data-scheme]` (none for Standard). */
+export const SCHEMES = SCHEME_IDS.map((value) => ({ label: SCHEME_NAMES[value], value }));
 
 /** Where the picked scheme is kept between pages. */
-export const SCHEME_KEY = "vc-components-scheme";
+export { SCHEME_KEY };
 
 /** A value as a JavaScript literal that is safe inside an inline <script>:
  *  the characters that could close the tag or end a line are escaped. */
@@ -32,7 +31,7 @@ function scriptLiteral(value) {
 
 /** Sets the scheme picked last on <html> before the page paints. */
 export const SCHEME_BOOT = `(function(){try{var s=localStorage.getItem(${scriptLiteral(SCHEME_KEY)});if(${scriptLiteral(
-  SCHEMES.map((s) => s.value).filter((v) => v !== "classic"),
+  SCHEME_IDS.filter((v) => v !== DEFAULT_SCHEME),
 )}.indexOf(s)>=0)document.documentElement.setAttribute("data-scheme",s)}catch(e){}})();`;
 
 export const sidebar = [
@@ -45,6 +44,7 @@ export const sidebar = [
       { label: "Wells, fields and key-value rows", link: "/controls/wells/" },
       { label: "Menu bar", link: "/controls/menu-bar/" },
       { label: "Message boxes", link: "/controls/message-boxes/" },
+      { label: "Appearance", link: "/controls/appearance/" },
       { label: "Icons", link: "/controls/icons/" },
     ],
   },
