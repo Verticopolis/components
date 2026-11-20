@@ -49,6 +49,18 @@
   .g-win {
     max-width: 320px;
   }
+  /* A screen saver on its little monitor (screen-saver.css draws the
+     monitor), with its name under the stand. */
+  .g-saver {
+    margin: 0 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .g-saver figcaption {
+    font-size: 12px;
+  }
   .g-win .g-pad {
     padding: 8px;
   }
