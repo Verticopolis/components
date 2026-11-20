@@ -31,8 +31,10 @@ env:
 permissions:
   contents: read
 
+# One bake per tag: a hand-run backfill and the release's own bake of the
+# same tag share the group, so one waits for the other and then audits it.
 concurrency:
-  group: sprite-atlas-${{ inputs.tag || github.ref }}
+  group: sprite-atlas-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
