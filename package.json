@@ -1,6 +1,6 @@
 {
   "name": "@verticopolis/components",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Verticopolis's renderer, Excalibur scene, Win95 windows and menus, and audio, with the game's CC BY art. They read a render model each game fills from the engine.",
   "license": "MIT",
   "type": "module",
