@@ -1,3 +1,6 @@
+import { html, nothing, type TemplateResult } from "lit-html";
+import { styleMap } from "lit-html/directives/style-map.js";
+import { renderDetached, type Detached } from "../detached";
 import { MovableWindow, WITHIN_PARENT, moverOf } from "../movableWindow";
 import { resizedTo, type DeskRect, type DeskWindowId, type SizeLimits } from "./deskGeometry";
 
@@ -56,72 +59,92 @@ export const DESK_MAXIMIZED_CLASS = "desk-maximized";
 /** The class the window that has the focus wears. */
 export const DESK_ACTIVE_CLASS = "desk-active";
 
+/** The title bar's button kinds. */
+type TitleButtonKind = "min" | "max" | "close";
+
 /** The glyphs of the title bar's buttons, drawn in pixels like the 1995 ones. */
-const GLYPH: Record<"min" | "max" | "restore" | "close", string> = {
-  min: '<svg width="10" height="9" viewBox="0 0 10 9" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="7" width="6" height="2"/></svg>',
-  max: '<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h9v9H0zM1 2v6h7V2z" fill-rule="evenodd"/></svg>',
-  restore:
-    '<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h7v6H7V2H2zM0 3h7v6H0zM1 5v3h5V5z" fill-rule="evenodd"/></svg>',
-  close:
-    '<svg width="8" height="7" viewBox="0 0 8 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z"/></svg>',
+const GLYPH: Record<TitleButtonKind | "restore", TemplateResult> = {
+  min: html`<svg width="10" height="9" viewBox="0 0 10 9" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="7" width="6" height="2"/></svg>`,
+  max: html`<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h9v9H0zM1 2v6h7V2z" fill-rule="evenodd"/></svg>`,
+  restore: html`<svg width="9" height="9" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h7v6H7V2H2zM0 3h7v6H0zM1 5v3h5V5z" fill-rule="evenodd"/></svg>`,
+  close: html`<svg width="8" height="7" viewBox="0 0 8 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z"/></svg>`,
 };
 
-/** A title-bar button with a pixel glyph. */
-export function titleButton(doc: Document, kind: keyof typeof GLYPH, label: string): HTMLButtonElement {
-  const b = doc.createElement("button");
-  b.type = "button";
-  b.className = `btn xs desk-btn desk-btn-${kind}`;
-  b.setAttribute("aria-label", label);
-  b.title = label;
-  b.innerHTML = GLYPH[kind];
-  return b;
+/** A title-bar button with a pixel glyph; `glyph` differs from `kind` only
+ *  for maximize, which shows restore while the window is maximized. */
+function titleButtonTemplate(
+  kind: TitleButtonKind,
+  label: string,
+  onClick: () => void,
+  glyph: keyof typeof GLYPH = kind,
+): TemplateResult {
+  return html`<button type="button" class=${`btn xs desk-btn desk-btn-${kind}`} aria-label=${label} title=${label} @click=${onClick}>${GLYPH[glyph]}</button>`;
 }
 
 /** The Verticopolis icon at the left of a desk window's title bar. */
-function titleIcon(doc: Document): HTMLImageElement {
-  const icon = doc.createElement("img");
-  icon.className = "desk-title-icon";
-  icon.src = "./favicon.png";
-  icon.alt = "";
-  icon.width = 16;
-  icon.height = 16;
-  return icon;
+const TITLE_ICON = html`<img class="desk-title-icon" src="./favicon.png" alt="" width="16" height="16" />`;
+
+/** A desk frame's ✕: its label and what it does. */
+export interface FrameClose {
+  readonly label: string;
+  readonly onClick: () => void;
 }
 
-/** Build a frame for content that has no window of its own (the tower, Info):
- *  a `.win` with the game's title bar and an empty body. */
-export function buildFrame(
-  doc: Document,
-  id: string,
-  title: string,
-): { root: HTMLElement; body: HTMLElement; titleText: HTMLElement } {
-  const root = doc.createElement("section");
-  root.id = id;
-  root.className = "win win-closable desk-win desk-frame";
-  const bar = doc.createElement("div");
-  bar.className = "win-title";
-  const icon = titleIcon(doc);
-  const titleText = doc.createElement("span");
-  titleText.className = "desk-title-text";
-  titleText.id = `${id}-title`;
-  titleText.textContent = title;
-  bar.append(icon, titleText);
-  const body = doc.createElement("div");
-  body.className = "desk-body";
-  root.setAttribute("aria-labelledby", titleText.id);
-  root.append(bar, body);
-  return { root, body, titleText };
+/** The frame for content that has no window of its own (the tower, Info): a
+ *  `.win` with the game's title bar, an optional ✕, and an empty body. */
+export function deskFrameTemplate(id: string, title: string, close?: FrameClose): TemplateResult {
+  const titleId = `${id}-title`;
+  return html`<section id=${id} class="win win-closable desk-win desk-frame" aria-labelledby=${titleId}><div class="win-title">${TITLE_ICON}<span class="desk-title-text" id=${titleId}>${title}</span>${close ? titleButtonTemplate("close", close.label, close.onClick) : nothing}</div><div class="desk-body"></div></section>`;
+}
+
+/** A desk frame, drawn by {@link deskFrameTemplate}. */
+export interface DeskFrame {
+  readonly root: HTMLElement;
+  /** Where the window's content goes. */
+  readonly body: HTMLElement;
+  /** Rename the window; lit changes the title's text alone. */
+  setTitle(title: string): void;
+}
+
+/** Draw a desk frame, ready for the page to place on the desk. */
+export function buildFrame(doc: Document, id: string, title: string, close?: FrameClose): DeskFrame {
+  const drawn = renderDetached(doc, deskFrameTemplate(id, title, close));
+  const root = drawn.elements[0] as HTMLElement;
+  return {
+    root,
+    body: root.querySelector<HTMLElement>(":scope > .desk-body")!,
+    setTitle: (next) => drawn.update(deskFrameTemplate(id, next, close)),
+  };
+}
+
+/** The dotted outline a resize draws at `r` until the pointer lets go. */
+const outlineTemplate = (r: DeskRect): TemplateResult =>
+  html`<div class="desk-outline" style=${styleMap({ left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` })}></div>`;
+
+/** A resize under way: where it started, where the pointer started, and the
+ *  size the window takes on release. */
+interface Resize {
+  readonly start: DeskRect;
+  readonly sx: number;
+  readonly sy: number;
+  readonly desk: HTMLElement;
+  readonly outline: Detached;
+  next: DeskRect;
 }
 
 export class DeskWindow {
   minimized = false;
   maximized = false;
   private before: DeskRect | null = null;
-  private readonly added: HTMLElement[] = [];
+  /** What the desk drew into the window, taken off again by dispose. */
+  private readonly added: Element[] = [];
   private readonly ownMover: MovableWindow | null = null;
   /** Stops hearing the moves of a window the game moves itself. */
   private readonly unhear: (() => void) | null = null;
-  private readonly maxButton: HTMLButtonElement | null = null;
+  /** Minimize and maximize, redrawn when the window maximizes or restores. */
+  private readonly buttons: Detached | null = null;
+  /** The resize under way, or null. */
+  private resize: Resize | null = null;
 
   constructor(readonly spec: DeskWindowSpec) {
     const { el } = spec;
@@ -131,31 +154,20 @@ export class DeskWindow {
     if (bar) {
       // The game's own windows wear the desk's icon too, while on the desk.
       if (!bar.querySelector(":scope > .desk-title-icon")) {
-        const icon = titleIcon(doc);
-        this.added.push(icon);
-        bar.prepend(icon);
+        const icon = renderDetached(doc, TITLE_ICON).elements;
+        this.added.push(...icon);
+        bar.prepend(...icon);
       }
       // Minimize and maximize go before the window's own ✕, as in 1995.
       const close = bar.querySelector<HTMLElement>(":scope > .btn.xs:not(.desk-btn), :scope > .desk-btn-close");
-      const min = titleButton(doc, "min", `Minimize ${spec.label()}`);
-      min.addEventListener("click", () => this.minimize());
-      this.added.push(min);
-      bar.insertBefore(min, close);
-      if (spec.canMax) {
-        const max = titleButton(doc, "max", `Maximize ${spec.label()}`);
-        max.addEventListener("click", () => this.toggleMax());
-        this.maxButton = max;
-        this.added.push(max);
-        bar.insertBefore(max, close);
-      }
+      this.buttons = renderDetached(doc, this.buttonsTemplate());
+      this.added.push(...this.buttons.elements);
+      for (const b of this.buttons.elements) bar.insertBefore(b, close);
     }
     if (spec.limits) {
-      const grip = doc.createElement("div");
-      grip.className = "desk-grip";
-      grip.setAttribute("aria-hidden", "true");
-      el.appendChild(grip);
-      this.added.push(grip);
-      this.wireGrip(grip);
+      const grip = renderDetached(doc, this.gripTemplate()).elements;
+      this.added.push(...grip);
+      el.append(...grip);
     }
     // The small windows already move by their title bars; the desk's own
     // frames and Tools get a mover here. Either way it moves inside the desk.
@@ -171,7 +183,26 @@ export class DeskWindow {
         canMove: () => !this.maximized,
       });
     }
+    // On the game's window, which no template of ours owns.
     el.addEventListener("pointerdown", this.onPress, true);
+  }
+
+  /** Minimize, and maximize (or restore) where the window may maximize. */
+  private buttonsTemplate(): TemplateResult {
+    const name = this.spec.label();
+    const max = this.maximized
+      ? titleButtonTemplate("max", `Restore ${name}`, this.onMax, "restore")
+      : titleButtonTemplate("max", `Maximize ${name}`, this.onMax);
+    return html`${titleButtonTemplate("min", `Minimize ${name}`, this.onMin)}${this.spec.canMax ? max : nothing}`;
+  }
+
+  private readonly onMin = () => this.minimize();
+  private readonly onMax = () => this.toggleMax();
+
+  /** The size grip: a dotted outline follows the pointer and the window takes
+   *  the size on release. */
+  private gripTemplate(): TemplateResult {
+    return html`<div class="desk-grip" aria-hidden="true" @pointerdown=${this.gripDown} @pointermove=${this.gripMove} @pointerup=${this.gripEnd} @pointercancel=${this.gripEnd}></div>`;
   }
 
   private readonly onPress = () => this.spec.pressed();
@@ -228,12 +259,7 @@ export class DeskWindow {
       el.classList.remove(DESK_MAXIMIZED_CLASS);
       if (back) this.place(back);
     }
-    if (this.maxButton) {
-      const label = `${this.maximized ? "Restore" : "Maximize"} ${this.spec.label()}`;
-      this.maxButton.innerHTML = GLYPH[this.maximized ? "restore" : "max"];
-      this.maxButton.setAttribute("aria-label", label);
-      this.maxButton.title = label;
-    }
+    this.buttons?.update(this.buttonsTemplate());
     this.spec.changed(this.maximized ? "max" : "unmax");
   }
 
@@ -241,6 +267,7 @@ export class DeskWindow {
    *  own layout (the phone, the title screen, or the desk turned off). */
   dispose(): void {
     const el = this.spec.el;
+    this.endResize(false);
     el.removeEventListener("pointerdown", this.onPress, true);
     for (const a of this.added) a.remove();
     this.ownMover?.dispose();
@@ -254,57 +281,53 @@ export class DeskWindow {
     el.style.removeProperty("top");
   }
 
-  /** The size grip: a dotted outline follows the pointer and the window takes
-   *  the size on release. */
-  private wireGrip(grip: HTMLElement): void {
+  private readonly gripDown = (e: PointerEvent): void => {
     const limits = this.spec.limits;
-    if (!limits) return;
-    grip.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0 || this.maximized) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const el = this.spec.el;
-      const desk = el.parentElement;
-      if (!desk) return;
-      try {
-        grip.setPointerCapture(e.pointerId);
-      } catch {
-        /* the outline still follows while the pointer stays over the grip */
-      }
-      const start = this.rect();
-      const sx = e.clientX;
-      const sy = e.clientY;
-      const outline = el.ownerDocument.createElement("div");
-      outline.className = "desk-outline";
-      desk.appendChild(outline);
-      let next = start;
-      const draw = (r: DeskRect) =>
-        Object.assign(outline.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
-      draw(start);
-      const move = (ev: PointerEvent) => {
-        next = resizedTo(
-          start,
-          ev.clientX - sx,
-          ev.clientY - sy,
-          limits,
-          desk.clientWidth,
-          desk.clientHeight,
-          !!this.spec.heightOnly,
-        );
-        draw(next);
-      };
-      const end = () => {
-        grip.removeEventListener("pointermove", move);
-        grip.removeEventListener("pointerup", end);
-        grip.removeEventListener("pointercancel", end);
-        outline.remove();
-        if (next.w === start.w && next.h === start.h) return;
-        this.place(next);
-        this.spec.changed("resize");
-      };
-      grip.addEventListener("pointermove", move);
-      grip.addEventListener("pointerup", end);
-      grip.addEventListener("pointercancel", end);
-    });
+    if (!limits || e.button !== 0 || this.maximized) return;
+    // A resize whose pointerup never came (the pointer left the page) ends here.
+    this.endResize(false);
+    e.preventDefault();
+    e.stopPropagation();
+    const el = this.spec.el;
+    const desk = el.parentElement;
+    if (!desk) return;
+    try {
+      (e.currentTarget as Element).setPointerCapture(e.pointerId);
+    } catch {
+      /* the outline still follows while the pointer stays over the grip */
+    }
+    const start = this.rect();
+    const outline = renderDetached(el.ownerDocument, outlineTemplate(start));
+    desk.append(...outline.elements);
+    this.resize = { start, sx: e.clientX, sy: e.clientY, desk, outline, next: start };
+  };
+
+  private readonly gripMove = (e: PointerEvent): void => {
+    const r = this.resize;
+    const limits = this.spec.limits;
+    if (!r || !limits) return;
+    r.next = resizedTo(
+      r.start,
+      e.clientX - r.sx,
+      e.clientY - r.sy,
+      limits,
+      r.desk.clientWidth,
+      r.desk.clientHeight,
+      !!this.spec.heightOnly,
+    );
+    r.outline.update(outlineTemplate(r.next));
+  };
+
+  private readonly gripEnd = (): void => this.endResize(true);
+
+  /** Take the resize outline down; `apply` gives the window the new size. */
+  private endResize(apply: boolean): void {
+    const r = this.resize;
+    if (!r) return;
+    this.resize = null;
+    for (const o of r.outline.elements) o.remove();
+    if (!apply || (r.next.w === r.start.w && r.next.h === r.start.h)) return;
+    this.place(r.next);
+    this.spec.changed("resize");
   }
 }

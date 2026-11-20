@@ -5,9 +5,12 @@
  * menu key opens it from a focused taskbar button; the arrow keys move through
  * it and Esc or a press outside closes it.
  *
- * Cost: one menu built once with the taskbar; each opening sets four items.
+ * Cost: one menu drawn once with the taskbar, with lit; each opening
+ * re-renders it, and lit sets only the items whose grayed state changed.
  */
 
+import { html, type TemplateResult } from "lit-html";
+import { renderDetached, type Detached } from "../detached";
 import type { DeskWindow } from "./deskWindow";
 
 /** Where a window menu was opened: a right-click (or Shift+F10) on a taskbar
@@ -67,7 +70,9 @@ export interface WindowMenuHandlers {
 
 export class WindowMenu {
   readonly root: HTMLElement;
-  private readonly items = new Map<WindowCommand, HTMLButtonElement>();
+  private readonly drawn: Detached;
+  /** Which commands apply now; all grayed until the menu first opens. */
+  private state: WindowMenuState = { restore: false, minimize: false, maximize: false, close: false };
   private target: string | null = null;
   /** Where focus goes back to when the menu closes from the keyboard. */
   private opener: HTMLElement | null = null;
@@ -76,36 +81,26 @@ export class WindowMenu {
     private readonly doc: Document,
     private readonly handlers: WindowMenuHandlers,
   ) {
-    const root = doc.createElement("div");
-    root.className = "desk-win-menu";
-    root.setAttribute("role", "menu");
-    root.setAttribute("aria-label", "Window");
-    root.hidden = true;
-    for (const item of WINDOW_MENU_ITEMS) {
-      if (!item) {
-        const sep = doc.createElement("hr");
-        sep.className = "mb-sep";
-        root.appendChild(sep);
-        continue;
-      }
-      const [label, command] = item;
-      const b = doc.createElement("button");
-      b.type = "button";
-      b.className = "mb-item";
-      b.setAttribute("role", "menuitem");
-      b.dataset.command = command;
-      b.textContent = label;
-      b.addEventListener("click", () => {
-        const id = this.target;
-        this.close(true);
-        if (id && !b.disabled) handlers.run(id, command);
-      });
-      this.items.set(command, b);
-      root.appendChild(b);
-    }
-    root.addEventListener("keydown", (e) => this.key(e));
-    this.root = root;
+    this.drawn = renderDetached(doc, this.template());
+    this.root = this.drawn.elements[0] as HTMLElement;
   }
+
+  /** The menu, its items grayed by {@link state}. Rendered once, then again
+   *  each time it opens. */
+  private template(): TemplateResult {
+    const item = ([label, command]: readonly [string, WindowCommand]) =>
+      html`<button type="button" class="mb-item" role="menuitem" data-command=${command} ?disabled=${!this.state[command]} @click=${this.pick}>${label}</button>`;
+    return html`<div class="desk-win-menu" role="menu" aria-label="Window" hidden @keydown=${this.key}>${WINDOW_MENU_ITEMS.map((i) => (i ? item(i) : html`<hr class="mb-sep" />`))}</div>`;
+  }
+
+  /** An item's click: close the menu, then run its command on the window it
+   *  was opened for, unless the item is grayed. */
+  private readonly pick = (e: MouseEvent): void => {
+    const b = e.currentTarget as HTMLButtonElement;
+    const id = this.target;
+    this.close(true);
+    if (id && !b.disabled) this.handlers.run(id, b.dataset.command as WindowCommand);
+  };
 
   get open(): boolean {
     return !this.root.hidden;
@@ -116,7 +111,8 @@ export class WindowMenu {
   show(id: string, x: number, y: number, above: boolean, opener: HTMLElement | null): boolean {
     const state = this.handlers.state(id);
     if (!state) return false;
-    for (const [command, b] of this.items) b.disabled = !state[command];
+    this.state = state;
+    this.drawn.update(this.template());
     this.target = id;
     this.opener = opener;
     const root = this.root;
@@ -144,14 +140,14 @@ export class WindowMenu {
   }
 
   private enabled(): HTMLButtonElement[] {
-    return [...this.items.values()].filter((b) => !b.disabled);
+    return [...this.root.querySelectorAll<HTMLButtonElement>("button.mb-item:not(:disabled)")];
   }
 
   private first(): HTMLButtonElement | undefined {
     return this.enabled()[0];
   }
 
-  private key(e: KeyboardEvent): void {
+  private readonly key = (e: KeyboardEvent): void => {
     if (e.key === "Escape") {
       e.preventDefault();
       e.stopPropagation();
@@ -164,5 +160,5 @@ export class WindowMenu {
     const at = items.indexOf(this.doc.activeElement as HTMLButtonElement);
     const step = e.key === "ArrowDown" ? 1 : -1;
     items[(at + step + items.length) % items.length]?.focus();
-  }
+  };
 }
