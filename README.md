@@ -138,6 +138,7 @@ though nothing names what it exports.
 npm ci
 npm run typecheck
 npm run lint
+npm run icons:check      # the pixelarticons paths match the package; `npm run icons` rewrites them
 npm run format:check     # Prettier; `npm run format` rewrites the files
 npm test
 npm run build                 # compiles src/ into lib/, what the package ships
