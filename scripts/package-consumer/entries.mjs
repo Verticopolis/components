@@ -20,13 +20,17 @@ const specifiers = new Set();
 for (const [key, target] of Object.entries(exports)) {
   const types = typeof target === "object" && target !== null ? target.types : undefined;
   if (!key.includes("*") || typeof types !== "string") continue;
-  const [pre, post] = types.slice(2).split("*");
+  // A subpath pattern has exactly one `*`, in the key and in its target.
+  const keyParts = key.slice(2).split("*");
+  const typeParts = types.slice(2).split("*");
+  if (keyParts.length !== 2 || typeParts.length !== 2) throw new Error(`${key}: a pattern with more than one *`);
+  const [pre, post] = typeParts;
   for (const f of files) {
     if (!f.startsWith(pre) || !f.endsWith(post)) continue;
     const middle = f.slice(pre.length, f.length - post.length);
     // `shared/*` is the alias of `model/*`: one name per file is enough.
     if (key === "./shared/*") continue;
-    specifiers.add(`@verticopolis/components/${key.slice(2).replace("*", middle)}`);
+    specifiers.add(`@verticopolis/components/${keyParts.join(middle)}`);
   }
 }
 if (specifiers.size === 0) throw new Error("the package exports no declarations");
