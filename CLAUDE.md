@@ -8,17 +8,23 @@ package. [README.md](README.md) has the layout, the
 checks, the gallery, the screenshot tests and releasing, and
 [ARCHITECTURE.md](ARCHITECTURE.md) has the design in diagrams. Read both.
 
-## Load the game's repository too
+## The BMAD setup
 
-The agent workflow is not copied here. The BMAD/BMGD skills, the review
-skills (`/gds-code-review`, `/bmad-code-review`), the hot-path checklist
-(`docs/performance/hot-path-review.md`) and the agent rules (`AGENTS.md`,
-`_bmad-output/project-context.md`) live in
-[Verticopolis/web](https://github.com/Verticopolis/web). Load it in the same
-session, and run its review skill on every non-trivial change here:
-`/gds-code-review` for the renderer, input, audio and the render model,
+This repository carries its own BMAD install: the BMAD/BMGD skills in
+`.agents/skills/` (`.claude/skills` links to it), the workflow engine in
+`_bmad/`, this repository's overrides in `_bmad/custom/`, and its own
+outputs in `_bmad-output/`: the project context
+(`_bmad-output/project-context.md`), the backlog
+(`_bmad-output/implementation-artifacts/backlog.md`), specs, plans and party
+findings. Run the skills from this repository's root so they read its config
+and write to its backlog. Run the review skill on every non-trivial change
+here: `/gds-code-review` for the renderer, input, audio and the render model,
 `/bmad-code-review` for CI, packaging and tooling. Rendering, the frame
-loop, UI and audio are hot paths and also get the hot-path checklist.
+loop, UI and audio are hot paths and also get the hot-path checklist
+(`docs/performance/hot-path-review.md`), which stays one page in
+[Verticopolis/web](https://github.com/Verticopolis/web); the review
+overrides read it from there. Keeping the install in step with the other
+repositories is in CONTRIBUTING.md, "The BMAD setup".
 
 ## Non-negotiables
 
