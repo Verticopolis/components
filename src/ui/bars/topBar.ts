@@ -1,6 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map.js";
-import { styleMap } from "lit-html/directives/style-map.js";
 import { iconTemplate, type IconName } from "../icons";
 import type { TrafficLevel } from "../../presentation/traffic";
 
@@ -25,8 +24,9 @@ import type { TrafficLevel } from "../../presentation/traffic";
  * Lit compares every value with the one it drew last and writes only the ones
  * that changed, so an unchanged pass touches no DOM. Pass the same
  * {@link TopBarActions} object every time, so lit never rebinds a listener.
- * The classes and the funds color go through `classMap` and `styleMap`, which
- * leave alone a class or style the game adds itself (the Play button's nudge).
+ * The classes go through `classMap`, which leaves alone a class the game adds
+ * itself (the Play button's nudge). The funds color is a plain attribute, so
+ * lit writes it only when the sign of the funds changes.
  */
 
 /** What the meters and buttons show. The game formats every text. */
@@ -179,7 +179,7 @@ export function topBarTemplate(view: TopBarView, actions: TopBarActions): Templa
       </div>
       <div class="stat" title="Cash on hand">
         <span class="label">FUND</span>
-        <span id="stat-money" class="value money" style=${styleMap({ color: view.fundsNegative ? "var(--bad)" : "var(--money)" })}
+        <span id="stat-money" class="value money" style="color: ${view.fundsNegative ? "var(--bad)" : "var(--money)"}"
           >${view.funds}</span
         >
       </div>

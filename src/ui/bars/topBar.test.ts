@@ -158,9 +158,26 @@ describe("topBarTemplate", () => {
     draw();
     const time = $("#stat-time");
     const money = $("#stat-money").firstChild;
+    const watch = new MutationObserver(() => {});
+    watch.observe(host, { subtree: true, childList: true, characterData: true, attributes: true });
     draw({ time: "Mon 07:10" });
+    const records = watch.takeRecords();
+    watch.disconnect();
     expect($("#stat-time")).toBe(time);
     expect($("#stat-time").textContent).toBe("Mon 07:10");
     expect($("#stat-money").firstChild).toBe(money);
+    expect(records.map((r) => r.type)).toEqual(["characterData"]);
+    expect(time.contains(records[0].target)).toBe(true);
+  });
+
+  it("writes the funds color only when the sign of the funds changes", () => {
+    draw();
+    const watch = new MutationObserver(() => {});
+    watch.observe($("#stat-money"), { attributes: true });
+    draw({ funds: "$1,999,000" });
+    expect(watch.takeRecords()).toHaveLength(0);
+    draw({ funds: "$-5,000", fundsNegative: true });
+    expect(watch.takeRecords().map((r) => r.attributeName)).toEqual(["style"]);
+    watch.disconnect();
   });
 });
