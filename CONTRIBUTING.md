@@ -27,6 +27,12 @@ them:
 - **American English, and no em-dashes in prose** (docs, comments, commit
   and pull request text, and anything a player reads).
 - **New art, a new look or a new sound** needs the owner's OK before merge.
+- **An independent GO before every merge.** The review comes from someone
+  other than the pull request's author, on its head commit, with every
+  review thread resolved.
+- **Merge commits only** to `main`, never a squash, and never a force-push
+  to `main`. Force-pushing your own pull request branch is fine; keep its
+  history readable before it merges.
 
 Before you push, run `npm run typecheck`, `npm run lint`,
 `npm run icons:check`, `npm run format:check`, `npm test` and
