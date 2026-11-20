@@ -1,8 +1,9 @@
 /* A Starlight docs site in the game's look, in one stylesheet: the tokens,
-   the site's skin (starlight-theme.css) and the title bar (title-bar.css), in
-   that order. Starlight puts its own CSS in the `starlight` layer, so a site
-   declares `@layer starlight, vc;` before any components CSS loads, and these
-   rules win over Starlight's. A customCss entry is too late, since Astro puts
+   the site's skin (starlight-theme.css), the title bar (title-bar.css) and
+   the game's appearance schemes (starlight-schemes.css), in that order.
+   Starlight puts its own CSS in the `starlight` layer, so a site declares
+   `@layer starlight, vc;` before any components CSS loads, and these rules
+   win over Starlight's. A customCss entry is too late, since Astro puts
    the CSS a page's scripts import (the menu bar's) ahead of customCss, so the
    site declares it in a <style> through Starlight's `head` option. */
 @layer vc.tokens, vc.base, vc.components, vc.page;
@@ -10,3 +11,4 @@
 @import "./retro-tokens.css";
 @import "./starlight-theme.css";
 @import "./title-bar.css";
+@import "./starlight-schemes.css";
