@@ -191,9 +191,10 @@ bus graph, the lifecycle and the ambient layer.
 ```mermaid
 flowchart LR
     Src["src/"] -->|"npm run build<br/>(tsc, one ES module per file)"| Lib["lib/<br/>JS · .d.ts · CSS"]
-    Lib --> Gallery["gallery/<br/>every piece, scenes, sound board"]
-    Gallery --> Shots["e2e/ screenshot tests<br/>pinned Playwright image"]
-    Gallery --> Pages["GitHub Pages"]
+    Lib --> Gallery["gallery/<br/>every piece, scenes, people, sound board"]
+    Gallery --> Site["site/<br/>the Starlight gallery and these docs"]
+    Site --> Shots["e2e/ screenshot tests<br/>pinned Playwright image"]
+    Site --> Pages["GitHub Pages"]
     Lib -->|"npm run pack"| Tgz["tarball + sha256"]
     Notes[".changes/ notes"] -->|"Cut release"| ReleasePR["release PR"]
     ReleasePR -->|"merge"| Tag["v&lt;version&gt; tag and GitHub release"]

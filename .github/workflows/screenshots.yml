@@ -18,6 +18,7 @@ on:
     paths:
       - "src/**"
       - "gallery/**"
+      - "site/**"
       - "e2e/**"
       - "playwright.config.ts"
       - "scripts/build-lib.sh"
@@ -68,7 +69,7 @@ jobs:
           # Collect the list first, so a failing git diff fails the step
           # instead of skipping the work.
           changed="$(git diff --name-only --no-renames "$BASE...$HEAD")"
-          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|e2e/|playwright\.config\.ts$|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/screenshots\.yml$|\.nvmrc$)'; then
+          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|site/|e2e/|playwright\.config\.ts$|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/screenshots\.yml$|\.nvmrc$)'; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "No file the screenshot comparison reads changed; skipping."
@@ -102,14 +103,20 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            site/package-lock.json
 
       - run: npm ci
+
+      - name: Install the gallery site's packages
+        run: npm run gallery:install
 
       - name: Typecheck the specs
         run: npx tsc -p e2e/tsconfig.json --noEmit
 
       # The web server in playwright.config.ts builds the package and the
-      # gallery before it serves the page.
+      # gallery site before it serves the pages.
       - name: Compare the screenshots
         run: npx playwright test
 

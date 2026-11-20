@@ -1,15 +1,16 @@
 /**
- * The component gallery: every reusable piece of the package in each color
- * scheme, built from lib/ the way a consumer would. The chrome (windows,
- * buttons, wells, key-value rows, the menu bar and the icons) is plain markup
+ * The gallery's demos: every reusable piece of the package, built from lib/
+ * the way a consumer would, each mounted where a site page asks for it by
+ * name (`site/src/components/Demo.astro`). The chrome (windows, buttons,
+ * wells, key-value rows, a sample menu bar and the icons) is plain markup
  * over the package's stylesheets. The rooms and the tower scenes are painted
  * by the package's own painters from the components' hand-written render
- * catalog (`src/tests/catalogFixture.ts`), the stand-in for the catalog a game
- * hands the renderer. The overview map is left out: it draws a running tower,
- * and the gallery has none.
+ * catalog (`src/tests/catalogFixture.ts`), the stand-in for the catalog a
+ * game hands the renderer. The overview map is left out: it draws a running
+ * tower, and the gallery has none.
  */
 import { catalogFor } from "../src/tests/catalogFixture.js";
-import type { FacilityKind, RenderFacility } from "../lib/render/renderModel.js";
+import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/renderModel.js";
 import { bindViewWorld } from "../lib/presentation/viewWorld.js";
 import { bindViewKinds } from "../lib/presentation/viewKinds.js";
 import type { DrawCtx } from "../lib/render/sprites.js";
@@ -19,14 +20,8 @@ import { GALLERY_HOUR, roomCells, type RoomCell } from "./rooms.js";
 import { paintScene, sceneSize, type Scene } from "./scene.js";
 import { elevatorScenes, lobbyScenes, stairScenes } from "./scenes.js";
 import { soundBoard } from "./sounds.js";
-
-/** The color schemes, by the value each sets on `html[data-scheme]` (none for
- *  the classic look). */
-const SCHEMES: ReadonlyArray<{ label: string; value: string | null }> = [
-  { label: "Classic", value: null },
-  { label: "Skyline", value: "skyline" },
-  { label: "High contrast", value: "high_contrast" },
-];
+import { canvasFor, figure } from "./canvas.js";
+import { people } from "./people.js";
 
 /** Room cell size in CSS px. */
 const CELL_W = 260;
@@ -35,43 +30,10 @@ const CELL_H = 200;
 /** Scene magnification, a whole multiple so world pixels stay square blocks. */
 const SCENE_MAG = 2;
 
-const app = document.getElementById("app")!;
-
-function section(title: string, body: HTMLElement): HTMLElement {
-  const s = document.createElement("section");
-  s.className = "g-section";
-  const h = document.createElement("h2");
-  h.textContent = title;
-  s.append(h, body);
-  return s;
-}
-
 function fromMarkup(markup: string): HTMLElement {
   const holder = document.createElement("div");
   holder.innerHTML = markup.trim();
   return holder.firstElementChild as HTMLElement;
-}
-
-function schemeSwitcher(): HTMLElement {
-  const row = document.createElement("div");
-  row.className = "g-schemes";
-  row.setAttribute("role", "group");
-  row.setAttribute("aria-label", "Color scheme");
-  const buttons = SCHEMES.map(({ label, value }) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "btn";
-    b.textContent = label;
-    b.addEventListener("click", () => {
-      if (value) document.documentElement.dataset.scheme = value;
-      else delete document.documentElement.dataset.scheme;
-      for (const other of buttons) other.setAttribute("aria-pressed", String(other === b));
-    });
-    return b;
-  });
-  buttons[0].setAttribute("aria-pressed", "true");
-  row.append(...buttons);
-  return row;
 }
 
 const BUTTONS = `
@@ -123,7 +85,7 @@ const WELLS = `
 const MENU = `
 <nav class="menubar" aria-label="Sample menu">
     <div class="mb-menu">
-      <button type="button" class="mb-title" id="g-file" aria-haspopup="menu" aria-expanded="false" aria-controls="g-file-menu"><u>F</u>ile</button>
+      <button type="button" class="mb-title" id="g-file" aria-haspopup="menu" aria-expanded="false" aria-controls="g-file-menu"><span class="g-key">F</span>ile</button>
       <div class="mb-pop" id="g-file-menu" role="menu" aria-labelledby="g-file" hidden>
         <button type="button" role="menuitem" class="mb-item">New…</button>
         <button type="button" role="menuitem" class="mb-item">Open…<kbd>Ctrl+O</kbd></button>
@@ -133,14 +95,14 @@ const MENU = `
       </div>
     </div>
     <div class="mb-menu">
-      <button type="button" class="mb-title" id="g-options" aria-haspopup="menu" aria-expanded="false" aria-controls="g-options-menu"><u>O</u>ptions</button>
+      <button type="button" class="mb-title" id="g-options" aria-haspopup="menu" aria-expanded="false" aria-controls="g-options-menu"><span class="g-key">O</span>ptions</button>
       <div class="mb-pop" id="g-options-menu" role="menu" aria-labelledby="g-options" hidden>
         <button type="button" role="menuitemcheckbox" class="mb-item" aria-checked="true">Sound</button>
         <button type="button" role="menuitemcheckbox" class="mb-item" aria-checked="false">Music</button>
       </div>
     </div>
     <div class="mb-menu">
-      <button type="button" class="mb-title" id="g-help" aria-haspopup="menu" aria-expanded="false" aria-controls="g-help-menu"><u>H</u>elp</button>
+      <button type="button" class="mb-title" id="g-help" aria-haspopup="menu" aria-expanded="false" aria-controls="g-help-menu"><span class="g-key">H</span>elp</button>
       <div class="mb-pop" id="g-help-menu" role="menu" aria-labelledby="g-help" hidden>
         <button type="button" role="menuitem" class="mb-item">About…</button>
       </div>
@@ -163,30 +125,6 @@ function icons(): HTMLElement {
 /** A still evening frame, the look the game's own sprite gallery used. */
 function frame(ctx: CanvasRenderingContext2D, hour: number): DrawCtx {
   return { ctx, lit: true, anim: 0, hour, parkingUse: 0.7, recycleFill: 0.66 };
-}
-
-function canvasFor(cssW: number, cssH: number, label: string): [HTMLCanvasElement, CanvasRenderingContext2D] {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(cssW * dpr);
-  canvas.height = Math.round(cssH * dpr);
-  canvas.setAttribute("role", "img");
-  canvas.setAttribute("aria-label", label);
-  const ctx = canvas.getContext("2d")!;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.imageSmoothingEnabled = false;
-  return [canvas, ctx];
-}
-
-function figure(canvas: HTMLCanvasElement, title: string, caption?: string): HTMLElement {
-  const fig = document.createElement("figure");
-  const cap = document.createElement("figcaption");
-  const name = document.createElement("strong");
-  name.textContent = title;
-  cap.append(name);
-  if (caption) cap.append(document.createElement("br"), caption);
-  fig.append(canvas, cap);
-  return fig;
 }
 
 function roomGrid(cells: RoomCell[]): HTMLElement {
@@ -217,9 +155,9 @@ function sceneGrid(scenes: Scene[], facts: (kind: FacilityKind) => RenderFacilit
   return grid;
 }
 
-/** The rooms and the tower scenes, drawn from the Modern render catalog,
- *  which holds every kind and variety the art draws. */
-function towerSections(): HTMLElement[] {
+/** The Modern render catalog, which holds every kind and variety the art
+ *  draws, bound for the view the painters read. */
+function towerFacts(): { cat: RenderCatalog; facts: (kind: FacilityKind) => RenderFacility } {
   const cat = catalogFor("modern");
   bindViewWorld(cat.world);
   bindViewKinds(cat);
@@ -229,47 +167,60 @@ function towerSections(): HTMLElement[] {
     if (!f) throw new Error(`The gallery's catalog has no ${kind}.`);
     return f;
   };
-  return [
-    section("Lobbies", sceneGrid(lobbyScenes(facts), facts)),
-    section("Stairs and escalators", sceneGrid(stairScenes(facts), facts)),
-    section("Elevators", sceneGrid(elevatorScenes(facts), facts)),
-    section("Rooms", roomGrid(roomCells(cat.facilities))),
-  ];
+  return { cat, facts };
 }
 
-function start(): void {
-  const win = fromMarkup(`
-<div class="win page-win">
-  <div class="win-title"><span class="page-title-text">@verticopolis/components</span></div>
-  <div class="win-body"></div>
-</div>`);
-  const body = win.querySelector<HTMLElement>(".win-body")!;
-  const lede = fromMarkup(`
-<div class="page-lede">
-  <h1>Component gallery</h1>
-  <p class="sub">Every reusable piece of the package, drawn from its own stylesheets and painters. Pick a color scheme to see each one in it.</p>
-</div>`);
-  const menu = fromMarkup(MENU);
-  const menuNote = document.createElement("p");
-  menuNote.textContent =
-    "The bar at the top of this page: open File or Options to see the menus, with the keyboard too (Alt and the underlined letter).";
-  body.append(
-    lede,
-    schemeSwitcher(),
-    section("Buttons", fromMarkup(BUTTONS)),
-    section("Windows", fromMarkup(WINDOWS)),
-    section("Wells, fields and key-value rows", fromMarkup(WELLS)),
-    section("Menu bar", menuNote),
-    section("Icons", icons()),
-    section("Sounds", soundBoard()),
-    ...towerSections(),
-  );
-  // The menu bar sits above the page window, outside any window body, the
-  // way the game places it, so no page rule restyles its items.
-  app.replaceChildren(menu, win);
-  new MenuBar(menu);
+/** Work a demo needs done once it is in the page, by its root element. */
+const onMounted = new WeakMap<HTMLElement, () => void>();
 
+/** The sample bar. `MenuBar` finds each menu by id in the document, so it is
+ *  built once the bar is in the page. Its letters are underlined without a
+ *  <u>, so Alt and a letter open the site's own bar and never this one too. */
+function sampleMenu(): HTMLElement {
+  const holder = document.createElement("div");
+  holder.className = "g-menu-sample";
+  const menu = fromMarkup(MENU);
+  holder.append(menu);
+  onMounted.set(holder, () => new MenuBar(menu));
+  return holder;
+}
+
+/** Every demo a page can show, by the name its `Demo` component passes. */
+export const DEMOS = {
+  buttons: () => fromMarkup(BUTTONS),
+  windows: () => fromMarkup(WINDOWS),
+  wells: () => fromMarkup(WELLS),
+  "menu-bar": sampleMenu,
+  icons,
+  sounds: soundBoard,
+  people,
+  lobbies: () => {
+    const { facts } = towerFacts();
+    return sceneGrid(lobbyScenes(facts), facts);
+  },
+  stairs: () => {
+    const { facts } = towerFacts();
+    return sceneGrid(stairScenes(facts), facts);
+  },
+  elevators: () => {
+    const { facts } = towerFacts();
+    return sceneGrid(elevatorScenes(facts), facts);
+  },
+  rooms: () => roomGrid(roomCells(towerFacts().cat.facilities)),
+} satisfies Record<string, () => HTMLElement>;
+
+export type DemoName = keyof typeof DEMOS;
+
+/** Fill each `[data-demo]` holder on the page with its demo, then mark the
+ *  page ready for the screenshot tests. */
+export function mountDemos(root: ParentNode = document): void {
+  for (const holder of root.querySelectorAll<HTMLElement>("[data-demo]")) {
+    const name = holder.dataset.demo as DemoName;
+    const make = DEMOS[name];
+    if (!make) throw new Error(`The gallery has no demo named ${name}.`);
+    const demo = make();
+    holder.replaceChildren(demo);
+    onMounted.get(demo)?.();
+  }
   (window as unknown as { galleryReady: boolean }).galleryReady = true;
 }
-
-start();

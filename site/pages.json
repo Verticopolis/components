@@ -1,0 +1,29 @@
+{
+  "$comment": "The repository's own docs the gallery site shows. scripts/sync-pages.mjs copies each source into src/content/docs/docs/<slug>.md before a build.",
+  "pages": [
+    {
+      "source": "ARCHITECTURE.md",
+      "slug": "architecture",
+      "title": "Architecture",
+      "description": "How the components are put together, in diagrams."
+    },
+    {
+      "source": "docs/design-system.md",
+      "slug": "design-system",
+      "title": "Design system",
+      "description": "The tokens, the components and the window grammar of the Win95 chrome."
+    },
+    {
+      "source": "docs/audio.md",
+      "slug": "audio",
+      "title": "Audio",
+      "description": "The audio layer: the modules, the bus graph, the lifecycle and the ambience."
+    },
+    {
+      "source": "docs/atlas.md",
+      "slug": "atlas",
+      "title": "Sprite atlas",
+      "description": "The baked sprite atlas: the archive, the manifest, depth layers and how it is checked."
+    }
+  ]
+}

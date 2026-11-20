@@ -1,7 +1,7 @@
 # Built and installed output
 lib/
 dist/
-dist-gallery/
+site/.astro/
 coverage/
 test-results/
 playwright-report/

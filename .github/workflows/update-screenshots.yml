@@ -70,8 +70,14 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            site/package-lock.json
 
       - run: npm ci
+
+      - name: Install the gallery site's packages
+        run: npm run gallery:install
 
       - name: Regenerate the baselines
         run: npx playwright test --update-snapshots

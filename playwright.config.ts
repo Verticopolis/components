@@ -1,9 +1,11 @@
 import { defineConfig } from "@playwright/test";
 
-// Screenshot tests for the component gallery (gallery/): every piece the
-// package draws, in each color scheme, on a desktop and a phone screen. The
-// web server builds the package and the gallery, then serves the built page,
-// so the shots come from lib/ the way a consumer would load it.
+// Screenshot tests for the component gallery (site/, with its demos in
+// gallery/): every piece the package draws, in each color scheme, on a
+// desktop and a phone screen. The web server builds the package and the
+// gallery site, then serves the built site, so the shots come from lib/ the
+// way a consumer would load it. The site's own packages come first
+// (`npm run gallery:install`).
 //
 // Glyph and canvas rasterization differ across Chromium builds, so the
 // baselines are minted only inside the pinned Playwright image (the
@@ -42,7 +44,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run build && npm run gallery:build && npx vite preview -c gallery/vite.config.ts --host 127.0.0.1 --port ${PORT} --strictPort`,
+    command: `npm run build && npm run gallery:build && npm run --prefix site preview -- --host 127.0.0.1 --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}`,
     timeout: 180_000,
     reuseExistingServer: !process.env.CI,

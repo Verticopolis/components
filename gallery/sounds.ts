@@ -145,11 +145,7 @@ export function soundBoard(): HTMLElement {
   });
 
   const board = document.createElement("div");
-  const note = document.createElement("p");
-  note.textContent =
-    "Every sound is made by the package's synthesizer as it plays. Music and a place's ambience keep going until you stop them.";
   board.append(
-    note,
     row("Effects", effects),
     row("Music", [...musicButtons, stopMusic]),
     row("Places", [...placeButtons, stopPlace]),

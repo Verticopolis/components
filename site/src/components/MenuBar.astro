@@ -1,0 +1,92 @@
+---
+// The site's Win95 menu bar across the top of every page, above its title
+// bar, as the player's manual and the game draw theirs. Its markup is the
+// package's (styles/menu-bar.css); gallery/siteMenu.ts says what each item
+// does. The sample menu bar, with made-up items, is a demo on its own page.
+import { ENGINE_DOCS, GAME, GITHUB, GITHUB_ISSUES, NPM, PLAYER_HELP, SCHEMES } from "../../site.mjs";
+---
+
+<nav id="site-menubar" class="menubar site-menubar print:hidden" aria-label="Site menu">
+  <div class="mb-menu">
+    <button type="button" class="mb-title" id="sm-file" aria-haspopup="menu" aria-expanded="false" aria-controls="sm-file-menu"><u>F</u>ile</button>
+    <div class="mb-pop" id="sm-file-menu" role="menu" aria-labelledby="sm-file" hidden>
+      <a role="menuitem" class="mb-item" href={GAME}>Play Verticopolis</a>
+      <a role="menuitem" class="mb-item" href={NPM}>Get the Package on npm</a>
+      <a role="menuitem" class="mb-item" href={GITHUB}>View the Source on GitHub</a>
+      <hr class="mb-sep" />
+      <button type="button" role="menuitem" class="mb-item" data-site-item="print">Print…<kbd>Ctrl+P</kbd></button>
+    </div>
+  </div>
+  <div class="mb-menu">
+    <button type="button" class="mb-title" id="sm-edit" aria-haspopup="menu" aria-expanded="false" aria-controls="sm-edit-menu"><u>E</u>dit</button>
+    <div class="mb-pop" id="sm-edit-menu" role="menu" aria-labelledby="sm-edit" hidden>
+      <button type="button" role="menuitem" class="mb-item" data-site-item="find">Find…<kbd>Ctrl+K</kbd></button>
+      <button type="button" role="menuitem" class="mb-item" data-site-item="copy_link">Copy Link to This Page</button>
+    </div>
+  </div>
+  <div class="mb-menu">
+    <button type="button" class="mb-title" id="sm-options" aria-haspopup="menu" aria-expanded="false" aria-controls="sm-options-menu"><u>O</u>ptions</button>
+    <div class="mb-pop" id="sm-options-menu" role="menu" aria-labelledby="sm-options" hidden>
+      <button type="button" role="menuitemradio" class="mb-item" data-site-item="theme_light" aria-checked="false">Light</button>
+      <button type="button" role="menuitemradio" class="mb-item" data-site-item="theme_dark" aria-checked="false">Dark</button>
+      <button type="button" role="menuitemradio" class="mb-item" data-site-item="theme_auto" aria-checked="false">Match My Device</button>
+      <hr class="mb-sep" />
+      {
+        SCHEMES.map(({ label, value }) => (
+          <button type="button" role="menuitemradio" class="mb-item" data-site-item={`scheme_${value}`} aria-checked="false">
+            {label}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+  <div class="mb-menu">
+    <button type="button" class="mb-title" id="sm-help" aria-haspopup="menu" aria-expanded="false" aria-controls="sm-help-menu"><u>H</u>elp</button>
+    <div class="mb-pop" id="sm-help-menu" role="menu" aria-labelledby="sm-help" hidden>
+      <a role="menuitem" class="mb-item" href={PLAYER_HELP}>Player's Manual</a>
+      <a role="menuitem" class="mb-item" href={ENGINE_DOCS}>Engine Docs</a>
+      <hr class="mb-sep" />
+      <a role="menuitem" class="mb-item" href={GITHUB_ISSUES} target="_blank" rel="noopener noreferrer">Report a Problem…</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  import { wireSiteMenu, type SiteTheme } from "../../../gallery/siteMenu";
+  import { SCHEMES, SCHEME_KEY } from "../../site.mjs";
+
+  const root = document.getElementById("site-menubar");
+  if (root) {
+    const themeSelect = () => document.querySelector<HTMLSelectElement>("starlight-theme-select select");
+    wireSiteMenu(
+      root,
+      {
+        print: () => window.print(),
+        openSearch: () => document.querySelector<HTMLButtonElement>("site-search button[data-open-modal]")?.click(),
+        copyLink: (url) => navigator.clipboard.writeText(url),
+        pageUrl: () => location.origin + location.pathname,
+        theme: () => {
+          const value = themeSelect()?.value;
+          return value === "light" || value === "dark" ? value : "auto";
+        },
+        setTheme: (theme: SiteTheme) => {
+          const select = themeSelect();
+          if (!select) return;
+          select.value = theme;
+          select.dispatchEvent(new Event("change"));
+        },
+        scheme: () => document.documentElement.getAttribute("data-scheme") ?? "classic",
+        setScheme: (scheme) => {
+          if (scheme === "classic") document.documentElement.removeAttribute("data-scheme");
+          else document.documentElement.setAttribute("data-scheme", scheme);
+          try {
+            localStorage.setItem(SCHEME_KEY, scheme);
+          } catch {
+            // Private browsing: the pick lasts for this page only.
+          }
+        },
+      },
+      SCHEMES.map((s) => s.value),
+    );
+  }
+</script>
