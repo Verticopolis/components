@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { clockOf, type ClockHeader, type ClockView } from "./headerClock";
+import { ClockReads } from "../simport/clockView";
+import { clockOf as headerClockOf, type ClockHeader } from "../simport/headerClock";
+import { clockOf as clockAt, type ClockView } from "./clockOf";
+
+/** The panel's clock for a header, with the engine's clock at its minute. */
+const clockOf = (h: ClockHeader): ClockView => clockAt(h, new ClockReads().set(h));
 
 /**
  * A panel's clock, derived from the header alone: the time of day from the
@@ -71,7 +76,7 @@ const CALENDARS = [
   ["the real-world calendar", REAL_WORLD, { weekDays: 7, weekendDays: 2 }],
 ] as const;
 
-describe("headerClock", () => {
+describe("clockOf", () => {
   for (const [name, rows, week] of CALENDARS) {
     it(`${name}: reads the time and names from the header`, () => {
       for (const r of rows) expect(readings(clockOf(headerOf(r, week))), `at minute ${r[0]}`).toEqual(r);
@@ -84,5 +89,19 @@ describe("headerClock", () => {
     const next = clockOf({ minutes: 1440, day: 1, dayOfWeek: 1, isWeekend: false, quarter: 0, year: 0, ...week });
     expect([first.minutes, first.minuteOfDay, first.hour, first.minute, first.day]).toEqual([0, 0, 0, 0, 0]);
     expect([first.dayOfWeek, first.format(), next.dayOfWeek, next.format()]).toEqual([0, "Mon 00:00", 1, "Tue 00:00"]);
+  });
+
+  it("takes its reading once, so a clock that moves on leaves it alone", () => {
+    const week = { weekDays: 7, weekendDays: 2 };
+    const h = { minutes: 420, day: 0, dayOfWeek: 0, isWeekend: false, quarter: 0, year: 0, ...week };
+    const live = new ClockReads().set(h);
+    const c = clockAt(h, live);
+    live.set({ minutes: 1260 });
+    expect([c.minutes, c.hour, c.isMorning(), c.isNight(), c.format()]).toEqual([420, 7, true, false, "Mon 07:00"]);
+  });
+
+  it("keeps the deprecated header path's readings", () => {
+    const week = { weekDays: 3, weekendDays: 1 };
+    for (const r of CANON) expect(readings(headerClockOf(headerOf(r, week)))).toEqual(r);
   });
 });

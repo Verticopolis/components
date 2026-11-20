@@ -1,4 +1,4 @@
-import type { ElevatorQueueView } from "../../model/engineTypes";
+import type { RenderQueue } from "../renderModel";
 
 export function shade(hex: string, amt: number): string {
   const n = parseInt(hex.slice(1), 16);
@@ -59,7 +59,7 @@ export interface DrawCtx {
    *  frame prelude. A VIEW of tracked crowd state, so the transport render path can
    *  read landing queues and cab fill without a draw routine calling the engine.
    *  Populated by TowerEngine; the queue render that consumes it is a follow-up. */
-  elevatorQueue?: ElevatorQueueView;
+  elevatorQueue?: RenderQueue;
 }
 
 /** The 7px signage every service facility paints on its back wall; hidden

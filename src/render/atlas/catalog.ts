@@ -1,4 +1,4 @@
-import type { FacilityKind, UnitState } from "../../model/types";
+import type { FacilityKind, UnitState } from "../renderModel";
 import { LATE_NIGHT_KINDS, isLateHour } from "../lateNight";
 import { TILE, FLOOR } from "../scale";
 import { findViewKind, hasBusinessHours, isOpenAt, viewKindKeys } from "../../presentation/viewKinds";

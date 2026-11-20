@@ -1,3 +1,4 @@
+import type { RenderCatalog } from "../renderModel";
 import { zipSync, strToU8, type Zippable } from "fflate";
 import type { BakeResult, ImageRef } from "./bake";
 import { variantPlacements, roomKinds, RECYCLE_BREAKS, RECYCLE_STEPS, PARKING_CAR_COLORS } from "./catalog";
@@ -23,7 +24,6 @@ import {
 import { FLOOR, TILE } from "../scale";
 import { skyColor } from "../sprites/sky";
 import { SHIRTS } from "../pixelSprites/common";
-import type { Catalog } from "../../catalog/catalogTypes";
 import { bindViewWorld } from "../../presentation/viewWorld";
 import { bindViewKinds } from "../../presentation/viewKinds";
 
@@ -46,7 +46,7 @@ export interface ArchiveInfo {
   /** The engine's Modern catalog the art was drawn with. The archive reads
    *  room and scenery facts through the view, and Node's archive builder runs
    *  apart from the page that baked the art, so it binds its own view to this. */
-  catalog: Catalog;
+  catalog: RenderCatalog;
 }
 
 export const ARCHIVE_ROOT = "verticopolis-atlas";

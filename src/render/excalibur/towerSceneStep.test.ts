@@ -18,7 +18,10 @@ vi.mock("./towerReconcile", async (original) => ({
 }));
 vi.mock("./towerCrowd", async (original) => ({ ...(await original<object>()), syncMotion: vi.fn() }));
 // A swap binds the new tower's world and kinds; these stand-ins hold none.
-vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules: {} }) }));
+vi.mock("../towerSource", async (real) => ({
+  ...(await real<typeof import("../towerSource")>()),
+  towerCatalog: () => ({ rules: {} }),
+}));
 vi.mock("../../presentation/viewWorld", async (original) => ({
   ...(await original<object>()),
   bindViewWorld: vi.fn(),

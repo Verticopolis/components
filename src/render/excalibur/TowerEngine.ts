@@ -1,7 +1,5 @@
+import type { FacilityKind, RenderCamera, RenderUnit, RenderSim } from "../renderModel";
 import * as ex from "excalibur";
-import type { FacilityKind, SerializedView } from "../../model/types";
-import type { SimView, UnitView } from "../../simport/view";
-import type { RenderSim } from "../renderSim";
 import { PinchTracker } from "../pinchTracker";
 import type { DrawCtx } from "../sprites";
 import type { EntranceKind } from "../sprites/structure/lobby";
@@ -19,7 +17,6 @@ import { guardPointerButtons } from "./pointerButtonGuard";
 import { keyboardHost } from "./keyboardHost";
 import * as overlayFx from "./towerOverlay";
 import { displayLit, runSceneSync } from "./towerSyncSchedule";
-import { clockOf } from "../../simport/headerClock";
 import { beginFrame } from "./towerFrame";
 import { drainRegions, type RegionRec } from "./towerRegions";
 import { NOT_BAKED } from "./sceneBake";
@@ -31,9 +28,8 @@ import type { ViewFocus, Picked, ScreenRect } from "./towerInputCamera";
 import type { ThiefSpan } from "./thiefSpan";
 
 export { FLOOR, TILE };
-// The camera zoom range lives in its friend-module; re-exported so consumers
-// keep importing it (and the `ViewFocus`/`Picked` shapes) from this file.
-export { MIN_ZOOM, MAX_ZOOM } from "./towerInputCamera";
+// The view shapes live in the camera's friend-module; re-exported so
+// consumers keep importing them from this file.
 export type { ViewFocus, Picked } from "./towerInputCamera";
 
 /**
@@ -200,7 +196,7 @@ export class TowerEngine {
   tunnelActors: ex.Actor[] = [];
   /** The pre-dawn garbage truck: one per recycling center, visible only during
    *  the collection hour (drives in, loads, drives off, like the metro train). */
-  truckActors: { actor: ex.Actor; u: UnitView; w: number }[] = [];
+  truckActors: { actor: ex.Actor; u: RenderUnit; w: number }[] = [];
   /** Commute cars cruising the garage decks at rush hours: one per basement
    *  parking floor, ping-ponging along that floor's parking run. */
   garageCars: { actor: ex.Actor; floor: number; x0w: number; x1w: number; seed: number }[] = [];
@@ -314,14 +310,9 @@ export class TowerEngine {
   sky!: ex.ScreenElement;
   skyCanvas!: ex.Canvas;
 
-  /** `reader`: the shared view reader. `start()` takes the saved camera, the
-   *  hour and the revisions from it when given (slice 7, PR 4); the frame
-   *  reads stay on `sim` until the frame slices move behind the view. */
-  constructor(
-    canvas: HTMLCanvasElement,
-    sim: RenderSim,
-    private readonly reader?: SimView,
-  ) {
+  /** `start()` takes the saved camera, the hour and the revisions from
+   *  `sim`. */
+  constructor(canvas: HTMLCanvasElement, sim: RenderSim) {
     this.sim = sim;
     scene.bindSceneWorld(sim);
     guardPointerButtons(canvas); // before Excalibur's own listeners; see the module
@@ -362,11 +353,11 @@ export class TowerEngine {
     scene.makeSky(this);
     scene.makeOverlay(this);
     // A boot-loaded autosave restores its saved view; a fresh tower centers.
-    this.adoptCamera(this.reader ? this.reader.header.camera : this.sim.view);
+    this.adoptCamera(this.sim.view);
     // Bake the boot scene against the real clock instead of the d defaults:
     // the hour-driven resync now defers a frame (towerSyncSchedule), so a
     // stale boot bake would actually display instead of being fixed pre-draw.
-    const clock = this.reader ? clockOf(this.reader.header) : this.sim.clock;
+    const clock = this.sim.clock;
     this.d.hour = clock.hour;
     this.d.lit = displayLit(clock);
     this.litState = this.d.lit;
@@ -374,7 +365,7 @@ export class TowerEngine {
     this.syncScene();
     this.syncMotion();
     this.syncFacade();
-    const tower = this.reader ? this.reader.tower : this.sim.tower;
+    const tower = this.sim.tower;
     this.builtRev = tower.revision;
     this.mealOverlayRev = tower.mealOverlayRevision;
     camera.bindInput(this);
@@ -436,7 +427,7 @@ export class TowerEngine {
 
   /** Camera policy for a swapped-in (or boot-loaded) tower (see towerInputCamera).
    *  @internal friend-module access (towerScene setSim). */
-  adoptCamera(view: SerializedView | null, keepCamera?: boolean): void {
+  adoptCamera(view: RenderCamera | null, keepCamera?: boolean): void {
     camera.adoptCamera(this, view, keepCamera);
   }
 
@@ -464,11 +455,11 @@ export class TowerEngine {
   }
 
   /** The live camera as save-file cargo (see towerInputCamera). */
-  viewState(): SerializedView {
+  viewState(): RenderCamera {
     return camera.viewState(this);
   }
   /** @internal friend-module access (towerInputCamera adoptCamera) / prototype tests. */
-  applyView(v: SerializedView): void {
+  applyView(v: RenderCamera): void {
     camera.applyView(this, v);
   }
   /** Zoom by a factor about the current center (keyboard +/- zoom). */

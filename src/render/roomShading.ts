@@ -1,5 +1,4 @@
-import { isPresent } from "../model/unitState";
-import type { UnitState } from "../model/types";
+import type { UnitState } from "./renderModel";
 
 /**
  * Modern's room shading (#2097): a light pass over each settled room, lit
@@ -13,7 +12,11 @@ import type { UnitState } from "../model/types";
  */
 
 /** Whether a room gets the pass: Modern's look, and someone is there. */
-export function shadesRoom(shadedLook: boolean, u: { readonly state: UnitState }): boolean {
+export function shadesRoom(
+  shadedLook: boolean,
+  u: { readonly state: UnitState },
+  isPresent: (u: { readonly state: UnitState }) => boolean,
+): boolean {
   return shadedLook && isPresent(u);
 }
 

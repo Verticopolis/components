@@ -4,7 +4,6 @@ import type { TowerEngine } from "./TowerEngine";
 import { syncScene } from "./towerReconcile";
 import { emptyStructPass } from "./towerStructTiles";
 import { HallDoorLayer } from "./towerHallDoors";
-import { NO_TALL_HALLS } from "../lobbyHalls";
 import { emptyFlightPass } from "../venueFlights";
 import { drawTransport } from "../sprites";
 
@@ -37,8 +36,11 @@ vi.mock("../sprites", async (importOriginal) => ({
   drawTransport: vi.fn(),
 }));
 const rules = { venueFlights: true };
-vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules }) }));
-vi.mock("../../catalog/catalogTypes", () => ({
+vi.mock("../towerSource", async (real) => ({
+  ...(await real<typeof import("../towerSource")>()),
+  towerCatalog: () => ({ rules }),
+}));
+vi.mock("../catalogIndex", () => ({
   catalogFacility: (_: unknown, kind: string) => ({ floors: kind === "cinema" ? 2 : 1 }),
 }));
 vi.mock("./towerCrowd", () => ({
@@ -99,7 +101,7 @@ function fakeSim(units: UnitView[]) {
       getUnit: (id: number) => units.find((u) => u.id === id),
       transports: [stairs, lift],
       functionalParkingSet: () => new Set<number>(),
-      tallLobbies: () => NO_TALL_HALLS,
+      lobbyHeights: () => [],
     },
     parkingUsage: () => 0,
     recyclingFill: () => 0,

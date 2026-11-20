@@ -1,4 +1,4 @@
-import type { UnitView } from "../../../simport/view";
+import type { RenderUnit } from "../../renderModel";
 import { ceilingFixture, geoVariant, personSeated, personStanding, roomGlow, SKIN } from "../../pixelSprites/common";
 import { layerBreak, layerEnd } from "../../pixelSprites/layers";
 import type { DrawCtx } from "../common";
@@ -34,7 +34,7 @@ import { box, floorb, glow, refMap, wallp, whiteCoat, type Fill } from "./servic
 /** Staff appearance depends on room geography alone. `geoVariant` reads the
  *  world's lowest floor and lot width, so the shirts follow those too; both
  *  are constant for the shipped catalog. */
-function staffSeed(u: Pick<UnitView, "kind" | "floor" | "x">): number {
+function staffSeed(u: Pick<RenderUnit, "kind" | "floor" | "x">): number {
   return geoVariant(u, 6, 997);
 }
 
@@ -42,7 +42,7 @@ function staffSeed(u: Pick<UnitView, "kind" | "floor" | "x">): number {
 
 export function drawSecurity(
   d: DrawCtx,
-  u: Pick<UnitView, "kind" | "floor" | "x">,
+  u: Pick<RenderUnit, "kind" | "floor" | "x">,
   x: number,
   y: number,
   w: number,
@@ -101,7 +101,7 @@ export function drawSecurity(
 
 export function drawMedical(
   d: DrawCtx,
-  u: Pick<UnitView, "kind" | "floor" | "x">,
+  u: Pick<RenderUnit, "kind" | "floor" | "x">,
   x: number,
   y: number,
   w: number,
@@ -189,7 +189,7 @@ export function drawMedical(
 
 export function drawHousekeeping(
   d: DrawCtx,
-  u: Pick<UnitView, "kind" | "floor" | "x">,
+  u: Pick<RenderUnit, "kind" | "floor" | "x">,
   x: number,
   y: number,
   w: number,

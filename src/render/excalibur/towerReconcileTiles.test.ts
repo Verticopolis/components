@@ -7,7 +7,6 @@ import { disposeScene } from "./towerScene";
 import { emptyStructPass } from "./towerStructTiles";
 import { emptyFlightPass } from "../venueFlights";
 import { HallDoorLayer, relightHallDoors, syncHallDoors } from "./towerHallDoors";
-import { lobbyHalls, NO_TALL_HALLS, type LobbyHalls } from "../lobbyHalls";
 import { bindViewWorld, viewWorld } from "../../presentation/viewWorld";
 
 // The door actors need a 2d canvas a Node test lacks; `towerHallDoors.test.ts`
@@ -31,8 +30,11 @@ vi.mock("./roomSignature", () => ({
 vi.mock("../regionPaint", () => ({ paintAnimatedUnit: vi.fn() }));
 // The catalog's rules, which a test may set (Classic's answers by default).
 const catalogRules = vi.hoisted(() => ({ frontDoorPerTower: false }));
-vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules: catalogRules }) }));
-vi.mock("../../catalog/catalogTypes", () => ({ catalogFacility: () => ({ floors: 1 }) }));
+vi.mock("../towerSource", async (real) => ({
+  ...(await real<typeof import("../towerSource")>()),
+  towerCatalog: () => ({ rules: catalogRules }),
+}));
+vi.mock("../catalogIndex", () => ({ catalogFacility: () => ({ floors: 1 }) }));
 vi.mock("./towerCrowd", () => ({
   clearMotion: vi.fn(),
   reap: <K, V>(map: Map<K, V>, seen: ReadonlySet<K>, dispose: (v: V, k: K) => void): void => {
@@ -81,7 +83,7 @@ const lobbyGfx = (lit: number): string[][] => [
   Array.from({ length: 16 }, (_, v) => `ground ${lit}:${v}`),
 ];
 
-function fakeEngine(state: { units: UnitView[]; revision: number; tall?: LobbyHalls }) {
+function fakeEngine(state: { units: UnitView[]; revision: number; tall?: readonly number[] }) {
   const cells = new Map<string, Cell>();
   const getTile = vi.fn((x: number, y: number) => {
     const key = `${x},${y}`;
@@ -98,7 +100,7 @@ function fakeEngine(state: { units: UnitView[]; revision: number; tall?: LobbyHa
       },
       transports: [],
       functionalParkingSet: () => new Set<number>(),
-      tallLobbies: vi.fn(() => state.tall ?? NO_TALL_HALLS),
+      lobbyHeights: vi.fn(() => state.tall ?? []),
     },
     parkingUsage: () => 0,
     recyclingFill: () => 0,
@@ -238,7 +240,7 @@ describe("the scene sync walks the structure tiles only when what they draw from
     const units = [{ ...office }];
     for (let x = 4; x < 8; x++) units.push(tile("lobby", 1, x));
     for (let x = 4; x < 6; x++) units.push(tile("lobby", 15, x));
-    const state = { units, revision: 5, tall: lobbyHalls([1, 4, 7, 2, 15, 4, 5, 3]) };
+    const state = { units, revision: 5, tall: [1, 4, 7, 2, 15, 4, 5, 3] };
     const { engine, cell } = fakeEngine(state);
     syncScene(engine);
     // The entrance is a slice of the open hall on every story, its doors
@@ -259,14 +261,14 @@ describe("the scene sync walks the structure tiles only when what they draw from
     expect(cell(4, 2)?.gfx).toEqual(["tall 1:ground:2:1:grand-left"]);
     expect(cell(5, 16)?.gfx).toEqual([`tall 1:sky:3:1:${5 % 4}`]);
     // The heights are read once per full pass, never on a lighting-only sync.
-    expect(engine.sim.tower.tallLobbies).toHaveBeenCalledOnce();
+    expect(engine.sim.tower.lobbyHeights).toHaveBeenCalledOnce();
   });
 
   it("rises each hall to its own height and puts a revolving door where two heights meet (#2068)", () => {
     const units = [{ ...office }];
     for (let x = 4; x < 12; x++) units.push(tile("lobby", 1, x));
     // A three-story hall over 4..7 beside a two-story hall over 8..11.
-    const state = { units, revision: 5, tall: lobbyHalls([1, 4, 7, 3, 1, 8, 11, 2]) };
+    const state = { units, revision: 5, tall: [1, 4, 7, 3, 1, 8, 11, 2] };
     const { engine, cell } = fakeEngine(state);
     syncScene(engine);
     expect(cell(7, 3)?.gfx).toHaveLength(1);
@@ -277,7 +279,7 @@ describe("the scene sync walks the structure tiles only when what they draw from
       { floor: 1, x: 8, tall: 3, short: 2, tallOnLeft: true },
     ]);
     // The halls level out: the next full pass hands over no door.
-    state.tall = lobbyHalls([1, 4, 11, 3]);
+    state.tall = [1, 4, 11, 3];
     state.revision = 6;
     syncScene(engine);
     expect(vi.mocked(syncHallDoors)).toHaveBeenLastCalledWith(engine, []);
@@ -292,12 +294,12 @@ describe("the scene sync walks the structure tiles only when what they draw from
   it("clears a tall lobby's upper cells when its lobby goes", () => {
     const units = [{ ...office }];
     for (let x = 4; x < 8; x++) units.push(tile("lobby", 1, x));
-    const state = { units, revision: 5, tall: lobbyHalls([1, 4, 7, 3]) };
+    const state = { units, revision: 5, tall: [1, 4, 7, 3] };
     const { engine, cell } = fakeEngine(state);
     syncScene(engine);
     expect(engine.structTiles.size).toBe(12);
     state.units = [{ ...office }];
-    state.tall = NO_TALL_HALLS;
+    state.tall = [];
     state.revision = 6;
     syncScene(engine);
     expect(engine.structTiles.size).toBe(0);
@@ -478,7 +480,7 @@ describe("the scene sync walks the structure tiles only when what they draw from
   });
 
   it("staffs a tall ground lobby's doors from its own tower's tenants (#2384)", () => {
-    const state = { ...twoTowers(true, false), tall: lobbyHalls([1, 12, 15, 2]) };
+    const state = { ...twoTowers(true, false), tall: [1, 12, 15, 2] };
     try {
       catalogRules.frontDoorPerTower = true;
       const modern = fakeEngine(state);

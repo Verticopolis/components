@@ -1,3 +1,4 @@
+import { towerCatalog } from "../towerSource";
 import * as ex from "excalibur";
 import { castIndex } from "../pixelSprites/people";
 import { FIGURE_ANCHOR, FIGURE_H, FIGURE_W } from "./peopleGfx";
@@ -5,7 +6,6 @@ import { Z } from "../depthPlanes";
 import { coveredUpperStories, lotCovered, trafficLots } from "./towerCrowdLayout";
 import { FLOOR } from "../scale";
 import type { TowerEngine } from "./TowerEngine";
-import { towerCatalog } from "../../catalog/towerCatalog";
 
 /**
  * Construction of the decorative passers-by: figures that loiter in a short

@@ -1,4 +1,4 @@
-import type { FacilityKind } from "../../model/types";
+import type { FacilityKind } from "../renderModel";
 import type { LiveScene, LiveUnit } from "./lookup";
 
 /**

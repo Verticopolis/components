@@ -16,8 +16,7 @@
  * shafts and stairs over both. The unit of a rectangle is the map's device pixel
  * (see `geometry.ts`).
  */
-import type { FacilityKind } from "../../model/types";
-import type { StructureRunView, TransportView, UnitView } from "../../simport/view";
+import type { FacilityKind, RenderStructureRun, RenderTransport, RenderUnit } from "../renderModel";
 import type { HallRun } from "../lobbyHalls";
 import type { FloorSpans } from "./floorSpans";
 import { snappedBlock, type MapLayout, type MapRect } from "./geometry";
@@ -37,11 +36,11 @@ export interface MapMark {
  *  `findViewKind(kind)?.floors` in `src/presentation/viewKinds.ts` (the map
  *  holds no facility table of its own). It is asked once per kind per build.
  *  `tallLobbies` is the engine's lobby halls taller than one story
- *  (`RenderTower.tallLobbies().runs`), asked once per build. */
+ *  (`lobbyHalls(RenderTower.lobbyHeights()).runs`), asked once per build. */
 export interface MapSource {
-  readonly structure: ReadonlyArray<Pick<StructureRunView, "kind" | "floor" | "x" | "width" | "count">>;
-  readonly rooms: ReadonlyArray<Pick<UnitView, "kind" | "floor" | "x" | "width">>;
-  readonly transports: ReadonlyArray<Pick<TransportView, "kind" | "x" | "width" | "bottom" | "top">>;
+  readonly structure: ReadonlyArray<Pick<RenderStructureRun, "kind" | "floor" | "x" | "width" | "count">>;
+  readonly rooms: ReadonlyArray<Pick<RenderUnit, "kind" | "floor" | "x" | "width">>;
+  readonly transports: ReadonlyArray<Pick<RenderTransport, "kind" | "x" | "width" | "bottom" | "top">>;
   floorsOf(kind: FacilityKind): number;
   tallLobbies(): ReadonlyArray<HallRun>;
 }

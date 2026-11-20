@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { kindFloors, kindWidth } from "../../presentation/viewKinds";
-import type { UnitView } from "../../simport/view";
 import { paintAnimatedUnit, paintSettledUnit } from "../regionPaint";
 import { FLOOR, TILE } from "../scale";
 import { bake, type Renderer } from "./bake";
@@ -63,7 +63,7 @@ function region(doc: Document, w: number, h: number): CanvasRenderingContext2D {
  *  its own canvas when `at` is null. */
 function webPaint(
   doc: Document,
-  unit: UnitView,
+  unit: RenderUnit,
   s: LiveScene,
   anim: number,
   at: { x: number; y: number } | null,
@@ -82,7 +82,7 @@ function webPaint(
 
 export function verifySample(doc: Document, jobs: readonly Job[], renderer: Renderer, sample: Sample): SampleResult[] {
   const pl = variantPlacements(sample.unit.kind)[sample.variant];
-  const unit: UnitView = {
+  const unit: RenderUnit = {
     ...sample.unit,
     floor: pl.floor,
     x: pl.x,
@@ -90,7 +90,6 @@ export function verifySample(doc: Document, jobs: readonly Job[], renderer: Rend
     // presence), so the sample keeps its own id there.
     id: sample.unit.kind === "parking" ? sample.unit.id : pl.id,
     width: kindWidth(sample.unit.kind),
-    label: "",
   };
   const found = lookupRoom(unit, sample.scene, sample.variant, { recyclingEighths: sample.eighths });
   const jobName = "animation" in found ? found.animation : found.frame;

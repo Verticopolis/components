@@ -1,4 +1,4 @@
-import type { BombSearchGuard } from "../../simport/view";
+import type { RenderGuard } from "../renderModel";
 import { TILE } from "../scale";
 import { ESCAPE_W } from "../sprites/structure/rooftop";
 
@@ -14,7 +14,7 @@ export const ON_THE_ESCAPE = ESCAPE_W / 2 / TILE;
  *  floors; crossing a shared floor takes none. `floor` may be fractional on
  *  the stairs, where `x` is on the fire escape left of the route's stairs
  *  tile; `x` is in tiles. */
-export function guardPosition(g: BombSearchGuard, now: number): { floor: number; x: number; climbing: boolean } {
+export function guardPosition(g: RenderGuard, now: number): { floor: number; x: number; climbing: boolean } {
   const part = (a: number, b: number): number => (b > a ? Math.min(1, Math.max(0, (now - a) / (b - a))) : 1);
   if (now < g.arrive) {
     const route = g.route.length > 1 ? g.route : [[g.from, g.left] as const, [g.floor, g.left] as const];

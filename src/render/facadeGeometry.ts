@@ -1,5 +1,5 @@
-import { catalogFacility, type Catalog } from "../catalog/catalogTypes";
-import type { UnitView } from "../simport/view";
+import { catalogFacility } from "./catalogIndex";
+import type { RenderCatalog, RenderUnit } from "./renderModel";
 import { NO_TALL_HALLS, type LobbyHalls } from "./lobbyHalls";
 
 /** Left/right built extent of one above-ground floor row, in tile columns
@@ -45,7 +45,7 @@ export interface FacadeGeometry {
 
 /** Whether story `floor` of `u` is part of the wedding hall's garden crown (every
  *  story above the hall's ground story), which is not a building row. */
-function isGardenCrownStory(u: UnitView, floor: number): boolean {
+function isGardenCrownStory(u: RenderUnit, floor: number): boolean {
   return u.kind === "weddingHall" && floor > u.floor;
 }
 
@@ -57,9 +57,9 @@ function isGardenCrownStory(u: UnitView, floor: number): boolean {
  * since the catalog gives every lobby one story.
  */
 export function facadeGeometry(
-  units: readonly UnitView[],
+  units: readonly RenderUnit[],
   highestFloor: number,
-  catalog: Catalog,
+  catalog: RenderCatalog,
   halls: LobbyHalls = NO_TALL_HALLS,
 ): FacadeGeometry {
   const edges = new Map<number, FloorEdge>();

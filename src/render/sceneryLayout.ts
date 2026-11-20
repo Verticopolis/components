@@ -1,5 +1,5 @@
+import type { RenderUnit } from "./renderModel";
 import { viewWorld, type ViewWorld } from "../presentation/viewWorld";
-import type { UnitView } from "../simport/view";
 import { FLOOR, TILE } from "./scale";
 
 /**
@@ -157,7 +157,7 @@ export function plantSpots(seed: number, world: ViewWorld = viewWorld()): PlantS
  *  footprint padded by {@link APRON_PAD_TILES}, clamped to the lot. Null when
  *  nothing is built on the ground floor yet (a fresh lot is all grass). */
 export function apronRange(
-  units: readonly UnitView[],
+  units: readonly RenderUnit[],
   world: ViewWorld = viewWorld(),
 ): { min: number; max: number } | null {
   let min = Infinity;

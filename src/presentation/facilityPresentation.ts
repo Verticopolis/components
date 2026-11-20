@@ -1,5 +1,4 @@
-import type { CatalogWorld } from "../catalog/catalogTypes";
-import type { FacilityKind } from "../model/types";
+import type { FacilityKind, RenderWorld } from "../render/renderModel";
 
 /**
  * How each facility looks and reads in the UI: its swatch and sprite color and
@@ -11,7 +10,7 @@ export interface FacilityPresentation {
   readonly color: string;
   /** The tool card's one-paragraph description: fixed, or worded from the
    *  tower's world for a facility that names where it stands. */
-  readonly description: string | ((world: Pick<CatalogWorld, "maxFloor">) => string);
+  readonly description: string | ((world: Pick<RenderWorld, "maxFloor">) => string);
 }
 
 export const FACILITY_PRESENTATION: Readonly<Record<FacilityKind, FacilityPresentation>> = {
@@ -191,7 +190,7 @@ export function facilityColor(kind: FacilityKind): string {
 
 /** The description the tool card shows for a facility kind on a tower whose
  *  catalog states `world`. */
-export function facilityDescription(kind: FacilityKind, world: Pick<CatalogWorld, "maxFloor">): string {
+export function facilityDescription(kind: FacilityKind, world: Pick<RenderWorld, "maxFloor">): string {
   const description = FACILITY_PRESENTATION[kind].description;
   return typeof description === "string" ? description : description(world);
 }

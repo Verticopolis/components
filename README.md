@@ -2,29 +2,33 @@
 
 The TypeScript pieces of [Verticopolis](https://verticopolis.com) that a
 frontend builds on: the renderer and Excalibur scene, the Win95 windows and
-menus, the procedural sprites and audio, the engine binding and port, and the
-WebAssembly host loader. The web game is built from them, and so can any other
-game that runs the Verticopolis engine.
+menus, and the procedural sprites and audio. The web game is built from them,
+and so can any other game that runs the Verticopolis engine. The components
+import nothing from the engine: they read a render model
+(`render/renderModel`) that the game fills from the engine's frame reader.
 
 ## The Verticopolis repositories
 
 | Repository | What it holds |
 | --- | --- |
 | [Verticopolis/engine](https://github.com/Verticopolis/engine) | The Rust simulation engine, its WebAssembly package and the conformance lock |
-| **[Verticopolis/components](https://github.com/Verticopolis/components)** (this one) | The renderer, windows and menus, audio, the engine binding and host |
+| **[Verticopolis/components](https://github.com/Verticopolis/components)** (this one) | The renderer, windows and menus, and audio |
 | [Verticopolis/web](https://github.com/Verticopolis/web) | The web game at [verticopolis.com](https://verticopolis.com) and its player's manual |
 
-The game depends on the engine and the components, and the components load
-the engine's WebAssembly package at run time.
+The game depends on the engine and the components, and joins them: it loads
+the engine (its `host/*` and `port/*` subpaths), and hands the engine's frame
+reader and catalog to the renderer as the render model. The components do not
+depend on the engine.
 
 ## Use it
 
 ```sh
-npm install @verticopolis/components @verticopolis/engine excalibur tone lit-html
+npm install @verticopolis/components excalibur tone lit-html
 ```
 
-The engine, Excalibur, Tone.js and lit-html are peer dependencies, so the
-game installs its own copy of each beside the components.
+Excalibur, Tone.js and lit-html are peer dependencies, so the game installs
+its own copy of each beside the components. The engine is an optional peer:
+only the deprecated subpaths below need it.
 
 The one direct dependency is fflate, which the sprite atlas bake
 (`render/atlas/archive`, `render/atlas/png`) uses to write PNG and zip files.
@@ -52,32 +56,67 @@ waits for a curated public surface. Each folder is a subpath export:
 | --- | --- | --- |
 | `@verticopolis/components/render/*` | `src/render/` | The Excalibur scene, the tower renderer and the procedural sprites |
 | `@verticopolis/components/presentation/*` | `src/presentation/` | What the view shows for each kind of room |
-| `@verticopolis/components/catalog/*` | `src/catalog/` | The engine catalog as the view reads it |
-| `@verticopolis/components/model/*` | `src/model/` | The tower model types (`types`, `engineTypes`, `serializedGame`) and small helpers over them. `shared/*` is the same folder under its old name, kept until 1.0 |
-| `@verticopolis/components/binding/*` | `src/engineBinding/` | The WebAssembly binding's types and export tiers |
-| `@verticopolis/components/port/*` | `src/simport/` | The engine port a frontend talks to |
-| `@verticopolis/components/host/*` | `src/wasmhost/` | Loading and checking the engine package |
-| `@verticopolis/components/events/*` | `src/events/` | The gameplay events a host drains |
+| `@verticopolis/components/model/*` | `src/model/` | Input events and the vacate reasons' wording. The rest of the folder is deprecated (below). `shared/*` is the same folder under its old name, kept until 1.0 |
 | `@verticopolis/components/audio/*` | `src/audio/` | The procedural music and ambience on Tone.js |
 | `@verticopolis/components/windows/*` | `src/ui/` | The Win95 windows, menus and message boxes |
 | `@verticopolis/components/styles.css` | `src/styles.css` | The styles the windows use |
 | `@verticopolis/components/styles/*` | `src/styles/` | The stylesheets `styles.css` imports, one by one |
-| `@verticopolis/components/fixtures/*` | `src/simport/fixtures/` | The engine-written JSON fixtures (catalogs, the view layout) for a game's unit tests |
 
 For example, `import { MenuBar } from "@verticopolis/components/windows/menuBar"`.
 
-Excalibur, Tone, lit-html and `@verticopolis/engine` are required peer
-dependencies. npm 7 and later install them with the components; with
-`--legacy-peer-deps` or a package manager that skips peers, a game without
-the engine builds, and fails at run time when the host loads the engine's
-WebAssembly. The components never import the engine's JavaScript: the host
-(`host/*`) loads the engine's WebAssembly at run time from the URL the game
-serves it at, and the binding (`binding/*`) is written against that engine's
-API. So a game installs `@verticopolis/engine` itself, serves its `web/`
-build, and keeps it in the version range this package names. A host defines four build
-constants (`__APP_VERSION__`, `__APP_SHA__`, `__TOOLING_ENGINE__`,
-`__ENGINE_PACKAGE__`), declared in `src/env.d.ts`; with Vite that is its
-`define` option.
+### The render model
+
+`render/renderModel` declares everything the renderer reads: `RenderSim` (the
+clock, the tower, the crowd and the effects of one frame), `RenderCatalog`
+(the catalog fields it draws from) and `RenderRules` (the engine's
+`isPresent`, `isOperational` and zoom limits). Each is a subset of what the
+engine produces, so a game passes the engine's own objects through with no
+copy:
+
+```ts
+import type { FrameReader } from "@verticopolis/engine/port/frameReader";
+import type { Catalog } from "@verticopolis/engine/catalog/catalogTypes";
+import { isOperational, isPresent } from "@verticopolis/engine/model/unitState";
+import { VIEW_ZOOM_MAX, VIEW_ZOOM_MIN } from "@verticopolis/engine/model/viewZoom";
+import type { RenderCatalog, RenderRules, RenderSim } from "@verticopolis/components/render/renderModel";
+
+export const toRenderSim = (reader: FrameReader): RenderSim => reader;
+export const toRenderCatalog = (catalog: Catalog): RenderCatalog => catalog;
+export const renderRules: RenderRules = {
+  isPresent,
+  isOperational,
+  viewZoom: { min: VIEW_ZOOM_MIN, max: VIEW_ZOOM_MAX },
+};
+```
+
+The game's typecheck then fails when the engine drops or retypes a field the
+renderer reads. Each tower's catalog and rules are set with
+`useTowerSource(tower, { catalog, rules })` from `render/towerSource`. The
+game passes `presentation/catalogCheck`'s `refuseForeignCatalogs` to the
+engine's boot as `checkCatalogs`, so a catalog with a kind this build has no
+art for is refused at boot. `presentation/clockOf` words the header's date
+and the engine's clock for the panels.
+
+### Deprecated subpaths
+
+These re-export the engine (`@verticopolis/engine`) under their old paths, so
+a game can switch one import at a time. They need the engine installed and
+go in 1.0:
+
+| Import | Now in the engine (or here) |
+| --- | --- |
+| `catalog/*` | `@verticopolis/engine/catalog/*`; `catalog/towerCatalog` wraps `render/towerSource` with the engine's rules |
+| `model/types`, `engineTypes`, `serializedGame`, `unitState`, `floorRuns`, `viewZoom` | `@verticopolis/engine/model/*` |
+| `binding/*` | `@verticopolis/engine/binding/*` |
+| `port/*` | `@verticopolis/engine/port/*` (`port/portRenderSim` is `port/frameReader`); `port/headerClock` wraps `presentation/clockOf` |
+| `host/*` | `@verticopolis/engine/host/*`; `host/catalogCheck` is `presentation/catalogCheck`. The web game's own boot files (`engineBoot`, `engineChoice`, `engineDiagnostics`, `engineLabel`, `engineRepair`, `slotPopulation`) stay here until 1.0 |
+| `events/*` | `@verticopolis/engine/events/*` |
+| `fixtures/*` | `@verticopolis/engine/fixtures/*`, copied in at build time |
+
+CI checks the boundary three ways: lint refuses an engine import outside the
+shims, `scripts/engine-free.ts` checks the built `lib/` the same way, and
+`scripts/engine-free-consumer.sh` installs the packed tarball without the engine,
+loads every other module and type-checks its declarations.
 
 ### Styles
 
@@ -188,8 +227,8 @@ npm run build                 # compiles src/ into lib/, what the package ships
 npm run pack -- 0.0.0-local   # writes dist/verticopolis-components-0.0.0-local.tgz
 ```
 
-The unit tests mock the engine and read its catalog from the JSON fixtures in
-`src/simport/fixtures`, so they need no engine build. Every pull request and
+The unit tests mock the engine and read its catalog from the engine
+package's JSON fixtures, so they need no engine build. Every pull request and
 push to `main` packs the tarball as a workflow artifact.
 
 ## Gallery

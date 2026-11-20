@@ -1,4 +1,4 @@
-import type { UnitView } from "../../simport/view";
+import type { RenderUnit } from "../renderModel";
 import { castShadow, hash, personSeated, personStanding, roomOccupants, shade, shell, type RoomCtx } from "./common";
 import { artRow, authoredWidth } from "./artScale";
 import { layerBreak } from "./layers";
@@ -46,7 +46,7 @@ export const BOUTIQUE_LOOKS: Record<string, BoutiqueLook> = {
 
 /** A stable per-room seed from GEOGRAPHY (floor, x), so the figures and prop
  *  colors survive a save/export/import (which renumbers `u.id`). */
-function figureSeed(u: Pick<UnitView, "floor" | "x">): number {
+function figureSeed(u: Pick<RenderUnit, "floor" | "x">): number {
   return (u.floor * 131 + u.x * 17) >>> 0;
 }
 
@@ -282,7 +282,7 @@ function drawGallery(
 
 /** The Modern Boutique Bay. Reused for every trade subtype; the look's `trade`
  *  discriminant picks the shopfront so each trade renders as its own room. */
-export function boutiqueBay(d: RoomCtx, u: UnitView, x: number, y: number, w: number, h: number): void {
+export function boutiqueBay(d: RoomCtx, u: RenderUnit, x: number, y: number, w: number, h: number): void {
   const { ctx } = d;
   const look = (u.subtype !== undefined && BOUTIQUE_LOOKS[u.subtype]) || BOUTIQUE_DEFAULT;
   const floorY = shell(ctx, x, y, w, h, look.wall, look.floor);

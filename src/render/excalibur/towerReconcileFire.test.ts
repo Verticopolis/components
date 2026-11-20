@@ -7,7 +7,6 @@ import { paintAnimatedUnit } from "../regionPaint";
 import { emptyStructPass } from "./towerStructTiles";
 import { emptyFlightPass } from "../venueFlights";
 import { HallDoorLayer } from "./towerHallDoors";
-import { NO_TALL_HALLS } from "../lobbyHalls";
 import { NOT_BAKED } from "./sceneBake";
 
 // The reconcile is driven with a hand-built engine: no canvas bakes here. The
@@ -31,8 +30,11 @@ vi.mock("excalibur", async (importOriginal) => {
 vi.mock("./towerScenery", () => ({ syncScenery: vi.fn() }));
 vi.mock("./roomSignature", () => ({ roomSignature: () => "sig", isDeadParking: () => false }));
 vi.mock("../regionPaint", () => ({ paintAnimatedUnit: vi.fn() }));
-vi.mock("../../catalog/towerCatalog", () => ({ towerCatalog: () => ({ rules: {} }) }));
-vi.mock("../../catalog/catalogTypes", () => ({ catalogFacility: () => ({ floors: 1 }) }));
+vi.mock("../towerSource", async (real) => ({
+  ...(await real<typeof import("../towerSource")>()),
+  towerCatalog: () => ({ rules: {} }),
+}));
+vi.mock("../catalogIndex", () => ({ catalogFacility: () => ({ floors: 1 }) }));
 vi.mock("./towerCrowd", () => ({
   reap: <K, V>(map: Map<K, V>, seen: ReadonlySet<K>, dispose: (v: V, k: K) => void): void => {
     for (const [k, v] of map) {
@@ -69,7 +71,7 @@ function fakeEngine(unit: UnitView): TowerEngine {
         },
         transports: [],
         functionalParkingSet: () => new Set<number>(),
-        tallLobbies: () => NO_TALL_HALLS,
+        lobbyHeights: () => [],
       },
       parkingUsage: () => 0,
       recyclingFill: () => 0,

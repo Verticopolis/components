@@ -1,6 +1,5 @@
-import { catalogFacility, type Catalog } from "../../catalog/catalogTypes";
-import type { UnitView } from "../../simport/view";
-import type { FacilityKind } from "../../model/types";
+import { catalogFacility } from "../catalogIndex";
+import type { RenderCatalog, RenderUnit, FacilityKind } from "../renderModel";
 
 /**
  * Pure layout math for the decorative passer-by builder in {@link buildWalkers}.
@@ -14,8 +13,8 @@ import type { FacilityKind } from "../../model/types";
  *  facility's mid-line and float above its real floor, so `buildWalkers` drops
  *  these lots from its runs. */
 export function coveredUpperStories(
-  units: readonly UnitView[],
-  catalog: Catalog,
+  units: readonly RenderUnit[],
+  catalog: RenderCatalog,
 ): Map<number, Array<[number, number]>> {
   const rows = new Map<number, Array<[number, number]>>();
   for (const u of units) {
@@ -65,8 +64,8 @@ interface TrafficTransport {
  *  person the engine knows about, waiting where real queues form. */
 export function trafficLots(
   transports: readonly TrafficTransport[],
-  units: readonly UnitView[],
-  catalog: Catalog,
+  units: readonly RenderUnit[],
+  catalog: RenderCatalog,
 ): Map<number, Set<number>> {
   const lots = new Map<number, Set<number>>();
   const keep = (floor: number, x0: number, x1: number) => {

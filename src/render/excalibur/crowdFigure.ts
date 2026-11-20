@@ -1,5 +1,5 @@
+import type { RenderPerson, RenderTransport } from "../renderModel";
 import { isElevatorKind } from "../../presentation/viewKinds";
-import type { PersonView, TransportView } from "../../simport/view";
 import { Z } from "../depthPlanes";
 import { castIndex, crewIndex } from "../pixelSprites/people";
 import { TILE } from "../scale";
@@ -26,7 +26,7 @@ import {
  *  housekeeper in a 16-person service cab rounds to zero on the cab's load
  *  indicator, and watching them ride to the room floor is the whole point of
  *  the mechanic. */
-export function ridingHidden(p: PersonView): boolean {
+export function ridingHidden(p: RenderPerson): boolean {
   return p.state === "riding" && !p.staff;
 }
 
@@ -45,7 +45,7 @@ export function doorPlane(through: -1 | 1): number {
 }
 
 /** The plane for anyone outside a door: walkers go behind the transport. */
-export function walkingPlane(p: PersonView): number {
+export function walkingPlane(p: RenderPerson): number {
   return p.state === "toShaft" || p.state === "toDest" ? Z.walking : Z.crowd;
 }
 
@@ -61,7 +61,7 @@ export function walkingPlane(p: PersonView): number {
  *  their floor. `null` when no elevator serves the floor. One pass over the
  *  shafts, run once per wait: the crowd pass keeps the answer until the
  *  person stops waiting. */
-export function waitShaftMid(transports: ReadonlyArray<TransportView>, p: PersonView): number | null {
+export function waitShaftMid(transports: ReadonlyArray<RenderTransport>, p: RenderPerson): number | null {
   let best = Infinity;
   let mid: number | null = null;
   for (const t of transports) {
@@ -85,7 +85,7 @@ export function waitFacesLeft(x: number, mid: number | null, walkedLeft: boolean
 }
 
 export function personFigure(
-  p: PersonView,
+  p: RenderPerson,
   g: Glide,
   look: CrowdLook,
   through?: -1 | 1,

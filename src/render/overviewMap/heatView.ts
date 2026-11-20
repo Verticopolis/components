@@ -20,7 +20,7 @@
  * holds them). `HeatMarks.take` copies a read (one pass over the cells) and
  * `HeatMarks.place` finds the rectangles (one pass over the kept floors).
  */
-import type { HeatCell, HeatmapMode } from "../../model/engineTypes";
+import type { RenderHeatCell, HeatmapMode } from "../renderModel";
 import { snappedBlock, type MapLayout, type MapRect } from "./geometry";
 import { MIN_PATTERN_SIDE, type MapPaintContext, type PatternSource } from "./paint";
 import type { MapKindStyle } from "./style";
@@ -86,7 +86,7 @@ export const OCCUPANCY_LEGEND: ReadonlyArray<HeatLegendEntry> = [
 ];
 
 /** The cell fields the views read. */
-export type HeatCellView = Pick<HeatCell, "floor" | "minX" | "maxX" | "severity">;
+export type HeatCellView = Pick<RenderHeatCell, "floor" | "minX" | "maxX" | "severity">;
 
 /** The floors of the last read with their bands, and where each sits on the
  *  map. The rectangles are found again when the layout changes. */

@@ -1,5 +1,5 @@
+import type { RenderUnit } from "../renderModel";
 import { hasBusinessHours, isOpenAt } from "../../presentation/viewKinds";
-import type { UnitView } from "../../simport/view";
 import { LATE_NIGHT_KINDS, isLateHour } from "../lateNight";
 
 /** The scene inputs a settled room's bake reads beyond the unit itself. */
@@ -18,7 +18,7 @@ export interface RoomSigScene {
 /** A parking space draws the red X when no ramp chain reaches it. Only a
  *  SETTLED space counts: a mid-build (or burning) space is left out of the
  *  functional set for other reasons and is not a connectivity fault. */
-export function isDeadParking(u: UnitView, unchained: boolean): boolean {
+export function isDeadParking(u: RenderUnit, unchained: boolean): boolean {
   return u.kind === "parking" && u.state !== "construction" && u.state !== "fire" && unchained;
 }
 
@@ -34,7 +34,7 @@ export function isDeadParking(u: UnitView, unchained: boolean): boolean {
  * both rentals, which share its draw), so a rental baked in the evening drops
  * its residents at 23:00 and gets them back at 06:00.
  */
-export function roomSignature(u: UnitView, s: RoomSigScene): string {
+export function roomSignature(u: RenderUnit, s: RoomSigScene): string {
   let open = "";
   if (hasBusinessHours(u.kind)) open = isOpenAt(u.kind, s.hour) ? "o" : "c";
   const lateNight = LATE_NIGHT_KINDS.has(u.kind) && isLateHour(s.hour) ? "s" : "";

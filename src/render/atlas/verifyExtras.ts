@@ -1,6 +1,5 @@
+import type { FacilityKind, RenderUnit, RenderTransport } from "../renderModel";
 import { kindWidth } from "../../presentation/viewKinds";
-import type { FacilityKind } from "../../model/types";
-import type { UnitView, TransportView } from "../../simport/view";
 import { SHIRTS, personFigure } from "../pixelSprites/common";
 import { FLOOR, TILE } from "../scale";
 import { drawCar, drawEscapeStairs, drawLobbyEntrance, drawTransport, drawUnit } from "../sprites";
@@ -37,8 +36,8 @@ function read(ctx: CanvasRenderingContext2D, w: number, h: number): Image {
 }
 
 /** A structural tile as the game bakes it (`towerScene.fakeStruct`). */
-function struct(kind: "floor" | "lobby", floor: number, x: number): UnitView {
-  return { id: -1, kind, floor, x, width: 1, state: "occupied", occupants: 0, label: "" };
+function struct(kind: "floor" | "lobby", floor: number, x: number): RenderUnit {
+  return { id: -1, kind, floor, x, width: 1, state: "occupied", occupants: 0 };
 }
 
 interface Case {
@@ -69,7 +68,7 @@ function shaftCase(kind: FacilityKind, skip: number[], pieces: string[], tiles =
     },
     game: (doc) => {
       const ctx = canvas(doc, w, floors * FLOOR);
-      const t: TransportView = {
+      const t: RenderTransport = {
         id: 1,
         kind,
         x: 0,
@@ -131,7 +130,7 @@ export function extraCases(): Case[] {
       game: (doc) => {
         const w = 4 * TILE;
         const ctx = canvas(doc, w, 2 * FLOOR);
-        const t: TransportView = {
+        const t: RenderTransport = {
           id: 1,
           kind,
           x: 0,

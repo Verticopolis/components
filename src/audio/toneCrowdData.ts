@@ -1,4 +1,4 @@
-import type { FacilityKind } from "../model/types";
+import type { FacilityKind } from "../render/renderModel";
 import type { Scene } from "./toneScenes";
 import { splashProgram } from "./toneTracks";
 

@@ -1,17 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { ROOM_EDGE, ROOM_LIGHT, shadeRoom, shadesRoom } from "./roomShading";
-import type { UnitState } from "../model/types";
+import type { UnitState } from "./renderModel";
+import { isPresent } from "../model/unitState";
 
 describe("Modern's room shading (#2097)", () => {
   it("shades a room only in Modern's look and only while someone is there", () => {
     const present: UnitState[] = ["occupied", "asleep", "moving_in", "vacating"];
     for (const state of present) {
-      expect(shadesRoom(true, { state })).toBe(true);
-      expect(shadesRoom(false, { state }), `Classic stays flat (${state})`).toBe(false);
+      expect(shadesRoom(true, { state }, isPresent)).toBe(true);
+      expect(shadesRoom(false, { state }, isPresent), `Classic stays flat (${state})`).toBe(false);
     }
     // A state read by its color keeps that color.
     for (const state of ["vacant", "construction", "fire", "gutted"] as UnitState[])
-      expect(shadesRoom(true, { state })).toBe(false);
+      expect(shadesRoom(true, { state }, isPresent)).toBe(false);
   });
 
   it("lights from above and the left, inside the room's rect", () => {

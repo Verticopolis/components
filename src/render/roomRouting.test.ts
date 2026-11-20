@@ -115,7 +115,7 @@ describe("no facility kind falls through to the flat facility-color fallback (sy
   // added can't slip through the same gap the two rentals did.
   // Transports (stairs/escalator/elevators) are catalog facilities but are drawn
   // by the transport renderer, never through drawUnit, so they are out of scope.
-  const kinds = kindKeys().filter((k) => kindFacts(k).maxCars === null && !kindFacts(k).fixedSpan);
+  const kinds = kindKeys().filter((k) => !kindFacts(k).transport);
   it.each(kinds)("%s renders content, not a flat facility-color block", (kind) => {
     const s = spyCtx();
     const w = Math.max(4, kindFacts(kind).width) * 11;

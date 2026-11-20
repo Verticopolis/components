@@ -1,8 +1,8 @@
+import { findCatalogFacility } from "../catalogIndex";
+import type { FacilityKind, RenderCamera, WeatherKind } from "../renderModel";
+import { towerCatalog, towerRules } from "../towerSource";
 import * as ex from "excalibur";
 import { viewWorld } from "../../presentation/viewWorld";
-import { findCatalogFacility } from "../../catalog/catalogTypes";
-import type { FacilityKind, SerializedView, WeatherKind } from "../../model/types";
-import { VIEW_ZOOM_MAX, VIEW_ZOOM_MIN } from "../../model/viewZoom";
 import { wheelZoomDelta } from "../../model/inputEvents";
 import { clampCameraY, fitZoom } from "../cameraBounds";
 import { stablePointerId } from "../pinchTracker";
@@ -11,19 +11,22 @@ import { crowdCullNext } from "./crowdCull";
 import { armLongPress, cancelLongPressOnMove, finishLongPress } from "./longPress";
 import { cancelPress, endPress, isFirstContact, isUnusedMouseButton, movesWithButtonUp } from "./pressLifecycle";
 import type { TowerEngine } from "./TowerEngine";
-import { towerCatalog } from "../../catalog/towerCatalog";
 
 /** Pointer input, entity picking, camera control and the audio view-focus for
  *  {@link TowerEngine}, as friend functions taking the engine instance
  *  (extracted from `TowerEngine.ts`; the class keeps thin delegations and the
  *  coordinate transforms these read). */
 
-/** Camera zoom range (screen px per world px). Lives in model/viewZoom
- *  (VIEW_ZOOM_MIN/MAX: the save schema clamps a restored zoom at the
- *  deserialize trust boundary); re-exported under the familiar names. */
-export const MIN_ZOOM = VIEW_ZOOM_MIN;
-export const MAX_ZOOM = VIEW_ZOOM_MAX;
-const clampZoom = (z: number): number => (Number.isFinite(z) ? Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z)) : MIN_ZOOM);
+/** The camera's zoom range (screen px per world px): the engine's view zoom
+ *  limits (the save schema clamps a restored zoom to them), from the tower's
+ *  rules. */
+function zoomRange(engine: TowerEngine): { readonly min: number; readonly max: number } {
+  return towerRules(engine.sim).viewZoom;
+}
+const clampZoom = (engine: TowerEngine, z: number): number => {
+  const { min, max } = zoomRange(engine);
+  return Number.isFinite(z) ? Math.max(min, Math.min(max, z)) : min;
+};
 
 /** Movement value far above every tap-slop threshold. Assigned to `moved` when
  *  a pinch hands off to one surviving finger, so its release can't tap-place. */
@@ -292,7 +295,7 @@ function pointerUp(engine: TowerEngine, ev: ex.PointerEvent, how: "release" | "c
 /** Camera policy for a swapped-in (or boot-loaded) tower. A tooling restore
  *  keeps the camera (keepCamera), a genuine swap restores the save's own view
  *  or else centers, and an undo or redo step keeps the scene and skips this. */
-export function adoptCamera(engine: TowerEngine, view: SerializedView | null, keepCamera?: boolean): void {
+export function adoptCamera(engine: TowerEngine, view: RenderCamera | null, keepCamera?: boolean): void {
   if (keepCamera) return;
   if (view) engine.applyView(view);
   else engine.center();
@@ -319,10 +322,10 @@ export function zoomAt(engine: TowerEngine, factor: number, sx: number, sy: numb
  *  lowest), so a deep tower frames its cellars too. See {@link fitZoom}. */
 export function dynamicMinZoom(engine: TowerEngine): number {
   const span = engine.sim.tower.highestFloor - engine.sim.tower.lowestFloor + 1;
-  return fitZoom(engine.viewHeight, span, FLOOR, MIN_ZOOM);
+  return fitZoom(engine.viewHeight, span, FLOOR, zoomRange(engine).min);
 }
 
-/** Clamp a gesture-driven zoom to `[effectiveMin, MAX_ZOOM]`. The static
+/** Clamp a gesture-driven zoom to `[effectiveMin, max]`. The static
  *  {@link clampZoom} (trust-boundary floor) still guards the save-restore path
  *  in {@link setCamera}; the tighter tower-aware floor applies only to live
  *  pinch/wheel/keyboard zoom so the player can't zoom out past their tower.
@@ -337,7 +340,7 @@ export function clampGestureZoom(engine: TowerEngine, z: number): number {
   const lo = dynamicMinZoom(engine);
   const cur = engine.cam.zoom;
   const effectiveLo = Number.isFinite(cur) && cur < lo ? cur : lo;
-  return Number.isFinite(z) ? Math.max(effectiveLo, Math.min(MAX_ZOOM, z)) : effectiveLo;
+  return Number.isFinite(z) ? Math.max(effectiveLo, Math.min(zoomRange(engine).max, z)) : effectiveLo;
 }
 function clamp(engine: TowerEngine): void {
   const x = Math.max(0, Math.min(viewWorld().lotWidth * TILE, engine.cam.pos.x));
@@ -361,14 +364,14 @@ export function center(engine: TowerEngine): void {
 /** The live camera as save-file cargo: center in grid units plus zoom (the exact
  *  inverse of {@link applyView}, so a same-device round trip is lossless).
  *  Stamped onto the sim by the UI layer right before a save. */
-export function viewState(engine: TowerEngine): SerializedView {
+export function viewState(engine: TowerEngine): RenderCamera {
   return { tile: engine.cam.pos.x / TILE, floor: -engine.cam.pos.y / FLOOR, zoom: engine.cam.zoom };
 }
 
 /** Restore a saved view. Zoom is optional (a TDT import has none): absent, the
  *  session's current zoom stays. Everything funnels through setCamera's clampZoom
  *  and clamp() so a view from another device (or forged) is re-bounded here. */
-export function applyView(engine: TowerEngine, v: SerializedView): void {
+export function applyView(engine: TowerEngine, v: RenderCamera): void {
   engine.setCamera(v.tile, v.floor, v.zoom ?? engine.cam.zoom);
   clamp(engine);
 }
@@ -400,7 +403,7 @@ export function ensureVisible(engine: TowerEngine, tile: number, floor: number):
 export function setCamera(engine: TowerEngine, tileX: number, floor: number, zoom: number): void {
   // Validate zoom: the vertical clamp divides by zoom, so a zero/negative/NaN
   // here would poison later pan/zoom math.
-  engine.cam.zoom = clampZoom(zoom);
+  engine.cam.zoom = clampZoom(engine, zoom);
   engine.cam.pos = ex.vec(tileX * TILE, -floor * FLOOR);
 }
 

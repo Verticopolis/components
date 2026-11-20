@@ -18,9 +18,7 @@
  * engine lists with no evaluation (Eval) or with no rent level or No Rate
  * (Pricing) keeps its Edit look.
  */
-import type { FacilityKind } from "../../model/types";
-import type { EvalTier, RentTier, RoomTiers } from "../../simport/roomTiers";
-import type { UnitView } from "../../simport/view";
+import type { FacilityKind, EvalTier, RentTier, RenderRoomTiers, RenderUnit } from "../renderModel";
 import { floorsFor } from "./drawList";
 import { snappedBlock, type MapLayout, type MapRect } from "./geometry";
 import { MIN_PATTERN_SIDE, type MapPaintContext, type PatternSource } from "./paint";
@@ -84,7 +82,7 @@ export const PRICING_LEGEND: ReadonlyArray<TierLegendEntry<RentTier>> = [
 ];
 
 /** The room fields the tier views read. */
-export type TierRoom = Pick<UnitView, "id" | "kind" | "floor" | "x" | "width">;
+export type TierRoom = Pick<RenderUnit, "id" | "kind" | "floor" | "x" | "width">;
 
 /**
  * The rows of the last read, and where each matched room sits on the map.
@@ -107,7 +105,7 @@ export class TierMarks {
   /** Keep a read's rows (one pass over them). The read itself may be let go.
    *  True when the rows differ from the ones kept before, so a read that
    *  found nothing new needs no repaint. */
-  take(tiers: RoomTiers): boolean {
+  take(tiers: RenderRoomTiers): boolean {
     const n = tiers.size;
     let changed = n !== this.ids.length;
     if (changed) {

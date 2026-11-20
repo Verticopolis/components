@@ -1,5 +1,5 @@
-import { catalogFacility, catalogOpenAt, type CatalogFacility } from "../catalog/catalogTypes";
-import type { FacilityKind } from "../model/types";
+import { catalogFacility, catalogOpenAt } from "../render/catalogIndex";
+import type { FacilityKind, RenderFacility } from "../render/renderModel";
 import { catalogFor } from "./catalogFixture";
 
 /**
@@ -12,7 +12,7 @@ import { catalogFor } from "./catalogFixture";
 const CATALOG = catalogFor("classic");
 
 /** `kind`'s catalog entry. */
-export function kindFacts(kind: FacilityKind): CatalogFacility {
+export function kindFacts(kind: FacilityKind): RenderFacility {
   return catalogFacility(CATALOG, kind);
 }
 

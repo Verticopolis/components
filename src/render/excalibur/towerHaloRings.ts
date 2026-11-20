@@ -1,4 +1,4 @@
-import type { CatalogHalo } from "../../catalog/catalogTypes";
+import type { RenderHalo } from "../renderModel";
 import { FLOOR, TILE } from "../scale";
 
 /**
@@ -33,7 +33,7 @@ const BAND_ALPHA = 0.3;
 
 /** How strong `halo` is `d` floors from its venue, from 1 on its own floor
  *  to 0 at its reach, as the engine fades it. */
-export function haloStrength(halo: CatalogHalo, d: number): number {
+export function haloStrength(halo: RenderHalo, d: number): number {
   return d < 0 || d >= halo.floors ? 0 : 1 - d / halo.floors;
 }
 
@@ -47,7 +47,7 @@ export function storyDistance(f: number, floor: number, stories: number): number
  *  `floor`, filling `stories`. */
 export function drawHaloRings(
   ctx: CanvasRenderingContext2D,
-  halo: CatalogHalo,
+  halo: RenderHalo,
   floor: number,
   stories: number,
   world: RingWorld,

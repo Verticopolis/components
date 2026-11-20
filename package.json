@@ -1,7 +1,7 @@
 {
   "name": "@verticopolis/components",
   "version": "0.2.2",
-  "description": "Verticopolis's renderer, Excalibur scene, Win95 windows and menus, audio, the engine binding and host, with the game's CC BY art.",
+  "description": "Verticopolis's renderer, Excalibur scene, Win95 windows and menus, and audio, with the game's CC BY art. They read a render model each game fills from the engine.",
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -96,6 +96,11 @@
     "excalibur": "^1.0.0",
     "lit-html": "^3.3.3",
     "tone": "^15.1.22"
+  },
+  "peerDependenciesMeta": {
+    "@verticopolis/engine": {
+      "optional": true
+    }
   },
   "dependencies": {
     "fflate": "^0.8.3"

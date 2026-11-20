@@ -1,5 +1,4 @@
-import type { CatalogFacility } from "../catalog/catalogTypes";
-import type { FacilityKind, Transport, Unit, UnitState } from "../model/types";
+import type { RenderFacility, FacilityKind, RenderTransport, RenderUnit, UnitState } from "./renderModel";
 import { fitAtGameScale } from "./catalogScale";
 import { FLOOR, TILE } from "./scale";
 import { drawCar, drawTransport, drawUnit, type DrawCtx } from "./sprites";
@@ -13,7 +12,7 @@ import { drawCar, drawTransport, drawUnit, type DrawCtx } from "./sprites";
  */
 
 /** A kind's catalog entry, from whichever catalog the page read. */
-export type FactsOf = (kind: FacilityKind) => CatalogFacility;
+export type FactsOf = (kind: FacilityKind) => RenderFacility;
 
 /** How a room is shown: its state, its people and, for a shop or a restaurant,
  *  its canon variant. */
@@ -36,7 +35,7 @@ export function portraitUnit(
   id = 1,
   subtype?: string,
   floorOverride?: number,
-): Unit {
+): RenderUnit {
   const f = facts(kind);
   return {
     id,
@@ -48,11 +47,7 @@ export function portraitUnit(
     x: 0,
     width: f.width,
     state,
-    satisfaction: 1,
     occupants,
-    everOccupied: true,
-    pendingIncome: 0,
-    label: f.name,
     subtype,
   };
 }
@@ -151,7 +146,7 @@ export function drawTransportPortrait(
   // empty, because drawFloor clamps a zero height up to a visible 1px.
   if (w < 1 || box.h < 1) return;
   const cars = kind.startsWith("elevator") ? 2 : 0;
-  const t: Transport = {
+  const t: RenderTransport = {
     id: 1,
     kind,
     x: 0,
@@ -161,7 +156,6 @@ export function drawTransportPortrait(
     cars,
     carPositions: cars ? [1.4, 1 + span - 0.6] : [],
     carDir: cars ? [1, -1] : [],
-    load: 1,
   };
   // Whole screen pixels for the origin, as in the room path.
   const x = Math.round(cx + (cw - w) / 2);

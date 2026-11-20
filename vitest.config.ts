@@ -1,9 +1,9 @@
 import { configDefaults, defineConfig } from "vitest/config";
 
 // The package's unit tests run headless in happy-dom, as the game's do. The
-// setup file binds the view to the engine's Modern catalog (from the JSON
-// fixtures in src/simport/fixtures), so a test can draw and lay out without a
-// running engine.
+// setup file binds the view to the engine's Modern catalog (the engine
+// package's JSON fixtures), so a test can draw and lay out without a running
+// engine.
 export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify("0.0.0-test"),
