@@ -1,0 +1,125 @@
+name: Gallery preview
+
+# Publishes a preview of the component gallery for each open pull request
+# that changes it, at <gallery site>/pr-preview/pr-<number>/, and comments
+# the link on the pull request. A closed pull request's preview goes with the
+# next store: every store drops the previews of pull requests that are no
+# longer open (gallery-pages-publish.yml), and the merge of a gallery change
+# stores the live gallery.
+#
+# Gallery (gallery.yml) builds the page on every pull request that changes
+# the package or the gallery, and keeps the built page as the gallery-site
+# artifact. When that build passes, this workflow stores it with the live
+# gallery on the gallery-pages branch and deploys (gallery-pages-publish.yml).
+# The page loads everything by relative paths, so the same build serves at
+# the root and under a preview path.
+#
+# The build runs the pull request's code with a read-only token; this
+# workflow runs from main, takes only the built files, and publishes them
+# under the pull request's own path. A pull request from a fork gets no
+# preview, because its pages would go out on the project's domain.
+on:
+  workflow_run:
+    workflows: ["Gallery"]
+    types: [completed]
+
+permissions: {}
+
+# One run per pull request at a time, so an older build that finishes storing
+# late cannot replace a newer one; a newer run replaces a queued one. Runs for
+# main's own gallery builds publish nothing and get a group each.
+concurrency:
+  group: gallery-preview-${{ github.event.workflow_run.pull_requests[0].number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  # A build of an older commit (a re-run, or one that finished late) would
+  # replace a newer preview, so only a build of the pull request's current
+  # head publishes. A build that skipped its steps (the pull request touched
+  # nothing the gallery reads) kept no artifact and publishes nothing.
+  current:
+    name: gallery-preview (current build)
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0] != null
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+      actions: read
+    outputs:
+      head: ${{ steps.head.outputs.current }}
+    steps:
+      - name: Compare with the pull request's head
+        id: head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.workflow_run.pull_requests[0].number }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          read -r state head < <(gh api "repos/$REPO/pulls/$PR" --jq '"\(.state) \(.head.sha)"')
+          if [ "$state" != open ] || [ "$head" != "$SHA" ]; then
+            echo "Skipping: this build is of $SHA, and the pull request is $state at $head."
+            echo "current=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          kept=$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" --jq '[.artifacts[] | select(.name == "gallery-site")] | length')
+          if [ "$kept" = 0 ]; then
+            echo "Skipping: the build changed nothing the gallery reads, so it kept no page."
+            echo "current=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "current=true" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: gallery-preview (publish)
+    needs: current
+    if: ${{ needs.current.outputs.head == 'true' }}
+    uses: ./.github/workflows/gallery-pages-publish.yml
+    with:
+      slot: pr-preview/pr-${{ github.event.workflow_run.pull_requests[0].number }}
+      artifact: gallery-site
+      run-id: ${{ github.event.workflow_run.id }}
+    permissions:
+      contents: write
+      actions: read
+      pull-requests: read
+      pages: write
+      id-token: write
+
+  # One comment per pull request, edited in place, so a new build does not
+  # notify anyone again.
+  comment:
+    name: gallery-preview (comment)
+    needs: publish
+    if: ${{ needs.publish.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+      pages: read
+    steps:
+      - name: Comment the preview link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.workflow_run.pull_requests[0].number }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          marker='<!-- gallery-preview -->'
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | head -n1)
+          site=$(gh api "repos/$REPO/pages" --jq '.html_url')
+          body="$marker
+          **Gallery preview:** ${site%/}/pr-preview/pr-$PR/
+
+          Built from $SHA. It updates when a push changes the package or the gallery, and it goes away with the next gallery deploy after this pull request closes."
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh api -X POST "repos/$REPO/issues/$PR/comments" -f body="$body" > /dev/null
+          fi
