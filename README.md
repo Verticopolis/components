@@ -138,6 +138,7 @@ though nothing names what it exports.
 npm ci
 npm run typecheck
 npm run lint
+npm run format:check     # Prettier; `npm run format` rewrites the files
 npm test
 npm run build                 # compiles src/ into lib/, what the package ships
 npm run pack -- 0.0.0-local   # writes dist/verticopolis-components-0.0.0-local.tgz
