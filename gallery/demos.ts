@@ -37,6 +37,7 @@ import { titleScreenDemo } from "./titleScreen.js";
 import { controlPanelDemo } from "./controlPanel.js";
 import { fireworksDemo } from "./fireworks.js";
 import { saverDialogDemo, saverScenes } from "./screenSaver.js";
+import { paletteDemo } from "./palette.js";
 
 /** Room cell size in CSS px. */
 const CELL_W = 260;
@@ -189,6 +190,7 @@ export const DEMOS = {
   "file-dialog": shows(fileDialogDemo),
   "title-screen": shows(titleScreenDemo),
   fireworks: shows(fireworksDemo),
+  palette: shows(paletteDemo),
   "saver-scenes": shows(saverScenes),
   "saver-dialog": shows(saverDialogDemo),
   desk: (holder) => deskDemo(holder, towerFacts().facts),
