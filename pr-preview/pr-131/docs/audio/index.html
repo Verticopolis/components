@@ -1,0 +1,906 @@
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-g5ptsecz"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Audio | Verticopolis components</title><link rel="canonical" href="https://components.verticopolis.com/pr-preview/pr-131/docs/audio/"/><link rel="sitemap" href="/pr-preview/pr-131/sitemap-index.xml"/><style>@layer starlight, vc;</style><script>(function(){try{var s=localStorage.getItem("vc-components-scheme");if(["skyline","high_contrast"].indexOf(s)>=0)document.documentElement.setAttribute("data-scheme",s)}catch(e){}})();</script><link rel="shortcut icon" href="/pr-preview/pr-131/favicon.png" type="image/png"/><meta name="generator" content="Astro v7.4.12"/><meta name="generator" content="Starlight v0.42.7"/><meta property="og:title" content="Audio"/><meta property="og:type" content="article"/><meta property="og:url" content="https://components.verticopolis.com/pr-preview/pr-131/docs/audio/"/><meta property="og:locale" content="en"/><meta property="og:description" content="The audio layer: the modules, the bus graph, the lifecycle and the ambience."/><meta property="og:site_name" content="Verticopolis components"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="The audio layer: the modules, the bus graph, the lifecycle and the ambience."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/pr-preview/pr-131/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/pr-preview/pr-131/_astro/starlight.C2m7r0qw.css"><link rel="stylesheet" href="/pr-preview/pr-131/_astro/site.y-sg80cl.css"><link rel="stylesheet" href="/pr-preview/pr-131/_astro/common.BW62dSpt.css"><style>@layer vc.tokens{:root{--bg:var(--r-desktop);--panel:var(--r-face);--ink:var(--r-ink);--accent:var(--r-title);--panel-light:#d7d7d7;--muted:#2f2f38;--good:#15722e;--bad:#b01023;--bad-ink:#9a0e1f;--money:#005000;--line:#7a7a7a;--r-face:silver;--r-shadow:gray;--r-dark:#000;--r-light:#dfdfdf;--r-hi:#fff;--r-title:navy;--r-title-fg:#fff;--r-ink:#000;--r-desktop:teal;--r-workspace:var(--r-face);--r-font:"MS Sans Serif", "Tahoma", "Geneva", "Segoe UI", sans-serif;--bevel-out:inset -1px -1px var(--r-dark), inset 1px 1px var(--r-hi), inset -2px -2px var(--r-shadow), inset 2px 2px var(--r-light);--bevel-in:inset 1px 1px var(--r-dark), inset -1px -1px var(--r-hi), inset 2px 2px var(--r-shadow), inset -2px -2px var(--r-light);--win-shadow:2px 2px 0 #0006;--rung-vlow:#2048b0;--rung-low:#1e7a2e;--rung-avg:#c8a000;--rung-high:#b02020;--splash-sky:linear-gradient(#161634 0%, #241f4c 34%, #5b3560 62%, #c65a63 86%, #ef8560 100%);--splash-amber:#ffc94a;--splash-sun:radial-gradient(circle, #ffe6a0 0%, var(--splash-amber) 52%, #f18f4b 100%);--splash-sun-glow:#ffb35742;--splash-building:#201643;--splash-cream:#e6dcc0;--splash-plate-ink:#20204a;--splash-ink:#0d0d10;--splash-wordmark:#f7f1e4;--splash-tagline:#ffd9a8;--splash-premise:#e7ddf5}html[data-scheme=skyline]{--r-face:#ebe7dc;--r-light:#f7f5ef;--r-hi:#fff;--r-shadow:#a59fb4;--r-dark:#4a4560;--r-title:#33378f;--r-desktop:#3b3c7a;--panel-light:#f4f2ec;--line:#8b8698;--muted:#3c3850;--money:#0b5a1f;--sky-line:#8b8698;--sky-title:linear-gradient(180deg, #5a63c8 0%, #3d429e 42%, #2a2766 100%);--sky-title-off:linear-gradient(180deg, #77739a 0%, #66618a 45%, #555075 100%);--sky-btn:linear-gradient(#fff, #e4e0d5);--sky-btn-down:linear-gradient(#d8d3c6, #efece4);--sky-violet:linear-gradient(#7880dc, #4a50b0);--sky-rose:linear-gradient(#d06a7c, #9c3048);--bevel-out:inset 0 0 0 1px var(--sky-line);--bevel-in:inset 0 0 0 1px var(--sky-line), inset 1px 1px 0 1px #4a45602e;--win-shadow:2px 3px 0 #14103252}html[data-scheme=high_contrast]{--r-face:#000;--r-light:#000;--r-hi:#fff;--r-shadow:#fff;--r-dark:#fff;--r-title:#ff0;--r-title-fg:#000;--r-ink:#fff;--r-desktop:#000;--panel-light:#000;--ink:#fff;--muted:#fff;--line:#fff;--good:#7dff7d;--bad:#ff8a8a;--bad-ink:#ff8a8a;--money:#7dff7d;--bevel-out:inset 0 0 0 2px #fff;--bevel-in:inset 0 0 0 2px #ff0;--win-shadow:0 0 0 1px #fff}}@layer vc.base,vc.components,vc.page,vc.components.button,vc.components.window,vc.components.well,vc.components.kv;@layer vc.components.menu-bar{.menubar{z-index:30;background:var(--r-face);box-shadow:inset 0 -1px var(--r-shadow);font-family:var(--r-font);color:var(--r-ink);flex:none;align-items:center;padding:1px 2px;font-size:12px;display:flex;position:relative}.menubar-brand{display:none}.mb-menu{position:relative}.mb-title{font:inherit;color:inherit;cursor:default;background:0 0;border:0;padding:3px 8px}.mb-title u{text-decoration:underline}.mb-title[aria-expanded=true]{box-shadow:inset 1px 1px var(--r-shadow), inset -1px -1px var(--r-hi)}.mb-title:focus-visible,.mb-item:focus-visible{outline:1px dotted var(--r-ink);outline-offset:-3px}.mb-pop{background:var(--r-face);min-width:220px;box-shadow:var(--bevel-out), var(--win-shadow);flex-direction:column;padding:3px;display:flex;position:absolute;top:100%;left:0}.mb-pop[hidden]{display:none}.mb-item{font:inherit;color:var(--r-ink);text-align:left;cursor:default;white-space:nowrap;background:0 0;border:0;justify-content:space-between;gap:24px;padding:4px 12px 4px 22px;display:flex;position:relative}a.mb-item{text-decoration:none}.mb-item[hidden]{display:none}.mb-item:hover,.mb-item:focus-visible{background:var(--r-title);color:var(--r-title-fg)}.mb-item[aria-disabled=true]{color:var(--r-shadow);background:0 0}.mb-item[aria-checked=true]:before{content:"✓";position:absolute;left:7px}.mb-item kbd{font:inherit;opacity:.8}.mb-sep{border:0;border-top:1px solid var(--r-shadow);border-bottom:1px solid var(--r-hi);margin:3px 2px}.mb-sep[hidden]{display:none}}
+</style><link rel="stylesheet" href="/pr-preview/pr-131/_astro/Demo.CLNUfK5N.css"><script type="module" src="/pr-preview/pr-131/_astro/page.cNngjUgL.js"></script></head><body class="astro-g5ptsecz"><a class="sl-skip-link astro-qb7clj6f" href="#_top">Skip to content</a><div class="page sl-flex astro-yntsjkba"><header class="header astro-yntsjkba"><div id="site-menubar-host"></div><script type="module" src="/pr-preview/pr-131/_astro/MenuBar.astro_astro_type_script_index_0_lang.PKXm5hH-.js"></script><div class="vc-bar"><a href="/pr-preview/pr-131/" class="site-title vc-bar-title"><img src="/pr-preview/pr-131/_astro/pwa-192x192.B7C8LqMV.png" width="192" height="192" alt=""><span class="vc-name" translate="no"><span class="vc-full">Verticopolis components</span><span class="vc-short" aria-hidden="true">Components</span></span></a><div class="vc-bar-search print:hidden"><site-search class=" astro-b5kgnn7o" data-translations="{&quot;placeholder&quot;:&quot;Search&quot;}"><button data-open-modal disabled aria-label="Search" aria-keyshortcuts="Control+K" class="astro-b5kgnn7o"><svg aria-hidden="true" class="astro-b5kgnn7o astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-b5kgnn7o" aria-hidden="true">Search</span><kbd class="sl-hidden md:sl-flex astro-b5kgnn7o" style="display: none;"><kbd class="astro-b5kgnn7o">Ctrl</kbd><kbd class="astro-b5kgnn7o">K</kbd></kbd></button><dialog style="padding:0" aria-label="Search" class="astro-b5kgnn7o"><div class="dialog-frame sl-flex astro-b5kgnn7o"><button data-close-modal class="sl-flex md:sl-hidden astro-b5kgnn7o">Cancel</button><div class="search-container astro-b5kgnn7o"><div id="starlight__search" class="astro-b5kgnn7o"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/pr-preview/pr-131/_astro/Search.astro_astro_type_script_index_0_lang.BEkBnus6.js"></script></div><div class="vc-bar-links print:hidden"><a class="vc-bar-game" href="https://verticopolis.com/" data-game-link><span class="vc-full">Play the game</span><span class="vc-short" aria-hidden="true">Play</span></a><a class="vc-bar-github" href="https://github.com/Verticopolis/components"><span class="vc-sr-only">GitHub</span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"></path></svg></a><div class="vc-bar-theme"><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script></div></div></div><script type="module" src="/pr-preview/pr-131/_astro/Mermaid.astro_astro_type_script_index_0_lang.DevnlGvv.js"></script></header><nav class="sidebar print:hidden astro-yntsjkba" aria-label="Main"><button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden astro-r2osgdlg"><svg aria-hidden="true" class="open-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg><svg aria-hidden="true" class="close-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg><span class="sr-only astro-r2osgdlg">Menu</span></button><script type="module">var e=class extends HTMLElement{constructor(){super();let e=matchMedia(`(min-width: 50em)`),t=()=>{this.popover=e.matches?null:`auto`};t(),e.addEventListener(`change`,()=>t()),this.addEventListener(`toggle`,({newState:e})=>this.trapFocus(e===`open`))}trapFocus(e){document.querySelectorAll(`.main-frame, .sl-skip-link`).forEach(t=>{t.toggleAttribute(`inert`,e)})}};customElements.define(`sl-sidebar-pane`,e);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script><sl-sidebar-pane popover id="starlight__sidebar" class="sidebar-pane astro-yntsjkba"><div class="sidebar-content sl-flex astro-yntsjkba"><sl-sidebar-state-persist data-hash="1e9t1xc" class="astro-ipdry5cl"><script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script><ul class="top-level astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Overview</span></a></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Windows and controls</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="0"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/buttons/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Buttons</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/windows/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Windows</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/wells/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Wells, fields and key-value rows</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/menu-bar/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Menu bar</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/message-boxes/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Message boxes</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/alert-cards/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Alert cards and updates</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/appearance/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Appearance</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/file-dialog/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Open and Save As</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/controls/icons/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Icons</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Desktop</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="1"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/information-bar/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Information bar and status bar</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/tools/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Tools window</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/layout/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Where windows open</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/control-panel/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Control Panel</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/title-screen/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Title screen</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/map/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Map window</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/screen-saver/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Screen saver</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/fireworks/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Fireworks</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/desktop/not-found/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Page not found</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/sounds/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Sounds</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/docs-sites/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Docs sites</span></a></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">The tower</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="2"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/tower/lobbies/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Lobbies</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/tower/stairs-and-escalators/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Stairs and escalators</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/tower/elevators/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Elevators</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/tower/rooms/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Rooms</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/tower/people/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">People</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Docs</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="3"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/docs/architecture/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Architecture</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/docs/design-system/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Design system</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/docs/desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/docs/audio/" aria-current="page" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Audio</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-131/docs/atlas/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Sprite atlas</span></a></li></ul></details></li></ul><script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script></sl-sidebar-state-persist><div class="md:sl-hidden"><div class="mobile-preferences sl-flex astro-p4azlveh"><div class="social-icons astro-p4azlveh"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script></div></div></div></sl-sidebar-pane></nav><div class="main-frame astro-yntsjkba"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-lrzkfocr"><aside class="right-sidebar-container print:hidden astro-lrzkfocr"><div class="right-sidebar astro-lrzkfocr"><div class="lg:sl-hidden astro-qok35upx"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-66cqc7ze"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-66cqc7ze"><details id="starlight__mobile-toc" class="astro-66cqc7ze"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-66cqc7ze"><span class="toggle sl-flex astro-66cqc7ze">On this page<svg aria-hidden="true" class="caret astro-66cqc7ze astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-66cqc7ze"></span></summary><div class="dropdown astro-66cqc7ze"><ul class="isMobile astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-goal" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The goal</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-short-version" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The short version</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#module-map" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Module map</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-bus-graph" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The bus graph</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#lifecycle" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Lifecycle</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-cue-vocabulary" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The cue vocabulary</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-ambient-layer" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The ambient layer</span></a><ul class="isMobile astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#how-firing-works" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">How firing works</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#element-sounds" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Element sounds</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#murmur" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Murmur</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#gate-curves" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Gate curves</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#recordings-instead-of-tones" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Recordings instead of tones</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#house-rules" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">House rules</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#adding-a-cue" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Adding a cue</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#hearing-the-current-sounds" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Hearing the current sounds</span></a></li></ul></div></details></nav></mobile-starlight-toc><script type="module" src="/pr-preview/pr-131/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.C3fM4Kra.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-qok35upx"><div class="sl-container astro-qok35upx"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-goal" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The goal</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-short-version" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The short version</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#module-map" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Module map</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-bus-graph" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The bus graph</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#lifecycle" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Lifecycle</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-cue-vocabulary" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The cue vocabulary</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-ambient-layer" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The ambient layer</span></a><ul class="astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#how-firing-works" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">How firing works</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#element-sounds" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Element sounds</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#murmur" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Murmur</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#gate-curves" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Gate curves</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#recordings-instead-of-tones" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Recordings instead of tones</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#house-rules" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">House rules</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#adding-a-cue" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Adding a cue</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#hearing-the-current-sounds" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Hearing the current sounds</span></a></li></ul></nav></starlight-toc><script type="module" src="/pr-preview/pr-131/_astro/TableOfContents.astro_astro_type_script_index_0_lang.BpJaGz7G.js"></script></div></div></div></aside><div class="main-pane astro-lrzkfocr"><main data-pagefind-body class="astro-g5ptsecz" lang="en" dir="ltr"><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><h1 id="_top" class="astro-bebwqqxs">Audio</h1></div></div><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><div class="sl-markdown-content"><blockquote>
+<p><strong>Snapshot of the source on 2026-10-15, moved here 2026-11-20.</strong> Every
+number here (gains, rates, frequencies, timings, budgets) is copied by hand
+from the source and does not refresh. The files named in each section hold
+the live values.</p>
+</blockquote>
+<p>How the package makes noise: the modules in <code dir="auto">src/audio/</code>
+(<code dir="auto">@verticopolis/components/audio/*</code>), the bus graph, the lifecycle, the cue
+vocabulary and the ambient layer. Below, “the audio engine” means
+<code dir="auto">ToneAudioEngine</code> and “the facade” means <code dir="auto">AudioEngine</code> in <code dir="auto">Audio.ts</code>.</p>
+<p>What fires a cue, what the player’s settings are, and which sounds are
+planned next belong to the game that hosts the audio: the web game’s side is
+<a href="https://github.com/Verticopolis/web/blob/main/SOUNDS.md"><code dir="auto">SOUNDS.md</code></a> in
+Verticopolis/web. Issue numbers (<code dir="auto">#N</code>) on this page are Verticopolis/web’s,
+where it lived until 2026-11-20.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-goal">The goal</h2><a class="sl-anchor-link" href="#the-goal"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The goal”</span></a></div>
+<p>The 1994 original’s soundscape was dynamic in a specific way. It was a
+building you could hear: sounds arrived at their own rates, layered without
+coordinating, and changed with the hour and with where you were looking.</p>
+<ul>
+<li><strong>Probability.</strong> An elevator arrival sometimes made a sound and sometimes
+stayed quiet. That is most of why it never became tiring; a cue that fires on
+every instance of a frequent event becomes noise within a minute.</li>
+<li><strong>Stacking.</strong> Typing, registers, whirs, and the crowd ran at once at
+independent rates, and the density of the pile was the information.</li>
+<li><strong>Time of day.</strong> Birds at sunrise, an owl at night. They tell you the hour
+while you are looking at something else, and give the tower a park-like
+quality a purely mechanical building would lack.</li>
+</ul>
+<p>The crowd layer already has this machinery. When weighing a new
+sound, ask whether it thickens that soundscape or merely announces an event.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-short-version">The short version</h2><a class="sl-anchor-link" href="#the-short-version"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The short version”</span></a></div>
+<ul>
+<li>Sound is <strong>Tone.js</strong>, synthesized live. Excalibur’s audio system is not used
+at all: Excalibur draws the tower and nothing more. No <code dir="auto">ex.Sound</code>, no audio
+<code dir="auto">Loader</code>, no per-cue asset files.</li>
+<li>Almost nothing is sampled. The only recordings are <code dir="auto">audio/voice-talk.mp3</code>
+and <code dir="auto">audio/voice-laughs.mp3</code> (<code dir="auto">audioAssets.ts</code>), gibberish talk and
+laughter the owner recorded, which the crowd layer chops into murmur. The
+host serves them under its base URL. Everything else is generated at run
+time.</li>
+<li>The music and action cues are transcriptions of the owner’s own recordings
+(hums, chest hits, taps, a bloop, a ping). New cues should speak in that
+voice rather than introduce a fresh instrument.</li>
+<li>Every sound is original to Verticopolis, UI effects included: synthesized in
+code, rendered from the project’s code, or recorded by the owner. No
+third-party sample or sound pack ships, free or paid.</li>
+<li>The audio layer only plays. The host tells it what to play (<code dir="auto">sfx(name)</code>),
+where the camera is (<code dir="auto">update(focus)</code>), the program and the player’s levels.
+It never decides a game rule.</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    Host["the host game"] --&gt;|"start() on the first gesture"| Facade["AudioEngine facade&lt;br/&gt;Audio.ts (no Tone import)"]
+    Host --&gt;|"sfx(name)"| Facade
+    Host --&gt;|"update(ViewFocus) about 6 Hz"| Facade
+    Host --&gt;|"setVolumes · setMuted · setProgram · setAway"| Facade
+    Facade --&gt;|"lazy import once"| Tone["ToneAudioEngine&lt;br/&gt;ToneAudioEngine.ts"]
+    Tone --&gt; Voices["action cues&lt;br/&gt;toneVoices.ts · tonePercussion.ts"]
+    Tone --&gt; Music["music tracks&lt;br/&gt;toneTracks.ts · toneMusicVoices.ts"]
+    Tone --&gt; Crowd["crowd and venues&lt;br/&gt;toneCrowd*.ts"]
+    Tone --&gt; Beds["room tone · rain&lt;br/&gt;toneRoomTone.ts · toneRain.ts"]</pre>
+<p><code dir="auto">ViewFocus</code> is what the scene reports about its camera
+(<code dir="auto">src/render/excalibur/towerInputCamera.ts</code>): the floor at the middle of the
+view, the zoom, the dominant kind, night, the hour, the weather and how full
+the rooms in view are. A host hands the latest one to <code dir="auto">update</code> about six times
+a second.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="module-map">Module map</h2><a class="sl-anchor-link" href="#module-map"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Module map”</span></a></div>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">Audio.ts</code></td>
+<td>The <code dir="auto">AudioEngine</code> facade a host builds at boot. No <code dir="auto">tone</code> import; holds mute, volume and program synchronously and lazy-loads the audio engine on the first gesture.</td>
+</tr>
+<tr>
+<td><code dir="auto">ToneAudioEngine.ts</code></td>
+<td>The live orchestrator: bus graph, every voice, the music <code dir="auto">Tone.Part</code>, the ambient bed driven by camera focus.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneScenes.ts</code></td>
+<td>Scene vocabulary and pure math (<code dir="auto">SCENES</code>, <code dir="auto">sceneFor</code>, <code dir="auto">midiToFreq</code>), plus the <code dir="auto">SfxName</code> union. No Tone.js import.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneTracks.ts</code></td>
+<td>Composed music: note data for the two tracks and the builders that time them. No Tone.js import.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneVoices.ts</code></td>
+<td>Action jingles: the <code dir="auto">SfxVoices</code> instrument set and <code dir="auto">playSfx</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">tonePercussion.ts</code></td>
+<td>The chest-hit thump and object-tap membrane voices.</td>
+</tr>
+<tr>
+<td><code dir="auto">lightSynth.ts</code>, <code dir="auto">lightEnvelope.ts</code></td>
+<td>Light voices: stand-ins for Tone’s synths that build each note from two native nodes and release them when it ends, with Tone’s own envelope curves.</td>
+</tr>
+<tr>
+<td><code dir="auto">firstCueLatch.ts</code></td>
+<td>Holds the cue fired by the gesture that unlocks audio, so the very first click is heard.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneRain.ts</code></td>
+<td>The outdoor rain bed, on a dry path.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneRoomTone.ts</code></td>
+<td>The per-scene room-tone bed (filtered pink noise).</td>
+</tr>
+<tr>
+<td><code dir="auto">toneMusicVoices.ts</code></td>
+<td>The tracks’ pitched voices: arpeggio, bass and melody.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneContext.ts</code></td>
+<td>The one playback context, and <code dir="auto">ContextSleep</code>, which suspends it while the player is away.</td>
+</tr>
+<tr>
+<td><code dir="auto">awayWatch.ts</code></td>
+<td>Reports the player leaving the page (hidden tab or lost focus) and coming back.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneCrowd.ts</code></td>
+<td>The crowd and venue ambience layer: talkers, per-scene details, venue programs.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneCrowdData.ts</code></td>
+<td>Crowd specs and math, including the <code dir="auto">pseudo</code> hash the layer varies itself with.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneCrowdVoices.ts</code></td>
+<td>Slices the two seed mp3s into murmur grains.</td>
+</tr>
+<tr>
+<td><code dir="auto">toneCrowdPrograms.ts</code></td>
+<td><code dir="auto">PartyBand</code>, <code dir="auto">CinemaProgram</code>, <code dir="auto">MetroProgram</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">audioAssets.ts</code></td>
+<td>Every file the audio layer fetches at run time (<code dir="auto">AUDIO_RUNTIME_FILES</code>) and the lazy chunk’s name, so a host’s offline precache check can find them.</td>
+</tr>
+</tbody>
+</table>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-bus-graph">The bus graph</h2><a class="sl-anchor-link" href="#the-bus-graph"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The bus graph”</span></a></div>
+<ul>
+<li><strong><code dir="auto">musicBus</code></strong> carries the composed tracks and percussion. The <strong>Music</strong>
+slider. Its output goes through the shared reverb.</li>
+<li><strong><code dir="auto">ambBus</code></strong> and <strong><code dir="auto">ambDryBus</code></strong> carry the crowd layer, room tone, and rain.
+The <strong>Ambience</strong> slider. Two nodes because rain stays dry while the rest
+shares the reverb.</li>
+<li><strong><code dir="auto">sfxBus</code></strong> carries the action jingles. The <strong>Effects</strong> slider.</li>
+<li><strong><code dir="auto">master</code></strong> is downstream of all of them (directly, or through the shared
+reverb) at gain <code dir="auto">0.35</code>; mute ramps it to zero.</li>
+</ul>
+<p>A <code dir="auto">bedFilter</code> lowpass on the ambient path opens as the camera zooms in, so
+distance muffles the building’s life. Music bypasses it.</p>
+<p>The melodic voices reach <code dir="auto">musicBus</code> through a short chain: a level gain, a
+warm 2400 Hz lowpass, then a 90 Hz sub highpass. Percussion skips that chain
+and connects to <code dir="auto">musicBus</code> itself, so the tap stays bright and the thump keeps
+its body; it still sits behind the Music slider, the shared reverb, and mute.</p>
+<p>Three sliders plus mute is the whole player-facing surface. Levels live in
+<code dir="auto">Prefs</code>, are clamped in the facade before reaching an <code dir="auto">AudioParam</code>, and are
+read back from the facade so prefs never store junk.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="lifecycle">Lifecycle</h2><a class="sl-anchor-link" href="#lifecycle"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Lifecycle”</span></a></div>
+<p>Browsers refuse to make noise before a gesture, and the Tone.js chunk is
+large (about 230 kB minified), so both are handled together. The host builds
+the facade at boot with nothing heavy loaded. The first real gesture calls
+<code dir="auto">start()</code>, which feature-detects <code dir="auto">AudioContext</code> (so tests and unsupported
+environments never fetch the chunk), then dynamically imports
+<code dir="auto">ToneAudioEngine</code>. Once the audio engine exists the facade replays what it was
+holding: mute, volumes, program, last focus, and the cue the unlocking
+gesture fired (<code dir="auto">firstCueLatch.ts</code>).</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Inert: facade built at boot
+    Inert --&gt; Loading: start() on a gesture
+    Loading --&gt; Inert: no AudioContext
+    Loading --&gt; Running: chunk loaded, state replayed
+    Running --&gt; Away: tab hidden or focus lost
+    Away --&gt; Running: player back
+    Running --&gt; [*]: dispose()
+    Loading --&gt; [*]: dispose() (generation guard)</pre>
+<p>While the chunk loads, a second <code dir="auto">start()</code> returns early. A <code dir="auto">generation</code>
+counter guards the load window, so a <code dir="auto">dispose()</code> mid-flight cannot resurrect a
+torn-down audio engine.</p>
+<p><code dir="auto">setProgram("splash" | "game")</code> picks the track; the splash theme crossfades to
+the in-game bed on entry.</p>
+<p>Leaving the page silences it. <code dir="auto">awayWatch.ts</code> reports the player away while the
+tab is hidden or the page has lost focus, and <code dir="auto">setAway</code> fades the master out,
+skips the music part’s notes and any cues, quiets the crowd, and suspends the
+context once the fade has played, so the music holds its place
+(<code dir="auto">ContextSleep</code> in <code dir="auto">toneContext.ts</code>). Coming back resumes the context at the
+player’s own mute. This is kept apart from the player’s mute. It fixed static
+heard in a background tab: a backgrounded or unfocused page gets a throttled,
+lower-priority main thread, so the notes it builds only 0.1 s ahead (Tone’s
+look-ahead) arrived late and crackled.</p>
+<p>An installed game has to play every sound offline. <code dir="auto">AUDIO_RUNTIME_FILES</code> and
+the chunk name in <code dir="auto">audioAssets.ts</code> are what a host’s precache check reads;
+<code dir="auto">audioAssets.test.ts</code> fails when the source names an <code dir="auto">audio/...</code> file the list
+lacks, and <code dir="auto">audioFetches.test.ts</code> fails when the audio engine loads one.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-cue-vocabulary">The cue vocabulary</h2><a class="sl-anchor-link" href="#the-cue-vocabulary"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The cue vocabulary”</span></a></div>
+<p><code dir="auto">SfxName</code> is the complete list of one-shot cues. All play through <code dir="auto">sfxBus</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Cue</th>
+<th>Sound</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">build</code></td>
+<td>One bloop swooping 520 Hz down to 180 Hz</td>
+</tr>
+<tr>
+<td><code dir="auto">click</code></td>
+<td>A small, quick high bloop</td>
+</tr>
+<tr>
+<td><code dir="auto">sell</code></td>
+<td>Two falling bloops</td>
+</tr>
+<tr>
+<td><code dir="auto">error</code></td>
+<td>A slow, sighing double bloop</td>
+</tr>
+<tr>
+<td><code dir="auto">promote</code></td>
+<td>The splash theme’s peak turn on the ping bell</td>
+</tr>
+<tr>
+<td><code dir="auto">notify</code></td>
+<td>A single ping on G4</td>
+</tr>
+<tr>
+<td><code dir="auto">money</code></td>
+<td>An ascending four-note arpeggio</td>
+</tr>
+</tbody>
+</table>
+<p>Where the web game fires each one is in its <code dir="auto">SOUNDS.md</code>.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-ambient-layer">The ambient layer</h2><a class="sl-anchor-link" href="#the-ambient-layer"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The ambient layer”</span></a></div>
+<p>The cues are the small part. The soundscape lives in <code dir="auto">toneCrowd.ts</code> with its
+data in <code dir="auto">toneCrowdData.ts</code>, and it is closer to the original’s behavior than
+the cue table suggests: the stacking, rate-driven, occupancy-scaled machinery
+is <strong>already built</strong>. What is missing is mostly content and time-of-day gating.</p>
+<p>A <strong>scene</strong> resolves from camera focus and the dominant facility kind: <code dir="auto">lobby</code>,
+<code dir="auto">office</code>, <code dir="auto">condo</code>, <code dir="auto">hotel</code>, <code dir="auto">restaurant</code>, <code dir="auto">fastFood</code>, <code dir="auto">shop</code>, <code dir="auto">cinema</code>,
+<code dir="auto">partyHall</code>, <code dir="auto">metro</code>, <code dir="auto">outside</code>. Overview, quiet, and service areas resolve to
+nothing and get music and room tone only. Each scene carries a <strong>murmur spec</strong>,
+a list of <strong>elements</strong> (one-shot details on independent timers), a <strong>gate</strong>,
+optionally a composed <strong>program</strong>, and optionally a <strong><code dir="auto">crowdFloor</code></strong> for the
+city’s own spaces, which never fall fully silent (indoor rooms have none, so
+empty means silent).</p>
+<p>Everything is scheduled on timers seeded by the <code dir="auto">pseudo</code> hash, so the layer
+varies without <code dir="auto">Math.random</code> and without a fixed loop becoming audible.
+<code dir="auto">outside</code> also swells a low street hum (two oscillators under an LFO) while it
+is live.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="how-firing-works">How firing works</h3><a class="sl-anchor-link" href="#how-firing-works"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “How firing works”</span></a></div>
+<p>There is no per-event probability roll. Each element runs a loop that sleeps a
+drawn gap and fires:</p>
+<div class="expressive-code"><link rel="stylesheet" href="/pr-preview/pr-131/_astro/ec.w36nc.css"><script type="module" src="/pr-preview/pr-131/_astro/ec.0vx5m.js"></script><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">gap = (rateMin + draw × rateVar) / clamp(activity, 0.2, 1)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">activity = hourActivity(gate, hour) × crowdFactor</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="gap = (rateMin + draw × rateVar) / clamp(activity, 0.2, 1)activity = hourActivity(gate, hour) × crowdFactor"><div></div></button></div></figure></div>
+<ul>
+<li><strong><code dir="auto">rateMin</code>/<code dir="auto">rateVar</code> describe a gap.</strong> Bigger means rarer.</li>
+<li><strong>Low activity stretches the gap, up to 5x.</strong> The clamp floors at 0.2, so a
+near-empty office types at a fifth of its busy rate instead of falling
+silent. This is what produces “quiet but alive.”</li>
+<li><strong>Zero activity idles the loop.</strong> When the gate reads 0 (an office at
+3 a.m.) or the crowd is below 5% (<code dir="auto">EMPTY_CROWD</code>), activity is exactly zero:
+the loop fires nothing and only re-checks every couple of seconds. The 0.2
+floor applies only while activity is above zero. <code dir="auto">metro</code> and <code dir="auto">outside</code> set
+a <code dir="auto">crowdFloor</code>, so their crowd never drops below 5%.</li>
+</ul>
+<p>So a sound’s “probability” is really its average firings per minute, which is
+what the tables give, quoted <strong>at full activity</strong>. Multiply by <code dir="auto">activity</code> for
+any other moment, down to the 0.2 floor. Camera position picks the scene.
+Zooming out past the overview threshold (<code dir="auto">OVERVIEW_ZOOM</code> 0.55, left again at
+0.63) switches to the overview scene, which has no crowd layer, so nothing
+fires. Within a scene, zoom only scales the layer’s level and opens
+<code dir="auto">bedFilter</code>.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="element-sounds">Element sounds</h3><a class="sl-anchor-link" href="#element-sounds"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Element sounds”</span></a></div>
+<p><code dir="auto">ping</code> and <code dir="auto">thud</code> are pitched tones; <code dir="auto">burst</code> is a noise hit whose frequency
+column is a filter cutoff. Attack defaults to 0.004 s (a tick); longer is a
+swish. “Companion” is the <code dir="auto">pair</code> field: a second hit at that ratio, delay, and
+relative gain. The per-minute figures count firings: every hit of a cluster
+counts (a cluster of N hits has N - 1 short gaps, then the pause), and a
+companion note does not, so the bird’s ~11 firings a minute are ~22 chirps.</p>
+<table>
+<thead>
+<tr>
+<th>Scene</th>
+<th>Kind</th>
+<th>Freq (Hz)</th>
+<th>Dur (s)</th>
+<th>Gain</th>
+<th>Attack</th>
+<th>Firing at full activity</th>
+<th>Companion</th>
+<th>Gate</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>office</td>
+<td>burst</td>
+<td>750–900</td>
+<td>0.012</td>
+<td>0.02–0.04</td>
+<td>0.004</td>
+<td>4–12 hits @ ~0.13 s, then ~2.7 s pause (<strong>~133/min</strong>)</td>
+<td></td>
+<td>workday</td>
+<td>Typist one</td>
+</tr>
+<tr>
+<td>office</td>
+<td>burst</td>
+<td>750–900</td>
+<td>0.012</td>
+<td>0.02–0.04</td>
+<td>0.004</td>
+<td>4–12 hits @ ~0.14 s, then ~3.5 s pause (<strong>~108/min</strong>)</td>
+<td></td>
+<td>workday</td>
+<td>Typist two</td>
+</tr>
+<tr>
+<td>office</td>
+<td>burst</td>
+<td>650–750</td>
+<td>0.35</td>
+<td>0.03–0.05</td>
+<td>0.08</td>
+<td>~6.0 s gap (<strong>~10/min</strong>)</td>
+<td></td>
+<td>workday</td>
+<td>Page turn</td>
+</tr>
+<tr>
+<td>condo</td>
+<td>ping</td>
+<td>1150–1350</td>
+<td>0.18</td>
+<td>0.05–0.08</td>
+<td>0.004</td>
+<td>~8.0 s gap (<strong>~7.5/min</strong>)</td>
+<td></td>
+<td>condoDay</td>
+<td>Dish clink</td>
+</tr>
+<tr>
+<td>condo</td>
+<td>thud</td>
+<td>90–100</td>
+<td>0.3</td>
+<td>0.10–0.16</td>
+<td>0.004</td>
+<td>~12.0 s gap (<strong>~5/min</strong>)</td>
+<td></td>
+<td>condoDay</td>
+<td>Cupboard thud</td>
+</tr>
+<tr>
+<td>hotel</td>
+<td>thud</td>
+<td>64–76</td>
+<td>0.12</td>
+<td>0.05–0.09</td>
+<td>0.004</td>
+<td>5–9 hits @ ~0.47 s, then ~14 s pause (<strong>~25/min</strong>)</td>
+<td></td>
+<td>always</td>
+<td>Cart wheel bumps</td>
+</tr>
+<tr>
+<td>hotel</td>
+<td>thud</td>
+<td>105–115</td>
+<td>0.35</td>
+<td>0.14–0.20</td>
+<td>0.004</td>
+<td>~13.5 s gap (<strong>~4.4/min</strong>)</td>
+<td>×0.636, +0.02 s, 0.8</td>
+<td>always</td>
+<td>Door close</td>
+</tr>
+<tr>
+<td>restaurant</td>
+<td>ping</td>
+<td>850–1250</td>
+<td>0.2</td>
+<td>0.05–0.13</td>
+<td>0.004</td>
+<td>~2.1 s gap (<strong>~29/min</strong>)</td>
+<td>×1.5, +0.06 s, 0.7</td>
+<td>attendance</td>
+<td>Glass tinkle</td>
+</tr>
+<tr>
+<td>restaurant</td>
+<td>thud</td>
+<td>150–210</td>
+<td>0.18</td>
+<td>0.06–0.10</td>
+<td>0.006</td>
+<td>~6.0 s gap (<strong>~10/min</strong>)</td>
+<td></td>
+<td>attendance</td>
+<td>Set-down</td>
+</tr>
+<tr>
+<td>restaurant</td>
+<td>burst</td>
+<td>360–420</td>
+<td>0.4</td>
+<td>0.06–0.10</td>
+<td>0.12</td>
+<td>~8.5 s gap (<strong>~7.1/min</strong>)</td>
+<td></td>
+<td>attendance</td>
+<td>Chair scrape</td>
+</tr>
+<tr>
+<td>fastFood</td>
+<td>burst</td>
+<td>1300–1800</td>
+<td>0.06</td>
+<td>0.05–0.10</td>
+<td>0.012</td>
+<td>2–4 hits @ ~0.14 s, then ~1.5 s pause (<strong>~102/min</strong>)</td>
+<td></td>
+<td>attendance</td>
+<td>Tray / wrapper</td>
+</tr>
+<tr>
+<td>fastFood</td>
+<td>ping</td>
+<td>900–1400</td>
+<td>0.15</td>
+<td>0.05–0.08</td>
+<td>0.004</td>
+<td>~2.2 s gap (<strong>~27/min</strong>)</td>
+<td>×1.33, +0.11 s, 0.7</td>
+<td>attendance</td>
+<td>Register tone</td>
+</tr>
+<tr>
+<td>fastFood</td>
+<td>thud</td>
+<td>120–170</td>
+<td>0.2</td>
+<td>0.05–0.08</td>
+<td>0.006</td>
+<td>~5.0 s gap (<strong>~12/min</strong>)</td>
+<td></td>
+<td>attendance</td>
+<td>Set-down</td>
+</tr>
+<tr>
+<td>shop</td>
+<td>burst</td>
+<td>1050–1150</td>
+<td>0.42</td>
+<td>0.04–0.07</td>
+<td>0.1</td>
+<td>~3.6 s gap (<strong>~17/min</strong>)</td>
+<td></td>
+<td>attendance</td>
+<td>Browse rustle</td>
+</tr>
+<tr>
+<td>outside</td>
+<td>ping</td>
+<td>1300–1550</td>
+<td>0.09</td>
+<td>0.05–0.07</td>
+<td>0.004</td>
+<td>~5.3 s gap (<strong>~11/min</strong>)</td>
+<td>×1.25, +0.11 s, 0.7</td>
+<td>always</td>
+<td><strong>Bird chirp</strong></td>
+</tr>
+<tr>
+<td>outside</td>
+<td>ping</td>
+<td>365–375</td>
+<td>0.35</td>
+<td>0.07–0.09</td>
+<td>0.004</td>
+<td>~20.0 s gap (<strong>~3/min</strong>)</td>
+<td>×1.26, +0 s, 0.8</td>
+<td>always</td>
+<td>Distant car horn</td>
+</tr>
+</tbody>
+</table>
+<p><code dir="auto">lobby</code>, <code dir="auto">cinema</code>, <code dir="auto">partyHall</code>, and <code dir="auto">metro</code> have no elements in this table.
+The last three run a composed program from <code dir="auto">toneCrowdPrograms.ts</code> instead,
+while the venue is live:</p>
+<ul>
+<li><strong>Party hall:</strong> the band plays a 124 BPM remix of the splash hook, and the
+crowd layer adds the owner’s laughs (every 18 to 40 s) and voice-bent whoops
+(every 22 to 46 s).</li>
+<li><strong>Cinema:</strong> a sparse plucked score under muffled dialogue, with a riser into
+a boom every 8 to 14 s.</li>
+<li><strong>Metro:</strong> a scripted train arrival and departure about every 55 s (jittered
+by up to 20 percent), over a low rumble.</li>
+</ul>
+<p>Under every scene sits the room-tone bed (pink noise behind a steep lowpass,
+set per scene in <code dir="auto">SCENES</code>), and rain joins on the dry path when the weather
+calls for it.</p>
+<p>Look at the bird row twice. Outside, it chirps whenever you are looking,
+<strong>at any hour</strong>, because its gate is <code dir="auto">always</code>: about eleven times a minute
+with a full street, and still about four a minute at the street’s 0.35 crowd
+floor.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="murmur">Murmur</h3><a class="sl-anchor-link" href="#murmur"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Murmur”</span></a></div>
+<p>Talker count scales with live occupancy, so the count listed is the ceiling
+(at least one talker while the room is live). Each talker loops: one phrase of
+0.9 to 1.8 seconds (about 1.35 s on average), then a pause drawn from
+<code dir="auto">pauseMin + draw × pauseVar</code>. “Per talker” counts phrases a minute over that
+whole cycle, so a full lobby is six talkers each starting a phrase about every
+2.4 seconds.</p>
+<table>
+<thead>
+<tr>
+<th>Scene</th>
+<th>Max talkers</th>
+<th>Pause between phrases</th>
+<th>Per talker</th>
+<th>Muffle</th>
+<th>Gain</th>
+<th>Pitch</th>
+<th>Gate</th>
+<th>Crowd floor</th>
+<th>Program</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lobby</td>
+<td>6</td>
+<td>~1.0 s</td>
+<td>~25/min</td>
+<td>950 Hz</td>
+<td>0.50</td>
+<td></td>
+<td>always</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>office</td>
+<td>1</td>
+<td>~2.9 s</td>
+<td>~14/min</td>
+<td>850 Hz</td>
+<td>0.33</td>
+<td>-3.5</td>
+<td>workday</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>condo</td>
+<td>3</td>
+<td>~1.8 s</td>
+<td>~19/min</td>
+<td>480 Hz</td>
+<td>0.30</td>
+<td>-2.5</td>
+<td>condoDay</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>hotel</td>
+<td>1</td>
+<td>~3.7 s</td>
+<td>~12/min</td>
+<td>420 Hz</td>
+<td>0.24</td>
+<td>-4</td>
+<td>always</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>restaurant</td>
+<td>3</td>
+<td>~3.3 s</td>
+<td>~13/min</td>
+<td>800 Hz</td>
+<td>0.34</td>
+<td></td>
+<td>attendance</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>fastFood</td>
+<td>5</td>
+<td>~0.9 s</td>
+<td>~27/min</td>
+<td>1050 Hz</td>
+<td>0.46</td>
+<td></td>
+<td>attendance</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>shop</td>
+<td>2</td>
+<td>~2.4 s</td>
+<td>~16/min</td>
+<td>950 Hz</td>
+<td>0.30</td>
+<td></td>
+<td>attendance</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>cinema</td>
+<td>1</td>
+<td>~2.1 s</td>
+<td>~17/min</td>
+<td>650 Hz</td>
+<td>0.30</td>
+<td>-5.5</td>
+<td>attendance</td>
+<td></td>
+<td>cinema</td>
+</tr>
+<tr>
+<td>partyHall</td>
+<td>2</td>
+<td>~3.3 s</td>
+<td>~13/min</td>
+<td>900 Hz</td>
+<td>0.30</td>
+<td></td>
+<td>attendance</td>
+<td></td>
+<td>party</td>
+</tr>
+<tr>
+<td>metro</td>
+<td>4</td>
+<td>~1.4 s</td>
+<td>~22/min</td>
+<td>900 Hz</td>
+<td>0.42</td>
+<td></td>
+<td>always</td>
+<td>0.30</td>
+<td>metro</td>
+</tr>
+<tr>
+<td>outside</td>
+<td>2</td>
+<td>~3.0 s</td>
+<td>~14/min</td>
+<td>520 Hz</td>
+<td>0.30</td>
+<td></td>
+<td>always</td>
+<td>0.35</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A pitch offset means every talker shares one fixed shift (the office phone
+call, the condo TV, the cinema dialogue). Blank means each talker draws its own
+from the down-only range.</p>
+<p>Voices are the special case: grains chopped from the two seed mp3s by
+<code dir="auto">toneCrowdVoices.ts</code>, which screens candidate windows by zero-crossing rate and
+RMS so squeals and shouts are never sampled. Everything else is synthesized.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="gate-curves">Gate curves</h3><a class="sl-anchor-link" href="#gate-curves"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Gate curves”</span></a></div>
+<p><code dir="auto">hourActivity(gate, hour)</code> is the entire time-of-day model today:</p>
+<ul>
+<li><code dir="auto">workday</code> is 0 before 8, ramps linearly to 1 by 9, holds until 17, ramps
+back to 0 by 19, and stays 0 overnight.</li>
+<li><code dir="auto">condoDay</code> is 0 before 7, steps to 1 at 7, steps down to 0.2 at 9, ramps
+back to 1 from 15 to 17, holds until 21, ramps to 0 by 23, and stays 0
+overnight.</li>
+<li><code dir="auto">always</code> and <code dir="auto">attendance</code> are 1 at every hour.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hour</th>
+<th>0</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>21</th>
+<th>22</th>
+<th>23</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">workday</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0.5</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code dir="auto">condoDay</code></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0.2</td>
+<td>0.2</td>
+<td>0.6</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0.5</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><code dir="auto">attendance</code> is 1 at every hour by design: the live crowd factor is its gate.
+<code dir="auto">always</code> ignores the hour; its activity still follows the crowd factor.</p>
+<p>The missing row is the point: <strong>no curve peaks at dawn and none peaks at
+night.</strong> See the dawn birds idea below.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="recordings-instead-of-tones">Recordings instead of tones</h2><a class="sl-anchor-link" href="#recordings-instead-of-tones"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Recordings instead of tones”</span></a></div>
+<p>Replacing a synthesized element with a recording is an open idea. It is a new
+sound, so it needs an owner audition. If it is picked up, these constraints
+already apply:</p>
+<ul>
+<li><strong>The recording is the project’s own.</strong> Owner-recorded or rendered from the
+project’s code; no third-party sample or pack, CC0 included. It gets an
+entry in the license record of the repository that ships the file.</li>
+<li><strong>It is listed for the offline precache.</strong> It gets a named constant in
+<code dir="auto">audioAssets.ts</code> holding its full path (for example
+<code dir="auto">"audio/bird-chirp.mp3"</code>), added to <code dir="auto">AUDIO_RUNTIME_FILES</code>. Code loads it as
+<code dir="auto">`${baseUrl}${CONSTANT}`</code>, the way the voice seeds load.</li>
+<li><strong>It is an mp3.</strong> A host precaches <code dir="auto">mp3</code> and no other audio type.</li>
+<li><strong>Match the seeds’ encoding unless a clip proves it needs more:</strong> 22050 Hz,
+mono, 32 kbps. The talk seed is 18 s in 72 kB and the laugh seed 2.6 s in
+11 kB. Decoded audio is resampled to the context’s rate and stored as 32-bit
+floats, so memory depends on duration and channel count, never on bitrate.</li>
+<li><strong>The plumbing is private today.</strong> <code dir="auto">CrowdVoices</code> (<code dir="auto">toneCrowdVoices.ts</code>)
+plays its grains through a private <code dir="auto">emit</code>, and the crowd layer fires
+elements through synths; a clip player, its destination node and its gain
+scaling would be new design work.</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="house-rules">House rules</h2><a class="sl-anchor-link" href="#house-rules"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “House rules”</span></a></div>
+<p>Breaking one tends to produce a bug that shows up only on someone else’s
+hardware or in a replay.</p>
+<ul>
+<li><strong>Never draw from the game’s seeded random numbers.</strong> Sound is presentation,
+and a game’s seeded streams are part of its save determinism. Vary with the
+<code dir="auto">pseudo</code> hash seeded on things that already move, never with <code dir="auto">Math.random</code>.</li>
+<li><strong>No <code dir="auto">SfxName</code> cue ramps below 160 Hz.</strong> The owner tested the action cues
+on phone and laptop speakers and could not hear lower floors (the
+audibility rule in <code dir="auto">toneVoices.ts</code>). Deep cues add quiet octave and twelfth
+partials so small speakers reconstruct the pitch. The rule covers the cues
+on <code dir="auto">sfxBus</code>; the ambient elements are outside it (several thuds sit between
+64 and 115 Hz).</li>
+<li><strong>Guard retriggers.</strong> <code dir="auto">ERROR_HOLDOFF</code> is the model: a 0.65 s window keyed to
+the voice set by <code dir="auto">WeakMap</code>, with an explicit check for a rewound Tone clock.</li>
+<li><strong>Keep the pure modules pure.</strong> <code dir="auto">toneScenes.ts</code> and <code dir="auto">toneTracks.ts</code> carry no
+Tone.js import and no live state, which lets tests assert note data directly.</li>
+<li><strong>Celebrations ring the ping bell.</strong> <code dir="auto">promote</code> and <code dir="auto">notify</code> play on the
+ping bell (<code dir="auto">strikeBell</code>); the bloops are for build, sell, click, and error.</li>
+<li><strong>Audio only reads.</strong> It reads the focus it is handed and never writes back
+to the game.</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="adding-a-cue">Adding a cue</h2><a class="sl-anchor-link" href="#adding-a-cue"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Adding a cue”</span></a></div>
+<p>A new sound needs the owner’s OK before it merges (CLAUDE.md, design
+sign-off). Then:</p>
+<ol>
+<li>Add the name to the <code dir="auto">SfxName</code> union in <code dir="auto">toneScenes.ts</code>.</li>
+<li>Add its recipe as a <code dir="auto">case</code> in <code dir="auto">playSfx</code>, reusing existing voices where you
+can. A new instrument means a new <code dir="auto">SfxVoices</code> field and its construction
+in <code dir="auto">createSfxVoices</code>. Nothing else is needed for teardown:
+<code dir="auto">ToneAudioEngine.dispose()</code> walks every <code dir="auto">SfxVoices</code> value.</li>
+<li>Tests: <code dir="auto">toneVoices.test.ts</code> for the recipe, <code dir="auto">toneAudioEngineGraph.test.ts</code>
+for routing, <code dir="auto">toneAudioEngine.test.ts</code> for the inert-without-audio contract.</li>
+<li>Add it to the gallery’s sound board (<code dir="auto">gallery/sounds.ts</code>) so it can be
+heard and reviewed.</li>
+<li>Add a change note (<code dir="auto">.changes/README.md</code>).</li>
+</ol>
+<p>The game then fires it with <code dir="auto">sfx("name")</code>. The facade no-ops before the audio
+engine loads, which is correct.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="hearing-the-current-sounds">Hearing the current sounds</h2><a class="sl-anchor-link" href="#hearing-the-current-sounds"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Hearing the current sounds”</span></a></div>
+<p>The gallery’s sound board (<code dir="auto">npm run gallery</code>, <code dir="auto">gallery/sounds.ts</code>) plays every
+action cue, both music tracks and the ambience of each part of a tower. There
+is no checked-in way to render the sounds to a file yet.</p>
+<p>An earlier draft of this doc carried a local render script. It was dropped
+because nothing tested it and it re-implemented the crowd layer’s synths, so
+it could drift from the game unnoticed. The lessons from it are worth carrying
+into a renderer:</p>
+<ul>
+<li><strong>Render through the master gain (<code dir="auto">0.35</code>)</strong> or <code dir="auto">build</code>, <code dir="auto">sell</code>, and
+<code dir="auto">error</code> clip, which makes a recipe sound hotter than it is.</li>
+<li><strong>Normalize per group (cues, ambience), never per item.</strong> At the master,
+office typing sits around 50 dB below the <code dir="auto">error</code> cue. That is right in
+game and inaudible in a sample, and per-item normalizing would flatten the
+balance you are listening for.</li>
+<li><strong>Trim silence per sound before joining</strong>, or every later timestamp
+drifts.</li>
+<li><strong><code dir="auto">burst</code> elements are pink noise</strong>, so their level varies a few dB run to
+run; compare a <code dir="auto">ping</code> or <code dir="auto">thud</code> render to tell whether a recipe changed.</li>
+<li><strong>Lay out the sample for listening.</strong> A horn every 20 s makes an unusable
+sample, so space hits for timbre and judge rates from the tables above.</li>
+</ul>
+</div><footer class="sl-flex astro-ddtxxk7k"><div class="meta sl-flex astro-ddtxxk7k"></div><div class="pagination-links print:hidden astro-b5raizh3" dir="ltr"><a href="/pr-preview/pr-131/docs/desk/" rel="prev" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg><span class="astro-b5raizh3">Previous<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">The desk</span></span></a><a href="/pr-preview/pr-131/docs/atlas/" rel="next" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17.92 11.62a1.001 1.001 0 0 0-.21-.33l-5-5a1.003 1.003 0 1 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1.002 1.002 0 0 0 .325 1.639 1 1 0 0 0 1.095-.219l5-5a1 1 0 0 0 .21-.33 1 1 0 0 0 0-.76Z"/></svg><span class="astro-b5raizh3">Next<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Sprite atlas</span></span></a></div></footer></div></div></main></div></div></div></div></body></html>
