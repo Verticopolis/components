@@ -281,6 +281,11 @@
       text-align: left;
       padding: 0 10px 0 8px;
     }
+    /* The grid above outranks the palette's own .pal-item.locked rule, so
+       hide a locked tool again here: the strip shows only what the star allows. */
+    .desk-pocket-body > #palette .pal-item.locked {
+      display: none;
+    }
     .desk-pocket-body > #palette .pal-swatch {
       grid-row: 1 / span 2;
       width: 20px;
