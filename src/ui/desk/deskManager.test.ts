@@ -48,6 +48,8 @@ interface Rig {
   els: Record<Id, HTMLElement>;
   refreshed: ReturnType<typeof vi.fn>;
   store: ReturnType<typeof memoryStore>;
+  /** Each window's label; a test renames one by writing here. */
+  names: Record<Id, string>;
 }
 
 /** Every rig a test made, taken off the window after it. */
@@ -64,6 +66,7 @@ function rig(over: Partial<DeskManagerOptions<Id>> = {}, seed: Record<string, st
   for (const el of Object.values(els)) desk.appendChild(el);
   const store = memoryStore(seed);
   const refreshed = vi.fn();
+  const names: Record<Id, string> = { tower: "TOWER", build: "BUILD", goals: "GOALS" };
   const manager = new DeskManager<Id>({
     desk,
     order: ORDER,
@@ -75,7 +78,7 @@ function rig(over: Partial<DeskManagerOptions<Id>> = {}, seed: Record<string, st
   const slot = (id: Id, rest: Partial<DeskSlot<Id>> = {}): DeskSlot<Id> => ({
     id,
     el: els[id],
-    label: () => id.toUpperCase(),
+    label: () => names[id],
     layer: "tool",
     limits: null,
     canMax: false,
@@ -87,7 +90,7 @@ function rig(over: Partial<DeskManagerOptions<Id>> = {}, seed: Record<string, st
   manager.add(
     slot("goals", { open: () => void (els.goals.hidden = false), close: () => void (els.goals.hidden = true) }),
   );
-  const made = { manager, desk, els, refreshed, store };
+  const made = { manager, desk, els, refreshed, store, names };
   rigs.push(made);
   return made;
 }
@@ -124,6 +127,18 @@ describe("DeskManager", () => {
       { id: "build", label: "BUILD", active: false, minimized: false },
       { id: "goals", label: "GOALS", active: false, minimized: false },
     ]);
+  });
+
+  it("names a renamed window's title-bar buttons after its new label on refresh", () => {
+    const r = rig();
+    r.manager.start();
+    const min = r.els.tower.querySelector<HTMLElement>(".desk-btn-min")!;
+    expect(min.getAttribute("aria-label")).toBe("Minimize TOWER");
+    r.names.tower = "HARMONY";
+    r.manager.refresh();
+    expect(min.getAttribute("aria-label")).toBe("Minimize HARMONY");
+    expect(r.els.tower.querySelector(".desk-btn-max")!.getAttribute("aria-label")).toBe("Maximize HARMONY");
+    expect(lastEntries(r)[0]).toEqual({ id: "tower", label: "HARMONY", active: true, minimized: false });
   });
 
   it("leaves a closed window off the taskbar", () => {

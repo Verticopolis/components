@@ -212,6 +212,12 @@ export class DeskWindow<Id extends string = DeskWindowId> {
     return html`${titleButtonTemplate("min", `Minimize ${name}`, this.onMin)}${this.spec.canMax ? max : nothing}`;
   }
 
+  /** Names the title bar's buttons after the window's label again, after a
+   *  rename. lit changes only the labels that differ. */
+  relabel(): void {
+    this.buttons?.update(this.buttonsTemplate());
+  }
+
   private readonly onMin = () => this.minimize();
   private readonly onMax = () => this.toggleMax();
 

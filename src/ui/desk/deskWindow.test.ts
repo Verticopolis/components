@@ -150,6 +150,20 @@ describe("DeskWindow", () => {
     expect(s.changed).toHaveBeenLastCalledWith("unmax");
   });
 
+  it("names its buttons after the new label on relabel, keeping the buttons", () => {
+    const el = frame();
+    let name = "Tower One";
+    const w = new DeskWindow(spec(el, { canMax: true, label: () => name }));
+    const min = el.querySelector<HTMLElement>(".desk-btn-min")!;
+    const max = el.querySelector<HTMLElement>(".desk-btn-max")!;
+    name = "Harmony Tower";
+    w.relabel();
+    expect(el.querySelector(".desk-btn-min")).toBe(min);
+    expect(min.getAttribute("aria-label")).toBe("Minimize Harmony Tower");
+    expect(min.title).toBe("Minimize Harmony Tower");
+    expect(max.getAttribute("aria-label")).toBe("Maximize Harmony Tower");
+  });
+
   it("shows the restore glyph on the same button while maximized", () => {
     const el = frame();
     new DeskWindow(spec(el, { canMax: true }));

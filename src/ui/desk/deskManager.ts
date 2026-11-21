@@ -222,12 +222,14 @@ export class DeskManager<Id extends string = DeskWindowId> {
     this.refresh();
   }
 
-  /** Rebuild the taskbar's entries from the windows' state. */
+  /** Rebuild the taskbar's entries from the windows' state, and name each
+   *  open window's title-bar buttons after its label (a renamed tower). */
   refresh(): void {
     const entries: TaskEntry[] = [];
     for (const id of this.opts.order) {
       const w = this.wins.get(id);
       if (!w || !w.spec.isOpen()) continue;
+      w.relabel();
       entries.push({ id, label: w.spec.label(), active: w === this.current, minimized: w.minimized });
     }
     this.opts.refreshed(entries);
