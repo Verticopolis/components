@@ -222,7 +222,10 @@ pocket desk anywhere, and `any` the full desk on any screen at least
 tablet-wide.
 
 On a touchscreen (`body.desk-touch`) the taskbar and the menu rows are 44 px
-tall and each title-bar button has a 44 px touch area. On the pocket desk
+tall and each title-bar button has a 44 px touch area. When a page opts into
+a phone's cutout area (`viewport-fit=cover` in its viewport meta), the desk
+area keeps in from the safe-area insets on every side and the taskbar pads
+its sides and foot, so no window or tool sits under a notch. On the pocket desk
 (`body.desk-pocket`) the tower window fills the desk and never moves. The
 game builds `pocketBody(doc)` inside it and moves Info, Tools and the tower's
 stage into that grid; the stylesheet stacks them on an upright phone and puts
