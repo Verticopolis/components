@@ -18,7 +18,7 @@ const VIEW: TopBarView = {
   install: false,
 };
 
-type Spies = { [K in keyof TopBarActions]: Mock<TopBarActions[K]> };
+type Spies = { [K in keyof TopBarActions]-?: Mock<NonNullable<TopBarActions[K]>> };
 
 function spies(): Spies {
   return {
@@ -168,6 +168,60 @@ describe("topBarTemplate", () => {
     expect($("#stat-money").firstChild).toBe(money);
     expect(records.map((r) => r.type)).toEqual(["characterData"]);
     expect(time.contains(records[0].target)).toBe(true);
+  });
+
+  it("draws the badge unless the view leaves it out", () => {
+    draw();
+    expect(host.querySelector(".brand")).not.toBeNull();
+    draw({ brand: false });
+    expect(host.querySelector(".brand")).toBeNull();
+    expect($("#stat-money").textContent).toBe("$2,000,000");
+  });
+
+  describe("a page that leaves out an action", () => {
+    const without = (key: Exclude<keyof TopBarActions, "speed">) => {
+      const { [key]: _gone, ...rest } = actions;
+      render(topBarTemplate(VIEW, rest), host);
+    };
+
+    it.each([
+      ["undo", "#btn-undo"],
+      ["redo", "#btn-redo"],
+      ["save", "#btn-save-top"],
+      ["mute", "#audio-toggle"],
+      ["update", "#btn-update"],
+      ["install", "#btn-install"],
+    ] as const)("draws no control for %s", (key, sel) => {
+      without(key);
+      expect(host.querySelector(sel)).toBeNull();
+      expect(host.querySelectorAll("#speed button[data-speed]")).toHaveLength(4);
+    });
+
+    it("draws no traffic meter without a traffic action", () => {
+      without("traffic");
+      expect(host.querySelector("#traffic")).toBeNull();
+      expect($("#stat-pop").textContent).toBe("1,204");
+    });
+
+    it("draws no traffic meter without a traffic readout", () => {
+      const { traffic: _gone, ...view } = VIEW;
+      render(topBarTemplate(view, actions), host);
+      expect(host.querySelector("#traffic")).toBeNull();
+    });
+
+    it("draws the speeds alone for a page that gives only speed", () => {
+      const speed = vi.fn();
+      render(topBarTemplate({ ...VIEW, brand: false, traffic: undefined }, { speed }), host);
+      expect([...host.querySelectorAll("#speed > *")].map((b) => (b as HTMLElement).dataset.speed)).toEqual([
+        "0",
+        "1",
+        "2",
+        "3",
+      ]);
+      expect(host.querySelector("#traffic, .brand")).toBeNull();
+      host.querySelector<HTMLButtonElement>('[data-speed="3"]')!.click();
+      expect(speed).toHaveBeenCalledWith(3);
+    });
   });
 
   it("writes the funds color only when the sign of the funds changes", () => {

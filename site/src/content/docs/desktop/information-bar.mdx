@@ -11,6 +11,7 @@ Both come from `windows/bars/topBar` and `windows/bars/statusBar`, and their loo
 
 - The game owns each bar's element, `<header id="topbar">` and `<footer id="statusbar" class="statusbar">`, and renders the package's template into it. On the desk the game moves those elements between windows, and the Pocket desk's sheet sizes them by their ids.
 - The game formats every text: the rating, the date, the time, the funds, the population, the traffic word and its floor, and the sentence a screen reader hears for the traffic.
+- Only the meters and the speeds are required. A page that leaves out an action (Undo, Redo, Save, the speaker, Update, Install or the traffic meter) gets no control for it, and `brand: false` leaves out the badge, so another page with no saving or sound shows the meters and the speeds alone. The frame's "Speeds only" box shows that bar.
 - Each press goes to the game. A press on a grayed Undo or Redo reaches it too, since the game knows when a gesture under way can still be undone.
 - The traffic meter fills one to four bars, so its level reads without color, and turns the warning color as well from Backed up on. A click, a tap, Enter or Space on it goes to the game, which takes the player to the line it names.
 - The game renders the bars on every status pass, several times a second. Lit writes only the values that changed, and a class the game adds itself, such as the nudge on Play, stays on its button.

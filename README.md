@@ -288,7 +288,10 @@ bundle to one copy of each.
   `windows/bars/statusBar` the status bar under the tower:
   `topBarTemplate(view, actions)` and `statusBarTemplate(view)` render into
   the game's own `<header id="topbar">` and `<footer id="statusbar">`, keep
-  the ids the stylesheets name, and take every text ready to show. Their look
+  the ids the stylesheets name, and take every text ready to show. Every
+  Information bar control but the speeds is optional: an action left out of
+  `TopBarActions` draws no control, and `brand: false` leaves out the
+  badge. Their look
   is `styles/game/topbar.css` and `styles/game/menubar.css`.
 - `windows/palette/toolPalette` is the game's Tools window: `ToolPalette`
   draws the pinned tools and a section per category into the game's
