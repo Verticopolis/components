@@ -8,9 +8,10 @@ package: minor
   `DESK_WINDOW_IDS` lists every desk window in the order the desk builds and
   saves them.
 - `windows/desk/deskHelp` exports `buildHelpWindow`, the Help window: the
-  Player's Manual in a page frame under Contents, Back, Forward and Open in
-  Browser (`setNav` turns Back and Forward on and off), styled in
-  `styles/game/desk.css`.
+  Player's Manual in a page frame under its own menu bar (the game's
+  `MenuBarModel`, re-rendered through `menus`; Alt stays with the game's bar)
+  and Contents, Back, Forward and Open in Browser (`setNav` turns Back and
+  Forward on and off), styled in `styles/game/desk.css`.
 - `windows/desk/deskWindow`: a window counts as pressed when the focus moves
   into a frame inside it (a press or Tab into the Help window's manual, which
   never reaches the game's page), so it comes to the front and lights its

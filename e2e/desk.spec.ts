@@ -122,6 +122,12 @@ test("the Help window opens from the Help menu, follows its pages and comes to t
   await expect(help).not.toHaveClass(/desk-active/);
   await manual.getByRole("heading", { name: "Contents" }).click();
   await expect(help).toHaveClass(/desk-active/);
+
+  // Its own menu bar sits under its title bar; File > Exit closes it.
+  const menus = help.getByRole("navigation", { name: "Player's Manual menu" });
+  await menus.getByRole("button", { name: "File" }).click();
+  await help.getByRole("menuitem", { name: "Exit" }).click();
+  await expect(help).toBeHidden();
 });
 
 test("a window minimizes to the taskbar and comes back", async ({ page }) => {
