@@ -224,18 +224,22 @@ pocket desk anywhere, and `any` the full desk on any screen at least
 tablet-wide.
 
 On a touchscreen (`body.desk-touch`) the taskbar and the menu rows are 44 px
-tall and each title-bar button has a 44 px touch area. When a page opts into
-a phone's cutout area (`viewport-fit=cover` in its viewport meta), the desk
-area keeps in from the safe-area insets on every side and the taskbar pads
-its sides and foot, so no window or tool sits under a notch. On the pocket desk
-(`body.desk-pocket`) the tower window fills the desk and never moves. The
-game builds `pocketBody(doc)` inside it and moves Info, Tools and the tower's
-stage into that grid; the stylesheet stacks them on an upright phone and puts
-Tools at the left on a sideways phone or an upright tablet. The Map floats
-over the tower, and the Bulletin, Tower Info and the Control Panel each cover
-the whole desk while open, one at a time, with the taskbar switching between
-them. The Verticopolis button shows its icon alone and each window's button
-its word alone.
+tall, each title-bar button has a 44 px touch area, and the Verticopolis
+menu opens just above the taller taskbar. When a page opts into a phone's
+cutout area (`viewport-fit=cover` in its viewport meta), the desk area keeps
+in from the safe-area insets on every side and the taskbar pads its sides and
+foot, so no window or tool sits under a notch. On the pocket desk
+(`body.desk-pocket`) the tower window fills the desk and never moves; it has
+no Minimize or Maximize button. The game builds `pocketBody(doc)` inside it
+and moves Info, Tools and the tower's stage into that grid; the stylesheet
+stacks them on an upright phone and puts Tools at the left on a sideways
+phone or an upright tablet. On an upright phone the pinned Inspect and
+Bulldoze show their icons alone. The Map floats over the tower at its phone
+size; on a sideways phone, where the tower's view is short, it may take that
+view's whole height. The Bulletin covers the whole desk while open, and Tower
+Info and the Control Panel open across its top at the height of what they
+hold, with the taskbar switching between them. The Verticopolis button shows
+its icon alone and each window's button its word alone.
 
 ## The class contract
 

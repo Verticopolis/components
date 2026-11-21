@@ -44,6 +44,10 @@
       bottom: 10px;
     }
   }
+  /* The Start menu opens just above the taller taskbar. */
+  body.desk-touch .desk-start-menu {
+    bottom: calc(var(--desk-taskbar-h) - 1px);
+  }
   body.desk-touch .desk-taskbar {
     height: var(--desk-taskbar-h);
     gap: 3px;
@@ -116,6 +120,7 @@
     height: auto !important;
     box-shadow: none;
   }
+  body.desk-pocket #desk-win-tower > .win-title > .desk-btn-min,
   body.desk-pocket #desk-win-tower > .win-title > .desk-btn-max,
   body.desk-pocket #desk-win-tower > .desk-grip,
   body.desk-pocket #statusbar {
@@ -280,6 +285,23 @@
     .desk-pocket-body > #palette .pal-desc {
       display: none;
     }
+    /* Inspect and Bulldoze, always at hand, show their icons alone; each
+       keeps its name for a screen reader. */
+    .desk-pocket-body > #palette .pal-pinned .pal-item {
+      grid-template-columns: auto;
+      justify-content: center;
+      padding: 0 9px;
+    }
+    .desk-pocket-body > #palette .pal-pinned :is(.pal-swatch, .pal-cost) {
+      display: none;
+    }
+    .desk-pocket-body > #palette .pal-pinned .pal-name {
+      font-size: 0;
+    }
+    .desk-pocket-body > #palette .pal-pinned .pal-ic {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   /* Sideways phone: Tools at the left, the tower at the right. */
@@ -294,6 +316,16 @@
     .desk-pocket-body > #palette {
       min-height: 0;
       overflow: auto;
+    }
+    /* The tower's view is shorter here than on a sideways phone without the
+       desk, so the Map card may take all of its height but 8px margins
+       instead of two thirds of it; 74px is those margins and the card's title
+       bar, View row and frame. */
+    .desk-pocket-body > #stage > .overview-map {
+      max-height: calc(100% - 16px);
+    }
+    .desk-pocket-body > #stage .overview-map-body {
+      height: min(216px, calc(100cqh - 74px));
     }
   }
 
