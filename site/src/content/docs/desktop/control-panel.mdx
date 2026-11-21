@@ -1,0 +1,17 @@
+---
+title: Control Panel
+description: The desk's Control Panel, a window of large icons for the game's settings.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+The Control Panel is the window a 1995 player opened for their settings: a row of large icons on a white well, each named under it, with an object count along the foot. It comes from `windows/desk/deskControlPanel` and the desk's stylesheet, `styles/game/desk.css`.
+
+- The game picks the icons and their order from the four the package draws (Display, Appearance, Sounds and Settings), names each one and gives it a tooltip.
+- A press on an icon goes to the game, which opens whatever that setting is. The window runs nothing of its own.
+- The game can change an icon's name while the window is open, as the game's Sounds icon reads "Sounds: On" or "Sounds: Off".
+- The ✕ closes the window, and the game opens it again from its own menu or tray.
+
+Here each icon only says it was pressed, and Sounds flips its name.
+
+<Demo name="control-panel" />
