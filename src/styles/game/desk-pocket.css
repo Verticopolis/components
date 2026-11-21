@@ -375,24 +375,25 @@
     }
   }
 
-  /* Bulletin, Tower Info and the Control Panel open over the tower, full
-     width; the tower stays laid out under them. */
+  /* Bulletin, Tower Info and the Control Panel open across the top of the
+     desk, full width and as tall as what they hold, with the tower showing
+     below; a long list scrolls. The Bulletin stops at a third of the desk and
+     its log scrolls inside it. Their places are not !important: a drag by the
+     title bar writes an inline place, so the player can slide one out of the
+     way (the mover keeps it inside the desk). Their size stays the
+     stylesheet's, since a pocket window has no grip. */
   body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control).desk-win {
-    inset: 0 !important;
-    width: auto !important;
+    left: 0;
+    top: 0;
+    right: auto;
+    bottom: auto;
+    width: 100% !important;
     height: auto !important;
     max-width: none;
-    max-height: none;
+    max-height: 100%;
   }
   body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control) > .desk-grip {
     display: none;
-  }
-  /* They are as tall as what they hold, across the top of the desk, with the
-     tower showing below; a long list scrolls. The Bulletin stops at a third
-     of the desk and its log scrolls inside it. */
-  body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control).desk-win {
-    bottom: auto !important;
-    max-height: 100%;
   }
   body.desk-pocket :is(#tower-win, #desk-win-control).desk-win {
     overflow-y: auto;
