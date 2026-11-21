@@ -40,6 +40,7 @@ export const sidebar = [
       { label: "Wells, fields and key-value rows", link: "/controls/wells/" },
       { label: "Menu bar", link: "/controls/menu-bar/" },
       { label: "Message boxes", link: "/controls/message-boxes/" },
+      { label: "Alert cards and updates", link: "/controls/alert-cards/" },
       { label: "Appearance", link: "/controls/appearance/" },
       { label: "Open and Save As", link: "/controls/file-dialog/" },
       { label: "Icons", link: "/controls/icons/" },

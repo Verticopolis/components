@@ -2,7 +2,8 @@
  * The gallery's demos: every reusable piece of the package, built from lib/
  * the way a consumer would, each mounted where a site page asks for it by
  * name (`site/src/components/Demo.astro`). The chrome (windows, buttons,
- * wells, key-value rows, a sample menu bar, message boxes and the icons) is
+ * wells, key-value rows, a sample menu bar, message boxes, alert cards, the
+ * update box and the icons) is
  * lit templates over the package's stylesheets, and the desk (`desk.ts`) is
  * the package's desk windows and window menu on a sample desk. The rooms and
  * the tower scenes are painted by the package's own painters from the
@@ -29,6 +30,7 @@ import { people } from "./people.js";
 import { deskDemo } from "./desk.js";
 import { deskLayouts } from "./deskLayout.js";
 import { messageBoxes } from "./messageBoxes.js";
+import { alertCards } from "./alertCards.js";
 import { appearanceDemo } from "./appearance.js";
 import { fileDialogDemo } from "./fileDialog.js";
 import { titleScreenDemo } from "./titleScreen.js";
@@ -181,6 +183,7 @@ export const DEMOS = {
   wells: shows(() => WELLS),
   "menu-bar": shows(sampleMenu),
   "message-boxes": shows(messageBoxes),
+  "alert-cards": shows(alertCards),
   appearance: shows(appearanceDemo),
   "file-dialog": shows(fileDialogDemo),
   "title-screen": shows(titleScreenDemo),

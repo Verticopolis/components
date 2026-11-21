@@ -262,6 +262,13 @@ bundle to one copy of each.
   small print and the optional mute, install and sponsor corners the caller
   hands in. A page renders it into its own `#splash` container. It imports
   `styles/game/splash.css`.
+- `windows/alertCard` is the alert card (`new AlertCard(doc, id, view)`): a
+  modal dialog that holds the page until one of its buttons is pressed, such
+  as a crash card, or a wait card with no buttons that its caller closes.
+  `windows/updateBox` is the update box (`updateBoxView(view, actions)` for a
+  `ModalShell`): what is new, the build lines, Later and Update now. The
+  caller writes every word. Their look is `styles/game/dialogs.css`, part of
+  `styles.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -341,6 +348,7 @@ built package from `lib/` the way a consumer would:
 | Buttons, Windows, Wells | the chrome, in the scheme Options picks |
 | Menu bar | a sample menu bar, the same component the site's own bar uses |
 | Message boxes | `windows/messageBox` in the modal: a message, a question, a warning with its icon, and a notice |
+| Alert cards and updates | `windows/alertCard`: a crash card with a status line and a wait card; `windows/updateBox` in the modal, after one version and after several |
 | Appearance | the Appearance dialog; OK dresses the site in the picked scheme |
 | Open and Save As | the Open, Save As and Previous Versions windows over a made-up folder that lives only on the page |
 | Title screen | the game's title screen in a frame, with sample buttons and every corner |
