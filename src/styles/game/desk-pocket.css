@@ -126,6 +126,10 @@
   body.desk-pocket #statusbar {
     display: none;
   }
+  /* With Minimize gone, the close button carries the push to the bar's right end. */
+  body.desk-pocket #desk-win-tower > .win-title > .desk-btn-close {
+    margin-left: auto;
+  }
   /* Phones show the Verticopolis logo alone on the Start button (its word
      stays its accessible name) and a word alone on each task. */
   body.desk-pocket .desk-start {
@@ -321,6 +325,9 @@
        desk, so the Map card may take all of its height but 8px margins
        instead of two thirds of it; 74px is those margins and the card's title
        bar, View row and frame. */
+    .desk-pocket-body > #stage {
+      container-type: size;
+    }
     .desk-pocket-body > #stage > .overview-map {
       max-height: calc(100% - 16px);
     }
