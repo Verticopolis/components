@@ -21,6 +21,107 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.2.0 (2026-11-21)
+
+- **minor**: `windows/alertCard` exports `AlertCard`, a modal card that holds the page
+  until one of its buttons is pressed (a crash card), or until its caller
+  closes it (a wait card), with a status line it redraws on `update`.
+- **minor**: `windows/updateBox` exports `updateBoxView`, the update box for the shared
+  modal: the incoming version's notes as a list or a scrolling well, every
+  skipped version's notes, a release notes link, the build lines, and Later
+  and Update now.
+- **minor**: The update box's rules (`.whatsnew`, `.build-id`) move from
+  `styles/game/new-tower.css` to `styles/game/dialogs.css`, right where
+  `styles.css` read them before, so the game sees no change and a page that
+  loads only `dialogs.css` gets the update box's look.
+- **minor**: `windows/desk/deskControlPanel` draws the desk's Control Panel: `ControlPanel` takes the icons
+  (`ControlItem`: one of the four the package draws, a name and a tooltip), the ✕'s label, a
+  `picked` callback and an optional title and title-bar icon. `setLabel` renames an icon while
+  the window is open. The gallery has a Desktop > Control Panel page.
+- **minor**: `windows/desk/deskManager` is the desk's window manager: `DeskManager` gives the focus and
+  stacks the windows, keeps the taskbar's entries, runs a taskbar press (`deskTaskResult`) and
+  the window menu, opens each window at its saved place or the page's own, remembers a maximized
+  app window, keeps small windows off its menu bar, pulls windows back onto a desk that shrank,
+  and brings up a window the page opens its own way. Window ids are the page's own.
+- **minor**: `windows/desk/deskScreen` reads the screen for `deskMode` (`deskScreenOf` with `DESK_QUERIES`
+  or a page's own queries, `watchDeskScreen`) and keeps the `?desk=` testing switch
+  (`heedDeskSwitch`, `readDeskSwitch`) under a key and parameter the page names.
+- **minor**: `windows/desk/deskTitle` draws the title screen's window title bar and taskbar on the desk into
+  a root the page names (`DeskTitle`).
+- **minor**: `windows/desk/deskStore` reads and writes storage without throwing (`read`, `write`,
+  `localStore`).
+- **minor**: `DeskWindow`, `DeskWindowSpec`, `windowMenuState`, `runWindowCommand` and `parseLayout` take
+  a page's own window ids (the game's stay the default), and `DESK_WINDOW_IDS` lists the game's.
+- **minor**: The gallery's desk runs on `DeskManager`: the taskbar lists the tower first, and a maximized
+  tower stays under the small windows, which step below its menu bar, as in the game.
+- **minor**: `windows/fireworks` exports `playFireworks`, pixel fireworks drawn first
+  inside a dialog the caller names, under its box and over its backdrop. The
+  show clears on its own, returns `stop`, and draws one still frame with
+  reduced motion. The sky's steps (`newSky`, `stepSky`, `stillSky`,
+  `drawSky`, `skyDone`) are exported too.
+- **minor**: `windows/notFoundDesk` exports `notFoundDeskTemplate`, the "page not found"
+  desk for a site's 404 page: a message box on the 1994 desk with a skyline
+  missing a floor and a taskbar. The site gives the words and the links, and
+  each link hears a click and a middle click. `trayClock` and
+  `msToNextMinute` keep its clock on the minute.
+- **minor**: `windows/overviewMapWindow` exports `OverviewMapWindow`, the Map window a game docks in its stage: the
+  tower small with a box where the main view is, its Map button, drags, taps and keys that move the view,
+  the open or closed choice per layout, and a summary a screen reader hears. It draws from one lit template
+  and draws again only when something it shows changed.
+- **minor**: `windows/overviewMapViews` exports `OverviewMapViews`, the View dropdown and the Hotel, Eval, Pricing,
+  Traffic and Occupancy views with their legends, fed by readers the game hands in (rooms, clock, tiers,
+  heat cells).
+- **minor**: The modules they are built from come along: `overviewMapDom`, `overviewMapPresses`, `overviewMapKeys`,
+  `overviewMapPicker`, `overviewMapLegend`, `overviewMapPrefs`, `overviewMapSpot`, `overviewMapPick`,
+  `overviewMapText`, `overviewMapWorldPress` and `overviewMapDeps`. These are internal for now (README).
+- **minor**: `windows/palette/toolPalette` is the game's Tools window as lit templates. `ToolPalette` draws the
+  pinned tools and a section per build category into the game's `.palette-scroll`, and the phone's
+  category tabs into its `.palette-tabs`, from the tools a game hands in with `update(view)`: their
+  names, prices, swatches and descriptions, and which are locked, out of reach of the funds or
+  picked. It keeps the open tab, the "new" pips on a tab whose category gained tools, and the folded
+  categories (stored under a key the game names). Every tool keeps its element across updates, so
+  the focus and a class the game adds stay on it.
+- **minor**: `windows/palette/pressKeys` gives a `role="button"` element a native button's Enter and Space,
+  and `windows/palette/paletteFolds` loads and keeps the folds.
+- **minor**: `styles/game/tools-stage.css` places Inspect's and Bulldoze's icon on the name's line itself.
+- **minor**: The gallery has a Tools window page.
+- **minor**: `windows/bars/topBar` and `windows/bars/statusBar` are the game's Information bar and status bar
+  as lit templates. `topBarTemplate(view, actions)` draws the badge, the six meters and the speed,
+  Undo, Redo, Save, sound, Update and Install buttons; `statusBarTemplate(view)` draws the hint, the
+  tool card, the tower and the bulletin line. A game renders them into its own `#topbar` and
+  `#statusbar` elements on each status pass, the ids and classes stay as the stylesheets name them,
+  and a class the game adds itself (the Play nudge) survives a render.
+- **minor**: The gallery has an Information bar and status bar page, drawn in a frame over the game's desktop
+  stylesheet.
+- **minor**: `windows/desk/deskGeometry` has a Help window: `DeskWindowId` gains
+  `"help"`, `defaultLayout` opens it in the middle of the desk at
+  `HELP_WIDTH` x `HELP_HEIGHT` (shrunk to fit a small desk), `HELP_LIMITS`
+  holds its smallest size, and `parseLayout` reads its saved place.
+  `DESK_WINDOW_IDS` lists every desk window in the order the desk builds and
+  saves them.
+- **minor**: `windows/desk/deskHelp` exports `buildHelpWindow`, the Help window: the
+  Player's Manual in a page frame under its own menu bar (the game's
+  `MenuBarModel`, re-rendered through `menus`; Alt stays with the game's bar)
+  and Contents, Back, Forward and Open in Browser (`setNav` turns Back and
+  Forward on and off), styled in `styles/game/desk.css`. Its `dispose`
+  takes the menu bar's page listeners off once the window is gone.
+- **minor**: `windows/menuBar`: `MenuBar.dispose()` takes the bar's window and document
+  listeners off, for a bar whose page outlives it.
+- **minor**: `windows/desk/deskWindow`: a window counts as pressed when the focus moves
+  into a frame inside it (a press or Tab into the Help window's manual, which
+  never reaches the game's page), so it comes to the front and lights its
+  title bar. `dispose` also drops a focus check the page's blur had queued.
+- **minor**: The gallery's sample desk has the Help window, opened from Help > Player's
+  Manual or the Verticopolis menu, with a sample manual in its frame.
+- **minor**: `windows/menuBar`'s `MenuItemModel` takes `title`, the item's tooltip, and `content`, a lit template drawn in place of the underlined label for a line with parts of its own (a recent file's number and name, say). A later render changes both.
+- **patch**: On an upright phone, the pocket desk's Info fits all five rating stars, the time and the whole traffic word ("Backed up"); the traffic chip drops its "Traffic" label to make room. On a sideways phone the map sits in the middle of the Map card instead of against its left edge.
+- **patch**: On the pocket desk, Inspect and Bulldoze show their icons alone, so the tool strip has room for more tools; the tower window has no Minimize button; and on a sideways phone the Map card may take the whole height of the tower's view, so it is no longer drawn tiny. On any touchscreen desk the Start menu opens just above the taller taskbar instead of over it.
+- **patch**: `styles/game/desk-pocket.css`: on a touchscreen the desk area now keeps in from the left and
+  right safe-area insets as well as the top, so on a page with `viewport-fit=cover` the pocket
+  desk's Tools column and tower no longer sit under a phone's notch. The Map, its toggle and the
+  tool strip over the tower keep their plain offsets there, so they do not take the inset twice.
+  Nothing moves on a page without it.
+
 ## 2.1.0 (2026-11-20)
 
 - **minor**: `astro/TitleBar.astro` and `astro/TitleScreen.astro` are the docs title bar and title screen
