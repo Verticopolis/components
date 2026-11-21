@@ -36,7 +36,10 @@ export const WINDOW_MENU_ITEMS: ReadonlyArray<readonly [label: string, command: 
  *  the focus: Restore unless it is in front at its own size, Minimize unless
  *  minimized, Maximize for the tower when not maximized, Close when the game
  *  can close it (Info and Tools never close on the desk). */
-export function windowMenuState(w: DeskWindow | undefined, active: DeskWindow | null): WindowMenuState | null {
+export function windowMenuState<Id extends string>(
+  w: DeskWindow<Id> | undefined,
+  active: DeskWindow<Id> | null,
+): WindowMenuState | null {
   if (!w) return null;
   const inFront = w === active && !w.minimized && !w.maximized;
   return { restore: !inFront, minimize: !w.minimized, maximize: w.spec.canMax && !w.maximized, close: !!w.spec.close };
@@ -44,10 +47,10 @@ export function windowMenuState(w: DeskWindow | undefined, active: DeskWindow | 
 
 /** Run `command` on `w`; `bringUp` puts it in front, back from the taskbar
  *  when minimized. Restore and Maximize bring it up first, as 1995 did. */
-export function runWindowCommand(
-  w: DeskWindow | undefined,
+export function runWindowCommand<Id extends string>(
+  w: DeskWindow<Id> | undefined,
   command: WindowCommand,
-  bringUp: (w: DeskWindow) => void,
+  bringUp: (w: DeskWindow<Id>) => void,
 ): void {
   if (!w) return;
   if (command === "minimize") w.minimize();

@@ -19,8 +19,9 @@ import { resizedTo, type DeskRect, type DeskWindowId, type SizeLimits } from "./
  */
 
 /** What the desk tells a window it needs. */
-export interface DeskWindowSpec {
-  readonly id: DeskWindowId;
+export interface DeskWindowSpec<Id extends string = DeskWindowId> {
+  /** The window's id: one of the game's by default, or a page's own. */
+  readonly id: Id;
   /** The window element: a frame the desk built, or the game's own window. */
   readonly el: HTMLElement;
   /** The name on its taskbar button and in its buttons' labels. */
@@ -142,7 +143,7 @@ interface Resize {
   next: DeskRect;
 }
 
-export class DeskWindow {
+export class DeskWindow<Id extends string = DeskWindowId> {
   minimized = false;
   maximized = false;
   private before: DeskRect | null = null;
@@ -156,7 +157,7 @@ export class DeskWindow {
   /** The resize under way, or null. */
   private resize: Resize | null = null;
 
-  constructor(readonly spec: DeskWindowSpec) {
+  constructor(readonly spec: DeskWindowSpec<Id>) {
     const { el } = spec;
     const doc = el.ownerDocument;
     el.classList.add("desk-win");

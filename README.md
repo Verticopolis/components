@@ -249,6 +249,13 @@ bundle to one copy of each.
   can import it in Node. `windows/appearance` is the Appearance dialog that
   picks one (`openAppearanceDialog`, or `appearanceView` for a `ModalShell`
   the caller drives); it imports `styles/game/appearance.css`.
+- `windows/desk/deskManager` runs the 1994 desk's windows for a page:
+  `DeskManager` keeps the focus, the stack, the taskbar's entries, the saved
+  places and a maximize in step, for window ids the page names.
+  `windows/desk/deskScreen` reads the screen for `deskMode` (with the
+  `?desk=` switch), `windows/desk/deskTitle` puts a title screen on the desk,
+  and `windows/desk/deskStore` reads and writes storage without throwing. See
+  the site's desk doc.
 - `windows/fileDialog/fileDialog` is the Open and Save As windows
   (`showFileDialog(shell, ctx)` in a `ModalShell`), and
   `windows/fileDialog/versionsDialog` is Previous Versions. They hold no

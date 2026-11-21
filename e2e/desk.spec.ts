@@ -69,11 +69,28 @@ for (const scheme of SCHEMES) {
 test("a window maximizes and restores", async ({ page }) => {
   await openPage(page, DESK);
   const tower = page.locator("#g-desk-tower");
+  const tools = page.locator("#g-desk-tools");
   await tower.getByRole("button", { name: "Maximize Sample Tower" }).click();
   await expect(tower).toHaveClass(/desk-maximized/);
+  // The small windows stay on top and step below the tower's menu bar.
+  await expect(tools).not.toHaveCSS("top", "8px");
   await expect(desk(page)).toHaveScreenshot("desk-maximized.png");
   await tower.getByRole("button", { name: "Restore Sample Tower" }).click();
   await expect(tower).not.toHaveClass(/desk-maximized/);
+  await expect(tools).toHaveCSS("top", "8px");
+});
+
+test("the tower closes with its ✕ and opens again from the Verticopolis menu", async ({ page }) => {
+  await openPage(page, DESK);
+  const tower = page.locator("#g-desk-tower");
+  await tower.getByRole("button", { name: "Close Sample Tower" }).click();
+  await expect(tower).toBeHidden();
+  await expect(task(page, "Sample Tower")).toHaveCount(0);
+  await taskbar(page).getByRole("button", { name: "Verticopolis" }).click();
+  await page.getByRole("menu", { name: "Verticopolis" }).getByRole("menuitem", { name: "Sample Tower" }).click();
+  await expect(tower).toBeVisible();
+  await expect(tower).toHaveClass(/desk-active/);
+  await expect(task(page, "Sample Tower")).toHaveAttribute("aria-pressed", "true");
 });
 
 test("a window minimizes to the taskbar and comes back", async ({ page }) => {
