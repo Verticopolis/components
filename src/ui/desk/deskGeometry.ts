@@ -15,7 +15,7 @@ export interface DeskRect {
 }
 
 /** The windows the desk lays out. */
-export type DeskWindowId = "tower" | "info" | "tools" | "map" | "bulletin" | "towerInfo" | "control";
+export type DeskWindowId = "tower" | "info" | "tools" | "map" | "bulletin" | "towerInfo" | "control" | "help";
 
 /** The game's windows, in the order `parseLayout` reads them by default. */
 export const DESK_WINDOW_IDS: readonly DeskWindowId[] = [
@@ -26,6 +26,7 @@ export const DESK_WINDOW_IDS: readonly DeskWindowId[] = [
   "bulletin",
   "towerInfo",
   "control",
+  "help",
 ];
 
 /** The size limits of a resizable window; a fixed window has none. */
@@ -38,6 +39,12 @@ export interface SizeLimits {
 export const TOWER_LIMITS: SizeLimits = { minW: 320, minH: 240 };
 /** The Tools window grows in height only, from 200 px to the desk's height. */
 export const TOOLS_LIMITS: SizeLimits = { minW: 0, minH: 200 };
+/** The Help window (the Player's Manual): room for a page's text beside its
+ *  contents at the smallest, the desk at the largest. */
+export const HELP_LIMITS: SizeLimits = { minW: 480, minH: 360 };
+/** The Help window's size the first time it opens, on a desk big enough. */
+export const HELP_WIDTH = 760;
+export const HELP_HEIGHT = 560;
 
 /** The gap the desk keeps between its windows and its edges. */
 export const DESK_GAP = 8;
@@ -59,10 +66,11 @@ export const TOOLS_WIDTH = 184;
 
 /** Where every window opens the first time on a desk of `deskW` x `deskH`:
  *  Tools down the left, Info as a strip across the top (SimTower's, owner
- *  2026-11-15) with the tower under it, and the Map, the Bulletin and Tower
- *  Info down the right. `infoH` and `mapH` are the heights Info and the Map
- *  really have once measured. Fixed-size windows take their own size, so
- *  only their corner counts, and Info its width. */
+ *  2026-11-15) with the tower under it, the Map, the Bulletin and Tower
+ *  Info down the right, and Help in the middle of the desk. `infoH` and
+ *  `mapH` are the heights Info and the Map really have once measured.
+ *  Fixed-size windows take their own size, so only their corner counts, and
+ *  Info its width. */
 export function defaultLayout(
   deskW: number,
   deskH: number,
@@ -91,6 +99,21 @@ export function defaultLayout(
       : { x: towerX + SHORT_DESK_BULLETIN_INSET, y: towerY + SHORT_DESK_BULLETIN_DROP, w: SIDE_COLUMN, h: 0 },
     towerInfo: { x: Math.max(g, sideX - 240), y: towerY, w: 0, h: 0 },
     control: { x: Math.max(g, Math.round(deskW / 2 - 150)), y: Math.max(g, Math.round(deskH / 2 - 110)), w: 0, h: 0 },
+    help: centered(deskW, deskH, HELP_WIDTH, HELP_HEIGHT, HELP_LIMITS),
+  };
+}
+
+/** A `w` x `h` window in the middle of the desk, shrunk to fit inside the
+ *  desk's gap but never below `limits`. */
+function centered(deskW: number, deskH: number, w: number, h: number, limits: SizeLimits): DeskRect {
+  const g = DESK_GAP;
+  const fitW = Math.max(limits.minW, Math.min(w, deskW - 2 * g));
+  const fitH = Math.max(limits.minH, Math.min(h, deskH - 2 * g));
+  return {
+    x: Math.max(0, Math.round((deskW - fitW) / 2)),
+    y: Math.max(0, Math.round((deskH - fitH) / 2)),
+    w: fitW,
+    h: fitH,
   };
 }
 

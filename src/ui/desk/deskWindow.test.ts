@@ -189,6 +189,65 @@ describe("DeskWindow", () => {
     expect(s.pressed).toHaveBeenCalledTimes(1);
   });
 
+  it("hears focus moving into a frame in the window, which no press reaches", () => {
+    vi.useFakeTimers();
+    try {
+      const el = frame();
+      const other = frame();
+      const s = spec(el);
+      const so = spec(other);
+      const win = new DeskWindow(s);
+      new DeskWindow(so);
+      const page = document.createElement("iframe");
+      el.querySelector(".desk-body")!.append(page);
+      page.focus();
+      window.dispatchEvent(new Event("blur"));
+      vi.runAllTimers();
+      expect(s.pressed).toHaveBeenCalledTimes(1);
+      expect(so.pressed).not.toHaveBeenCalled();
+
+      win.dispose();
+      window.dispatchEvent(new Event("blur"));
+      vi.runAllTimers();
+      expect(s.pressed).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("drops a focus check the page's blur queued before dispose", () => {
+    vi.useFakeTimers();
+    try {
+      const el = frame();
+      const s = spec(el);
+      const win = new DeskWindow(s);
+      const page = document.createElement("iframe");
+      el.querySelector(".desk-body")!.append(page);
+      page.focus();
+      window.dispatchEvent(new Event("blur"));
+      win.dispose();
+      vi.runAllTimers();
+      expect(s.pressed).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not count the page losing focus to another app as a press", () => {
+    vi.useFakeTimers();
+    try {
+      const el = frame();
+      const s = spec(el);
+      new DeskWindow(s);
+      el.querySelector<HTMLElement>(".win-title button")?.focus();
+      window.dispatchEvent(new Event("blur"));
+      vi.runAllTimers();
+      expect(s.pressed).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("resizes from its grip once, on release, and not when the size did not change", () => {
     const el = frame();
     const s = spec(el, { limits: LIMITS });

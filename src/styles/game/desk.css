@@ -166,12 +166,32 @@
   }
   /* The tower window: the menu bar, the tower and the status bar. A menu that
    opens comes up over the small windows, as a menu always did. */
-  #desk-win-tower:has(.mb-pop:not([hidden])) {
+  #desk-win-tower:has(.mb-pop:not([hidden])),
+  #desk-win-help:has(.mb-pop:not([hidden])) {
     z-index: 100000 !important;
   }
   #desk-win-tower #stage {
     flex: 1;
     margin: 2px 0;
+  }
+  /* The Help window (deskHelp.ts): its menu bar, its row of buttons, then
+   the manual's page on a sunken white well filling the rest. */
+  #desk-win-help .menubar {
+    margin: 0 -2px 2px;
+  }
+  #desk-win-help .desk-help-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 2px 0 4px;
+  }
+  #desk-win-help .desk-help-page {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    border: 0;
+    box-shadow: var(--bevel-in);
+    background: #fff;
   }
   #desk-win-tower .menubar-brand {
     display: none;

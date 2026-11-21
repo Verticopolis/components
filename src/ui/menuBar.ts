@@ -111,6 +111,8 @@ export class MenuBar implements MenuBarHandlers {
   private readonly tripMenus = new Set<HTMLButtonElement>();
   /** The bar's titles, found once per render rather than per key. */
   private titleList: readonly HTMLButtonElement[] = [];
+  /** Takes off each listener the bar put on the window and the document. */
+  private readonly unlisten: (() => void)[] = [];
 
   /** Render `model` into `root`, its handlers bound by the template. */
   constructor(
@@ -126,7 +128,13 @@ export class MenuBar implements MenuBarHandlers {
     // listeners), it never reaches what is under it, and neither do its
     // pointerup and click, so closing a menu cannot also build on the tower.
     const outside = (e: Event) => !(e.target instanceof Node && root.contains(e.target));
-    win?.addEventListener(
+    const listen = (target: EventTarget | null, type: string, fn: (e: Event) => void, capture = false) => {
+      if (!target) return;
+      target.addEventListener(type, fn, capture);
+      this.unlisten.push(() => target.removeEventListener(type, fn, capture));
+    };
+    listen(
+      win,
       "pointerdown",
       (e) => {
         if (!this.openTitle || !outside(e)) return;
@@ -143,10 +151,17 @@ export class MenuBar implements MenuBarHandlers {
       e.preventDefault();
       e.stopPropagation();
     };
-    win?.addEventListener("pointerup", swallow, true);
-    win?.addEventListener("click", swallow, true);
-    if (opts.altKeys !== false) doc.addEventListener("keydown", (e) => this.accelerator(e));
-    win?.addEventListener("blur", () => this.close(true, "blur"));
+    listen(win, "pointerup", swallow, true);
+    listen(win, "click", swallow, true);
+    if (opts.altKeys !== false) listen(doc, "keydown", (e) => this.accelerator(e as KeyboardEvent));
+    listen(win, "blur", () => this.close(true, "blur"));
+  }
+
+  /** Take the bar's listeners off the window and the document, for a bar
+   *  whose page outlives it (a window the desk builds again). Its own
+   *  markup stays for its owner to remove. */
+  dispose(): void {
+    for (const off of this.unlisten.splice(0)) off();
   }
 
   /** Render `model` into the root, replacing what an earlier render drew

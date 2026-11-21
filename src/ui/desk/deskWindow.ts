@@ -6,7 +6,7 @@ import { resizedTo, type DeskRect, type DeskWindowId, type SizeLimits } from "./
 
 /**
  * One window on the 1994 desk (option C, owner 2026-11-15): the tower, Info,
- * Tools, the Map, the Bulletin or Tower Info. The desk either builds the
+ * Tools, the Map, the Bulletin, Tower Info or Help. The desk either builds the
  * window's frame (the tower and Info have none of their own) or takes over a
  * window the game already draws with its own title bar (Tools and the small
  * windows), and then adds what a 1995 window has: minimize, maximize where it
@@ -147,6 +147,8 @@ export class DeskWindow<Id extends string = DeskWindowId> {
   minimized = false;
   maximized = false;
   private before: DeskRect | null = null;
+  /** The check queued by the page's blur, cleared by dispose. */
+  private blurTimer: number | undefined;
   /** What the desk drew into the window, taken off again by dispose. */
   private readonly added: Element[] = [];
   private readonly ownMover: MovableWindow | null = null;
@@ -196,6 +198,9 @@ export class DeskWindow<Id extends string = DeskWindowId> {
     }
     // On the game's window, which no template of ours owns.
     el.addEventListener("pointerdown", this.onPress, true);
+    // A press or Tab into a frame in the window (the Help window's manual)
+    // never reaches this document; the page only loses focus to the frame.
+    doc.defaultView?.addEventListener("blur", this.onPageBlur);
   }
 
   /** Minimize, and maximize (or restore) where the window may maximize. */
@@ -217,6 +222,18 @@ export class DeskWindow<Id extends string = DeskWindowId> {
   }
 
   private readonly onPress = () => this.spec.pressed();
+
+  /** The page lost focus: once it settles, a frame in this window holding
+   *  the focus counts as a press on the window. */
+  private readonly onPageBlur = (): void => {
+    this.blurTimer = this.spec.el.ownerDocument.defaultView?.setTimeout(this.focusMoved, 0);
+  };
+
+  private readonly focusMoved = (): void => {
+    this.blurTimer = undefined;
+    const active = this.spec.el.ownerDocument.activeElement;
+    if (active?.tagName === "IFRAME" && this.spec.el.contains(active)) this.spec.pressed();
+  };
 
   /** The window's place and size now, in desk pixels. */
   rect(): DeskRect {
@@ -280,6 +297,8 @@ export class DeskWindow<Id extends string = DeskWindowId> {
     const el = this.spec.el;
     this.endResize(false);
     el.removeEventListener("pointerdown", this.onPress, true);
+    el.ownerDocument.defaultView?.removeEventListener("blur", this.onPageBlur);
+    el.ownerDocument.defaultView?.clearTimeout(this.blurTimer);
     for (const a of this.added) a.remove();
     this.ownMover?.dispose();
     this.unhear?.();
