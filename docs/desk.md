@@ -239,9 +239,13 @@ Bulldoze show their icons alone, and Info's traffic chip shows its meter and
 word without the "Traffic" label, so the five rating stars and "Backed up" fit
 a 360 px phone. The Map floats over the tower at its phone size; on a sideways
 phone, where the tower's view is short, it may take that view's whole height,
-and the map keeps its shape in the middle of the card. The Bulletin covers the whole desk while open, and Tower
-Info and the Control Panel open across its top at the height of what they
-hold, with the taskbar switching between them. The Verticopolis button shows
+and the map keeps its shape in the middle of the card. The Bulletin, Tower
+Info and the Control Panel open across the top of the desk at the height of
+what they hold, with the tower showing below; the Bulletin stops at a third of
+the desk and its log scrolls. A drag by the title bar slides any of them, or
+the Map, to another spot inside the desk. The taskbar switches between them. On an upright
+phone the seven Tools tabs share the strip's width, and the tools row scrolls
+sideways with no fade, so its last tool shows whole. The Verticopolis button shows
 its icon alone and each window's button its word alone.
 
 ## The class contract
