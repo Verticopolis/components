@@ -1,0 +1,20 @@
+---
+title: Information bar and status bar
+description: The game's Information bar of meters and buttons, and the Win95 status bar under the tower.
+---
+
+import Frame from "../../../components/Frame.astro";
+
+The Information bar runs along the top of the game: the Verticopolis badge, six meters (the star rating, the date, the time of day, the funds, the population and the traffic), and a row of buttons for the four speeds, Undo, Redo, Save and the sound. An Update chip and an Install chip join the row when the game has one to offer. The status bar runs along the foot of the tower: a hint for the tool under the pointer, the picked tool's card, the tower's name and rules, and the newest bulletin line.
+
+Both come from `windows/bars/topBar` and `windows/bars/statusBar`, and their look from `styles/game/topbar.css` and `styles/game/menubar.css`.
+
+- The game owns each bar's element, `<header id="topbar">` and `<footer id="statusbar" class="statusbar">`, and renders the package's template into it. On the desk the game moves those elements between windows, and the Pocket desk's sheet sizes them by their ids.
+- The game formats every text: the rating, the date, the time, the funds, the population, the traffic word and its floor, and the sentence a screen reader hears for the traffic.
+- Each press goes to the game. A press on a grayed Undo or Redo reaches it too, since the game knows when a gesture under way can still be undone.
+- The traffic meter fills one to four bars, so its level reads without color, and turns the warning color as well from Backed up on. A click, a tap, Enter or Space on it goes to the game, which takes the player to the line it names.
+- The game renders the bars on every status pass, several times a second. Lit writes only the values that changed, and a class the game adds itself, such as the nudge on Play, stays on its button.
+
+Here each press only says what it was, and a press on the traffic meter steps it through its four levels. The bars keep their desktop width, and the frame scrolls on a narrow screen.
+
+<Frame page="information-bar" title="The Information bar and the status bar" height={220} />
