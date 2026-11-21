@@ -8,6 +8,8 @@
  * tower maximizes, and a right-click on a title bar or a taskbar button opens
  * the window menu (`WindowMenu`). The taskbar, its Verticopolis menu and the
  * tray are the package's `DeskTaskbar`; its clock holds at 9:15 AM here.
+ * The Help window (`buildHelpWindow`) shows a sample manual in its frame,
+ * under the manual's own menus and its Contents, Back and Forward.
  * The package's `DeskManager` keeps the windows and the taskbar in step.
  *
  * The desk's stylesheet keys its window rules on `body.desk`, so this page's
@@ -20,7 +22,14 @@ import { buildFrame } from "../lib/ui/desk/deskWindow.js";
 import { DeskManager, type DeskSlot } from "../lib/ui/desk/deskManager.js";
 import type { WindowMenuHandlers } from "../lib/ui/desk/deskWindowMenu.js";
 import { DeskTaskbar } from "../lib/ui/desk/deskTaskbar.js";
-import { TOOLS_LIMITS, TOWER_LIMITS, type DeskRect, type DeskWindowId } from "../lib/ui/desk/deskGeometry.js";
+import {
+  HELP_LIMITS,
+  TOOLS_LIMITS,
+  TOWER_LIMITS,
+  type DeskRect,
+  type DeskWindowId,
+} from "../lib/ui/desk/deskGeometry.js";
+import { buildHelpWindow } from "../lib/ui/desk/deskHelp.js";
 import { MenuBar, type MenuBarModel } from "../lib/ui/menuBar.js";
 import type { FacilityKind, RenderFacility } from "../lib/render/renderModel.js";
 import { canvasTemplate } from "./canvas.js";
@@ -48,12 +57,90 @@ const PLACES: Record<DemoId, DeskRect> = {
   info: { x: 148, y: 8, w: 352, h: 0 },
   tower: { x: 148, y: 62, w: 352, h: 300 },
   bulletin: { x: 508, y: 8, w: 204, h: 0 },
+  help: { x: 180, y: 24, w: 480, h: 360 },
 };
 
-type DemoId = Extract<DeskWindowId, "tower" | "info" | "tools" | "bulletin">;
+type DemoId = Extract<DeskWindowId, "tower" | "info" | "tools" | "bulletin" | "help">;
 
 /** The taskbar's order. */
-const ORDER: readonly DemoId[] = ["tower", "info", "tools", "bulletin"];
+const ORDER: readonly DemoId[] = ["tower", "info", "tools", "bulletin", "help"];
+/** The windows Arrange Windows opens: the manual opens only from Help. */
+const ARRANGED: readonly DemoId[] = ["tower", "info", "tools", "bulletin"];
+
+/** The sample manual's pages for the Help window: the game's Help window
+ *  shows the real manual from its own site, which the gallery stands in for. */
+type ManualPage = "contents" | "elevators" | "offices";
+const MANUAL: Record<ManualPage, { title: string; text: string }> = {
+  contents: { title: "Contents", text: "Pick a topic to read about it." },
+  elevators: {
+    title: "Elevators",
+    text: "If a tower has a heart, it is the elevators. Every worker, resident and guest above the lobby rides one.",
+  },
+  offices: { title: "Offices", text: "Offices rent by the quarter and fill with workers who come and go on weekdays." },
+};
+
+/** The Help window's menus, as the game gives them: the manual's own File,
+ *  Edit, Options and Help. In the gallery only Exit and the looks do
+ *  anything. */
+const helpMenu = (look: string, pickLook: (look: string) => void, exit: () => void): MenuBarModel => ({
+  label: "Player's Manual menu",
+  menus: [
+    {
+      id: "g-hw-file",
+      label: "File",
+      mnemonic: 0,
+      items: [
+        { label: "Open in Browser" },
+        { label: "Print Topic…" },
+        { kind: "separator" },
+        { label: "Exit", onPick: exit },
+      ],
+    },
+    {
+      id: "g-hw-edit",
+      label: "Edit",
+      mnemonic: 0,
+      items: [{ label: "Find…" }, { label: "Copy Link to This Page" }],
+    },
+    {
+      id: "g-hw-options",
+      label: "Options",
+      mnemonic: 0,
+      items: ["Light", "Dark", "Match My Device"].map((l) => ({
+        label: l,
+        radio: true,
+        checked: l === look,
+        onPick: () => pickLook(l),
+      })),
+    },
+    {
+      id: "g-hw-help",
+      label: "Help",
+      mnemonic: 0,
+      items: [
+        { label: "What's New" },
+        { label: "Report a Problem…" },
+        { kind: "separator" },
+        { label: "Sponsor Verticopolis" },
+      ],
+    },
+  ],
+});
+
+/** A sample manual page, drawn into the Help window's frame. */
+const manualPage = (id: ManualPage, go: (to: ManualPage) => void): TemplateResult => {
+  const link = (to: ManualPage) =>
+    html`<li><a href="#" @click=${(e: Event) => (e.preventDefault(), go(to))}>${MANUAL[to].title}</a></li>`;
+  return html`<style>
+      body { font: 14px/1.5 system-ui, sans-serif; margin: 16px; color: #111; background: #fff; }
+      h1 { font-size: 20px; margin: 0 0 8px; }
+    </style>
+    <h1>${MANUAL[id].title}</h1>
+    <p>${MANUAL[id].text}</p>
+    <ul>
+      ${(Object.keys(MANUAL) as ManualPage[]).filter((p) => p !== id).map(link)}
+    </ul>`;
+};
 
 /** The slice of tower the sample tower window shows: two halls of different
  *  heights with rooms above them. */
@@ -104,7 +191,7 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
   /** Open every window, put each back where it opens at its own size, and
    *  give the tower the focus. */
   const arrange = () => {
-    for (const id of ORDER) desk.show(id);
+    for (const id of ARRANGED) desk.show(id);
     desk.arrange();
     desk.bringUp("tower");
   };
@@ -112,6 +199,7 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
   const START: Record<string, () => void> = {
     tower: () => desk.show("tower"),
     bulletin: () => desk.show("bulletin"),
+    help: () => desk.show("help"),
     arrange,
   };
 
@@ -124,6 +212,7 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     items: [
       { id: "tower", label: "Sample Tower" },
       { id: "bulletin", label: "Bulletin" },
+      { id: "help", label: "Player's Manual" },
       null,
       { id: "arrange", label: "Arrange Windows" },
     ],
@@ -173,8 +262,47 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     { altKeys: false },
   );
 
+  // The Help window keeps its own Back and Forward over the pages shown.
+  let pages: ManualPage[] = ["contents"];
+  let at = 0;
+  const showPage = () => {
+    const page = pages[at];
+    help.setTitle(page === "contents" ? "Player's Manual" : `${MANUAL[page].title} - Player's Manual`);
+    help.setNav({ back: at > 0, forward: at < pages.length - 1 });
+    const body = help.page.contentDocument?.body;
+    if (body) render(manualPage(page, go), body);
+  };
+  const go = (to: ManualPage) => {
+    pages = [...pages.slice(0, at + 1), to];
+    at = pages.length - 1;
+    showPage();
+  };
+  const step = (by: number) => {
+    at = Math.min(pages.length - 1, Math.max(0, at + by));
+    showPage();
+  };
+  let look = "Match My Device";
+  const pickLook = (l: string) => {
+    look = l;
+    help.menus.render(helpMenu(look, pickLook, close("help")));
+  };
+  const help = buildHelpWindow(
+    doc,
+    "Player's Manual",
+    {
+      contents: () => go("contents"),
+      back: () => step(-1),
+      forward: () => step(1),
+      openInBrowser: () => undefined,
+      close: { label: "Close the Player's Manual", onClick: close("help") },
+    },
+    { model: helpMenu(look, pickLook, close("help")) },
+    ICON,
+  );
+  help.root.hidden = true;
+
   const bulletin = renderDetached(doc, bulletinTemplate(close("bulletin"))).elements[0] as HTMLElement;
-  Object.assign(els, { tools: tools.root, info: info.root, tower: tower.root, bulletin });
+  Object.assign(els, { tools: tools.root, info: info.root, tower: tower.root, bulletin, help: help.root });
 
   let area!: HTMLElement;
   render(
@@ -186,7 +314,7 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
           @contextmenu=${titleMenu}
           ${ref((el) => el && (area = el as HTMLElement))}
         >
-          ${[tools.root, info.root, tower.root, bulletin]}
+          ${[tools.root, info.root, tower.root, bulletin, help.root]}
         </div>
         ${taskbar.root}
       </div>
@@ -229,6 +357,16 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
     }),
   );
   desk.add(slot("bulletin", "Bulletin", { open: open("bulletin"), close: close("bulletin") }));
+  desk.add(
+    slot("help", "Player's Manual", {
+      layer: "app",
+      limits: HELP_LIMITS,
+      canMax: true,
+      open: open("help"),
+      close: close("help"),
+    }),
+  );
+  showPage();
   desk.start();
 }
 
@@ -247,6 +385,12 @@ function towerMenu(bringUp: (id: DemoId) => void): MenuBarModel {
           { label: "Info", onPick: () => bringUp("info") },
           { label: "Bulletin", onPick: () => bringUp("bulletin") },
         ],
+      },
+      {
+        id: "g-desk-help",
+        label: "Help",
+        mnemonic: 0,
+        items: [{ label: "Player's Manual", shortcut: "F1", onPick: () => bringUp("help") }],
       },
     ],
   };
