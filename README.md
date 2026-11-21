@@ -78,7 +78,10 @@ One stable module names types from an internal one, and those types share
 the stable promise: `MapCamera`, `MapCameraCenter`, `MapExtent`, `MapLayout`
 and `MapRect` from `render/overviewMap/geometry`, which
 `windows/overviewMapInput` takes and returns. No other stable declaration
-imports an internal module.
+imports an internal module. The Map window's other modules
+(`windows/overviewMapWindow`, `windows/overviewMapViews` and the modules they
+are built from) name the overview map's internal types throughout, so they
+are internal for now, and a game that mounts the Map pins an exact version.
 
 The scene is internal for now: `TowerEngine`'s public members mix what a game
 calls with what the scene's own modules share, and its declarations name
@@ -341,6 +344,7 @@ built package from `lib/` the way a consumer would:
 | Appearance | the Appearance dialog; OK dresses the site in the picked scheme |
 | Open and Save As | the Open, Save As and Previous Versions windows over a made-up folder that lives only on the page |
 | Title screen | the game's title screen in a frame, with sample buttons and every corner |
+| Map window | the tower map in a stage of its own over a made-up tower, with its views, legends, keys and taps |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |

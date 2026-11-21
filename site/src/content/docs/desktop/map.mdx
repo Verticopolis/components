@@ -1,0 +1,19 @@
+---
+title: Map window
+description: The tower map, with its views, legends, keys and the button that opens it.
+---
+
+import Frame from "../../../components/Frame.astro";
+
+The Map window shows the whole tower small, with a box where the main view is. A press or a drag on the map moves the main view, and the arrow keys move it while the map has focus. It comes from `windows/overviewMapWindow`, with its views in `windows/overviewMapViews` and its stylesheet, `styles/overview-map-views.css`.
+
+- The game hands in its stage (the window docks in the stage's corner and a Map button opens it again), the tower to draw each frame, the camera to read and move, and a kind's height in floors. Everything else, the drawing included, is the window's.
+- The View dropdown picks Edit, Hotel, Eval, Pricing, Traffic or Occupancy. Each view but Edit has a legend that counts the rooms or floors in each band. The game hands the views its readers: the rooms with their states, the clock, the rooms' tiers and the heat cells.
+- A tap that does not drag tells the game where it landed, so the game can open the card of what the selected view shows there.
+- The window is open or closed per layout (desktop opens it by default, a phone keeps it closed), and only a choice the player makes is kept.
+- While the map has focus, the game's keys stay out of the world behind it, except zoom, speed, Tab, Space and the shortcuts. Escape closes it. A screen reader hears the tower's size and where the view is.
+- The window draws its parts only when something changes, never on a steady frame, and repaints the tower only when the tower, its box or the selected view's picture changes.
+
+Here the frame is the game's stage, over a made-up tower, so a phone-wide frame shows the phone layout. The line under the stage says where the pretend view went.
+
+<Frame page="map-window" title="The Map window over a sample tower" />
