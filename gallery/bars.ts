@@ -4,7 +4,9 @@
  * (site/src/pages/frames/information-bar.astro), which loads the game's whole
  * stylesheet the way the game does. Every press only says what it was, the
  * speed and the speaker show their new state, and the traffic meter steps
- * through its four levels so each one can be seen.
+ * through its four levels so each one can be seen. A check box trims the bar
+ * to what a page with no history, saving, sound or traffic passes: the
+ * meters and the speeds alone, without the badge.
  */
 import { html, render } from "lit-html";
 import {
@@ -45,7 +47,9 @@ export function mountBars(doc: Document = document): void {
   const top = doc.getElementById("topbar");
   const status = doc.getElementById("statusbar");
   const line = doc.getElementById("g-bars-said");
-  if (!top || !status || !line) return;
+  const trimHost = doc.getElementById("g-bars-trim");
+  if (!top || !status || !line || !trimHost) return;
+  let trimmed = false;
   let traffic = 0;
   let said = "Press a button or the traffic meter.";
   let view: TopBarView = {
@@ -93,8 +97,21 @@ export function mountBars(doc: Document = document): void {
       say(`Traffic pressed: the meter now reads ${TRAFFIC[traffic].word}.`);
     },
   };
+  /** What a page with only the speeds passes. */
+  const speedsOnly: TopBarActions = { speed: actions.speed };
+  const trim = (e: Event) => {
+    trimmed = (e.target as HTMLInputElement).checked;
+    say(trimmed ? "Trimmed to the meters and the speeds." : "Every control is back.");
+  };
   const draw = () => {
-    render(topBarTemplate(view, actions), top);
+    render(trimmed ? topBarTemplate({ ...view, brand: false }, speedsOnly) : topBarTemplate(view, actions), top);
+    render(
+      html`<label
+        ><input type="checkbox" .checked=${trimmed} @change=${trim} /> Speeds only (a page with no undo, save, sound
+        or traffic)</label
+      >`,
+      trimHost,
+    );
     render(statusBarTemplate(bar), status);
     render(html`${said}`, line);
   };
