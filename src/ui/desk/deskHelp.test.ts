@@ -103,6 +103,19 @@ describe("buildHelpWindow", () => {
     expect([...w.root.querySelectorAll(".mb-title")].map((t) => t.textContent)).toEqual(["Help"]);
   });
 
+  it("takes its menu bar's page listeners off on dispose", () => {
+    const w = placed();
+    const outside = document.createElement("div");
+    document.body.append(outside);
+    const under = vi.fn();
+    outside.addEventListener("pointerdown", under);
+    w.root.querySelector<HTMLButtonElement>(".mb-title")!.click();
+    w.dispose();
+    outside.dispatchEvent(new Event("pointerdown", { bubbles: true, cancelable: true }));
+    expect(under).toHaveBeenCalledTimes(1);
+    expect(w.root.querySelector<HTMLElement>(".mb-pop")!.hidden).toBe(false);
+  });
+
   it("renames the window", () => {
     const w = placed();
     w.setTitle("Elevators - Player's Manual");

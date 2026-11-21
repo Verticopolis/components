@@ -359,7 +359,6 @@ export function deskDemo(holder: HTMLElement, facts: (kind: FacilityKind) => Ren
   desk.add(slot("bulletin", "Bulletin", { open: open("bulletin"), close: close("bulletin") }));
   desk.add(
     slot("help", "Player's Manual", {
-      layer: "app",
       limits: HELP_LIMITS,
       canMax: true,
       open: open("help"),

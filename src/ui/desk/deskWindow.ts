@@ -147,6 +147,8 @@ export class DeskWindow<Id extends string = DeskWindowId> {
   minimized = false;
   maximized = false;
   private before: DeskRect | null = null;
+  /** The check queued by the page's blur, cleared by dispose. */
+  private blurTimer: number | undefined;
   /** What the desk drew into the window, taken off again by dispose. */
   private readonly added: Element[] = [];
   private readonly ownMover: MovableWindow | null = null;
@@ -224,10 +226,11 @@ export class DeskWindow<Id extends string = DeskWindowId> {
   /** The page lost focus: once it settles, a frame in this window holding
    *  the focus counts as a press on the window. */
   private readonly onPageBlur = (): void => {
-    this.spec.el.ownerDocument.defaultView?.setTimeout(this.focusMoved, 0);
+    this.blurTimer = this.spec.el.ownerDocument.defaultView?.setTimeout(this.focusMoved, 0);
   };
 
   private readonly focusMoved = (): void => {
+    this.blurTimer = undefined;
     const active = this.spec.el.ownerDocument.activeElement;
     if (active?.tagName === "IFRAME" && this.spec.el.contains(active)) this.spec.pressed();
   };
@@ -295,6 +298,7 @@ export class DeskWindow<Id extends string = DeskWindowId> {
     this.endResize(false);
     el.removeEventListener("pointerdown", this.onPress, true);
     el.ownerDocument.defaultView?.removeEventListener("blur", this.onPageBlur);
+    el.ownerDocument.defaultView?.clearTimeout(this.blurTimer);
     for (const a of this.added) a.remove();
     this.ownMover?.dispose();
     this.unhear?.();

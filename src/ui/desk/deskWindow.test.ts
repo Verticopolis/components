@@ -215,6 +215,24 @@ describe("DeskWindow", () => {
     }
   });
 
+  it("drops a focus check the page's blur queued before dispose", () => {
+    vi.useFakeTimers();
+    try {
+      const el = frame();
+      const s = spec(el);
+      const win = new DeskWindow(s);
+      const page = document.createElement("iframe");
+      el.querySelector(".desk-body")!.append(page);
+      page.focus();
+      window.dispatchEvent(new Event("blur"));
+      win.dispose();
+      vi.runAllTimers();
+      expect(s.pressed).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("does not count the page losing focus to another app as a press", () => {
     vi.useFakeTimers();
     try {

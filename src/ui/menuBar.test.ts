@@ -121,6 +121,22 @@ describe("MenuBar", () => {
     expect(under).toHaveBeenCalledTimes(2);
   });
 
+  it("takes its window and document listeners off on dispose", () => {
+    const { $, bar, onOpen } = setup();
+    const under = vi.fn();
+    $("outside").addEventListener("pointerdown", under);
+    $("t-file").click();
+    bar.dispose();
+    // A press outside, the window's blur and Alt+E no longer reach the bar.
+    $("outside").dispatchEvent(new Event("pointerdown", { bubbles: true, cancelable: true }));
+    window.dispatchEvent(new Event("blur"));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "e", altKey: true, bubbles: true }));
+    expect(under).toHaveBeenCalledTimes(1);
+    expect($("m-file").hidden).toBe(false);
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    bar.close(false);
+  });
+
   it("a menu that would run off either edge of the window slides back onto it, and the left edge wins", () => {
     const { $ } = setup();
     Object.defineProperty(document.documentElement, "clientWidth", { configurable: true, value: 400 });

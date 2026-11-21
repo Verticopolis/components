@@ -48,6 +48,8 @@ export interface HelpWindow extends DeskFrame {
   readonly menus: MenuBar;
   /** Turn Back and Forward on or off. */
   setNav(nav: HelpNav): void;
+  /** Take the menu bar's listeners off the page, once the window is gone. */
+  dispose(): void;
 }
 
 const barTemplate = (a: HelpWindowActions, nav: HelpNav): TemplateResult =>
@@ -79,5 +81,6 @@ export function buildHelpWindow(
     page,
     menus,
     setNav: (nav) => bar.update(barTemplate(actions, nav)),
+    dispose: () => menus.dispose(),
   };
 }
