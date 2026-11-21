@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { html } from "lit-html";
 import { MenuBar, type MenuBarModel } from "./menuBar";
 import { markupOf } from "./testing/litTestUtils";
 
@@ -116,6 +117,28 @@ describe("menuBarTemplate", () => {
     expect(link.getAttribute("href")).toBe("https://example.com/");
     expect(link.target).toBe("_blank");
     expect(link.rel).toBe("noopener");
+  });
+
+  it("draws an item's tooltip and its own content in place of the label, and a later render changes both", () => {
+    const line = (name: string, where: string): MenuBarModel => ({
+      label: "Game menu",
+      menus: [
+        {
+          id: "mb-file",
+          label: "File",
+          items: [
+            { id: "recent-1", label: name, title: where, content: html`<u>1</u><span class="name">${name}</span>` },
+          ],
+        },
+      ],
+    });
+    const { $, bar } = mount(line("Harmony", "In My Towers"));
+    expect($("recent-1").title).toBe("In My Towers");
+    expect($("recent-1").querySelector("u")!.textContent).toBe("1");
+    expect($("recent-1").querySelector(".name")!.textContent).toBe("Harmony");
+    bar.render(line("Skyline", "In the linked folder"));
+    expect($("recent-1").title).toBe("In the linked folder");
+    expect($("recent-1").textContent).toBe("1Skyline");
   });
 
   it("draws a submenu as a sub title and its popup, and a mnemonic inside it", () => {
