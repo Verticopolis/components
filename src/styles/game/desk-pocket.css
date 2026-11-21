@@ -178,7 +178,8 @@
   @media (orientation: portrait) and (max-width: 767px) {
     .desk-pocket-body > #topbar {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.85fr);
+      /* The first column holds five stars and the traffic word whole. */
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.15fr) minmax(0, 0.75fr);
       gap: 3px;
       padding: 3px;
     }
@@ -198,6 +199,15 @@
     }
     .desk-pocket-body > #topbar .stat .label {
       font-size: 9px;
+      letter-spacing: 0;
+    }
+    .desk-pocket-body > #topbar .value.stars {
+      letter-spacing: 0;
+    }
+    /* The meter's bars and the word say it is traffic; the label goes so
+       "Backed up" fits on a 360 px phone. */
+    .desk-pocket-body > #topbar .stat:has(> #traffic) > .label {
+      display: none;
     }
     .desk-pocket-body > #topbar .stat .value {
       font-size: 13px;
@@ -324,7 +334,8 @@
     /* The tower's view is shorter here than on a sideways phone without the
        desk, so the Map card may take all of its height but 8px margins
        instead of two thirds of it; 74px is those margins and the card's title
-       bar, View row and frame. */
+       bar, View row and frame. The map fills the card's width, which its
+       View row sets, and draws the tower centered in it. */
     .desk-pocket-body > #stage {
       container-type: size;
     }
@@ -332,6 +343,8 @@
       max-height: calc(100% - 16px);
     }
     .desk-pocket-body > #stage .overview-map-body {
+      align-self: stretch;
+      width: auto;
       height: min(216px, calc(100cqh - 74px));
     }
   }
