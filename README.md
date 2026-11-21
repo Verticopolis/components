@@ -296,7 +296,10 @@ bundle to one copy of each.
   The game hands in each tool's name, price, swatch and description and which
   are locked, out of reach of the funds or picked (`update(view)`); the window
   keeps the open tab, the "new" pips and the folds (stored under a key the
-  game names). Its look is `styles/game/tools-stage.css`.
+  game names). `windows/palette/paletteFit` (`PaletteFit`) fits the desktop
+  window's tools without a scrollbar, and `windows/palette/paletteCollapse`
+  (`PaletteCollapse`) adds the title bar button that folds the window into a
+  strip. Its look is `styles/game/tools-stage.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.

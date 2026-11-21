@@ -4,11 +4,15 @@
  * The star buttons lock and unlock tools as a tower's rating would, the funds
  * button dims what the funds cannot reach, a press picks a tool, and the line
  * under the window shows the hint the game puts on its status bar. The folds
- * are kept in the page's storage, apart from any game's.
+ * are kept in the page's storage, apart from any game's. The window has a
+ * fixed height, so with every tool unlocked it fits them with compact rows or
+ * two columns, and the button on its title bar folds it into a strip.
  */
 import { html, render, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { ToolPalette, type PaletteGroup, type PaletteTool } from "../lib/ui/palette/toolPalette.js";
+import { PaletteFit } from "../lib/ui/palette/paletteFit.js";
+import { PaletteCollapse } from "../lib/ui/palette/paletteCollapse.js";
 import { facilityColor } from "../lib/presentation/facilityPresentation.js";
 import type { FacilityKind } from "../lib/render/renderModel.js";
 
@@ -59,8 +63,9 @@ const SAMPLES: readonly { title: string; tools: readonly Sample[] }[] = [
 
 const IDLE = "Point at a tool, or press one.";
 
-/** Where the demo keeps its folds, apart from any game's. */
+/** Where the demo keeps its folds and the window's fold, apart from any game's. */
 const FOLD_KEY = "vc-gallery-tools-folded";
+const COLLAPSE_KEY = "vc-gallery-tools-collapsed";
 
 function pageStorage(): Storage | null {
   try {
@@ -122,7 +127,10 @@ export function paletteDemo(): TemplateResult {
   let said = IDLE;
   let line: HTMLElement | null = null;
   let palette: ToolPalette | null = null;
-  const update = () => palette?.update({ pinned: PINNED, groups: groups(stars, funds), active });
+  let fit: PaletteFit | null = null;
+  const update = () => {
+    if (palette?.update({ pinned: PINNED, groups: groups(stars, funds), active })) fit?.refit();
+  };
   const setStars = (n: number) => {
     stars = n;
     update();
@@ -158,8 +166,20 @@ export function paletteDemo(): TemplateResult {
   };
   const mount = (el: Element | undefined) => {
     if (!(el instanceof HTMLElement) || palette) return;
+    const win = el.closest<HTMLElement>("#palette");
+    if (!win) return;
+    fit = new PaletteFit(win);
+    new PaletteCollapse(win, {
+      store: { key: COLLAPSE_KEY, storage: pageStorage() },
+      toggled: (collapsed) => {
+        fit?.refit();
+        said = collapsed ? "The Tools window is folded." : "The Tools window is open.";
+        draw();
+      },
+    });
     palette = new ToolPalette({
       list: el,
+      folded: () => fit?.refit(),
       foldStore: { key: FOLD_KEY, storage: pageStorage() },
       pick: (tool) => {
         active = tool.key;

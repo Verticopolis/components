@@ -217,9 +217,10 @@
     overflow-y: auto;
   }
   /* The Tools window demo (gallery/palette.ts): the game's docked window at
-     its own width, with a height that shows every sample tool. */
+     its own width and a fixed height, so the fit has a height to fit. */
   .g-palette {
     margin: 0;
+    height: 520px;
   }
   .g-palette-line {
     display: flex;

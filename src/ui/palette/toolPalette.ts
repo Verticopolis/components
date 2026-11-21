@@ -2,7 +2,7 @@ import { html, nothing, render, type TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map.js";
 import { repeat } from "lit-html/directives/repeat.js";
 import { iconTemplate, type IconName } from "../icons";
-import { loadFolded, saveFolded } from "./paletteFolds";
+import { loadFolded, PALETTE_FOLDED_CLASS, saveFolded } from "./paletteFolds";
 import { pressKeys, type PressKeys } from "./pressKeys";
 import { PaletteNews, shownGroups, unlockedCount, validOpen } from "./paletteNews";
 
@@ -224,7 +224,7 @@ export class ToolPalette {
     const modern = group.tools.filter((t) => t.modern);
     const modernShown = modern.some((t) => !t.locked);
     return html`<section
-      class=${classMap({ "pal-group": true, "tab-active": this.open === title, "pal-folded": folded })}
+      class=${classMap({ "pal-group": true, "tab-active": this.open === title, [PALETTE_FOLDED_CLASS]: folded })}
       data-group=${title}
       id=${panelId(title)}
       role=${tabsShown ? "tabpanel" : nothing}
