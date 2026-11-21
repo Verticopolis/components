@@ -1,4 +1,4 @@
-/* The "page not found" page (src/404.html, src/notFoundPage.ts): a message box
+/* The "page not found" desk (src/ui/notFoundDesk.ts): a message box
    on the teal 1994 desk, the startup screen's sunrise skyline across its top,
    and a taskbar along the bottom of the screen. It imports retro-page.css
    (tokens, .win, .btn and the dark-desk override) so that file always comes

@@ -1,0 +1,17 @@
+---
+title: Page not found
+description: The 404 page, a message box on the 1994 desk with a skyline missing a floor.
+---
+
+import Frame from "../../../components/Frame.astro";
+
+A site shows this page for an address it does not have, so a mistyped or old link gets a way on instead of the host's own error page. It is a message box on the teal 1994 desk, with the startup screen's sunrise skyline across its top and a taskbar along the bottom. One tower in the skyline is missing a floor, tagged 404. It comes from `windows/notFoundDesk` and its stylesheet, `styles/not-found.css`.
+
+- The site writes every word and names every place the page offers: the message box's buttons (the first is the default), its ✕ and the taskbar's start button. Each one is a plain link, so the page works with no script once it is drawn.
+- The missing address is shown as text, never as markup.
+- Each link tells its site about a click and a middle click (which opens it in a new tab). A site can count them, or close a tab another of its pages opened instead of following the link.
+- The tray clock reads like the 1995 one ("4:34 PM"). `trayClock` and `msToNextMinute` keep it on the minute, and the redraw changes only the clock's text.
+
+A site renders `notFoundDeskTemplate(view)` into its 404 page's `#app`, under `<body class="retro-page nf-page">`. Here it fills a frame, and a pick only names itself in the taskbar.
+
+<Frame page="not-found" title="The page not found desk" />

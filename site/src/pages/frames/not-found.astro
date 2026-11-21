@@ -1,0 +1,23 @@
+---
+// The package's "page not found" desk (gallery/notFound.ts) on a page of its
+// own, over the stylesheet a site's 404 page loads, so the desk fills the
+// frame the way it fills a browser window. The Page not found page shows it
+// in a frame (Frame.astro).
+import "../../../../lib/styles/not-found.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found</title>
+  </head>
+  <body class="retro-page nf-page">
+    <div id="app"></div>
+    <script>
+      import { mountNotFound } from "../../../../gallery/notFound";
+      mountNotFound();
+    </script>
+  </body>
+</html>

@@ -276,6 +276,13 @@ bundle to one copy of each.
   `ModalShell`): what is new, the build lines, Later and Update now. The
   caller writes every word. Their look is `styles/game/dialogs.css`, part of
   `styles.css`.
+- `windows/fireworks` is the pixel fireworks (`playFireworks(doc, host,
+  opts)`, which returns `stop`), drawn first inside the dialog a caller
+  names; its look is `styles/game/launch-fireworks.css`. The sky's steps
+  (`newSky`, `stepSky`, `stillSky`, `drawSky`) are exported too.
+- `windows/notFoundDesk` is the "page not found" desk
+  (`notFoundDeskTemplate(view)`, with `trayClock` and `msToNextMinute`) that
+  a site's 404 page renders into its `#app` with `styles/not-found.css`.
 - `styles/game/*` is the game page's own layout. It targets the game's markup
   and depends on the order `styles.css` gives it, so import `styles.css`
   rather than these files one by one.
@@ -360,6 +367,8 @@ built package from `lib/` the way a consumer would:
 | Open and Save As | the Open, Save As and Previous Versions windows over a made-up folder that lives only on the page |
 | Title screen | the game's title screen in a frame, with sample buttons and every corner |
 | Map window | the tower map in a stage of its own over a made-up tower, with its views, legends, keys and taps |
+| Fireworks | `windows/fireworks` behind a sample welcome box; a still frame with reduced motion |
+| Page not found | `windows/notFoundDesk`, the 404 desk, in a frame |
 | The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
