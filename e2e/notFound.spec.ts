@@ -9,12 +9,14 @@ import { openPage } from "./site";
 const PAGE = "frames/not-found/";
 
 test("the desk fills the screen, with the message box, the skyline and the taskbar", async ({ page }) => {
+  // The tray clock reads the time, so the shot fixes it; a masked clock still
+  // moved the tray's edge as its width changed with the hour.
+  await page.clock.setFixedTime(new Date(2026, 10, 15, 16, 34));
   await openPage(page, PAGE);
   await expect(page.getByRole("heading", { name: "Floor 404 hasn't been built yet." })).toBeVisible();
   await expect(page.locator(".nf-msg code")).toHaveText("/controls/elevator-music/");
-  await expect(page.locator(".nf-tray time")).toHaveText(/^\d{1,2}:\d\d (AM|PM)$/);
-  // The clock reads the real time, so the shot leaves it out.
-  await expect(page).toHaveScreenshot("not-found.png", { mask: [page.locator(".nf-tray time")] });
+  await expect(page.locator(".nf-tray time")).toHaveText("4:34 PM");
+  await expect(page).toHaveScreenshot("not-found.png");
 });
 
 test("a pick names itself, a middle click as a new tab", async ({ page }) => {
