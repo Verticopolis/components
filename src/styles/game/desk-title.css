@@ -63,9 +63,10 @@
   .desk-title-bar img {
     image-rendering: pixelated;
   }
+  /* Over the Control Panel, so a menu always opens on top of it. */
   body.desk-title .menubar {
     position: fixed;
-    z-index: 41;
+    z-index: 42;
     top: calc(var(--title-y) + 22px);
     left: calc(var(--title-x) + 3px);
     width: calc(var(--title-w) - 6px);
@@ -74,6 +75,16 @@
   body.desk-title .desk-taskbar-title {
     position: fixed;
     z-index: 41;
+  }
+  /* The Control Panel, which the Start menu and the tray open over the title
+     screen: in the middle of its window, under the menu bar's menus and the
+     Start menu (drawn after it). It does not move, as the title window does
+     not. */
+  body.desk-title #desk-win-control {
+    position: fixed;
+    z-index: 41;
+    top: calc(var(--title-y) + var(--poster-top) + 40px);
+    left: calc(50vw - 150px);
   }
 
   /* ---- The poster: the dusk art, kept inside the window ---- */

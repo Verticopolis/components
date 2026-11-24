@@ -1,7 +1,9 @@
 /* The 1994 desk (src/ui/desk/, owner 2026-11-15): on a computer every part
    of the game is its own window on a teal desktop with a taskbar. Every rule
    here is scoped to body.desk or to the desk's own classes, so phones,
-   tablets, small windows and the title screen keep today's layout.
+   tablets, small windows and the title screen keep today's layout. The
+   window chrome also applies under body.desk-title, for the Control Panel
+   the title screen opens (desk-title.css places it).
    Part of the game's stylesheet: src/styles.css imports the parts in order. */
 
 @layer vc.tokens, vc.base, vc.components, vc.page;
@@ -26,13 +28,13 @@
   }
 
   /* ---- Every desk window ---- */
-  body.desk .desk-win {
+  :is(body.desk, body.desk-title) .desk-win {
     position: absolute;
     right: auto;
     bottom: auto;
     margin: 0;
   }
-  body.desk .desk-win[hidden] {
+  :is(body.desk, body.desk-title) .desk-win[hidden] {
     display: none;
   }
   /* Minimized: off the screen but still laid out, so the tower's canvas keeps
@@ -48,10 +50,10 @@
   /* One chrome for every desk window: the full window shadow (Tools drops its
    docked look), and a title bar 2 px inside the frame with the same height,
    type, icon and buttons, whether the desk or the game drew the window. */
-  body.desk .desk-win.win {
+  :is(body.desk, body.desk-title) .desk-win.win {
     box-shadow: var(--bevel-out), var(--win-shadow);
   }
-  body.desk .desk-win > .win-title {
+  :is(body.desk, body.desk-title) .desk-win > .win-title {
     box-sizing: border-box;
     min-height: 18px;
     margin: calc(2px - var(--pad-y)) calc(2px - var(--pad-x)) var(--title-gap);
@@ -59,7 +61,7 @@
     font-size: 11px;
     padding: 1px 2px 1px 3px;
   }
-  body.desk .desk-win > .win-title > .btn.xs {
+  :is(body.desk, body.desk-title) .desk-win > .win-title > .btn.xs {
     width: 18px;
     min-width: 0;
     height: 16px;
@@ -68,13 +70,13 @@
     line-height: 1;
   }
   /* The title bar's buttons sit together at its right end. */
-  body.desk .desk-win > .win-title > .btn {
+  :is(body.desk, body.desk-title) .desk-win > .win-title > .btn {
     margin-left: 0;
   }
-  body.desk .desk-win > .win-title > .btn:first-of-type {
+  :is(body.desk, body.desk-title) .desk-win > .win-title > .btn:first-of-type {
     margin-left: auto;
   }
-  body.desk .desk-win > .win-title > .desk-btn {
+  :is(body.desk, body.desk-title) .desk-win > .win-title > .desk-btn {
     width: 18px;
     min-width: 0;
     height: 16px;
@@ -83,10 +85,10 @@
     place-items: center;
     flex: none;
   }
-  body.desk .desk-win > .win-title > .desk-btn-close {
+  :is(body.desk, body.desk-title) .desk-win > .win-title > .desk-btn-close {
     margin-left: 2px;
   }
-  body.desk .desk-win > .win-title > .desk-btn-min:first-of-type {
+  :is(body.desk, body.desk-title) .desk-win > .win-title > .desk-btn-min:first-of-type {
     margin-left: auto;
   }
   .desk-btn svg {

@@ -1,6 +1,7 @@
 import { html, nothing, render } from "lit-html";
 import { DESK_ICON } from "./deskWindow";
 import { DeskTaskbar, type TaskbarOptions } from "./deskTaskbar";
+import { ControlPanel, type ControlPanelOptions } from "./deskControlPanel";
 
 /**
  * The title screen on the 1994 desk (owner's pick, 2026-11-15): while a
@@ -10,6 +11,10 @@ import { DeskTaskbar, type TaskbarOptions } from "./deskTaskbar";
  * screen itself is unchanged; this adds the window's title bar and the
  * taskbar around it, drawn into a root the page names. The page imports
  * `styles.css`, which carries the desk's look.
+ * Given `controlPanel`, the title screen has the desk's Control Panel too,
+ * closed until {@link DeskTitle.openControl} (the Start menu's Control
+ * Panel… or the tray's monitor) opens it over the window, so the Start menu
+ * reads the same over the title screen as over a tower.
  *
  * Cost: drawn once when the title screen comes up on the desk and taken away
  * when it goes. Nothing runs per frame; the tray clock ticks once a minute.
@@ -34,12 +39,31 @@ export interface DeskTitleOptions {
   /** The taskbar's Start menu, tray and presses. A press on the window's
    *  taskbar button is `task(DESK_TITLE_WINDOW)`. */
   readonly taskbar: Omit<TaskbarOptions, "className">;
+  /** The Control Panel's icons and what they run. Without it the title
+   *  screen has no Control Panel, and the tray no monitor unless the taskbar
+   *  options give one. */
+  readonly controlPanel?: ControlPanelOptions;
 }
 
 export class DeskTitle {
   private bar: DeskTaskbar | null = null;
+  /** The Control Panel, drawn closed, kept while the page lives. */
+  private readonly panel: ControlPanel | null;
 
-  constructor(private readonly opts: DeskTitleOptions) {}
+  constructor(private readonly opts: DeskTitleOptions) {
+    this.panel = opts.controlPanel ? new ControlPanel(opts.host.ownerDocument, opts.controlPanel) : null;
+  }
+
+  /** The Control Panel, for its labels; null without `controlPanel`. */
+  get control(): ControlPanel | null {
+    return this.panel;
+  }
+
+  /** Open the Control Panel over the title screen; nothing without one or
+   *  while the title screen is off the desk. */
+  openControl(): void {
+    if (this.bar) this.panel?.open();
+  }
 
   /** Whether the title screen sits on the desk now. */
   get up(): boolean {
@@ -63,10 +87,19 @@ export class DeskTitle {
       doc.body.classList.toggle(DESK_TITLE_POCKET_CLASS, pocket);
     if (this.bar) return;
     const icon = this.opts.icon ?? DESK_ICON;
-    const bar = new DeskTaskbar(doc, { ...taskbar, icon: taskbar.icon ?? icon, className: "desk-taskbar-title" });
+    const panel = this.panel;
+    // The tray's monitor opens the panel, unless the page hears it itself.
+    const controlPanel = taskbar.controlPanel ?? (panel ? () => this.openControl() : undefined);
+    const bar = new DeskTaskbar(doc, {
+      ...taskbar,
+      ...(controlPanel ? { controlPanel } : {}),
+      icon: taskbar.icon ?? icon,
+      className: "desk-taskbar-title",
+    });
     doc.body.classList.add(DESK_TITLE_CLASS);
+    // The panel comes before the taskbar, so the Start menu opens over it.
     render(
-      html`<div class="desk-title-bar" aria-hidden="true"><img src=${icon} alt="" width="16" height="16" /><span>${title}</span></div>${bar.root}`,
+      html`<div class="desk-title-bar" aria-hidden="true"><img src=${icon} alt="" width="16" height="16" /><span>${title}</span></div>${panel?.root ?? nothing}${bar.root}`,
       host,
     );
     bar.start();
@@ -77,6 +110,8 @@ export class DeskTitle {
   /** Take the title screen off the desk. */
   hide(): void {
     if (!this.bar) return;
+    // Closed, so it opens fresh the next time the title screen comes up.
+    this.panel?.close();
     this.bar.stop();
     this.bar = null;
     render(nothing, this.opts.host);

@@ -86,19 +86,19 @@
     padding: 0 16px 0 12px;
     font-size: 15px;
   }
-  body.desk-touch .desk-win > .win-title {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-win > .win-title {
     min-height: 26px;
     font-size: 13px;
   }
-  body.desk-touch .desk-win > .win-title > .desk-btn,
-  body.desk-touch .desk-win > .win-title > .btn.xs {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-win > .win-title > .desk-btn,
+  :is(body.desk-touch, body.desk-title-pocket) .desk-win > .win-title > .btn.xs {
     position: relative;
     width: 24px;
     height: 21px;
   }
   /* The buttons look 24 px wide; a finger gets 44 px. */
-  body.desk-touch .desk-win > .win-title > .desk-btn::after,
-  body.desk-touch .desk-win > .win-title > .btn.xs::after {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-win > .win-title > .desk-btn::after,
+  :is(body.desk-touch, body.desk-title-pocket) .desk-win > .win-title > .btn.xs::after {
     content: "";
     position: absolute;
     inset: -12px -10px;
