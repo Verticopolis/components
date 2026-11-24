@@ -242,9 +242,7 @@ export class ToolPalette {
         @keydown=${keys.keydown}
         @keyup=${keys.keyup}
         @blur=${keys.blur}
-      >
-        ${title}
-      </div>
+      >${title}</div>
       ${repeat(
         classic,
         (t) => t.key,
@@ -299,9 +297,7 @@ export class ToolPalette {
           ?hidden=${unlockedCount(g) === 0}
           @click=${() => this.openTab(g.title)}
           @keydown=${(e: KeyboardEvent) => this.onTabKey(g.title, e)}
-        >
-          ${g.title}
-        </button>`;
+        >${g.title}</button>`;
       },
     )}`;
   }
