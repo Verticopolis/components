@@ -224,6 +224,17 @@ describe("topBarTemplate", () => {
     });
   });
 
+  it("redraws the controls for a new actions object on the same bar", () => {
+    draw();
+    expect(host.querySelector("#btn-undo")).not.toBeNull();
+    const speed = vi.fn();
+    render(topBarTemplate({ ...VIEW, time: "Mon 07:10" }, { speed }), host);
+    expect(host.querySelector("#btn-undo, #btn-save-top, #traffic")).toBeNull();
+    host.querySelector<HTMLButtonElement>('[data-speed="0"]')!.click();
+    expect(speed).toHaveBeenCalledWith(0);
+    expect(actions.speed).not.toHaveBeenCalled();
+  });
+
   it("writes the funds color only when the sign of the funds changes", () => {
     draw();
     const watch = new MutationObserver(() => {});
