@@ -12,13 +12,16 @@ interface Props {
   /** A fixed height in CSS px, for a piece shorter than a screen. Without
    *  one the frame has the shape of a screen. */
   height?: number;
+  /** The shape of an upright phone's screen, 360 by 720 CSS px, on every
+   *  screen, for a piece that only a phone shows. */
+  phone?: boolean;
 }
-const { page, title, height } = Astro.props;
+const { page, title, height, phone } = Astro.props;
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/frames/${page}/`;
 ---
 
 <iframe
-  class:list={["g-frame", "not-content", { "g-frame-fixed": height !== undefined }]}
+  class:list={["g-frame", "not-content", { "g-frame-fixed": height !== undefined, "g-frame-phone": phone }]}
   src={src}
   title={title}
   data-frame={page}

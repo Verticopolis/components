@@ -81,7 +81,8 @@ function money(n: number): string {
   return `$${n}`;
 }
 
-const PINNED: readonly PaletteTool[] = [
+/** The pinned Inspect and Bulldoze, which the pocket desk shows too. */
+export const PINNED: readonly PaletteTool[] = [
   {
     key: "inspect",
     attr: "tool",
@@ -102,7 +103,8 @@ const PINNED: readonly PaletteTool[] = [
   },
 ];
 
-function groups(stars: number, funds: number): PaletteGroup[] {
+/** The sample tools for a tower with `stars` and `funds`. */
+export function groups(stars: number, funds: number): PaletteGroup[] {
   return SAMPLES.map((g) => ({
     title: g.title,
     tools: g.tools.map(([kind, name, price, need, modern]) => ({

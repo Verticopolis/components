@@ -1,0 +1,41 @@
+---
+// The package's pocket desk (gallery/pocketDesk.ts) over the game's whole
+// stylesheet, on a page of its own so the rest of the gallery keeps its own
+// styles. The Pocket desk page shows it in a phone-shaped frame
+// (Frame.astro), so the pocket stylesheet's media queries take the frame's
+// size and orientation as a phone's.
+import "../../../../lib/styles.css";
+import { SCHEME_BOOT } from "../../../site.mjs";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Pocket desk</title>
+    <script is:inline set:html={SCHEME_BOOT} />
+    <style is:global>
+      /* The sample tower's view: the painted lobby, at the bottom of a sky. */
+      .g-pocket-stage {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        overflow: hidden;
+        background: linear-gradient(#3d5f9e, #9cb8de);
+      }
+      .g-pocket-news {
+        margin: 6px;
+        padding: 6px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      import { mountPocketDesk } from "../../../../gallery/pocketDesk";
+      mountPocketDesk();
+    </script>
+  </body>
+</html>

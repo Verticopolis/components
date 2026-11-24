@@ -1,0 +1,18 @@
+---
+title: Pocket desk
+description: The desk on a phone, with the tower window filling the screen.
+---
+
+import Frame from "../../../components/Frame.astro";
+
+A phone, held either way, and a smaller upright tablet get the pocket desk in place of [the desk](../desk/): the tower window fills the screen and never moves, with the Information bar, the tower's view and Tools inside it, and the taskbar along the bottom. It comes from `windows/desk/deskPocket`, with the desk's windows and taskbar, and its stylesheet is `styles/game/desk-pocket.css`.
+
+- `deskMode` decides which desk a screen gets: the full desk on a computer or a touchscreen at least 1024 by 600, the pocket desk on a smaller touchscreen, and none otherwise.
+- The game puts `desk`, `desk-touch` and `desk-pocket` on the body, draws the grid with `pocketBody` inside the tower window, and moves its own Information bar, Tools and tower view into it, in that order. The stylesheet places them by the game's element ids (`#topbar`, `#palette`, `#stage`).
+- On an upright phone the Information bar takes two rows, the tower's view fills the middle, and Tools is a row of category tabs over a strip of tools at the bottom. Sideways, Tools moves to the left of the view.
+- The taskbar and the menu rows are 44 pixels tall, and each title-bar button has a 44 pixel touch area.
+- The Bulletin, Tower Info and the Control Panel open over the whole desk, one at a time. Here the tower's Window menu, the Start menu and the taskbar open the Bulletin.
+
+Here the frame is an upright phone's screen, over the game's whole stylesheet, with a sample tower, the sample Information bar and sample tools. The rules are in [the desk doc](../../docs/desk/#the-pocket-desk).
+
+<Frame page="pocket-desk" title="The pocket desk on a phone, with a sample tower" phone />

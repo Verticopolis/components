@@ -50,6 +50,7 @@ export const sidebar = [
     label: "Desktop",
     items: [
       { label: "The desk", link: "/desktop/desk/" },
+      { label: "Pocket desk", link: "/desktop/pocket-desk/" },
       { label: "Information bar and status bar", link: "/desktop/information-bar/" },
       { label: "Tools window", link: "/desktop/tools/" },
       { label: "Where windows open", link: "/desktop/layout/" },
