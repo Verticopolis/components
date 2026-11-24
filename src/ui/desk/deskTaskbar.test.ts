@@ -75,12 +75,12 @@ describe("DeskTaskbar", () => {
     vi.useRealTimers();
   });
 
-  it("is a labeled toolbar with the Verticopolis button, its menu shut, and the tray", () => {
+  it("is a labeled toolbar with the Start button, its menu shut, and the tray", () => {
     make({ className: "desk-taskbar-title", icon: "/app/icon.png" });
     expect(bar.root.getAttribute("role")).toBe("toolbar");
     expect(bar.root.getAttribute("aria-label")).toBe("Taskbar");
     expect(bar.root.className).toBe("desk-taskbar desk-taskbar-title");
-    expect(startButton().textContent!.trim()).toBe("Verticopolis");
+    expect(startButton().textContent!.trim()).toBe("Start");
     expect(startButton().getAttribute("aria-controls")).toBe("desk-start-menu");
     expect(startButton().querySelector("img")!.getAttribute("src")).toBe("/app/icon.png");
     expect(menu().hidden).toBe(true);

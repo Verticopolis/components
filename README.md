@@ -389,7 +389,7 @@ built package from `lib/` the way a consumer would:
 | Map window | the tower map in a stage of its own over a made-up tower, with its views, legends, keys and taps |
 | Fireworks | `windows/fireworks` behind a sample welcome box; a still frame with reduced motion |
 | Page not found | `windows/notFoundDesk`, the 404 desk, in a frame |
-| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Verticopolis menu and tray |
+| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Start menu and tray |
 | Information bar and status bar | the game's top bar of meters and buttons and its status bar, in a frame over the game's desktop stylesheet |
 | Tools window | the game's Tools window with made-up tools: stars lock and unlock them, low funds dim them, and a category folds |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
@@ -443,7 +443,7 @@ The Screenshots workflow drives the gallery site in Chromium and compares
 each piece with the images in `e2e/__screenshots__`: the site's header and
 each menu of its menu bar open, the buttons, windows, wells, icons, the sound
 board, the sample menu bar closed and with each menu open, each message box,
-and the desk with its Verticopolis menu, its window menu and a maximized and
+and the desk with its Start menu, its window menu and a maximized and
 a minimized window in every color scheme, the pocket desk on an upright phone
 in every color scheme and held sideways, plus the desk layouts, each tower
 scene, room sprite and people figure once, on a

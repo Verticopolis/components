@@ -38,7 +38,7 @@ export function mountNotFound(): void {
         lines: ["The link may be mistyped, or the page may have moved."],
         links: [place("gallery", "Browse the gallery"), place("game", "Play the game"), place("docs", "Read the docs")],
         close: place("close", "Close and go to the gallery"),
-        start: place("start", "Verticopolis"),
+        start: place("start", "Start"),
         task,
         clock: trayClock(new Date()),
       }),
