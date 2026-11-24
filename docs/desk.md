@@ -279,6 +279,8 @@ the gray bar below (two by two on a short screen); held sideways, the buttons
 stand in a gray panel beside the poster. The poster takes the height the
 buttons leave and the premise line is hidden. On a screen too short even for
 that the window scrolls, so every button and the credit line can be reached.
+The toast rail (`#toast-wrap`) moves to the foot of the poster, so a notice
+shown with the title screen up covers neither the logo nor the buttons.
 A second `show` switches between the
 two, as turning a tablet can.
 
