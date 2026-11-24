@@ -29,8 +29,8 @@ import type { TrafficLevel } from "../../presentation/traffic";
  * Cost: the game renders the bar on each status pass, several times a second,
  * and the time and the funds change on nearly every one. Lit compares every
  * value with the one it drew last and writes only the ones that changed, so an
- * unchanged pass touches no DOM. The badge, the traffic meter, the speeds and
- * the buttons after them sit behind `guard`: a pass that leaves their fields
+ * unchanged pass touches no DOM. The traffic meter, the speeds and the
+ * buttons after them sit behind `guard`: a pass that leaves their fields
  * as they were skips them with one comparison, so a pass costs the meters it
  * changed. Pass the same {@link TopBarActions} object every time, so lit never
  * rebinds a listener and the guards hold; which controls show is read from

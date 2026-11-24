@@ -224,6 +224,22 @@ describe("topBarTemplate", () => {
     });
   });
 
+  it.each([
+    ["undoOff", "#btn-undo", (el: HTMLElement) => el.getAttribute("aria-disabled") === "true"],
+    ["redoOff", "#btn-redo", (el: HTMLElement) => el.getAttribute("aria-disabled") === "true"],
+    ["muted", "#audio-toggle", (el: HTMLElement) => el.getAttribute("aria-pressed") === "true"],
+    ["update", "#btn-update", (el: HTMLElement) => !el.hidden],
+    ["install", "#btn-install", (el: HTMLElement) => !el.hidden],
+  ] as const)("follows %s alone across renders", (field, sel, on) => {
+    const base = { undoOff: false, redoOff: false, muted: false, update: false, install: false };
+    draw(base);
+    expect(on($(sel))).toBe(false);
+    draw({ ...base, [field]: true });
+    expect(on($(sel))).toBe(true);
+    draw(base);
+    expect(on($(sel))).toBe(false);
+  });
+
   it("redraws the controls for a new actions object on the same bar", () => {
     draw();
     expect(host.querySelector("#btn-undo")).not.toBeNull();
