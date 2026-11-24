@@ -1,0 +1,206 @@
+/* The title screen on the pocket desk (src/ui/desk/deskTitle.ts, owner's pick
+   2026-11-24): on a phone or an upright tablet the title screen sits in a
+   Verticopolis window on the teal desk, with its menu bar, the dusk poster,
+   the buttons stacked in the gray bar below, and the 44 px taskbar along the
+   bottom (desk-pocket.css sizes it). Held sideways, the buttons stand in a
+   gray panel beside the poster. The poster takes the height the buttons
+   leave, so the window fits the screen under the browser's own bars; on a
+   screen too short even for that, the window scrolls. Everything here is
+   scoped to body.desk-title-pocket, which the title screen wears beside
+   body.desk-title. Part of the game's stylesheet: src/styles.css imports it
+   after desk-title.css. */
+
+@layer vc.tokens, vc.base, vc.components, vc.page;
+
+@layer vc.page {
+  body.desk-title.desk-title-pocket {
+    /* Three buttons, or four when Continue is there. */
+    --title-btns: 3;
+    --title-rows: var(--title-btns);
+    --title-x: 10px;
+    --title-y: 8px;
+    --title-w: calc(100vw - 20px);
+    --title-h: min(760px, calc(100dvh - var(--desk-taskbar-h, 44px) - 16px));
+    /* The title bar (26 px) and the menu bar above the poster. */
+    --poster-top: 60px;
+    /* Under the poster: the buttons, the credit line and the version. */
+    --poster-h: max(200px, calc(var(--title-h) - var(--poster-top) - var(--title-rows) * 54px - 88px));
+  }
+  body.desk-title.desk-title-pocket:has(#splash .splash-actions > .splash-btn:nth-child(4)) {
+    --title-btns: 4;
+  }
+  /* The poster, the buttons and the credit line are laid out one under the
+     other, so a window too short for them scrolls to the last one. */
+  body.desk-title-pocket #splash {
+    padding: calc(var(--poster-top) + 16px) 12px 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-attachment: local, local;
+  }
+  body.desk-title-pocket #splash > * {
+    flex-shrink: 0;
+  }
+  body.desk-title-pocket .splash-brand {
+    box-sizing: border-box;
+    height: calc(var(--poster-h) - 16px);
+  }
+  body.desk-title-pocket .desk-title-bar {
+    height: 26px;
+    font-size: 15px;
+    gap: 6px;
+  }
+  body.desk-title-pocket .desk-title-bar img {
+    width: 20px;
+    height: 20px;
+  }
+  body.desk-title-pocket .menubar {
+    top: calc(var(--title-y) + 29px);
+  }
+  /* The logo starts below the Sponsor and Install buttons. */
+  body.desk-title-pocket .splash-word {
+    width: min(300px, 76vw);
+    margin-top: 36px;
+  }
+  body.desk-title-pocket .splash-tag {
+    width: min(250px, 64vw);
+  }
+  body.desk-title-pocket .splash-premise {
+    display: none;
+  }
+  /* The skyline shrinks on a short poster, so it stays under the logo. */
+  body.desk-title-pocket .splash-skyline {
+    --skyline-h: clamp(48px, calc(var(--poster-h) - 150px), 120px);
+    top: calc(var(--poster-top) + var(--poster-h) - var(--skyline-h));
+    height: var(--skyline-h);
+  }
+  body.desk-title-pocket #splash .splash-actions {
+    position: static;
+    width: auto;
+    margin-top: 14px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  body.desk-title-pocket #splash .splash-btn {
+    box-sizing: border-box;
+    width: min(260px, 70vw);
+    min-width: 0;
+    margin: 0 auto;
+    min-height: 44px;
+    font-size: 15px;
+  }
+  body.desk-title-pocket .splash-attrib {
+    position: static;
+    margin-top: 12px;
+    font-size: 11px;
+  }
+  body.desk-title-pocket .splash-version {
+    position: static;
+    align-self: flex-end;
+    margin-top: 4px;
+  }
+
+  /* ---- A short upright screen: the buttons two by two ---- */
+  @media (orientation: portrait) and (max-height: 679px) {
+    body.desk-title.desk-title-pocket {
+      --title-rows: 2;
+    }
+    body.desk-title-pocket #splash .splash-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 150px));
+      justify-content: center;
+    }
+    body.desk-title-pocket #splash .splash-btn {
+      width: 100%;
+    }
+  }
+
+  /* ---- Held sideways: the buttons in a gray panel beside the poster ---- */
+  @media (orientation: landscape) {
+    body.desk-title.desk-title-pocket {
+      --title-w: min(900px, calc(100vw - 20px));
+      --title-x: calc(50vw - var(--title-w) / 2);
+      --title-y: 4px;
+      --title-h: calc(100dvh - var(--desk-taskbar-h, 44px) - 8px);
+      --panel-w: clamp(170px, calc(var(--title-w) * 0.28), 230px);
+      /* The credit line takes two short lines under the poster. */
+      --poster-h: max(120px, calc(var(--title-h) - var(--poster-top) - 38px));
+      /* The buttons share the panel's height, 34 to 44 px each. */
+      --btn-h: clamp(34px, calc((var(--title-h) - var(--poster-top) - 26px) / var(--title-btns) - 6px), 44px);
+    }
+    body.desk-title-pocket #splash {
+      padding: calc(var(--poster-top) + 8px) calc(var(--panel-w) + 10px) 4px 10px;
+      background:
+        var(--splash-sky) 3px var(--poster-top) / calc(100% - var(--panel-w) - 6px) var(--poster-h) no-repeat,
+        var(--r-face);
+      background-attachment: local, local;
+    }
+    body.desk-title-pocket .splash-brand {
+      height: calc(var(--poster-h) - 8px);
+    }
+    body.desk-title-pocket .splash-stars {
+      right: calc(var(--panel-w) + 3px);
+    }
+    body.desk-title-pocket .splash-sun {
+      --sun: clamp(64px, calc(var(--poster-h) * 0.75 - 30px), 150px);
+      top: calc(var(--poster-top) + var(--poster-h) - 24px);
+      left: calc((100% - var(--panel-w)) / 2);
+      width: var(--sun);
+      height: var(--sun);
+      clip-path: inset(0 0 calc(var(--sun) / 2 - 24px) 0);
+    }
+    body.desk-title-pocket .splash-skyline {
+      /* Drawn at its own shape across the poster, then squeezed down, so
+         the whole skyline shows below the logo. */
+      --skyline-h: calc((var(--title-w) - var(--panel-w) - 6px) * 200 / 460);
+      width: calc(100% - var(--panel-w) - 6px);
+      transform: scaleY(0.3);
+      transform-origin: 50% 100%;
+    }
+    body.desk-title-pocket .splash-install {
+      right: calc(var(--panel-w) + 48px);
+    }
+    body.desk-title-pocket .splash-mute {
+      right: calc(var(--panel-w) + 11px);
+    }
+    /* The logo sits under the corner buttons, sized to the poster. */
+    body.desk-title-pocket .splash-word {
+      width: clamp(170px, calc(var(--poster-h) * 1.5), 280px);
+      margin-top: 32px;
+    }
+    body.desk-title-pocket .splash-tag {
+      width: clamp(140px, calc(var(--poster-h) * 1.2), 220px);
+      margin-top: 2px;
+    }
+    body.desk-title-pocket #splash .splash-actions {
+      position: absolute;
+      top: calc(var(--poster-top) + 6px);
+      right: 10px;
+      left: auto;
+      width: calc(var(--panel-w) - 20px);
+      margin: 0;
+      gap: 6px;
+    }
+    body.desk-title-pocket #splash .splash-btn {
+      width: 100%;
+      min-height: var(--btn-h);
+      padding: 2px 8px;
+      font-size: 14px;
+    }
+    body.desk-title-pocket .splash-attrib {
+      margin-top: 6px;
+      font-size: 10px;
+    }
+    body.desk-title-pocket .splash-version {
+      position: absolute;
+      top: calc(var(--poster-top) + 8px + var(--title-btns) * (var(--btn-h) + 6px));
+      right: 10px;
+      bottom: auto;
+      width: calc(var(--panel-w) - 20px);
+      margin: 0;
+      font-size: 10px;
+      text-align: center;
+    }
+  }
+}

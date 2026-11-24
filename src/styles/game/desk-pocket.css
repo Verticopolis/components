@@ -1,7 +1,8 @@
 /* The desk on touch screens (owner's pick, 2026-11-20: "Pocket desk").
    body.desk-touch: the desk on a touchscreen, a sideways tablet's full desk
    included: a 44 px taskbar, 44 px menu rows and title-bar buttons with a
-   44 px touch area.
+   44 px touch area. The title screen's taskbar on the pocket desk
+   (body.desk-title-pocket) is the same size.
    body.desk-pocket: phones and upright tablets. The tower window fills the
    desk with Info and Tools inside it, and the Map floats over the tower at
    the size it has on phones today (overview-map.css), so the minimap and
@@ -17,7 +18,7 @@
 
 @layer vc.page {
   /* ---- Touch chrome ---- */
-  body.desk-touch {
+  :is(body.desk-touch, body.desk-title-pocket) {
     --desk-taskbar-h: calc(44px + env(safe-area-inset-bottom, 0px));
   }
   /* In from a notch or rounded corner on every side, once a page opts into
@@ -45,10 +46,10 @@
     }
   }
   /* The Start menu opens just above the taller taskbar. */
-  body.desk-touch .desk-start-menu {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-start-menu {
     bottom: calc(var(--desk-taskbar-h) - 1px);
   }
-  body.desk-touch .desk-taskbar {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-taskbar {
     height: var(--desk-taskbar-h);
     gap: 3px;
     padding: 3px max(3px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px)
@@ -56,28 +57,28 @@
     align-items: flex-start;
     font-size: 13px;
   }
-  body.desk-touch .desk-start,
-  body.desk-touch .desk-task,
-  body.desk-touch .desk-tray {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-start,
+  :is(body.desk-touch, body.desk-title-pocket) .desk-task,
+  :is(body.desk-touch, body.desk-title-pocket) .desk-tray {
     height: 38px;
   }
-  body.desk-touch .desk-start,
-  body.desk-touch .desk-task {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-start,
+  :is(body.desk-touch, body.desk-title-pocket) .desk-task {
     padding: 0 8px;
   }
-  body.desk-touch .desk-start {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-start {
     min-width: 48px;
     justify-content: center;
   }
-  body.desk-touch .desk-start img {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-start img {
     width: 22px;
     height: 22px;
   }
-  body.desk-touch .desk-task img {
+  :is(body.desk-touch, body.desk-title-pocket) .desk-task img {
     width: 18px;
     height: 18px;
   }
-  body.desk-touch .desk-start-list .mb-item,
+  :is(body.desk-touch, body.desk-title-pocket) .desk-start-list .mb-item,
   body.desk-touch .desk-win-menu .mb-item {
     min-height: 44px;
     display: flex;

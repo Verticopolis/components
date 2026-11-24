@@ -17,6 +17,9 @@ import { DeskTaskbar, type TaskbarOptions } from "./deskTaskbar";
 
 /** The class `<body>` wears while the title screen sits on the desk. */
 export const DESK_TITLE_CLASS = "desk-title";
+/** The class `<body>` also wears while the title screen sits on the pocket
+ *  desk: a phone's or an upright tablet's (`styles/game/desk-title-pocket.css`). */
+export const DESK_TITLE_POCKET_CLASS = "desk-title-pocket";
 /** The id of the title screen's one window, on its taskbar. */
 export const DESK_TITLE_WINDOW = "title";
 
@@ -48,11 +51,17 @@ export class DeskTitle {
     return this.bar;
   }
 
-  /** Put the title screen on the desk. A second call does nothing. */
-  show(): void {
-    if (this.bar) return;
+  /** Put the title screen on the desk: the computer's, or the pocket desk's
+   *  when `pocket` is set. A second call only switches between the two, as
+   *  turning a tablet can. */
+  show(pocket = false): void {
     const { host, title, taskbar } = this.opts;
     const doc = host.ownerDocument;
+    // Touched only on a change: a page that watches <body>'s class (as the
+    // game does, to call this) would otherwise hear a write it caused.
+    if (doc.body.classList.contains(DESK_TITLE_POCKET_CLASS) !== pocket)
+      doc.body.classList.toggle(DESK_TITLE_POCKET_CLASS, pocket);
+    if (this.bar) return;
     const icon = this.opts.icon ?? DESK_ICON;
     const bar = new DeskTaskbar(doc, { ...taskbar, icon: taskbar.icon ?? icon, className: "desk-taskbar-title" });
     doc.body.classList.add(DESK_TITLE_CLASS);
@@ -71,6 +80,6 @@ export class DeskTitle {
     this.bar.stop();
     this.bar = null;
     render(nothing, this.opts.host);
-    this.opts.host.ownerDocument.body.classList.remove(DESK_TITLE_CLASS);
+    this.opts.host.ownerDocument.body.classList.remove(DESK_TITLE_CLASS, DESK_TITLE_POCKET_CLASS);
   }
 }

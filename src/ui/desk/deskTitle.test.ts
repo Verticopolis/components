@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DESK_TITLE_CLASS, DESK_TITLE_WINDOW, DeskTitle } from "./deskTitle";
+import { DESK_TITLE_CLASS, DESK_TITLE_POCKET_CLASS, DESK_TITLE_WINDOW, DeskTitle } from "./deskTitle";
 
 function host(): HTMLElement {
   const el = document.createElement("div");
@@ -51,6 +51,39 @@ describe("DeskTitle", () => {
     expect(document.body.classList.contains(DESK_TITLE_CLASS)).toBe(false);
     expect(root.querySelector(".desk-title-bar, .desk-taskbar")).toBeNull();
     expect(root.querySelector("p")!.textContent).toBe("the page's own");
+  });
+
+  it("sits on the pocket desk when asked, switches as a tablet turns, and clears the pocket class when it goes", () => {
+    const root = host();
+    const title = new DeskTitle({ host: root, title: "Sample", taskbar: { items: [], task: vi.fn(), start: vi.fn() } });
+    const body = document.body.classList;
+    title.show(true);
+    expect([body.contains(DESK_TITLE_CLASS), body.contains(DESK_TITLE_POCKET_CLASS)]).toEqual([true, true]);
+    const bar = title.taskbar;
+    title.show(false);
+    expect([body.contains(DESK_TITLE_CLASS), body.contains(DESK_TITLE_POCKET_CLASS)]).toEqual([true, false]);
+    expect(title.taskbar).toBe(bar);
+    expect(root.querySelectorAll(".desk-title-bar")).toHaveLength(1);
+    title.show(true);
+    title.hide();
+    expect([body.contains(DESK_TITLE_CLASS), body.contains(DESK_TITLE_POCKET_CLASS)]).toEqual([false, false]);
+  });
+
+  it("writes <body>'s class only when the desk changes, so a page watching it hears no echo", async () => {
+    const root = host();
+    const title = new DeskTitle({ host: root, title: "Sample", taskbar: { items: [], task: vi.fn(), start: vi.fn() } });
+    title.show(true);
+    const writes: MutationRecord[] = [];
+    const watch = new MutationObserver((records) => writes.push(...records));
+    watch.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    title.show(true);
+    await Promise.resolve();
+    expect(writes).toHaveLength(0);
+    title.show(false);
+    await Promise.resolve();
+    expect(writes).toHaveLength(1);
+    watch.disconnect();
+    title.hide();
   });
 
   it("can come back after it goes", () => {

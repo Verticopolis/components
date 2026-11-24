@@ -1,7 +1,7 @@
 /**
  * Screenshot and behavior tests over the gallery's Desktop pages and its
  * message boxes (gallery/desk.ts, deskLayout.ts, messageBoxes.ts): the desk
- * with its Verticopolis menu and a window menu open, and each message box, in
+ * with its Start menu and a window menu open, and each message box, in
  * each color scheme; a maximized and a minimized window and the layout
  * drawings once. The presses work the package's own DeskWindow and
  * WindowMenu, so each test also checks what they did.
@@ -25,14 +25,14 @@ function task(page: Page, name: string) {
 
 for (const scheme of SCHEMES) {
   test.describe(`${scheme.label} scheme`, () => {
-    test("the desk, with the Verticopolis menu and a window menu open", async ({ page }) => {
+    test("the desk, with the Start menu and a window menu open", async ({ page }) => {
       await openPage(page, DESK);
       await pickScheme(page, scheme);
       await expect(desk(page)).toHaveScreenshot(`${scheme.slug}-desk.png`);
 
-      const start = taskbar(page).getByRole("button", { name: "Verticopolis" });
+      const start = taskbar(page).getByRole("button", { name: "Start" });
       await start.click();
-      const menu = page.getByRole("menu", { name: "Verticopolis" });
+      const menu = page.getByRole("menu", { name: "Start" });
       await expect(menu).toBeVisible();
       await expect(start).toHaveAttribute("aria-expanded", "true");
       await expect(desk(page)).toHaveScreenshot(`${scheme.slug}-desk-start-menu.png`);
@@ -80,14 +80,14 @@ test("a window maximizes and restores", async ({ page }) => {
   await expect(tools).toHaveCSS("top", "8px");
 });
 
-test("the tower closes with its ✕ and opens again from the Verticopolis menu", async ({ page }) => {
+test("the tower closes with its ✕ and opens again from the Start menu", async ({ page }) => {
   await openPage(page, DESK);
   const tower = page.locator("#g-desk-tower");
   await tower.getByRole("button", { name: "Close Sample Tower" }).click();
   await expect(tower).toBeHidden();
   await expect(task(page, "Sample Tower")).toHaveCount(0);
-  await taskbar(page).getByRole("button", { name: "Verticopolis" }).click();
-  await page.getByRole("menu", { name: "Verticopolis" }).getByRole("menuitem", { name: "Sample Tower" }).click();
+  await taskbar(page).getByRole("button", { name: "Start" }).click();
+  await page.getByRole("menu", { name: "Start" }).getByRole("menuitem", { name: "Sample Tower" }).click();
   await expect(tower).toBeVisible();
   await expect(tower).toHaveClass(/desk-active/);
   await expect(task(page, "Sample Tower")).toHaveAttribute("aria-pressed", "true");
@@ -147,9 +147,9 @@ test("a window minimizes to the taskbar and comes back", async ({ page }) => {
   await expect(info).toBeVisible();
   await expect(info).toHaveClass(/desk-active/);
   await expect(task(page, "Info")).toHaveAttribute("aria-pressed", "true");
-  // The Verticopolis menu opens the Bulletin again.
-  await taskbar(page).getByRole("button", { name: "Verticopolis" }).click();
-  await page.getByRole("menu", { name: "Verticopolis" }).getByRole("menuitem", { name: "Bulletin" }).click();
+  // The Start menu opens the Bulletin again.
+  await taskbar(page).getByRole("button", { name: "Start" }).click();
+  await page.getByRole("menu", { name: "Start" }).getByRole("menuitem", { name: "Bulletin" }).click();
   await expect(page.locator("#g-desk-bulletin")).toBeVisible();
   await expect(task(page, "Bulletin")).toHaveAttribute("aria-pressed", "true");
 });

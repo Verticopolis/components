@@ -4,9 +4,10 @@ import { DESK_ICON } from "./deskWindow";
 import { WindowMenu, type WindowMenuHandlers } from "./deskWindowMenu";
 
 /**
- * The 1994 desk's taskbar: the Verticopolis button and the menu it opens at
- * the left (a Verticopolis icon, never an operating system's logo, owner
- * 2026-11-15), a button per open window in the middle (a right-click,
+ * The 1994 desk's taskbar: the Start button and the menu it opens at the
+ * left (a Verticopolis icon, never an operating system's logo, owner
+ * 2026-11-15; labeled Start so it reads apart from a window named
+ * Verticopolis, owner 2026-11-24), a button per open window in the middle (a right-click,
  * Shift+F10 or the context menu key opens its window menu), and the tray at
  * the right: the Control Panel's monitor, the speaker and the clock. A game
  * names the menu's items and decides what each press does; the look is
@@ -26,7 +27,7 @@ export interface TaskEntry {
   readonly minimized: boolean;
 }
 
-/** A Verticopolis menu item: its label and the id the game runs when it is
+/** A Start menu item: its label and the id the game runs when it is
  *  picked. A null in the item list is a separator. */
 export interface StartItem {
   readonly id: string;
@@ -37,13 +38,13 @@ export interface StartItem {
 export type TrayIcon = "display" | "sound";
 
 export interface TaskbarOptions {
-  /** The Verticopolis menu's items in order; null is a separator. */
+  /** The Start menu's items in order; null is a separator. */
   readonly items: readonly (StartItem | null)[];
   /** Whether an item shows now, asked each time the menu opens (an item whose
    *  game twin is hidden is left out); every item shows when absent. A
    *  separator with nothing shown after it is left out too. */
   readonly shown?: (itemId: string) => boolean;
-  /** The icon on the Verticopolis button and each window's button;
+  /** The icon on the Start button and each window's button;
    *  {@link DESK_ICON} when absent. */
   readonly icon?: string;
   /** A class added to the taskbar, beside `desk-taskbar`. */
@@ -52,7 +53,7 @@ export interface TaskbarOptions {
   readonly now?: () => Date;
   /** A window's taskbar button was pressed. */
   readonly task: (id: string) => void;
-  /** A Verticopolis menu item was picked. */
+  /** A Start menu item was picked. */
   readonly start: (itemId: string) => void;
   /** Opens the Control Panel from the tray's monitor; without it the tray
    *  has no monitor. */
@@ -63,7 +64,7 @@ export interface TaskbarOptions {
   /** The window menu a window's button opens; without it a right-click on a
    *  button does nothing. */
   readonly windowMenu?: WindowMenuHandlers;
-  /** The Verticopolis menu opened (for the analytics). */
+  /** The Start menu opened (for the analytics). */
   readonly opened?: () => void;
   /** A tray button was pressed (for the analytics). */
   readonly tray?: (icon: TrayIcon) => void;
@@ -92,7 +93,7 @@ export function shownItems(
   return out;
 }
 
-/** The id of the Verticopolis menu, which its button controls. */
+/** The id of the Start menu, which its button controls. */
 export const START_MENU_ID = "desk-start-menu";
 
 export class DeskTaskbar {
@@ -183,9 +184,9 @@ export class DeskTaskbar {
         aria-controls=${START_MENU_ID}
         @click=${this.onStart}
       >
-        ${icon}Verticopolis
+        ${icon}Start
       </button>
-      <div id=${START_MENU_ID} class="desk-start-menu" role="menu" aria-label="Verticopolis" ?hidden=${!this.menuOpen} @keydown=${this.onMenuKey}>
+      <div id=${START_MENU_ID} class="desk-start-menu" role="menu" aria-label="Start" ?hidden=${!this.menuOpen} @keydown=${this.onMenuKey}>
         <div class="desk-start-stripe" aria-hidden="true">VERTICO<b>POLIS</b></div>
         <div class="desk-start-list">${this.menuItems.map((i) => this.itemTemplate(i))}</div>
       </div>

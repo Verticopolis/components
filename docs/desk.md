@@ -7,7 +7,7 @@ the tower fills the screen (see [The pocket desk](#the-pocket-desk)). This
 package holds the desk's windows, its window menu, its taskbar, its geometry
 and its stylesheets. A game decides when the desk comes up and which desk it
 gets, which of its own elements become windows, and what the taskbar's
-Verticopolis menu holds and does. The component gallery shows
+Start menu holds and does. The component gallery shows
 [the desk live](https://components.verticopolis.com/desktop/desk/) and
 [where its windows open](https://components.verticopolis.com/desktop/layout/).
 
@@ -16,18 +16,19 @@ Verticopolis menu holds and does. The component gallery shows
 | Import | What it is |
 | --- | --- |
 | `windows/desk/deskWindow` | `DeskWindow`, one window on the desk: minimize, maximize and restore, the size grip, the focus, and a move by the title bar. `buildFrame` draws a frame for content that has no window of its own. |
-| `windows/desk/deskTaskbar` | `DeskTaskbar`, the taskbar: the Verticopolis button and its menu, a button per open window, and the tray (the Control Panel's monitor, the speaker and the clock). `shownItems` and `trayClock` are the pure parts it draws from. |
+| `windows/desk/deskTaskbar` | `DeskTaskbar`, the taskbar: the Start button and its menu, a button per open window, and the tray (the Control Panel's monitor, the speaker and the clock). `shownItems` and `trayClock` are the pure parts it draws from. |
 | `windows/desk/deskPocket` | `deskMode` (which desk a screen gets), `pocketBody` (the grid inside the pocket tower window), the body classes `DESK_TOUCH_CLASS` and `DESK_POCKET_CLASS`, `POCKET_BODY_CLASS`, and the media queries `TOUCH_MQ` and `TOUCH_DESK_MQ`. |
 | `windows/desk/deskControlPanel` | `ControlPanel`, the Control Panel's window: the large icons the game picks from the four the package draws (`ControlIcon`), their names and tooltips, an object count, and a ✕. Each press goes to the game; `setLabel` renames an icon, such as "Sounds: Off". |
 | `windows/desk/deskWindowMenu` | `WindowMenu`, the menu a right-click on a title bar or a taskbar button opens (Restore, Minimize, Maximize, Close), with `windowMenuState` and `runWindowCommand`. |
 | `windows/desk/deskHelp` | `buildHelpWindow`, the Help window: the Player's Manual in a page frame under its own menu bar (a `MenuBarModel` the game gives, with `menus.render` for fresh check marks; Alt stays with the game's bar; `dispose` takes its page listeners off) and Contents, Back, Forward and Open in Browser, with `setNav` turning Back and Forward on and off. The game decides what the menus and buttons do and which page the frame shows. |
 | `windows/desk/deskGeometry` | Pure functions over plain numbers: `defaultLayout` (where each window opens the first time), `fitRect` (a saved place kept on a smaller screen), `resizedTo` (a resize held to its limits) and `parseLayout` (a saved layout read back safely), with `DESK_WINDOW_IDS`, the size limits and the layout constants. |
 | `windows/movableWindow` | `MovableWindow`, the drag by the title bar that every movable window uses, the desk's included. |
-| `styles/game/desk.css` | The look: every desk window, the taskbar, the Verticopolis menu, the tray, the window menu and the Control Panel's icons. Part of `styles.css`. |
+| `styles/game/desk.css` | The look: every desk window, the taskbar, the Start menu, the tray, the window menu and the Control Panel's icons. Part of `styles.css`. |
 | `styles/game/desk-pocket.css` | The desk on a touchscreen: the touch chrome and the pocket desk. Part of `styles.css`. |
 | `styles/game/desk-title.css` | The title screen on the desk: the splash as a window over the teal desk. Part of `styles.css`. |
+| `styles/game/desk-title-pocket.css` | The title screen on the pocket desk: the same window fitted to a phone, upright and sideways. Part of `styles.css`. |
 
-The taskbar, its Verticopolis menu and the tray are drawn here
+The taskbar, its Start menu and the tray are drawn here
 (`DeskTaskbar`); the game names the menu's items and decides what each press
 does. The Control Panel's window is drawn here too (`ControlPanel`); the game
 names its icons and decides what each one opens.
@@ -36,7 +37,7 @@ names its icons and decides what each one opens.
 flowchart LR
   subgraph Game["The game"]
     Controller["Desk controller<br/>(when the desk is up, saved places)"]
-    Items["Verticopolis menu items,<br/>tray actions"]
+    Items["Start menu items,<br/>tray actions"]
     Own["Its own windows<br/>(Map, Bulletin, Tools, Control Panel)"]
   end
   subgraph Package["@verticopolis/components"]
@@ -46,7 +47,7 @@ flowchart LR
     WM["WindowMenu"]
     Geo["deskGeometry"]
     Mover["MovableWindow"]
-    CSS["desk.css, desk-pocket.css,<br/>desk-title.css"]
+    CSS["desk.css, desk-pocket.css,<br/>desk-title.css, desk-title-pocket.css"]
   end
   Controller -->|"which desk"| Pocket
   Controller -->|"a button per window"| Taskbar
@@ -170,7 +171,7 @@ speaker.
 
 | Option | What it does |
 | --- | --- |
-| `items` | The Verticopolis menu, in order: each a `StartItem` (`id`, `label`), a null for a separator |
+| `items` | The Start menu, in order: each a `StartItem` (`id`, `label`), a null for a separator |
 | `shown` | Whether an item shows, asked each time the menu opens; a separator with nothing after it goes too |
 | `start` | Heard with an item's `id` when it is picked |
 | `task` | Heard with a window's `id` when its button is pressed |
@@ -225,8 +226,8 @@ pocket desk anywhere, and `any` the full desk on any screen at least
 tablet-wide.
 
 On a touchscreen (`body.desk-touch`) the taskbar and the menu rows are 44 px
-tall, each title-bar button has a 44 px touch area, and the Verticopolis
-menu opens just above the taller taskbar. When a page opts into a phone's
+tall, each title-bar button has a 44 px touch area, and the Start menu opens
+just above the taller taskbar. When a page opts into a phone's
 cutout area (`viewport-fit=cover` in its viewport meta), the desk area keeps
 in from the safe-area insets on every side and the taskbar pads its sides and
 foot, so no window or tool sits under a notch. On the pocket desk
@@ -245,7 +246,7 @@ what they hold, with the tower showing below; the Bulletin stops at a third of
 the desk and its log scrolls. A drag by the title bar slides any of them, or
 the Map, to another spot inside the desk. The taskbar switches between them. On an upright
 phone the seven Tools tabs share the strip's width, and the tools row scrolls
-sideways with no fade, so its last tool shows whole. The Verticopolis button shows
+sideways with no fade, so its last tool shows whole. The Start button shows
 its icon alone and each window's button its word alone. The gallery's Pocket
 desk page shows a sample one live, in a phone-shaped frame.
 
@@ -258,7 +259,7 @@ are the contract:
 | --- | --- |
 | `.desk-area` | The desk the windows sit on, above the taskbar |
 | `.desk-taskbar` | The 28 px bar along the bottom (`DeskTaskbar` draws it and everything in it) |
-| `.desk-start`, `.desk-start-menu`, `.desk-start-stripe`, `.desk-start-list` | The Verticopolis button and the menu it opens upward, with its stripe down the side and its `.mb-item` rows |
+| `.desk-start`, `.desk-start-menu`, `.desk-start-stripe`, `.desk-start-list` | The Start button and the menu it opens upward, with its stripe down the side and its `.mb-item` rows |
 | `.desk-tasks`, `.desk-task` (`.on` while in front) | One button per open window |
 | `.desk-tray`, `.desk-tray-display`, `.desk-tray-sound` (`.muted`), `.desk-tray-clock` | The tray: the Control Panel's monitor, the speaker and the clock |
 | `.desk-win-menu` | The window menu (`WindowMenu` draws it) |
@@ -269,7 +270,17 @@ are the contract:
 
 The title screen on the desk (`desk-title.css`) is keyed on
 `body.desk-title`: the splash sits in a window with a `.desk-title-bar` over
-the teal desk, with the taskbar below it.
+the teal desk, with the taskbar below it. `DeskTitle.show(true)` puts it on
+the pocket desk instead and adds `body.desk-title-pocket`
+(`DESK_TITLE_POCKET_CLASS`, `desk-title-pocket.css`): the window keeps its
+menu bar and fills the screen above the 44 px taskbar, under the browser's own
+bars. On an upright phone the poster fills its top and the buttons stack in
+the gray bar below (two by two on a short screen); held sideways, the buttons
+stand in a gray panel beside the poster. The poster takes the height the
+buttons leave and the premise line is hidden. On a screen too short even for
+that the window scrolls, so every button and the credit line can be reached.
+A second `show` switches between the
+two, as turning a tablet can.
 
 ## Cost
 

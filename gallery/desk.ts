@@ -6,7 +6,7 @@
  * it takes over a game's own windows. Every window moves by its title bar and
  * minimizes to the taskbar; the tower and Tools resize by their grips, the
  * tower maximizes, and a right-click on a title bar or a taskbar button opens
- * the window menu (`WindowMenu`). The taskbar, its Verticopolis menu and the
+ * the window menu (`WindowMenu`). The taskbar, its Start menu and the
  * tray are the package's `DeskTaskbar`; its clock holds at 9:15 AM here.
  * The Help window (`buildHelpWindow`) shows a sample manual in its frame,
  * under the manual's own menus and its Contents, Back and Forward.
