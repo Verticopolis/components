@@ -21,6 +21,13 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.3.1 (2026-11-24)
+
+- **patch**: `bars/topBar` is cheaper on a status pass again: the traffic meter, the speeds
+  and the buttons after them sit behind lit's `guard`, so a pass that changes
+  only the clock or the funds skips them with one comparison. 2.3.0 drew each
+  optional button as its own template, which made every pass slower than 2.2.0.
+
 ## 2.3.0 (2026-11-24)
 
 - **minor**: `windows/palette/paletteFit` fits the desktop Tools window's tools without a scrollbar:
