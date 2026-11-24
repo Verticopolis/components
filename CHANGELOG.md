@@ -21,6 +21,42 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.3.0 (2026-11-24)
+
+- **minor**: `windows/palette/paletteFit` fits the desktop Tools window's tools without a scrollbar:
+  `PaletteFit` tries compact rows, then two columns, then both, and fits again when the window's
+  height changes, the viewport crosses the desktop layout, a tool under a folded category starts or
+  stops showing, or the game calls `refit()` after tools show or hide.
+- **minor**: `windows/palette/paletteCollapse` draws the button on the Tools window's title bar that folds the
+  window into a strip (`PaletteCollapse`), keeps the choice under a key the game names, and opens the
+  window around a tool a guide points at.
+- **minor**: `windows/palette/paletteFolds` exports `PALETTE_FOLDED_CLASS`.
+- **minor**: `windows/bars/topBar`: every Information bar control but the speeds is
+  optional. An action left out of `TopBarActions` (`undo`, `redo`, `save`,
+  `mute`, `update`, `install`, `traffic`) draws no control, `TopBarView.traffic`
+  and the button flags are optional, and `brand: false` leaves out the badge.
+  A page that passes everything draws the bar as before.
+- **minor**: `DeskWindow.relabel()` names a window's Minimize and Maximize (or Restore) buttons after its label again, and `DeskManager.refresh()` calls it for each open window, so a renamed tower's buttons stop reading the old name.
+- **patch**: `desk-pocket.css`: the Bulletin opens across the top of the pocket desk at
+  the height of what it holds, up to a third of the desk, so the tower shows
+  below it, the way Tower Info and the Control Panel do.
+- **patch**: `desk-pocket.css`: the pocket desk's Bulletin, Tower Info and Control Panel
+  move by their title bars, as the Map already does; their places are no
+  longer `!important`, and the mover keeps them inside the desk.
+- **patch**: `desk-pocket.css`: on an upright phone the seven Tools tabs share the strip's
+  width instead of scrolling, and the tools row no longer fades at its edge, so
+  its last tool shows whole.
+- **patch**: The pocket desk's tool strip hides locked tools again. Its grid layout
+  outranked the palette's `.pal-item.locked` rule, so a tool above the
+  tower's star rating (such as the Wedding Hall at 4★) showed in the strip.
+- **patch**: `windows/menuBarTemplate`: a bar with `brand` now draws the app icon in its `.menubar-brand` span, as its
+  docs say, so a game no longer fills the span itself.
+- **patch**: The Tools window's section headers and category tabs hold their title alone. The template's
+  line breaks had left a space on each side of the title, which pushed each header's text one space
+  to the right of its fold arrow.
+- **patch**: `DeskManager` leaves a maximized small window full size when the app window maximizes behind it;
+  before, it stepped the window down below the app's menu bar at its old size.
+
 ## 2.2.0 (2026-11-21)
 
 - **minor**: `windows/alertCard` exports `AlertCard`, a modal card that holds the page
