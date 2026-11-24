@@ -57,6 +57,14 @@
   body.desk-title-pocket .menubar {
     top: calc(var(--title-y) + 29px);
   }
+  /* The Control Panel opens across the window under its menu bar, as tall as
+     its icons, the way the pocket desk opens it over a tower. */
+  body.desk-title-pocket #desk-win-control {
+    top: calc(var(--title-y) + var(--poster-top));
+    left: var(--title-x);
+    width: var(--title-w);
+    box-sizing: border-box;
+  }
   /* The logo starts below the Sponsor and Install buttons. */
   body.desk-title-pocket .splash-word {
     width: min(300px, 76vw);

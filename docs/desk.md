@@ -25,7 +25,8 @@ Start menu holds and does. The component gallery shows
 | `windows/movableWindow` | `MovableWindow`, the drag by the title bar that every movable window uses, the desk's included. |
 | `styles/game/desk.css` | The look: every desk window, the taskbar, the Start menu, the tray, the window menu and the Control Panel's icons. Part of `styles.css`. |
 | `styles/game/desk-pocket.css` | The desk on a touchscreen: the touch chrome and the pocket desk. Part of `styles.css`. |
-| `styles/game/desk-title.css` | The title screen on the desk: the splash as a window over the teal desk. Part of `styles.css`. |
+| `windows/desk/deskTitle` | `DeskTitle`, the title screen on the desk: the window's title bar and the taskbar around the page's splash, on a computer or (`show(true)`) the pocket desk. Given `controlPanel`, it also holds the Control Panel, opened by `openControl()` or the tray's monitor over the title window, so the Start menu can read the same over the title screen as over a tower. |
+| `styles/game/desk-title.css` | The title screen on the desk: the splash as a window over the teal desk, and where its Control Panel opens. Part of `styles.css`. |
 | `styles/game/desk-title-pocket.css` | The title screen on the pocket desk: the same window fitted to a phone, upright and sideways. Part of `styles.css`. |
 
 The taskbar, its Start menu and the tray are drawn here

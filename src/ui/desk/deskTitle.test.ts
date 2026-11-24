@@ -96,4 +96,61 @@ describe("DeskTitle", () => {
     expect(root.querySelector(".desk-title-bar img")!.getAttribute("src")).toBe("./favicon.png");
     title.hide();
   });
+
+  it("opens its Control Panel over the title screen from the page or the tray, under the Start menu, and closes it when it goes", () => {
+    const root = host();
+    const picked = vi.fn();
+    const title = new DeskTitle({
+      host: root,
+      title: "Sample",
+      taskbar: { items: [], task: vi.fn(), start: vi.fn() },
+      controlPanel: {
+        items: [{ icon: "display", label: "Display", hint: "Screen saver" }],
+        closeLabel: "Close",
+        picked,
+      },
+    });
+    const panel = title.control!;
+    title.openControl(); // off the desk: nothing to open it over
+    expect(panel.isOpen()).toBe(false);
+    title.show();
+    // Drawn closed, before the taskbar so the Start menu opens over it.
+    expect(panel.root.parentElement).toBe(root);
+    expect(panel.root.compareDocumentPosition(title.taskbar!.root) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(panel.isOpen()).toBe(false);
+    title.openControl();
+    expect(panel.isOpen()).toBe(true);
+    panel.root.querySelector<HTMLElement>('[data-control="display"]')!.click();
+    expect(picked).toHaveBeenCalledWith("display");
+    panel.close();
+    root.querySelector<HTMLElement>(".desk-tray-display")!.click();
+    expect(panel.isOpen()).toBe(true);
+    title.hide();
+    expect(root.contains(panel.root)).toBe(false);
+    title.show();
+    expect(panel.isOpen()).toBe(false);
+  });
+
+  it("has no Control Panel, and no tray monitor, without one", () => {
+    const root = host();
+    const title = new DeskTitle({ host: root, title: "Sample", taskbar: { items: [], task: vi.fn(), start: vi.fn() } });
+    title.show();
+    expect(title.control).toBeNull();
+    expect(root.querySelector(".desk-tray-display, .desk-control")).toBeNull();
+  });
+
+  it("leaves the tray's monitor to the page when it hears it", () => {
+    const root = host();
+    const heard = vi.fn();
+    const title = new DeskTitle({
+      host: root,
+      title: "Sample",
+      taskbar: { items: [], task: vi.fn(), start: vi.fn(), controlPanel: heard },
+      controlPanel: { items: [], closeLabel: "Close", picked: vi.fn() },
+    });
+    title.show();
+    root.querySelector<HTMLElement>(".desk-tray-display")!.click();
+    expect(heard).toHaveBeenCalledOnce();
+    expect(title.control!.isOpen()).toBe(false);
+  });
 });
