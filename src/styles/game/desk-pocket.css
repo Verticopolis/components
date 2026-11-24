@@ -5,9 +5,9 @@
    body.desk-pocket: phones and upright tablets. The tower window fills the
    desk with Info and Tools inside it, and the Map floats over the tower at
    the size it has on phones today (overview-map.css), so the minimap and
-   the tower always show together. The Bulletin opens over
-   the whole desk, and Tower Info and the Control Panel across its top at the
-   height of what they hold, the way Windows CE did; the taskbar switches
+   the tower always show together. The Bulletin, Tower Info and the Control
+   Panel open across the top of the desk at the height of what they hold, with
+   the tower showing below, the way Windows CE did; the taskbar switches
    between them.
    The game builds .desk-pocket-body inside the tower window and moves
    #topbar, #palette and #stage into it; the Map stays in #stage.
@@ -238,8 +238,10 @@
       display: none;
     }
 
-    /* Tools in one strip: a row of tabs and a row of tools, each with its
-       price beside it, faded at the edge where they scroll. */
+    /* Tools in one strip: a row of tabs that share the width, so all seven
+       show on a 360 px phone, and a row of tools, each with its price beside
+       it, that scrolls sideways. Nothing fades at the edge, so the last tool
+       shows whole. */
     .desk-pocket-body > #palette .palette-tabs {
       min-height: 0;
       padding: 2px 2px 0;
@@ -250,8 +252,16 @@
     .desk-pocket-body > #palette .pal-tab {
       height: 30px;
       min-height: 0;
-      padding: 0 10px;
-      font-size: 13px;
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 0 2px;
+      font-size: 11px;
+    }
+    /* "Commercial" needs a point less to fit beside the others under 380 px. */
+    @media (max-width: 379px) {
+      .desk-pocket-body > #palette .pal-tab {
+        font-size: 10px;
+      }
     }
     .desk-pocket-body > #palette .palette-scroll {
       height: 52px;
@@ -260,10 +270,6 @@
       overflow-y: hidden;
       align-items: center;
       padding: 3px;
-    }
-    .desk-pocket-body > #palette .palette-tabs,
-    .desk-pocket-body > #palette .palette-scroll {
-      mask-image: linear-gradient(to right, #000 82%, transparent);
     }
     .desk-pocket-body > #palette :is(.pal-pinned, .pal-groups, .pal-group.tab-active) {
       height: 46px;
@@ -369,23 +375,30 @@
     }
   }
 
-  /* Bulletin, Tower Info and the Control Panel open over the tower, full
-     width; the tower stays laid out under them. */
+  /* Bulletin, Tower Info and the Control Panel open across the top of the
+     desk, full width and as tall as what they hold, with the tower showing
+     below; a long list scrolls. The Bulletin stops at a third of the desk and
+     its log scrolls inside it. Their places are not !important: a drag by the
+     title bar writes an inline place, so the player can slide one out of the
+     way (the mover keeps it inside the desk). Their size stays the
+     stylesheet's, since a pocket window has no grip. */
   body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control).desk-win {
-    inset: 0 !important;
-    width: auto !important;
+    left: 0;
+    top: 0;
+    right: auto;
+    bottom: auto;
+    width: 100% !important;
     height: auto !important;
     max-width: none;
-    max-height: none;
+    max-height: 100%;
   }
   body.desk-pocket :is(#bulletin-win, #tower-win, #desk-win-control) > .desk-grip {
     display: none;
   }
-  /* Tower Info and the Control Panel are as tall as what they hold, across the
-     top of the desk, with the tower showing below; a long list scrolls. */
   body.desk-pocket :is(#tower-win, #desk-win-control).desk-win {
-    bottom: auto !important;
-    max-height: 100%;
     overflow-y: auto;
+  }
+  body.desk-pocket #bulletin-win.desk-win {
+    max-height: 33%;
   }
 }
