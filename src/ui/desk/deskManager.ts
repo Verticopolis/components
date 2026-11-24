@@ -334,7 +334,8 @@ export class DeskManager<Id extends string = DeskWindowId> {
     if (!bar) return;
     const top = bar.getBoundingClientRect().bottom - desk.getBoundingClientRect().top + 2;
     for (const [other, win] of this.wins) {
-      if (win.spec.layer !== "tool" || !win.spec.isOpen() || win.minimized) continue;
+      // A maximized small window already fills the desk, over the app window's menu bar on purpose.
+      if (win.spec.layer !== "tool" || !win.spec.isOpen() || win.minimized || win.maximized) continue;
       const r = win.rect();
       if (r.y >= top) continue;
       win.place(fitRect({ ...r, y: top }, desk.clientWidth, desk.clientHeight, win.spec.limits));
