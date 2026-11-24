@@ -97,6 +97,12 @@ describe("ToolPalette", () => {
     expect($("#pal-panel-commercial").dataset.group).toBe("Commercial");
   });
 
+  it("writes each section header and tab as its title alone, with no spaces around it", () => {
+    make().update(view());
+    expect($('#pal-panel-commercial > .pal-group-title[data-group="Commercial"]').textContent).toBe("Commercial");
+    expect($("#pal-tab-commercial").textContent).toBe("Commercial");
+  });
+
   it("hides a locked tool, a category with none unlocked and its tab, and the Modern band until one unlocks", () => {
     const p = make();
     p.update(view(1));
