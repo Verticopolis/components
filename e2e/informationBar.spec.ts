@@ -74,6 +74,21 @@ test("each button's press reaches the page, and the speed and the speaker show t
   await expect(page.locator("#sb-hint")).toBeHidden();
 });
 
+test("a page that passes only the speeds gets the meters and the speeds alone", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "one screen covers the drawing");
+  await openFrame(page, null);
+  await page.getByLabel(/Speeds only/).check();
+  await expect(page.locator("#g-bars-said")).toHaveText("Trimmed to the meters and the speeds.");
+  await expect(
+    page.locator("#topbar .brand, #traffic, #btn-undo, #btn-redo, #btn-save-top, #audio-toggle"),
+  ).toHaveCount(0);
+  await expect(page.locator("#speed button")).toHaveCount(4);
+  await page.getByRole("button", { name: "Fast speed" }).click();
+  await expect(page.locator('#speed [data-speed="3"]')).toHaveClass(/active/);
+  await page.getByLabel(/Speeds only/).uncheck();
+  await expect(page.locator("#btn-undo")).toHaveCount(1);
+});
+
 test("the gallery page shows the bars in a frame that follows the picked scheme", async ({ page }) => {
   // The page has no demos of its own to wait for, only the frame.
   await page.goto("/desktop/information-bar/");

@@ -43,6 +43,10 @@ import { SCHEME_BOOT } from "../../../site.mjs";
         background: linear-gradient(#3d5f9e, #9cb8de);
         box-shadow: var(--bevel-in);
       }
+      #g-bars-trim {
+        margin: 8px;
+        font-size: 12px;
+      }
       #g-bars-said {
         margin: 8px;
         font-size: 12px;
@@ -55,6 +59,7 @@ import { SCHEME_BOOT } from "../../../site.mjs";
       <div class="g-bars-stage"></div>
       <footer id="statusbar" class="statusbar"></footer>
     </div>
+    <div id="g-bars-trim"></div>
     <p id="g-bars-said" role="status"></p>
     <script>
       import { mountBars } from "../../../../gallery/bars";
