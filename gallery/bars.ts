@@ -41,6 +41,23 @@ const TRAFFIC: readonly TrafficReadout[] = [
 
 const SPEED_NAMES = ["Pause", "Slow", "Medium", "Fast"] as const;
 
+/** The sample tower's Information bar, which the pocket desk shows too. */
+export const SAMPLE_TOP_BAR: TopBarView = {
+  rating: "★★★☆☆",
+  date: "2nd WD/3Q/4th Year",
+  time: "Tue 08:45",
+  funds: "$1,284,500",
+  fundsNegative: false,
+  population: "2,418",
+  traffic: TRAFFIC[0],
+  speed: 1,
+  undoOff: false,
+  redoOff: true,
+  muted: false,
+  update: true,
+  install: true,
+};
+
 /** Draw both bars and their said line into the frame page's elements, and
  *  follow the scheme the gallery keeps when the visitor picks another. */
 export function mountBars(doc: Document = document): void {
@@ -52,21 +69,7 @@ export function mountBars(doc: Document = document): void {
   let trimmed = false;
   let traffic = 0;
   let said = "Press a button or the traffic meter.";
-  let view: TopBarView = {
-    rating: "★★★☆☆",
-    date: "2nd WD/3Q/4th Year",
-    time: "Tue 08:45",
-    funds: "$1,284,500",
-    fundsNegative: false,
-    population: "2,418",
-    traffic: TRAFFIC[0],
-    speed: 1,
-    undoOff: false,
-    redoOff: true,
-    muted: false,
-    update: true,
-    install: true,
-  };
+  let view: TopBarView = SAMPLE_TOP_BAR;
   const bar: StatusBarView = {
     hint: "",
     tool: html`<span class="ti-name">Office</span><span>$40,000</span><span>9 tiles wide</span>`,
@@ -121,7 +124,7 @@ export function mountBars(doc: Document = document): void {
 
 /** The gallery keeps the picked scheme in local storage; a pick on the page
  *  around the frame reaches the frame as a storage event. */
-function followScheme(doc: Document): void {
+export function followScheme(doc: Document): void {
   const view = doc.defaultView;
   if (!view) return;
   view.addEventListener("storage", (e) => {

@@ -444,7 +444,8 @@ each piece with the images in `e2e/__screenshots__`: the site's header and
 each menu of its menu bar open, the buttons, windows, wells, icons, the sound
 board, the sample menu bar closed and with each menu open, each message box,
 and the desk with its Verticopolis menu, its window menu and a maximized and
-a minimized window in every color scheme, plus the desk layouts, each tower
+a minimized window in every color scheme, the pocket desk on an upright phone
+in every color scheme and held sideways, plus the desk layouts, each tower
 scene, room sprite and people figure once, on a
 desktop and a phone screen. A change that moves a pixel fails the check, and
 the run keeps the diffs as an artifact.

@@ -11,10 +11,8 @@
  * the stand-in for the catalog a game hands the renderer. The overview map is
  * left out: it draws a running tower, and the gallery has none.
  */
-import { catalogFor } from "../src/tests/catalogFixture.js";
-import type { FacilityKind, RenderCatalog, RenderFacility } from "../lib/render/renderModel.js";
-import { bindViewWorld } from "../lib/presentation/viewWorld.js";
-import { bindViewKinds } from "../lib/presentation/viewKinds.js";
+import type { FacilityKind, RenderFacility } from "../lib/render/renderModel.js";
+import { towerFacts } from "./towerFacts.js";
 import type { DrawCtx } from "../lib/render/sprites.js";
 import { html, nothing, render, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
@@ -147,21 +145,6 @@ function sceneGrid(scenes: Scene[], facts: (kind: FacilityKind) => RenderFacilit
     return figure(canvas, scene.title, scene.caption, scene.manual ? manualLink(scene.manual) : undefined);
   });
   return html`<div class="g-scenes">${shown}</div>`;
-}
-
-/** The Modern render catalog, which holds every kind and variety the art
- *  draws, bound for the view the painters read. */
-function towerFacts(): { cat: RenderCatalog; facts: (kind: FacilityKind) => RenderFacility } {
-  const cat = catalogFor("modern");
-  bindViewWorld(cat.world);
-  bindViewKinds(cat);
-  const byKey = new Map(cat.facilities.map((f) => [f.key, f]));
-  const facts = (kind: FacilityKind): RenderFacility => {
-    const f = byKey.get(kind);
-    if (!f) throw new Error(`The gallery's catalog has no ${kind}.`);
-    return f;
-  };
-  return { cat, facts };
 }
 
 /** The sample bar. Its Alt keys are off, so Alt and a letter open the

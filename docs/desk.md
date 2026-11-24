@@ -246,7 +246,8 @@ the desk and its log scrolls. A drag by the title bar slides any of them, or
 the Map, to another spot inside the desk. The taskbar switches between them. On an upright
 phone the seven Tools tabs share the strip's width, and the tools row scrolls
 sideways with no fade, so its last tool shows whole. The Verticopolis button shows
-its icon alone and each window's button its word alone.
+its icon alone and each window's button its word alone. The gallery's Pocket
+desk page shows a sample one live, in a phone-shaped frame.
 
 ## The class contract
 
