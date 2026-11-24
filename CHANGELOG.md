@@ -21,6 +21,20 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.5.0 (2026-11-24)
+
+- **minor**: `windows/desk/deskTitle`: `DeskTitle` takes an optional `controlPanel` (the
+  `ControlPanel` options) and holds the desk's Control Panel over the title
+  screen, closed until `openControl()` or the tray's monitor opens it, with a
+  `control` getter for its labels. `desk-title.css` opens it in the middle of
+  the title window and `desk-title-pocket.css` across the window under its
+  menu bar; the menu bar's menus and the Start menu open over it. The desk
+  windows' chrome now applies under `body.desk-title` (and the touch chrome
+  under `body.desk-title-pocket`), so it wears the same title bar as on a tower.
+- **patch**: On a phone's title screen the menus and the Start menu open over a notice at the foot of the poster, so every item stays tappable while it shows.
+- **patch**: On a short sideways phone the title screen's sun stays under the tagline.
+- **patch**: On a phone's title screen, a notice (such as the one that says Continue goes back to a closed tower) shows at the foot of the poster, clear of the logo and the buttons.
+
 ## 2.4.0 (2026-11-24)
 
 - **minor**: `windows/desk/deskTaskbar`: the taskbar's Start button reads "Start" (it read "Verticopolis"), and its menu's accessible name is "Start", so the button reads apart from a window named Verticopolis.
