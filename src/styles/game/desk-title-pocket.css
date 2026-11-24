@@ -118,6 +118,14 @@
   body.desk-title-pocket #stage {
     container-type: normal;
   }
+  /* The rail draws over the title window (z-index 40); the menu bar and the
+     taskbar, with the menus and the Start menu they open, draw over it. */
+  body.desk-title.desk-title-pocket #toast-wrap {
+    z-index: 41;
+  }
+  body.desk-title.desk-title-pocket :is(.menubar, .desk-taskbar-title) {
+    z-index: 42;
+  }
   body.desk-title-pocket #toast-wrap > .toast {
     max-width: 100%;
   }
@@ -164,7 +172,9 @@
       right: calc(var(--panel-w) + 3px);
     }
     body.desk-title-pocket .splash-sun {
-      --sun: clamp(64px, calc(var(--poster-h) * 0.75 - 30px), 150px);
+      /* On a short poster the sun also stays under the tagline, whose foot
+         is about 42 px plus 0.31 of the poster's height down. */
+      --sun: clamp(36px, min(calc(var(--poster-h) * 0.75 - 30px), calc(var(--poster-h) * 1.37 - 140px)), 150px);
       top: calc(var(--poster-top) + var(--poster-h) - 24px);
       left: calc((100% - var(--panel-w)) / 2);
       width: var(--sun);
