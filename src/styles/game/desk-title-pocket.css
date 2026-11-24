@@ -101,6 +101,27 @@
     margin-top: 4px;
   }
 
+  /* A toast, such as the one that says Continue goes back to a closed tower,
+     sits at the foot of the poster, over the skyline, so it covers neither
+     the logo nor the buttons. */
+  body.desk-title-pocket #toast-wrap {
+    position: fixed;
+    top: auto;
+    right: calc(100vw - var(--title-x) - var(--title-w) + 14px);
+    bottom: calc(100dvh - var(--title-y) - var(--poster-top) - var(--poster-h) + 10px);
+    left: calc(var(--title-x) + 14px);
+    align-items: center;
+  }
+  /* A sideways phone sizes the Map card from #stage's container, which would
+     make #stage the box the rail is placed in. The title screen hides the
+     Map, so the container waits until a tower is up. */
+  body.desk-title-pocket #stage {
+    container-type: normal;
+  }
+  body.desk-title-pocket #toast-wrap > .toast {
+    max-width: 100%;
+  }
+
   /* ---- A short upright screen: the buttons two by two ---- */
   @media (orientation: portrait) and (max-height: 679px) {
     body.desk-title.desk-title-pocket {
@@ -157,6 +178,9 @@
       width: calc(100% - var(--panel-w) - 6px);
       transform: scaleY(0.3);
       transform-origin: 50% 100%;
+    }
+    body.desk-title-pocket #toast-wrap {
+      right: calc(100vw - var(--title-x) - var(--title-w) + var(--panel-w) + 14px);
     }
     body.desk-title-pocket .splash-install {
       right: calc(var(--panel-w) + 48px);
