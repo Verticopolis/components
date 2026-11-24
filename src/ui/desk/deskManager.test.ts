@@ -55,7 +55,12 @@ interface Rig {
 /** Every rig a test made, taken off the window after it. */
 const rigs: Rig[] = [];
 
-function rig(over: Partial<DeskManagerOptions<Id>> = {}, seed: Record<string, string> = {}, goalsHidden = false): Rig {
+function rig(
+  over: Partial<DeskManagerOptions<Id>> = {},
+  seed: Record<string, string> = {},
+  goalsHidden = false,
+  buildMax = false,
+): Rig {
   const desk = document.createElement("div");
   Object.defineProperties(desk, {
     clientWidth: { value: 1000, configurable: true },
@@ -86,7 +91,7 @@ function rig(over: Partial<DeskManagerOptions<Id>> = {}, seed: Record<string, st
     ...rest,
   });
   manager.add(slot("tower", { layer: "app", limits: { minW: 300, minH: 200 }, canMax: true }));
-  manager.add(slot("build", { limits: { minW: 100, minH: 100 } }));
+  manager.add(slot("build", { limits: { minW: 100, minH: 100 }, canMax: buildMax }));
   manager.add(
     slot("goals", { open: () => void (els.goals.hidden = false), close: () => void (els.goals.hidden = true) }),
   );
@@ -239,6 +244,21 @@ describe("DeskManager", () => {
     r.manager.get("tower")!.toggleMax();
     expect(r.els.build.style.top).toBe("8px");
     expect(r.els.goals.style.top).toBe("42px");
+  });
+
+  it("leaves a maximized small window full size when the app window maximizes over it", () => {
+    const bar = document.createElement("div");
+    vi.spyOn(bar, "getBoundingClientRect").mockReturnValue({ bottom: 50 } as DOMRect);
+    const r = rig({ chrome: (id) => (id === "tower" ? bar : null) }, {}, false, true);
+    vi.spyOn(r.desk, "getBoundingClientRect").mockReturnValue({ top: 10 } as DOMRect);
+    r.manager.start();
+    const build = r.manager.get("build")!;
+    build.toggleMax();
+    r.manager.get("tower")!.toggleMax();
+    expect([r.els.build.style.top, r.els.build.style.width, r.els.build.style.height]).toEqual(["0px", "100%", "100%"]);
+    r.manager.get("tower")!.toggleMax();
+    build.toggleMax();
+    expect(r.els.build.style.top).toBe("8px");
   });
 
   it("brings up a window the page opens its own way, and moves the focus off one it closes", async () => {
