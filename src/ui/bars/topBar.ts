@@ -1,5 +1,6 @@
 import { html, nothing, type TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map.js";
+import { guard } from "lit-html/directives/guard.js";
 import { iconTemplate, type IconName } from "../icons";
 import type { TrafficLevel } from "../../presentation/traffic";
 
@@ -25,10 +26,15 @@ import type { TrafficLevel } from "../../presentation/traffic";
  * `#btn-redo`, `#btn-save-top`, `#audio-toggle`, `#btn-update` and
  * `#btn-install`.
  *
- * Cost: the game renders the bar on each status pass, several times a second.
- * Lit compares every value with the one it drew last and writes only the ones
- * that changed, so an unchanged pass touches no DOM. Pass the same
- * {@link TopBarActions} object every time, so lit never rebinds a listener.
+ * Cost: the game renders the bar on each status pass, several times a second,
+ * and the time and the funds change on nearly every one. Lit compares every
+ * value with the one it drew last and writes only the ones that changed, so an
+ * unchanged pass touches no DOM. The traffic meter, the speeds and the
+ * buttons after them sit behind `guard`: a pass that leaves their fields
+ * as they were skips them with one comparison, so a pass costs the meters it
+ * changed. Pass the same {@link TopBarActions} object every time, so lit never
+ * rebinds a listener and the guards hold; which controls show is read from
+ * that object, so give it every action it will answer from the start.
  * The classes go through `classMap`, which leaves alone a class the game adds
  * itself (the Play button's nudge). The funds color is a plain attribute, so
  * lit writes it only when the sign of the funds changes.
@@ -188,6 +194,22 @@ function trafficTemplate(t: TrafficReadout, on: Handlers): TemplateResult {
   </div>`;
 }
 
+/** The four speed buttons, with `speed` pressed. */
+function speedButtons(speed: TopBarSpeed, on: Handlers): TemplateResult[] {
+  return SPEEDS.map(
+    (s, i) =>
+      html`<button
+        class=${classMap({ btn: true, active: speed === s.level })}
+        data-speed=${s.level}
+        title=${s.title}
+        aria-label=${s.label}
+        @click=${on.speed[i]}
+      >
+        ${ICON.speed[i]}
+      </button>`,
+  );
+}
+
 /** The buttons after the speeds, each drawn only when the page gave its action. */
 function moreButtons(view: TopBarView, actions: TopBarActions, on: Handlers): TemplateResult {
   return html`${
@@ -269,21 +291,12 @@ export function topBarTemplate(view: TopBarView, actions: TopBarActions): Templa
         <span class="label">POP</span>
         <span id="stat-pop" class="value">${view.population}</span>
       </div>
-      ${view.traffic && actions.traffic ? trafficTemplate(view.traffic, on) : nothing}
+      ${guard([view.traffic, on], () => (view.traffic && actions.traffic ? trafficTemplate(view.traffic, on) : nothing))}
     </div>
     <div id="speed">
-      ${SPEEDS.map(
-        (s, i) =>
-          html`<button
-            class=${classMap({ btn: true, active: view.speed === s.level })}
-            data-speed=${s.level}
-            title=${s.title}
-            aria-label=${s.label}
-            @click=${on.speed[i]}
-          >
-            ${ICON.speed[i]}
-          </button>`,
+      ${guard([view.speed, on], () => speedButtons(view.speed, on))}
+      ${guard([view.undoOff, view.redoOff, view.muted, view.update, view.install, on], () =>
+        moreButtons(view, actions, on),
       )}
-      ${moreButtons(view, actions, on)}
     </div>`;
 }
