@@ -19,6 +19,7 @@ import { html, nothing, type TemplateResult } from "lit-html";
 import { Directive, directive, type ElementPart } from "lit-html/directive.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 import { repeat } from "lit-html/directives/repeat.js";
+import { iconTemplate } from "./icons";
 
 /** A label with one underlined character, as a 1995 menu shows the key that
  *  picks it. `mnemonic` is the index of that character in `label`. */
@@ -250,10 +251,13 @@ function menuTemplate(menu: MenuModel, on: MenuBarHandlers): TemplateResult {
   </div>`;
 }
 
+/** The app icon a bar with `brand` draws at its left, made once. */
+const BRAND_ICON = iconTemplate("brand");
+
 /** The menu bar for `model`, with `on` bound to its titles and popups. */
 export function menuBarTemplate(model: MenuBarModel, on: MenuBarHandlers): TemplateResult {
   return html`<nav id=${ifDefined(model.id)} class=${classes("menubar", model.className)} aria-label=${model.label}>
-    ${model.brand ? html`<span class="menubar-brand" aria-hidden="true"></span>` : nothing}
+    ${model.brand ? html`<span class="menubar-brand" aria-hidden="true">${BRAND_ICON}</span>` : nothing}
     ${repeat(
       model.menus,
       (m) => m.id,

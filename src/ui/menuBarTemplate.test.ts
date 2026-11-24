@@ -77,6 +77,7 @@ describe("menuBarTemplate", () => {
     expect(nav.className).toBe("menubar extra");
     expect(nav.getAttribute("aria-label")).toBe("Game menu");
     expect(nav.firstElementChild!.matches("span.menubar-brand[aria-hidden='true']")).toBe(true);
+    expect(nav.firstElementChild!.querySelector("svg")?.getAttribute("data-icon")).toBe("brand");
 
     const title = $("mb-file");
     expect(title.matches("button.mb-title[type='button']")).toBe(true);
