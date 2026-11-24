@@ -11,7 +11,7 @@
  * Information bar, the tower's view and Tools in it. `desk-pocket.css` places
  * them by the game's element ids (`#topbar`, `#stage`, `#palette`), so this
  * page gives its own under the same ids: the page is the frame's alone, so
- * no other id can clash. The Bulletin opens over the whole desk. The taskbar
+ * no other id can clash. The Bulletin opens across the top of the desk. The taskbar
  * is the package's `DeskTaskbar`, and its clock holds at 9:15 AM.
  */
 import { html, render, type TemplateResult } from "lit-html";

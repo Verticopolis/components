@@ -40,7 +40,9 @@ test("the pocket desk held sideways puts Tools at the left of the tower", async 
   await expect(page).toHaveScreenshot("pocket-desk-sideways.png");
 });
 
-test("the tower fills the desk, and the Bulletin opens over it from the Window menu and closes", async ({ page }) => {
+test("the tower fills the desk, and the Bulletin opens across its top from the Window menu and closes", async ({
+  page,
+}) => {
   const frame = await openPage(page);
   const desk = await frame.locator("#desk").boundingBox();
   const tower = await frame.locator("#desk-win-tower").boundingBox();
@@ -52,7 +54,10 @@ test("the tower fills the desk, and the Bulletin opens over it from the Window m
   const bulletin = frame.locator("#bulletin-win");
   await expect(bulletin).toBeVisible();
   // Read both boxes together: the clicks may have scrolled the page.
-  expect(await bulletin.boundingBox()).toEqual(await frame.locator("#desk").boundingBox());
+  const [box, deskBox] = [await bulletin.boundingBox(), await frame.locator("#desk").boundingBox()];
+  // Full width across the top of the desk, at most a third of its height, so the tower shows below.
+  expect({ x: box!.x, y: box!.y, width: box!.width }).toEqual({ x: deskBox!.x, y: deskBox!.y, width: deskBox!.width });
+  expect(box!.height).toBeLessThanOrEqual(deskBox!.height / 3 + 1);
   await expect(frame.locator(".desk-task", { hasText: "Bulletin" })).toBeVisible();
 
   await frame.getByRole("button", { name: "Close Bulletin" }).click();
