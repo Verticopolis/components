@@ -21,6 +21,13 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.6.0 (2026-11-25)
+
+- **minor**: The title screen's main button on the desk and the pocket desk (`.splash-btn.primary` under `body.desk-title`)
+  wears the scheme's accent again, as it does away from the desk: amber in Classic, violet in Skyline and yellow
+  in High Contrast, with the default ring, bold text and a focus ring that shows on the color. The other
+  title buttons keep the scheme's plain face.
+
 ## 2.5.0 (2026-11-24)
 
 - **minor**: `windows/desk/deskTitle`: `DeskTitle` takes an optional `controlPanel` (the
