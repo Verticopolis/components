@@ -204,6 +204,13 @@ export class Tower3dView {
     this.orbit = homeOrbit(this.limits, FOV, this.camera.aspect);
   }
 
+  /** Turns the camera around the tower by `dTheta` and tilts it by `dPhi` (radians), as a drag would. */
+  orbitBy(dTheta: number, dPhi = 0): void {
+    this.orbit.theta += dTheta;
+    this.orbit.phi += dPhi;
+    clampOrbit(this.orbit, this.limits);
+  }
+
   /** The numbers the gate records. */
   stats(): Tower3dStats {
     const info = this.renderer.info;
