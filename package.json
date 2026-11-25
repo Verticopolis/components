@@ -21,6 +21,10 @@
       "types": "./lib/render/*.d.ts",
       "default": "./lib/render/*.js"
     },
+    "./render3d/*": {
+      "types": "./lib/render3d/*.d.ts",
+      "default": "./lib/render3d/*.js"
+    },
     "./presentation/*": {
       "types": "./lib/presentation/*.d.ts",
       "default": "./lib/presentation/*.js"
@@ -77,12 +81,14 @@
     "tone": "^15.1.22"
   },
   "dependencies": {
-    "fflate": "^0.8.3"
+    "fflate": "^0.8.3",
+    "three": "0.187.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.6.6",
+    "@types/three": "0.187.0",
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-lit": "^2.3.1",
