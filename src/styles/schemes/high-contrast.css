@@ -40,6 +40,14 @@
     background: #000000;
     color: #ffffff;
   }
+  /* The title screen's main button: yellow, as away from the desk. */
+  html[data-scheme="high_contrast"] body.desk-title .splash-btn.primary {
+    color: #000000;
+    background: #ffff00;
+  }
+  html[data-scheme="high_contrast"] body.desk-title .splash-btn.primary:focus-visible {
+    outline-color: #000000;
+  }
   html[data-scheme="high_contrast"] .btn.danger {
     color: var(--bad-ink);
   }

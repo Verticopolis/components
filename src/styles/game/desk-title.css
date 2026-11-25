@@ -172,9 +172,12 @@
   body.desk-title .splash-btn:active {
     box-shadow: var(--bevel-in);
   }
-  /* The default button wears the black ring, as Enter would press it. */
+  /* The default button wears the black ring, as Enter would press it, and
+     the scheme's accent (amber here), so it reads first (owner, 2026-11-25). */
   body.desk-title .splash-btn.primary {
     font-weight: 700;
+    color: var(--splash-plate-ink);
+    background: var(--splash-amber);
     outline: 1px solid var(--r-ink);
   }
   body.desk-title .splash-btn:focus-visible {
