@@ -459,9 +459,9 @@ is served from.
 ## Screenshot tests
 
 The Screenshots workflow drives the gallery site in Chromium and compares
-each piece with the images in `e2e/__screenshots__`, with a spec for each
-desktop page (`e2e/*.spec.ts`) and `gallery.spec.ts` for the Controls and
-tower pages, the site header and the docs pages: the site's header and each menu of its menu bar open,
+each piece with the images in `e2e/__screenshots__`, with a spec of its own
+for most desktop pages and dialogs (`e2e/*.spec.ts`) and `gallery.spec.ts`
+for the other controls, the tower pages and the docs pages: the site's header and each menu of its menu bar open,
 the buttons, windows, wells, icons, the sound board, the sample menu bar
 closed and with each menu open, each message box, the alert cards and update
 boxes, the Appearance dialog, the Open window and its focus rings, the title
