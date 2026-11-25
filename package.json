@@ -82,6 +82,7 @@
     "tone": "^15.1.22"
   },
   "dependencies": {
+    "@types/three": "0.187.0",
     "fflate": "^0.8.3",
     "three": "0.187.0"
   },
@@ -89,7 +90,6 @@
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.6.6",
-    "@types/three": "0.187.0",
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-lit": "^2.3.1",
