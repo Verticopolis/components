@@ -328,7 +328,13 @@ in this order at the top of every stylesheet:
   (`vc.windows.file-dialog` through `vc.windows.appearance`, declared in a
   third statement). A bundler can put the copy a module imports after the
   page's `styles.css`; in its own layer below `vc.page`, that copy cannot
-  undo what the game's layout, phone and scheme sheets change in it.
+  undo what the game's layout, phone and scheme sheets change in it. Every
+  `vc.page` rule beats these sheets, so the few of their rules that must
+  still beat a page-wide rule (their focus rings over a docs site's and High
+  Contrast's, the splash's buttons on the desk title screen, the screen
+  saver's missing outline, the sponsor label's color) sit in a `vc.page`
+  block at the end of the sheet. Each of those wins by its specificity, so a
+  late second copy of it changes nothing.
 - `vc.page`: the overview map (`overview-map.css`, `overview-map-views.css`,
   which lay out the game's stage around the map), the game's layout
   (the rest of `styles/game/*`), the color schemes and the standalone pages

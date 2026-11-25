@@ -303,10 +303,6 @@
   .splash-mute:hover {
     background: rgba(13, 13, 16, 0.55);
   }
-  .splash-mute:focus-visible {
-    outline: 2px solid var(--splash-amber);
-    outline-offset: 2px;
-  }
 
   /* The persistent splash install button (SPEC-pwa-install CAP-5): the quiet
    front door for getting Verticopolis onto the device. A labeled pill (download
@@ -339,10 +335,6 @@
   .splash-install:hover {
     background: rgba(13, 13, 16, 0.55);
   }
-  .splash-install:focus-visible {
-    outline: 2px solid var(--splash-amber);
-    outline-offset: 2px;
-  }
 
   /* The Sponsor link (owner, 2026-11-13): a quiet tip jar in the top-left corner,
    mirroring the install pill's box-art chrome so the corners read as one family.
@@ -363,7 +355,6 @@
     font-weight: 600;
     letter-spacing: 0.02em;
     line-height: 1;
-    color: var(--splash-cream);
     text-decoration: none;
     background: rgba(13, 13, 16, 0.35);
     border: 2px solid rgba(230, 220, 192, 0.55);
@@ -374,10 +365,6 @@
   }
   .splash-sponsor:hover {
     background: rgba(13, 13, 16, 0.55);
-  }
-  .splash-sponsor:focus-visible {
-    outline: 2px solid var(--splash-amber);
-    outline-offset: 2px;
   }
 
   .splash-btn {
@@ -396,11 +383,6 @@
   }
   .splash-btn:active {
     box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
-  }
-  /* The global navy focus ring is invisible on the night-sky splash. */
-  .splash-btn:focus-visible {
-    outline: 2px solid var(--splash-amber);
-    outline-offset: 2px;
   }
   .splash-btn.primary {
     background: var(--splash-amber);
@@ -475,6 +457,29 @@
   }
   #splash.splash--mobile .splash-btn {
     width: 100%;
+  }
+}
+
+/* The few rules that must still beat a page-wide rule (the focus rings of the
+   documentation sites and of High Contrast, the desk title screen's buttons)
+   stay in vc.page. Each wins by its specificity, so a second copy of this sheet
+   later on the page changes nothing (README, "Cascade layers"). */
+@layer vc.page {
+  /* The label stays cream under High Contrast's link color. */
+  .splash-sponsor {
+    color: var(--splash-cream);
+  }
+  /* The global navy focus ring is invisible on the night-sky splash. */
+  .splash-mute:focus-visible,
+  .splash-install:focus-visible,
+  .splash-sponsor:focus-visible,
+  .splash-btn:focus-visible {
+    outline: 2px solid var(--splash-amber);
+    outline-offset: 2px;
+  }
+  /* A splash that mounted for a phone keeps its tall buttons on the desk
+     title screen too. */
+  #splash.splash--mobile .splash-btn {
     min-height: 48px;
   }
 }
