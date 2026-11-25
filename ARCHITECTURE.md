@@ -31,8 +31,9 @@ flowchart TD
         Scene["render/excalibur/<br/>TowerEngine, the scene"]
         Render["render/<br/>geometry, sprites, overview map, atlas"]
         Pres["presentation/<br/>what each kind of room shows"]
-        Windows["windows/* (src/ui/)<br/>menu bar, windows, message boxes, desk<br/>(stable)"]
+        Windows["windows/* (src/ui/)<br/>menu bar, windows, message boxes, the desk,<br/>title screen, bars, Tools, Map, dialogs<br/>(stable)"]
         Styles["styles.css · styles/*<br/>(stable)"]
+        Astro["astro/<br/>docs title bar and title screen"]
         Audio["audio/<br/>Tone.js music and ambience"]
         InModel["model/<br/>input events, vacate wording, wellFormed<br/>(stable)"]
     end
@@ -44,6 +45,7 @@ flowchart TD
     Pres --> Model
     Ctl --> Windows
     Windows --> Styles
+    Astro --> Styles
     Scene -->|"hooks: tap, drag, hover, long press"| Ctl
     Scene -->|"ViewFocus"| Audio
     Ctl -->|"sfx(name)"| Audio
@@ -51,7 +53,9 @@ flowchart TD
 ```
 
 Excalibur, Tone.js and lit-html are peer dependencies. Only the sprite atlas
-bake uses the one direct dependency, fflate.
+bake uses the one direct dependency, fflate. The Astro components are the one
+piece a game does not run: a docs site (the player's manual, the engine docs,
+the component gallery) compiles them when it is built.
 
 ## The render model: the only way in
 
@@ -164,12 +168,28 @@ flowchart LR
 
 The Win95 chrome is DOM: the menu bar
 (`src/ui/menuBar.ts`), modal message boxes (`ModalShell` in `uiModal.ts`), movable windows
-(`movableWindow.ts`), the 1994 desk's windows, taskbar and touchscreen modes
-(`src/ui/desk/`, `deskPocket.ts` for phones and tablets), the overview
-map's input and the icons. Each window module imports the stylesheet it needs.
+(`movableWindow.ts`), the 1994 desk (`src/ui/desk/`: its window manager,
+windows, taskbar and Start menu, the Control Panel, the Help window that
+frames the player's manual, the title screen on the desk, and
+`deskPocket.ts` for phones and tablets), the title screen
+(`src/ui/titleScreen/`), the Information bar and status bar (`src/ui/bars/`),
+the Tools window (`src/ui/palette/`), the Map window
+(`overviewMapWindow.ts`), the Open and Save As windows (`src/ui/fileDialog/`),
+the screen savers (`src/ui/screenSaver/`), the Appearance dialog, the alert
+card and update box, the fireworks, the page not found desk, a docs site's
+menu bar (`siteMenu.ts`) and the icons. Each window module imports the stylesheet
+it needs. [docs/desk.md](docs/desk.md) has the desk's pieces and rules.
+
+A docs site's title bar and front page are Astro components in `src/astro/`
+(`TitleBar.astro`, `TitleScreen.astro`), compiled by the site when it is
+built. They put no DOM on the page at run time, so they are the one part of
+the package not drawn with lit-html.
 `styles.css` is the whole look in one import; every sheet sits in a cascade
 layer under `vc`, so a page's own unlayered rule always wins and the pieces
-keep their order. [docs/design-system.md](docs/design-system.md) is the
+keep their order. The sheets a window module imports itself sit in
+`vc.windows`, below the game's layout, so a second copy a bundler puts after
+`styles.css` cannot undo what the page layer changes in them; the README's
+Cascade layers section has the full order. [docs/design-system.md](docs/design-system.md) is the
 contract for the tokens, the components and the window grammar.
 
 The DOM is drawn with lit-html templates, and an element's events are bound
@@ -195,7 +215,8 @@ flowchart LR
 flowchart TD
     Tokens["vc.tokens<br/>retro-tokens.css"] --> Base["vc.base<br/>game/base.css"]
     Base --> Comp["vc.components<br/>button · window · well · kv · menu-bar"]
-    Comp --> Page["vc.page<br/>overview map · game/* layout ·<br/>color schemes · standalone pages · docs pages"]
+    Comp --> Win["vc.windows<br/>the sheets a window module imports:<br/>file dialog · splash · screen saver · appearance"]
+    Win --> Page["vc.page<br/>overview map · game/* layout ·<br/>color schemes · standalone pages · docs pages"]
     Page --> Unlayered["a page's own unlayered rules<br/>(always win)"]
 ```
 

@@ -398,15 +398,19 @@ built package from `lib/` the way a consumer would:
 | Alert cards and updates | `windows/alertCard`: a crash card with a status line and a wait card; `windows/updateBox` in the modal, after one version and after several |
 | Appearance | the Appearance dialog; OK dresses the site in the picked scheme |
 | Open and Save As | the Open, Save As and Previous Versions windows over a made-up folder that lives only on the page |
-| Title screen | the game's title screen in a frame, with sample buttons and every corner |
+| Title screen | the game's title screen in a frame, with sample buttons and every corner, and the same screen on the desk, where the main button wears the scheme's accent |
 | Map window | the tower map in a stage of its own over a made-up tower, with its views, legends, keys and taps |
 | Fireworks | `windows/fireworks` behind a sample welcome box; a still frame with reduced motion |
 | Page not found | `windows/notFoundDesk`, the 404 desk, in a frame |
-| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, and the taskbar with its Start menu and tray |
+| The desk | the 1994 desk live: desk windows that move, minimize, maximize and resize, the window menu, the Help window over a sample manual, and the taskbar with its Start menu and tray |
+| Pocket desk | the desk on an upright phone: the tower window filling the screen with the Information bar, the view and Tools inside it, and the Bulletin opening across its top |
+| Control Panel | the desk's Control Panel with its large icons; a press says which icon it was, and Sounds flips its name |
+| Screen saver | each of the five savers as a still frame, and the Screen Saver dialog with its preview |
 | Information bar and status bar | the game's top bar of meters and buttons and its status bar, in a frame over the game's desktop stylesheet |
 | Tools window | the game's Tools window with made-up tools: stars lock and unlock them, low funds dim them, and a category folds |
 | Where windows open | `defaultLayout` drawn to scale on three screen sizes |
 | Icons | every icon |
+| Docs sites | the Astro title bar and title screen a docs site builds with |
 | Sounds | each action effect, both music tracks and the ambience of each part of a tower |
 | Lobbies, Stairs and escalators, Elevators | hand-written slices of a tower: ground and sky lobbies one to three stories tall, halls of two heights, stairs, escalators and elevators |
 | Rooms | every room and variant at an hour it is open, with a share of its capacity inside so its furniture shows |
@@ -443,7 +447,9 @@ npm run gallery:build   # writes site/dist/
 ```
 
 The Gallery workflow builds it on every pull request that touches the source,
-the demos or the site, and publishes it to GitHub Pages from `main`
+the demos or the site (its "Build the gallery" check reports on every pull
+request, and skips the build when none of those changed), and publishes it to
+GitHub Pages from `main`
 (components.verticopolis.com). Each open pull request that changes the
 gallery gets a preview at `pr-preview/pr-<number>/` under the same site,
 linked in a comment on the pull request; the preview goes away with the next
@@ -453,15 +459,25 @@ is served from.
 ## Screenshot tests
 
 The Screenshots workflow drives the gallery site in Chromium and compares
-each piece with the images in `e2e/__screenshots__`: the site's header and
-each menu of its menu bar open, the buttons, windows, wells, icons, the sound
-board, the sample menu bar closed and with each menu open, each message box,
-and the desk with its Start menu, its window menu and a maximized and
-a minimized window in every color scheme, the pocket desk on an upright phone
-in every color scheme and held sideways, plus the desk layouts, each tower
-scene, room sprite and people figure once, on a
-desktop and a phone screen. A change that moves a pixel fails the check, and
-the run keeps the diffs as an artifact.
+each piece with the images in `e2e/__screenshots__`, one spec per gallery
+page (`e2e/*.spec.ts`): the site's header and each menu of its menu bar open,
+the buttons, windows, wells, icons, the sound board, the sample menu bar
+closed and with each menu open, each message box, the alert cards and update
+boxes, the Appearance dialog, the Open window and its focus rings, the title
+screen on its own and on the desk, the Information bar, the Tools window, the
+Map window, the Control Panel and the Screen Saver dialog, mostly in every
+color scheme; the desk with its Start menu, its window menu, the Help window
+and a maximized and a minimized window in every color scheme; the pocket
+desk on an upright phone in every color scheme and held sideways, clear of a
+notch's insets; the fireworks, the page not found desk and the docs sites'
+title bar and title screen; plus the desk layouts, each tower scene, room
+sprite and people figure once, on a desktop and a phone screen. Many specs
+also press the pieces and check what the page heard. A change that moves a
+pixel fails the check, and the run keeps the diffs as an artifact.
+
+"Compare the gallery screenshots" and "Build the gallery" are required checks
+on `main`. Each reports on every pull request and skips its work when the
+pull request changes nothing it reads.
 
 The baselines come only from the pinned Playwright image
 (`mcr.microsoft.com/playwright:v<version>-jammy`, the version in
