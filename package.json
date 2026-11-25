@@ -67,6 +67,7 @@
     "test": "vitest run",
     "build": "sh scripts/build-lib.sh",
     "prepack": "sh scripts/build-lib.sh",
+    "prepare": "sh scripts/build-lib.sh",
     "pack": "sh scripts/pack-components.sh",
     "gallery": "npm run --prefix site dev",
     "gallery:build": "npm run --prefix site build",
