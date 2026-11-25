@@ -19,6 +19,8 @@ on:
       - "src/**"
       - "gallery/**"
       - "site/**"
+      - "ARCHITECTURE.md"
+      - "docs/**"
       - "e2e/**"
       - "playwright.config.ts"
       - "scripts/build-lib.sh"
@@ -69,7 +71,7 @@ jobs:
           # Collect the list first, so a failing git diff fails the step
           # instead of skipping the work.
           changed="$(git diff --name-only --no-renames "$BASE...$HEAD")"
-          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|site/|e2e/|playwright\.config\.ts$|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/screenshots\.yml$|\.nvmrc$)'; then
+          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|site/|ARCHITECTURE\.md$|docs/|e2e/|playwright\.config\.ts$|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/screenshots\.yml$|\.nvmrc$)'; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "No file the screenshot comparison reads changed; skipping."

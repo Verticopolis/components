@@ -20,6 +20,8 @@ on:
       - "src/**"
       - "gallery/**"
       - "site/**"
+      - "ARCHITECTURE.md"
+      - "docs/**"
       - "scripts/build-lib.sh"
       - "vite.lib.config.ts"
       - "tsconfig*.json"
@@ -59,7 +61,7 @@ jobs:
           # Collect the list first, so a failing git diff fails the step
           # instead of skipping the work.
           changed="$(git diff --name-only --no-renames "$BASE...$HEAD")"
-          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|site/|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/gallery\.yml$|\.nvmrc$)'; then
+          if printf '%s\n' "$changed" | grep -qE '^(src/|gallery/|site/|ARCHITECTURE\.md$|docs/|scripts/build-lib\.sh$|vite\.lib\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.github/workflows/gallery\.yml$|\.nvmrc$)'; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "No file the gallery build reads changed; skipping."
