@@ -10,6 +10,7 @@ import { html, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { showFileDialog, type FileDialogCtx } from "../lib/ui/fileDialog/fileDialog.js";
 import type { FileEntry, FileKind, FileNote, FileWords } from "../lib/ui/fileDialog/fileDialogTypes.js";
+import type { LinkedPlaceCtx } from "../lib/ui/fileDialog/fileDialogPlaces.js";
 import { clockMark, oldTowerMark, towerMark } from "../lib/ui/fileDialog/fileIcons.js";
 import { showVersionsDialog, type FileVersion } from "../lib/ui/fileDialog/versionsDialog.js";
 import { ModalShell } from "../lib/ui/uiModal.js";
@@ -147,6 +148,27 @@ export function fileDialogDemo(): TemplateResult {
   const show = (mode: FileDialogCtx["mode"]) => {
     if (shell) showFileDialog(shell, ctx(mode));
   };
+  // A linked folder the browser wants the player's OK for again, as after a
+  // restart: the window opens on it and shows the Allow access… note.
+  const linked = (): LinkedPlaceCtx => ({
+    canLink: true,
+    state: () => ({ name: "Towers", access: "prompt" }),
+    files: () => [],
+    usage: () => ({ count: 0, bytes: 0 }),
+    onChange: () => () => {},
+    refresh: async () => {},
+    link: async () => "cancel",
+    allow: async () => ({ text: "This sample folder can't be opened.", kind: "info" }),
+    unlink: async () => null,
+    mirror: () => false,
+    setMirror: async () => null,
+    open: () => undefined,
+    save: async () => null,
+    duplicate: async () => null,
+  });
+  const showLinked = () => {
+    if (shell) showFileDialog(shell, { ...ctx("open"), linked: linked(), startIn: "linked" });
+  };
   const reset = () => {
     files = sample();
     changed();
@@ -155,6 +177,7 @@ export function fileDialogDemo(): TemplateResult {
       <button type="button" class="btn" @click=${() => show("open")}>Open…</button>
       <button type="button" class="btn" @click=${() => show("saveAs")}>Save As…</button>
       <button type="button" class="btn" @click=${() => versions("1")}>Previous Versions…</button>
+      <button type="button" class="btn" @click=${showLinked}>Open a linked folder…</button>
       <button type="button" class="btn" @click=${reset}>Put the sample folder back</button>
     </div>
     <dialog id="modal" ${ref(made)}></dialog>`;
