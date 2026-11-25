@@ -63,17 +63,28 @@ export function clampOrbit(o: Orbit, l: OrbitLimits): Orbit {
   return o;
 }
 
-/** The opening view: a front three-quarter view with the whole tower in frame. */
-export function homeOrbit(l: OrbitLimits, fovDeg: number, aspect: number): Orbit {
-  const w = l.maxX - l.minX;
-  const h = l.maxY - l.minY;
+/** A box to fit in frame, in world units. */
+export interface FrameBox {
+  readonly minX: number;
+  readonly maxX: number;
+  readonly minY: number;
+  readonly maxY: number;
+}
+
+/**
+ * The opening view: a front three-quarter view with `box` (the built tower;
+ * the whole lot when omitted) in frame at the camera's `aspect`.
+ */
+export function homeOrbit(l: OrbitLimits, fovDeg: number, aspect: number, box: FrameBox = l): Orbit {
+  const w = box.maxX - box.minX;
+  const h = box.maxY - box.minY;
   const half = (fovDeg * Math.PI) / 360;
   const fitH = h / 2 / Math.tan(half);
   const fitW = w / 2 / (Math.tan(half) * aspect);
   return clampOrbit(
     {
-      tx: (l.minX + l.maxX) / 2,
-      ty: (l.minY + l.maxY) / 2,
+      tx: (box.minX + box.maxX) / 2,
+      ty: (box.minY + box.maxY) / 2,
       tz: -3.5,
       theta: 0.5,
       phi: 1.32,
@@ -82,6 +93,18 @@ export function homeOrbit(l: OrbitLimits, fovDeg: number, aspect: number): Orbit
     l,
   );
 }
+
+/**
+ * The camera's far plane for an orbit: past the far side of the lot and its
+ * surroundings from wherever the camera stands, so a wide lot seen from far
+ * back (a phone held upright) never clips away.
+ */
+export function farPlane(o: Orbit, l: OrbitLimits): number {
+  return o.radius + (l.maxX - l.minX) + (l.maxY - l.minY) + SURROUNDINGS;
+}
+
+/** How far the lot's ground, street and neighbor blocks reach past the lot. */
+const SURROUNDINGS = 400;
 
 /** Wires pointer, wheel and key input on `el` to an orbit; returns the unhook. */
 export function attachOrbitInput(

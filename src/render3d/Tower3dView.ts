@@ -33,7 +33,16 @@ import { findCatalogFacility } from "../render/catalogIndex";
 import { lobbyHalls, type LobbyHalls } from "../render/lobbyHalls";
 import type { RenderCatalog, RenderRules, RenderSim, RenderUnit } from "../render/renderModel";
 import { BAND_FLOORS, buildBand, SLAB, STORY } from "./bandGeometry";
-import { attachOrbitInput, clampOrbit, homeOrbit, placeCamera, type Orbit, type OrbitLimits } from "./camera3d";
+import {
+  attachOrbitInput,
+  clampOrbit,
+  farPlane,
+  homeOrbit,
+  placeCamera,
+  type FrameBox,
+  type Orbit,
+  type OrbitLimits,
+} from "./camera3d";
 import { changedBands, towerBands, type TowerBands } from "./floorDigest";
 import { buildLot } from "./lot3d";
 import { Cars, Crowd } from "./movers3d";
@@ -106,6 +115,8 @@ export class Tower3dView {
   private revision = -1;
   private orbit: Orbit;
   private limits: OrbitLimits;
+  /** The built part of the tower, which the opening view fits in frame. */
+  private built: FrameBox;
   private tier: Tier;
   private variant: LookVariant;
   private time: TimeChoice;
@@ -147,6 +158,7 @@ export class Tower3dView {
     renderer.outputColorSpace = SRGBColorSpace;
     this.scene.add(this.tower, this.hemi, this.sun, this.sun.target, this.cars.mesh, this.crowd.mesh);
     this.limits = this.computeLimits();
+    this.built = this.limits;
     this.orbit = homeOrbit(this.limits, FOV, 1);
     this.syncStructure(true);
     this.detach = attachOrbitInput(
@@ -201,7 +213,7 @@ export class Tower3dView {
 
   /** Back to the opening view: front three-quarter, whole tower in frame. */
   resetView(): void {
-    this.orbit = homeOrbit(this.limits, FOV, this.camera.aspect);
+    this.orbit = homeOrbit(this.limits, FOV, this.camera.aspect, this.built);
   }
 
   /** Turns the camera around the tower by `dTheta` and tilts it by `dPhi` (radians), as a drag would. */
@@ -294,6 +306,12 @@ export class Tower3dView {
     if (swappedCrowd) this.scene.add(swappedCrowd);
     this.syncSky(resolveTime(this.time, sim.clock.hour));
     clampOrbit(this.orbit, this.limits);
+    const far = farPlane(this.orbit, this.limits);
+    if (Math.abs(far - this.camera.far) > far * 0.1) {
+      this.camera.far = far;
+      this.camera.near = Math.max(0.5, far / 4000);
+      this.camera.updateProjectionMatrix();
+    }
     placeCamera(this.camera, this.orbit);
     const fog = this.scene.fog as Fog | null;
     if (fog) {
@@ -314,6 +332,7 @@ export class Tower3dView {
     const basements = changed.some((b) => b <= 0) || !this.lot;
     this.layout = next;
     this.limits = this.computeLimits();
+    this.built = builtBox(sim.tower.units, this.limits);
     if (all) for (const b of changed) this.rebuild(b);
     else for (const b of changed) if (!this.dirty.includes(b)) this.dirty.push(b);
     if (basements) this.rebuildLot();
@@ -420,7 +439,7 @@ export class Tower3dView {
       minY,
       maxY,
       minRadius: STORY * 6,
-      maxRadius: reach * 4,
+      maxRadius: reach * 8,
       floorY: minY + 1,
     };
   }
@@ -430,6 +449,18 @@ export class Tower3dView {
       ? new MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0 })
       : new MeshLambertMaterial({ vertexColors: true });
   }
+}
+
+/** The span of built rooms, floor to roof; the lot when nothing is built. */
+function builtBox(units: ReadonlyArray<RenderUnit>, l: OrbitLimits): FrameBox {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (const u of units) {
+    minX = Math.min(minX, u.x);
+    maxX = Math.max(maxX, u.x + u.width);
+  }
+  if (!(maxX > minX)) return l;
+  return { minX: minX - 4, maxX: maxX + 4, minY: l.minY, maxY: l.maxY };
 }
 
 function disposeBand(b: BandMesh): void {

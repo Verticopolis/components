@@ -3,7 +3,7 @@ import { kindFacts, kindKeys } from "../tests/catalogKinds";
 import { testRules } from "../tests/renderRules";
 import { bandOf, BAND_FLOORS, buildBand, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
-import { clampOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
+import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
 import { changedBands, joinRuns, towerBands } from "./floorDigest";
 import { CONSTRUCTION, GUTTED, lookFor, LOOKS_3D } from "./looks3d";
 import { sample } from "./movers3d";
@@ -164,6 +164,22 @@ describe("camera3d", () => {
   it("keeps the camera above the bottom of the ground cut", () => {
     const o = clampOrbit({ tx: 50, ty: -10, tz: 0, theta: 0, phi: 1.7, radius: 300 }, limits);
     expect(orbitPosition(o)[1]).toBeGreaterThanOrEqual(limits.floorY - 1e-6);
+  });
+
+  it("keeps the whole scene inside the far plane from the opening view, even on a phone held upright", () => {
+    const wide: OrbitLimits = { ...limits, maxX: 600, maxRadius: 10_000 };
+    const home = homeOrbit(wide, 32, 0.5);
+    const [x, y, z] = orbitPosition(home);
+    // The far corner of the lot's surroundings, behind the tower and off to the side.
+    const corner = Math.hypot(x - (wide.maxX + 160), y - wide.minY, z + 100);
+    expect(farPlane(home, wide)).toBeGreaterThan(corner);
+  });
+
+  it("frames the built rooms, not the empty lot around them", () => {
+    const built = { minX: 10, maxX: 40, minY: 0, maxY: 60 };
+    const home = homeOrbit({ ...limits, maxX: 600 }, 32, 0.5, built);
+    expect(home.tx).toBe(25);
+    expect(home.radius).toBeLessThan(homeOrbit({ ...limits, maxX: 600 }, 32, 0.5).radius);
   });
 
   it("keeps zoom inside its limits", () => {
