@@ -2,7 +2,7 @@
    Part of the game's stylesheet: src/styles.css imports the parts in order. */
 
 /* ---- Modal (native <dialog>) ---- */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {
@@ -423,5 +423,20 @@
     color: var(--muted);
     margin: 6px 0 0;
     overflow-wrap: anywhere;
+  }
+
+  /* The Open and Save As window and Previous Versions (styles/game/file-dialog.css)
+     widen the modal they open in, and the window's Replace question drops the
+     modal's paragraph margin. These rules override the modal's own, so they sit
+     here with it: the window's sheet is in a lower layer (README, "Cascade
+     layers"). */
+  #modal:has(> .modal-box > .fd) {
+    max-width: min(660px, 96vw);
+  }
+  #modal:has(> .modal-box > .pv) {
+    max-width: min(480px, 96vw);
+  }
+  .modal-box .fd-ask-body p {
+    margin: 0;
   }
 }

@@ -9,7 +9,7 @@
    its tools from the bottom strip to a column on the left. Mirrored by GameApp.mobileMq, and
    the refusal-card opacity gate (end of this section) encodes its COMPLEMENT:
    a breakpoint change here must land in both. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {

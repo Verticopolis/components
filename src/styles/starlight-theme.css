@@ -10,7 +10,7 @@
    from retro-tokens.css. The skyline is splash-skyline.svg beside this file,
    which the build writes (scripts/gen-splash-skyline.ts). Load it through
    starlight.css, which puts the tokens first and the title bar after it. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-tokens.css";
 

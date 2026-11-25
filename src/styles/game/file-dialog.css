@@ -2,13 +2,11 @@
    a file list with columns on a sunken well, the File name and type rows
    beside their buttons, and the tools along the bottom. On a phone the rows
    become two-line cards and the columns' header goes (media-phone.css). */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance;
 
-@layer vc.page {
-  #modal:has(> .modal-box > .fd) {
-    max-width: min(660px, 96vw);
-  }
+@layer vc.windows.file-dialog {
   .fd {
     position: relative;
     display: flex;
@@ -303,8 +301,7 @@
   .fd-ask-icon {
     flex: none;
   }
-  .modal-box .fd-ask-body p {
-    margin: 0;
+  .fd-ask-body p {
     overflow-wrap: anywhere;
   }
   .fd-ask-buttons {
@@ -433,9 +430,6 @@
 
   /* Previous Versions (src/ui/fileDialog/versionsDialog.ts): one file's earlier versions
    in the same sunken list, newest first, with Open and Cancel under it. */
-  #modal:has(> .modal-box > .pv) {
-    max-width: min(480px, 96vw);
-  }
   .pv {
     display: flex;
     flex-direction: column;

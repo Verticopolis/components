@@ -14,7 +14,7 @@
    #topbar, #palette and #stage into it; the Map stays in #stage.
    Part of the game's stylesheet: src/styles.css imports it after desk.css. */
 
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 
 @layer vc.page {
   /* ---- Touch chrome ---- */

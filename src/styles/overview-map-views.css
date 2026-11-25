@@ -3,7 +3,7 @@
    the row, on a desktop and on a phone alike. On a phone and on any touch
    screen the select is 28 px tall, past the 24 px minimum target of WCAG
    2.5.8, so the row stays slim and the map keeps its size. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./overview-map.css";
 

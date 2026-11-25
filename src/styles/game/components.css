@@ -4,7 +4,7 @@
 /* ---- 3. COMPONENTS --------------------------------------------------- */
 
 /* .toast — a little gray alert box; the left edge carries the kind. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {

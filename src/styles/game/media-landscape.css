@@ -11,7 +11,7 @@
    src/main.ts still reads this tier as the phone tier. Orientation is the
    window's shape, so an on-screen keyboard or a split screen that makes the
    window taller than wide switches back to the portrait phone layout. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {
