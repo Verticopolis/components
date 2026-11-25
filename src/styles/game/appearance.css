@@ -2,10 +2,11 @@
    three small window pictures, one per scheme, each a radio button. The
    pictures carry their own scheme's colors here, so each one shows its scheme
    whatever scheme the page wears. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance;
 
-@layer vc.page {
+@layer vc.windows.appearance {
   .appearance-group {
     margin: 0 0 8px;
   }

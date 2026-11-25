@@ -313,7 +313,7 @@ Every rule the components ship sits in a cascade layer under `vc`, declared
 in this order at the top of every stylesheet:
 
 ```css
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 ```
 
 - `vc.tokens`: `retro-tokens.css`, the custom properties.
@@ -322,9 +322,22 @@ in this order at the top of every stylesheet:
   each in a layer of its own in that order (`vc.components.button` through
   `vc.components.menu-bar`, declared in a second statement), so a second copy
   of a sheet cannot change their order.
+- `vc.windows`: the game sheets a window module imports itself
+  (`game/file-dialog.css`, `game/splash.css`, `game/screen-saver.css`,
+  `game/appearance.css`), each in a layer of its own in that order
+  (`vc.windows.file-dialog` through `vc.windows.appearance`, declared in a
+  third statement). A bundler can put the copy a module imports after the
+  page's `styles.css`; in its own layer below `vc.page`, that copy cannot
+  undo what the game's layout, phone and scheme sheets change in it. Every
+  `vc.page` rule beats these sheets, so the few of their rules that must
+  still beat a page-wide rule (their focus rings over a docs site's and High
+  Contrast's, the splash's buttons on the desk title screen, the screen
+  saver's missing outline, the sponsor label's color) sit in a `vc.page`
+  block at the end of the sheet. Each of those wins by its specificity, so a
+  late second copy of it changes nothing.
 - `vc.page`: the overview map (`overview-map.css`, `overview-map-views.css`,
   which lay out the game's stage around the map), the game's layout
-  (`styles/game/*`), the color schemes and the standalone pages
+  (the rest of `styles/game/*`), the color schemes and the standalone pages
   (`retro-page.css`, `not-found.css`), in the order `styles.css` imports them,
   and the docs pages (`starlight-theme.css`, `title-bar.css`,
   `starlight-schemes.css`, then `starlight-menu-bar.css`).

@@ -4,7 +4,7 @@
    `starlight-menubar` class, first in its Header override. The header grows by
    the bar's height, and the title bar and the phone's menu button keep their
    size and move down under it. A site without the bar leaves this out. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./menu-bar.css";
 

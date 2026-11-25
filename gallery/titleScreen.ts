@@ -7,16 +7,12 @@ import { html, render, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { titleScreenTemplate, type TitleScreenView } from "../lib/ui/titleScreen/titleScreen.js";
 
-/** The title screen in a 16:10 frame, and a line that says what was pressed. */
-export function titleScreenDemo(): TemplateResult {
-  let root: HTMLElement | null = null;
-  let said = "Press a button.";
-  let muted = false;
-  const press = (what: string) => () => {
-    said = `${what} pressed.`;
-    draw();
-  };
-  const view = (): TitleScreenView => ({
+/** The sample title screen: its buttons and corners only call `say` with
+ *  what was pressed, and the mute corner calls `toggleMute`. The desk title
+ *  screen frame (deskTitle.ts) shows it too. */
+export function sampleTitleView(say: (what: string) => void, muted = false, toggleMute = () => {}): TitleScreenView {
+  const press = (what: string) => () => say(`${what} pressed.`);
+  return {
     premise: "Build a tower, one floor at a time, and keep its people happy.",
     actions: [
       { id: "continue", label: "Continue", icon: "play", look: "primary", onPress: press("Continue") },
@@ -30,11 +26,7 @@ export function titleScreenDemo(): TemplateResult {
     mute: {
       muted,
       label: "Mute sound",
-      onToggle: () => {
-        muted = !muted;
-        said = muted ? "Muted." : "Sound on.";
-        draw();
-      },
+      onToggle: toggleMute,
     },
     install: {
       label: "Install",
@@ -51,7 +43,23 @@ export function titleScreenDemo(): TemplateResult {
         press("Sponsor")();
       },
     },
-  });
+  };
+}
+
+/** The title screen in a 16:10 frame, and a line that says what was pressed. */
+export function titleScreenDemo(): TemplateResult {
+  let root: HTMLElement | null = null;
+  let said = "Press a button.";
+  let muted = false;
+  const say = (what: string) => {
+    said = what;
+    draw();
+  };
+  const toggleMute = () => {
+    muted = !muted;
+    say(muted ? "Muted." : "Sound on.");
+  };
+  const view = (): TitleScreenView => sampleTitleView(say, muted, toggleMute);
   function draw(): void {
     if (!root) return;
     render(

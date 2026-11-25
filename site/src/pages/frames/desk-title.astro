@@ -1,0 +1,26 @@
+---
+// The title screen on the desk (gallery/deskTitle.ts) over the game's whole
+// stylesheet, on a page of its own so the rest of the gallery keeps its own
+// styles. The Title screen page shows it in a frame; `?phone` shows a title
+// screen that first came up on a phone.
+import "../../../../lib/styles.css";
+import { SCHEME_BOOT } from "../../../site.mjs";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Title screen on the desk</title>
+    <script is:inline set:html={SCHEME_BOOT} />
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="desk-title"></div>
+    <script>
+      import { mountDeskTitle } from "../../../../gallery/deskTitle";
+      mountDeskTitle();
+    </script>
+  </body>
+</html>

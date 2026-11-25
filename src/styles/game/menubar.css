@@ -7,7 +7,7 @@
 /* ---- A submenu (File > Open Recent) ----
    It opens to the right of its title, its first item level with the title,
    and the arrow marks the title as one (src/ui/menuBar.ts). */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {

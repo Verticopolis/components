@@ -5,7 +5,7 @@
    first in the build: as two <link>s, Vite wrote the entry's own CSS ahead of
    the shared chunk and these rules lost to the ones they override. */
 
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-page.css";
 

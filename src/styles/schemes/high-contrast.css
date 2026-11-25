@@ -3,7 +3,7 @@
    greyed-out text #8a8a8a 6.6:1, non-text lines 3:1 or better),
    solid lines instead of bevels. Scoped to html[data-scheme="high_contrast"];
    style only. The system's forced-colors mode still wins. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {

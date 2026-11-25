@@ -4,6 +4,7 @@ description: The game's title screen, with its dusk skyline, wordmark, buttons a
 ---
 
 import Demo from "../../../components/Demo.astro";
+import Frame from "../../../components/Frame.astro";
 
 The title screen is the first thing a player sees: a dusk sky over an art-deco skyline, the VERTICO/POLIS wordmark and its tagline, a line about the game, a column of buttons, and the small print in the corners. It comes from `windows/titleScreen/titleScreen` and its stylesheet, `styles/game/splash.css`.
 
@@ -15,3 +16,7 @@ The title screen is the first thing a player sees: a dusk sky over an art-deco s
 In the game the screen fills the window. Here it sits in a frame, and each button and corner only says it was pressed.
 
 <Demo name="title-screen" />
+
+On a computer the game puts the title screen on [the desk](../desk/): the poster in a Verticopolis window, its buttons in a gray bar below, and the taskbar along the bottom. That comes from `windows/desk/deskTitle` and `styles/game/desk-title.css`. Here the frame is a screen over the game's whole stylesheet.
+
+<Frame page="desk-title" title="The title screen on the desk" />

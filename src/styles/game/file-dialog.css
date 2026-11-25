@@ -2,13 +2,11 @@
    a file list with columns on a sunken well, the File name and type rows
    beside their buttons, and the tools along the bottom. On a phone the rows
    become two-line cards and the columns' header goes (media-phone.css). */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance;
 
-@layer vc.page {
-  #modal:has(> .modal-box > .fd) {
-    max-width: min(660px, 96vw);
-  }
+@layer vc.windows.file-dialog {
   .fd {
     position: relative;
     display: flex;
@@ -100,7 +98,6 @@
   .fd-look-item:not([aria-disabled="true"]):focus-visible {
     background: var(--r-title);
     color: var(--r-title-fg);
-    outline: none;
   }
   .fd-look-item.selected .fd-look-sub,
   .fd-look-item:hover .fd-look-sub,
@@ -131,9 +128,6 @@
     gap: 8px;
     padding: 22px 12px;
     text-align: center;
-  }
-  .fd-allow p {
-    margin: 0;
   }
   .fd-usage {
     color: var(--muted);
@@ -183,7 +177,6 @@
     height: min(15em, 40vh);
     overflow-y: auto;
     padding: 2px;
-    outline: none;
   }
   .fd-rows:focus-visible .fd-row.selected {
     outline: 1px dotted var(--r-title-fg);
@@ -303,8 +296,7 @@
   .fd-ask-icon {
     flex: none;
   }
-  .modal-box .fd-ask-body p {
-    margin: 0;
+  .fd-ask-body p {
     overflow-wrap: anywhere;
   }
   .fd-ask-buttons {
@@ -433,9 +425,6 @@
 
   /* Previous Versions (src/ui/fileDialog/versionsDialog.ts): one file's earlier versions
    in the same sunken list, newest first, with Open and Cancel under it. */
-  #modal:has(> .modal-box > .pv) {
-    max-width: min(480px, 96vw);
-  }
   .pv {
     display: flex;
     flex-direction: column;
@@ -462,10 +451,6 @@
     background: var(--r-title);
     color: var(--r-title-fg);
   }
-  .pv-row:focus-visible {
-    outline: 1px dotted currentColor;
-    outline-offset: -2px;
-  }
   .pv-buttons {
     display: flex;
     justify-content: flex-end;
@@ -473,5 +458,24 @@
   }
   .pv-buttons .btn {
     min-width: 6.5em;
+  }
+}
+
+/* The few rules that must still beat a page-wide rule (the focus rings of the
+   documentation sites and of High Contrast, the desk title screen's buttons)
+   stay in vc.page. Each wins by its specificity, so a second copy of this sheet
+   later on the page changes nothing (README, "Cascade layers"). */
+@layer vc.page {
+  .fd-rows {
+    outline: none;
+  }
+  .fd-look-item.selected,
+  .fd-look-item:not([aria-disabled="true"]):hover,
+  .fd-look-item:not([aria-disabled="true"]):focus-visible {
+    outline: none;
+  }
+  .pv-row:focus-visible {
+    outline: 1px dotted currentColor;
+    outline-offset: -2px;
   }
 }

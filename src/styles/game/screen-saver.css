@@ -4,17 +4,17 @@
    sits at the bottom where a screen reader and a curious player find it.
    Part of the game's stylesheet: src/styles.css imports the parts in order. */
 
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance;
 
-@layer vc.page {
+@layer vc.windows.screen-saver {
   #screensaver {
     position: fixed;
     inset: 0;
     z-index: 2000; /* over the menus, the toasts and the title screen */
     background: #000;
     cursor: none;
-    outline: none;
   }
   #screensaver > canvas {
     display: block;
@@ -86,5 +86,15 @@
     margin: 0 0 8px;
     font-size: 12px;
     color: var(--muted);
+  }
+}
+
+/* The few rules that must still beat a page-wide rule (the focus rings of the
+   documentation sites and of High Contrast, the desk title screen's buttons)
+   stay in vc.page. Each wins by its specificity, so a second copy of this sheet
+   later on the page changes nothing (README, "Cascade layers"). */
+@layer vc.page {
+  #screensaver {
+    outline: none;
   }
 }

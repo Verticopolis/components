@@ -2,7 +2,7 @@
    Part of the game's stylesheet: src/styles.css imports the parts in order. */
 
 /* Getting-started coach card (a small window pinned over the stage). */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 
 @layer vc.page {

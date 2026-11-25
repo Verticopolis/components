@@ -6,7 +6,7 @@
    win over Starlight's. A customCss entry is too late, since Astro puts
    the CSS a page's scripts import (the menu bar's) ahead of customCss, so the
    site declares it in a <style> through Starlight's `head` option. */
-@layer vc.tokens, vc.base, vc.components, vc.page;
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
 @import "./retro-tokens.css";
 @import "./starlight-theme.css";
