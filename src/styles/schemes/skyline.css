@@ -46,6 +46,15 @@
   html[data-scheme="skyline"] body.desk-title .splash-btn:active {
     background: var(--sky-btn-down);
   }
+  /* The title screen's main button: violet, as away from the desk. */
+  html[data-scheme="skyline"] body.desk-title .splash-btn.primary {
+    color: #ffffff;
+    background: var(--sky-title);
+    text-shadow: 0 1px 0 #15123a;
+  }
+  html[data-scheme="skyline"] body.desk-title .splash-btn.primary:focus-visible {
+    outline-color: #ffffff;
+  }
 
   /* Title-bar buttons: violet, and the close button rose. */
   html[data-scheme="skyline"] .win-title > .btn,
