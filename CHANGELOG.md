@@ -21,6 +21,22 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.10.0 (2026-11-26)
+
+- **minor**: `windows/editorCard` draws the editor card's frame: `editorCardTemplate`
+  (a title bar with its ✕, a grid of facts, an optional block and action
+  rows), with `editorFact` and `editorActionRow` for the pieces.
+- **minor**: `windows/shaftEditor` draws a shaft's editor card: `shaftEditorTemplate`
+  shows its floors and an elevator's cars, capacity and stops, and carries
+  the buttons the game offers (`– Car`, `+ Car`, `Schedule…`, the extend
+  arrows, `Sell / Bulldoze`), each calling the game's `act` with its
+  action. The game words the stops line and names any offered button that
+  is off; `+ Car` is also off at the catalog's car limit.
+- **minor**: `windows/scenarioList` draws a game's scenarios: `scenarioLaunchTemplate`, a launch window of numbered rows with each scenario's brief, trophies and Play button (or why it is locked) and a foot the game fills; `scenarioRowsTemplate`, `scenarioDetailsTemplate`, `scenarioGoalsTemplate` and `scenarioTrophiesTemplate` for the pieces; and `scenarioBestText`. The trophies carry the best mark's name beside them.
+- **minor**: `windows/newScenario` is the New Scenario dialog for the shared modal (`newScenarioView`): a list box of scenarios beside the picked one's details, with Play and Cancel. The arrow keys, Home and End move the pick, Enter plays, and entries listed first (such as a sandbox) carry their own details.
+- **minor**: `styles/game/scenario-list.css` styles both in a new `vc.windows.scenario-list` layer, which `styles.css` imports and declares after `vc.windows.appearance`. Rows are at least 44 px tall on a touch screen.
+- **minor**: `windows/screenSaver/sceneBackdrop` runs a screen saver scene as a moving backdrop behind a page's windows (`startSceneBackdrop`), on a canvas the page draws with the new `scene-backdrop` class, sized to its box and rebuilt on resize; `backdropSize` gives the canvas size.
+
 ## 2.9.0 (2026-11-26)
 
 - **minor**: `windows/inspectCard` draws the inspect card: `unitCardTemplate`,
