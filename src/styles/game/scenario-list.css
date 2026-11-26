@@ -257,4 +257,12 @@
   #modal:has(> .modal-box > .sl-dialog) {
     max-width: min(800px, 96vw);
   }
+  /* The modal's own list indent and paragraph spacing would push the list box
+     off the edge and gap its rows. */
+  .modal-box .sl-listbox {
+    margin: 0;
+  }
+  .modal-box .sl-option {
+    margin: 0;
+  }
 }
