@@ -83,6 +83,15 @@ imports an internal module. The Map window's other modules
 are built from) name the overview map's internal types throughout, so they
 are internal for now, and a game that mounts the Map pins an exact version.
 
+The inspect card is two stable modules. `windows/inspectCard` draws the
+card bodies for a room, a shaft and a refused build from the facts the
+game's simulation reports (`InspectUnit`, `InspectTransport`), the
+catalog and the hour. The game words its own problem lines and passes
+them in. `windows/inspectPanel` shows a body in the game's `#inspector`
+element and pins it beside its facility (`InspectPanel`), and decides
+which card a pick shows, keeping a card the player closed from popping
+back up under the pointer (`InspectController`).
+
 The scene is internal for now: `TowerEngine`'s public members mix what a game
 calls with what the scene's own modules share, and its declarations name
 internal types (`render/scale`'s `FLOOR` and `TILE`, `PinchTracker`,

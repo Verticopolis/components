@@ -330,6 +330,9 @@ export interface RenderFacility {
   readonly floors: number;
   readonly population: number;
   readonly maxHousehold: number | null;
+  /** Whether a unit may carry its own household size (`residents`), which
+   *  then stands in for `population` on its card. */
+  readonly ownHousehold?: boolean;
   readonly attendance: number | null;
   readonly transport: boolean;
   readonly basement: boolean;
