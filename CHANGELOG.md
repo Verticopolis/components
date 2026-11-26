@@ -21,6 +21,20 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.8.0 (2026-11-26)
+
+- **minor**: `render/excalibur/TowerEngine`: the pointer hooks (`onTap`, `onActionDown`,
+  `onActionMove`, `onActionUp`, `onHover`, `onLongPress`, `onSecondary`) take a
+  `pick: PickAt` in place of the resolved `picked` entity. `pick()` hit-tests
+  the point the event landed on the first time it is called and returns the
+  same answer after, so a hover or a drag that never reads the entity no
+  longer walks every transport actor on each pointer move. `PickAt` is
+  exported beside `Picked`. Breaking: a hook that read `picked` calls `pick()`
+  instead.
+- **minor**: `pickEntityAt` and `Picked` moved from `render/excalibur/towerInputCamera`
+  to `render/excalibur/towerPick`, with `lazyPick` and `worldToCell`.
+  `TowerEngine` still exports `Picked` and its `pickEntityAt` method.
+
 ## 2.7.0 (2026-11-25)
 
 - **minor**: The game sheets that a module imports for itself (`styles/game/file-dialog.css`,
