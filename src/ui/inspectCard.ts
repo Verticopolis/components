@@ -108,12 +108,15 @@ export function unitCardTemplate(
   const title = u.subtype ?? f.name;
   // A label shows only as a real rename, never repeating the title.
   const labelIsExtra = u.label !== f.name && u.label !== title;
-  // Shops and venues count their live customers, closed or not; tenant rooms
-  // count the people inside against the room's full count.
+  // Shops and venues count their live customers, closed or not, when the
+  // simulation reports a count; tenant rooms count the people inside against
+  // the room's full count.
   const closed = TENANTED.has(u.state) && !catalogOpenAt(f, hour);
   let people: TemplateResult | typeof nothing = nothing;
   if ((isCommercialKind(u.kind) && f.population > 0) || f.attendance !== null) {
-    people = html`<div>Customers: ${u.customersIn ?? 0}${closed ? " (closed)" : ""}</div>`;
+    if (u.customersIn !== null) {
+      people = html`<div>Customers: ${u.customersIn}${closed ? " (closed)" : ""}</div>`;
+    }
   } else if (f.population) {
     const full = f.ownHousehold === true && u.residents != null ? u.residents : f.population;
     people = html`<div>Occupants: ${occupantsText(u.occupants, full, u.workersComing)}</div>`;

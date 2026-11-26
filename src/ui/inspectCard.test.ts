@@ -67,6 +67,18 @@ describe("the room card", () => {
     expect(lines(drawn(unitCardTemplate({ ...shop, state: "empty" }, classic, 3, [])))).toContain("Customers: 0");
   });
 
+  it("draws no customers line for a shop or spa with no reported count", () => {
+    const shop = { ...office, kind: "fastFood" as const, label: "Fast Food", customersIn: null };
+    expect(lines(drawn(unitCardTemplate(shop, classic, 10, [])))).toEqual([
+      "Fast Food",
+      "Floor 4",
+      "Status: occupied",
+      "Satisfaction: 73%",
+    ]);
+    const spa = { ...office, kind: "spa" as const, label: "Spa", customersIn: null };
+    expect(lines(drawn(unitCardTemplate(spa, modern, 10, []))).filter((l) => l.startsWith("Customers"))).toEqual([]);
+  });
+
   it("counts a venue's audience as customers", () => {
     const cinema = { ...office, kind: "cinema" as const, customersIn: 12 };
     expect(lines(drawn(unitCardTemplate(cinema, classic, 14, [])))).toContain("Customers: 12");
