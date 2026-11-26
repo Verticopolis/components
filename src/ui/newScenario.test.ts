@@ -69,17 +69,17 @@ describe("the New Scenario dialog", () => {
     const { dialog } = open(STATE);
     expect(text(dialog.querySelector("#modal-title, .win-title"))).toContain("New Scenario");
     const options = [...dialog.querySelectorAll('[role="option"]')];
-    expect(options.map((o) => text(o.querySelector(".sl-option-name")))).toEqual(["Sandbox", "One", "Two", "Three"]);
+    expect(options.map((o) => text(o.querySelector(".scn-option-name")))).toEqual(["Sandbox", "One", "Two", "Three"]);
     expect(options.map((o) => o.getAttribute("aria-selected"))).toEqual(["false", "true", "false", "false"]);
-    expect(dialog.querySelector('[role="listbox"]')?.getAttribute("aria-activedescendant")).toBe("sl-opt-one");
-    expect(text(dialog.querySelector(".sl-pane .sl-h"))).toBe("One");
-    expect(text(options[3]!.querySelector(".sl-note"))).toBe("Locked");
+    expect(dialog.querySelector('[role="listbox"]')?.getAttribute("aria-activedescendant")).toBe("scn-opt-one");
+    expect(text(dialog.querySelector(".scn-pane .scn-h"))).toBe("One");
+    expect(text(options[3]!.querySelector(".scn-note"))).toBe("Locked");
   });
 
   it("shows a lead entry's own details under its title", () => {
     const { dialog } = open({ ...STATE, picked: "free" });
-    expect(text(dialog.querySelector(".sl-pane .sl-h"))).toBe("Sandbox");
-    expect(text(dialog.querySelector(".sl-pane .lead-text"))).toBe("Build anything.");
+    expect(text(dialog.querySelector(".scn-pane .scn-h"))).toBe("Sandbox");
+    expect(text(dialog.querySelector(".scn-pane .lead-text"))).toBe("Build anything.");
   });
 
   it("picks on a press, plays on a double-click, and the buttons play and cancel", () => {
@@ -130,11 +130,11 @@ describe("the New Scenario dialog", () => {
     const on = { pick: vi.fn(), play: vi.fn(), cancel: vi.fn() };
     shell.open(newScenarioView(STATE, on));
     expect(scroll).toHaveBeenCalledTimes(1);
-    expect((scroll.mock.contexts[0] as Element).id).toBe("sl-opt-one");
+    expect((scroll.mock.contexts[0] as Element).id).toBe("scn-opt-one");
     expect(scroll).toHaveBeenLastCalledWith({ block: "nearest" });
     shell.render(newScenarioView({ ...STATE, picked: "three" }, on));
     expect(scroll).toHaveBeenCalledTimes(2);
-    expect((scroll.mock.contexts[1] as Element).id).toBe("sl-opt-three");
+    expect((scroll.mock.contexts[1] as Element).id).toBe("scn-opt-three");
     shell.render(newScenarioView({ ...STATE, picked: "three" }, on));
     expect(scroll).toHaveBeenCalledTimes(2);
   });

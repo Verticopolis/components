@@ -24,8 +24,8 @@ for (const scheme of SCHEMES) {
   test(`the launch window in ${scheme.label}`, async ({ page }) => {
     await openPage(page, PAGE);
     await pickScheme(page, scheme);
-    const launch = page.locator(".sl-launch");
-    await expect(launch.locator(".sl-row")).toHaveCount(3);
+    const launch = page.locator(".scn-launch");
+    await expect(launch.locator(".scn-row")).toHaveCount(3);
     await expect(launch).toHaveScreenshot(`${scheme.slug}-scenario-launch.png`);
   });
 
@@ -42,7 +42,7 @@ test("the dialog shows a locked scenario's reason and keeps Play off", async ({ 
   await openPage(page, PAGE);
   const box = await openDialog(page);
   await box.getByRole("option", { name: /Night Line/ }).click();
-  await expect(box.locator(".sl-lock")).toHaveText("Meet the Goal in Noon Rush to open it.");
+  await expect(box.locator(".scn-lock")).toHaveText("Meet the Goal in Noon Rush to open it.");
   await expect(box.getByRole("button", { name: "Play", exact: true })).toBeDisabled();
   await expect(box.locator(".modal-box")).toHaveScreenshot("new-scenario-locked.png");
 });
@@ -54,7 +54,7 @@ test("the arrow keys move the pick and Enter plays it", async ({ page }) => {
   await list.focus();
   await page.keyboard.press("Home");
   await expect(box.getByRole("option", { selected: true })).toContainText("Sandbox");
-  await expect(box.locator(".sl-pane .sl-h")).toHaveText("Sandbox");
+  await expect(box.locator(".scn-pane .scn-h")).toHaveText("Sandbox");
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowDown");
   await expect(box.getByRole("option", { selected: true })).toContainText("Noon Rush");

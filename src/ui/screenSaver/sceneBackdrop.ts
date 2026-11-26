@@ -37,7 +37,8 @@ export function backdropSize(cssW: number, cssH: number, win: Pick<Window, "inne
 
 /** Run a scene on `canvas`, sized to the canvas's CSS box, and build it
  *  again at the new size after the window is resized (once per frame, however
- *  many resize events a drag sends). Returns a stop that ends the motion and
+ *  many resize events a drag sends). A canvas not yet on the page is built
+ *  on the next frame, so a template's `ref` may start it. Returns a stop that ends the motion and
  *  the listener; a resize after the canvas has left the page stops it too. */
 export function startSceneBackdrop(
   canvas: HTMLCanvasElement,
@@ -68,7 +69,10 @@ export function startSceneBackdrop(
     if (!canvas.isConnected) return stop();
     if (queued === 0) queued = win.requestAnimationFrame(rebuild);
   }
-  start();
+  // A template's ref hands the canvas over before it is on the page, when it
+  // has no size yet: build on the next frame, once it is laid out.
+  if (canvas.isConnected) start();
+  else queued = win.requestAnimationFrame(rebuild);
   win.addEventListener("resize", resized);
   return stop;
 }

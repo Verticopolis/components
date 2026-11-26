@@ -103,4 +103,18 @@ describe("the backdrop", () => {
     expect(makeScene).toHaveBeenCalledTimes(1);
     expect(off).toHaveBeenCalledWith("resize", expect.any(Function));
   });
+  it("waits a frame for a canvas not yet on the page, then builds it at its laid-out size", () => {
+    const size = { w: 0, h: 0 };
+    const canvas = canvasOf(size);
+    canvas.remove();
+    const makeScene = vi.fn(scene);
+    startSceneBackdrop(canvas, { makeScene, still: true });
+    expect(makeScene).not.toHaveBeenCalled();
+    document.body.append(canvas);
+    size.w = 400;
+    size.h = 200;
+    runFrames();
+    expect(makeScene).toHaveBeenCalledOnce();
+    expect(makeScene).toHaveBeenCalledWith(100, 50);
+  });
 });

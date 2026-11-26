@@ -53,7 +53,7 @@ export interface NewScenarioActions {
 }
 
 /** The option's element id, for the list's active descendant. */
-const optionId = (id: string) => `sl-opt-${id}`;
+const optionId = (id: string) => `scn-opt-${id}`;
 
 /** Whether the picked entry can be played: a lead, or an open scenario. */
 export function newScenarioCanPlay(state: NewScenario): boolean {
@@ -100,7 +100,7 @@ function option(
 ): TemplateResult {
   return html`<li
     id=${optionId(id)}
-    class=${picked ? "sl-option selected" : "sl-option"}
+    class=${picked ? "scn-option selected" : "scn-option"}
     role="option"
     aria-selected=${picked ? "true" : "false"}
     ${ref(picked ? scrollNear : leave)}
@@ -110,7 +110,7 @@ function option(
       if (playable) on.play();
     }}
   >
-    <span class="sl-option-name">${title}</span>${side}
+    <span class="scn-option-name">${title}</span>${side}
   </li>`;
 }
 
@@ -122,7 +122,7 @@ export function newScenarioView(state: NewScenario, on: NewScenarioActions): Mod
   const entryPicked = state.entries.find((e) => e.id === state.picked);
   let details: TemplateResult | typeof nothing = nothing;
   if (leadPicked)
-    details = html`<div class="sl-details"><h3 class="sl-h">${leadPicked.title}</h3>${leadPicked.details}</div>`;
+    details = html`<div class="scn-details"><h3 class="scn-h">${leadPicked.title}</h3>${leadPicked.details}</div>`;
   else if (entryPicked) details = scenarioDetailsTemplate(entryPicked);
   const keys = (ev: KeyboardEvent) => {
     if (ev.key === "Enter") {
@@ -138,9 +138,9 @@ export function newScenarioView(state: NewScenario, on: NewScenarioActions): Mod
   const active = ids(state).includes(state.picked) ? optionId(state.picked) : nothing;
   return {
     title: html`${iconTemplate(state.icon ?? "folder", { size: 16 })}${state.title ?? "New Scenario"}`,
-    body: html`<div class="sl-dialog">
+    body: html`<div class="scn-dialog">
         <ul
-          class="sl-listbox well"
+          class="scn-listbox well"
           role="listbox"
           aria-label="Scenarios"
           tabindex="0"
@@ -148,20 +148,20 @@ export function newScenarioView(state: NewScenario, on: NewScenarioActions): Mod
           @keydown=${keys}
         >
           ${lead.map((l) =>
-            option(l.id, l.title, html`<span class="sl-note">${l.note}</span>`, l.id === state.picked, true, on),
+            option(l.id, l.title, html`<span class="scn-note">${l.note}</span>`, l.id === state.picked, true, on),
           )}
           ${state.entries.map((e) =>
             option(
               e.id,
               e.title,
-              e.locked === null ? scenarioTrophiesTemplate(e) : html`<span class="sl-note">Locked</span>`,
+              e.locked === null ? scenarioTrophiesTemplate(e) : html`<span class="scn-note">Locked</span>`,
               e.id === state.picked,
               e.locked === null,
               on,
             ),
           )}
         </ul>
-        <div class="sl-pane">${details}</div>
+        <div class="scn-pane">${details}</div>
       </div>
       <div class="modal-actions modal-footer">
         <button type="button" class="btn primary" data-act="play" ?disabled=${!canPlay} @click=${on.play}>

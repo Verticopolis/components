@@ -72,25 +72,25 @@ export function scenarioBestText(entry: Pick<ScenarioEntry, "best" | "locked">):
  *  name beside them so the result never rests on color alone. */
 export function scenarioTrophiesTemplate(entry: Pick<ScenarioEntry, "best" | "locked">): TemplateResult {
   const word = entry.best === 0 ? "Not won yet" : SCENARIO_TIER_NAMES[entry.best - 1];
-  return html`<span class="sl-trophies" role="img" aria-label=${scenarioBestText(entry)}
-    ><span class="sl-trophy-row" aria-hidden="true"
+  return html`<span class="scn-trophies" role="img" aria-label=${scenarioBestText(entry)}
+    ><span class="scn-trophy-row" aria-hidden="true"
       >${SCENARIO_TIER_NAMES.map(
         (name, i) =>
-          html`<span class=${entry.best > i ? "sl-trophy on" : "sl-trophy"} title=${name}
+          html`<span class=${entry.best > i ? "scn-trophy on" : "scn-trophy"} title=${name}
             >${iconTemplate("trophy", { size: 16 })}</span
           >`,
       )}</span
-    ><span class="sl-trophy-word" aria-hidden="true">${word}</span></span
+    ><span class="scn-trophy-word" aria-hidden="true">${word}</span></span
   >`;
 }
 
 /** The goals as a table: each goal's name, then its Goal, Better and Best
  *  marks, with a tick on each one the best run reached. */
 export function scenarioGoalsTemplate(goals: readonly ScenarioGoal[]): TemplateResult {
-  return html`<table class="sl-goals">
+  return html`<table class="scn-goals">
     <thead>
       <tr>
-        <th scope="col"><span class="sl-hidden">Goal</span></th>
+        <th scope="col"><span class="scn-hidden">Goal</span></th>
         ${SCENARIO_TIER_NAMES.map((n) => html`<th scope="col">${n}</th>`)}
       </tr>
     </thead>
@@ -103,8 +103,8 @@ export function scenarioGoalsTemplate(goals: readonly ScenarioGoal[]): TemplateR
               const m = g.marks[i];
               if (!m) return html`<td></td>`;
               return html`<td class=${m.earned ? "earned" : nothing}>
-                <span class="sl-tick" aria-hidden="true">${m.earned ? "✓" : ""}</span>${m.text}${
-                  m.earned ? html`<span class="sl-hidden"> (reached)</span>` : nothing
+                <span class="scn-tick" aria-hidden="true">${m.earned ? "✓" : ""}</span>${m.text}${
+                  m.earned ? html`<span class="scn-hidden"> (reached)</span>` : nothing
                 }
               </td>`;
             })}
@@ -117,21 +117,21 @@ export function scenarioGoalsTemplate(goals: readonly ScenarioGoal[]): TemplateR
 /** A scenario's details: its title, facts and best result, then the
  *  situation and the goals, or why it is not open yet. */
 export function scenarioDetailsTemplate(entry: ScenarioEntry): TemplateResult {
-  return html`<div class="sl-details">
-    <h3 class="sl-h">${entry.title}</h3>
-    <dl class="sl-facts">
+  return html`<div class="scn-details">
+    <h3 class="scn-h">${entry.title}</h3>
+    <dl class="scn-facts">
       ${entry.facts.map((f) => html`<dt>${f.label}</dt><dd>${f.value}</dd>`)}
       <dt>Result</dt>
       <dd>${entry.locked === null ? scenarioTrophiesTemplate(entry) : "Locked"}</dd>
     </dl>
     ${
       entry.locked !== null
-        ? html`<p class="sl-lock">${entry.locked}</p>`
-        : html`<fieldset class="sl-group">
+        ? html`<p class="scn-lock">${entry.locked}</p>`
+        : html`<fieldset class="scn-group">
             <legend>Situation</legend>
             <p>${entry.brief}</p>
           </fieldset>
-          <fieldset class="sl-group">
+          <fieldset class="scn-group">
             <legend>Goals</legend>
             ${scenarioGoalsTemplate(entry.goals)}
           </fieldset>`
@@ -147,19 +147,19 @@ export interface ScenarioRowsActions {
 
 function row(entry: ScenarioEntry, n: number, on: ScenarioRowsActions): TemplateResult {
   const locked = entry.locked !== null;
-  return html`<li class=${locked ? "sl-row locked" : "sl-row"}>
-    <span class="sl-num" aria-hidden="true">${n}</span>
-    <div class="sl-main">
-      <div class="sl-head">
-        <b class="sl-title">${entry.title}</b>
-        <span class="sl-meta">${entry.facts.map((f) => f.value).join(" · ")}</span>
+  return html`<li class=${locked ? "scn-row locked" : "scn-row"}>
+    <span class="scn-num" aria-hidden="true">${n}</span>
+    <div class="scn-main">
+      <div class="scn-head">
+        <b class="scn-title">${entry.title}</b>
+        <span class="scn-meta">${entry.facts.map((f) => f.value).join(" · ")}</span>
       </div>
-      <p class="sl-brief">${locked ? entry.locked : entry.brief}</p>
+      <p class="scn-brief">${locked ? entry.locked : entry.brief}</p>
     </div>
-    <div class="sl-side">
+    <div class="scn-side">
       ${
         locked
-          ? html`<span class="sl-locked">Locked</span>`
+          ? html`<span class="scn-locked">Locked</span>`
           : html`${scenarioTrophiesTemplate(entry)}<button
               type="button"
               class="btn primary"
@@ -176,7 +176,7 @@ function row(entry: ScenarioEntry, n: number, on: ScenarioRowsActions): Template
 /** The scenarios as numbered rows on a well, each with its brief, its
  *  trophies and a Play button, or why it is not open yet. */
 export function scenarioRowsTemplate(entries: readonly ScenarioEntry[], on: ScenarioRowsActions): TemplateResult {
-  return html`<ol class="sl-rows well">
+  return html`<ol class="scn-rows well">
     ${entries.map((e, i) => row(e, i + 1, on))}
   </ol>`;
 }
@@ -197,14 +197,14 @@ export interface ScenarioLaunch {
 /** The launch window: one large window with a heading, the numbered rows
  *  and the caller's foot. The caller places it (over a bare desk, say). */
 export function scenarioLaunchTemplate(launch: ScenarioLaunch, on: ScenarioRowsActions): TemplateResult {
-  return html`<section class="win sl-launch" aria-labelledby="sl-launch-title">
+  return html`<section class="win scn-launch" aria-labelledby="scn-launch-title">
     <div class="win-title">
-      ${launch.icon ? iconTemplate(launch.icon, { size: 16 }) : nothing}<span id="sl-launch-title">${launch.title}</span>
+      ${launch.icon ? iconTemplate(launch.icon, { size: 16 }) : nothing}<span id="scn-launch-title">${launch.title}</span>
     </div>
-    <div class="sl-launch-body">
-      <h2 class="sl-launch-h">${launch.heading}</h2>
+    <div class="scn-launch-body">
+      <h2 class="scn-launch-h">${launch.heading}</h2>
       ${scenarioRowsTemplate(launch.entries, on)}
-      ${launch.foot ? html`<div class="sl-foot">${launch.foot}</div>` : nothing}
+      ${launch.foot ? html`<div class="scn-foot">${launch.foot}</div>` : nothing}
     </div>
   </section>`;
 }

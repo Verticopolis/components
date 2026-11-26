@@ -53,17 +53,17 @@ describe("the trophies", () => {
   it("lights one trophy per mark reached and puts the best mark's name beside them", () => {
     const el = holder();
     render(scenarioTrophiesTemplate(OPEN), el);
-    expect(el.querySelectorAll(".sl-trophy")).toHaveLength(3);
-    expect(el.querySelectorAll(".sl-trophy.on")).toHaveLength(2);
-    expect(text(el.querySelector(".sl-trophy-word"))).toBe("Better");
-    expect(el.querySelector(".sl-trophies")?.getAttribute("aria-label")).toBe("Best result: Better");
+    expect(el.querySelectorAll(".scn-trophy")).toHaveLength(3);
+    expect(el.querySelectorAll(".scn-trophy.on")).toHaveLength(2);
+    expect(text(el.querySelector(".scn-trophy-word"))).toBe("Better");
+    expect(el.querySelector(".scn-trophies")?.getAttribute("aria-label")).toBe("Best result: Better");
   });
 
   it("lights none before a win and says so", () => {
     const el = holder();
     render(scenarioTrophiesTemplate(FRESH), el);
-    expect(el.querySelectorAll(".sl-trophy.on")).toHaveLength(0);
-    expect(text(el.querySelector(".sl-trophy-word"))).toBe("Not won yet");
+    expect(el.querySelectorAll(".scn-trophy.on")).toHaveLength(0);
+    expect(text(el.querySelector(".scn-trophy-word"))).toBe("Not won yet");
   });
 });
 
@@ -98,18 +98,18 @@ describe("the details", () => {
   it("shows the facts, the result, the situation and the goals of an open scenario", () => {
     const el = holder();
     render(scenarioDetailsTemplate(OPEN), el);
-    expect(text(el.querySelector(".sl-h"))).toBe("First Light");
+    expect(text(el.querySelector(".scn-h"))).toBe("First Light");
     expect([...el.querySelectorAll("dt")].map(text)).toEqual(["Rules", "Length", "Result"]);
     expect([...el.querySelectorAll("legend")].map(text)).toEqual(["Situation", "Goals"]);
-    expect(el.querySelector(".sl-lock")).toBeNull();
+    expect(el.querySelector(".scn-lock")).toBeNull();
   });
 
   it("shows why a locked scenario is shut, and neither its situation nor its goals", () => {
     const el = holder();
     render(scenarioDetailsTemplate(SHUT), el);
-    expect(text(el.querySelector(".sl-lock"))).toBe("Win Second Wind first.");
+    expect(text(el.querySelector(".scn-lock"))).toBe("Win Second Wind first.");
     expect(el.querySelector("legend")).toBeNull();
-    expect(el.querySelector(".sl-trophies")).toBeNull();
+    expect(el.querySelector(".scn-trophies")).toBeNull();
   });
 });
 
@@ -118,8 +118,8 @@ describe("the rows", () => {
     const play = vi.fn();
     const el = holder();
     render(scenarioRowsTemplate([OPEN, FRESH, SHUT], { play }), el);
-    expect([...el.querySelectorAll(".sl-num")].map(text)).toEqual(["1", "2", "3"]);
-    expect(text(el.querySelector(".sl-meta"))).toBe("Classic · 6 days");
+    expect([...el.querySelectorAll(".scn-num")].map(text)).toEqual(["1", "2", "3"]);
+    expect(text(el.querySelector(".scn-meta"))).toBe("Classic · 6 days");
     el.querySelector<HTMLButtonElement>('button[aria-label="Play Second Wind"]')!.click();
     expect(play).toHaveBeenCalledWith("second");
   });
@@ -127,10 +127,10 @@ describe("the rows", () => {
   it("gives a locked row its reason and no Play button", () => {
     const el = holder();
     render(scenarioRowsTemplate([SHUT], { play: vi.fn() }), el);
-    expect(el.querySelector(".sl-row")?.classList.contains("locked")).toBe(true);
-    expect(text(el.querySelector(".sl-brief"))).toBe("Win Second Wind first.");
+    expect(el.querySelector(".scn-row")?.classList.contains("locked")).toBe(true);
+    expect(text(el.querySelector(".scn-brief"))).toBe("Win Second Wind first.");
     expect(el.querySelector("button")).toBeNull();
-    expect(text(el.querySelector(".sl-locked"))).toBe("Locked");
+    expect(text(el.querySelector(".scn-locked"))).toBe("Locked");
   });
 });
 
@@ -152,16 +152,16 @@ describe("the launch window", () => {
     );
     expect(text(el.querySelector(".win-title"))).toBe("Sample Game");
     expect(el.querySelector('.win-title svg[data-icon="brand"]')).not.toBeNull();
-    expect(el.querySelector("section")?.getAttribute("aria-labelledby")).toBe("sl-launch-title");
-    expect(text(el.querySelector(".sl-launch-h"))).toBe("Choose a scenario");
-    expect(el.querySelectorAll(".sl-row")).toHaveLength(1);
-    expect(text(el.querySelector(".sl-foot"))).toBe("Sandbox");
+    expect(el.querySelector("section")?.getAttribute("aria-labelledby")).toBe("scn-launch-title");
+    expect(text(el.querySelector(".scn-launch-h"))).toBe("Choose a scenario");
+    expect(el.querySelectorAll(".scn-row")).toHaveLength(1);
+    expect(text(el.querySelector(".scn-foot"))).toBe("Sandbox");
   });
 
   it("leaves the foot out when none is given", () => {
     const el = holder();
     render(scenarioLaunchTemplate({ title: "T", heading: "H", entries: [] }, { play: vi.fn() }), el);
-    expect(el.querySelector(".sl-foot")).toBeNull();
+    expect(el.querySelector(".scn-foot")).toBeNull();
     expect(el.querySelector(".win-title svg")).toBeNull();
   });
 });
