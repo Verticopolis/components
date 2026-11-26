@@ -12,8 +12,9 @@ import { SAVER_PIXEL, type SaverScene } from "./saverScene";
  *
  * Cost: one canvas at one pixel per {@link SAVER_PIXEL} CSS pixels, drawn at
  * most `MAX_FPS` times a second while it is up (`runScene`). A resize builds
- * the scene again at the new size. Nothing runs once it is stopped or the
- * canvas leaves the page.
+ * the scene again at the new size, at most once a frame. Nothing runs once it
+ * is stopped or the canvas leaves the page, and the resize listener goes with
+ * the stop, or at the first resize after the canvas has left.
  */
 
 export interface SceneBackdropOpts {
@@ -35,13 +36,16 @@ export function backdropSize(cssW: number, cssH: number, win: Pick<Window, "inne
 }
 
 /** Run a scene on `canvas`, sized to the canvas's CSS box, and build it
- *  again when the window is resized. Returns a stop that ends the motion. */
+ *  again at the new size after the window is resized (once per frame, however
+ *  many resize events a drag sends). Returns a stop that ends the motion and
+ *  the listener; a resize after the canvas has left the page stops it too. */
 export function startSceneBackdrop(
   canvas: HTMLCanvasElement,
   opts: SceneBackdropOpts,
   win: Window = window,
 ): () => void {
   let stopScene = () => {};
+  let queued = 0;
   const start = () => {
     stopScene();
     const { w, h } = backdropSize(canvas.clientWidth, canvas.clientHeight, win);
@@ -49,10 +53,22 @@ export function startSceneBackdrop(
     canvas.height = h;
     stopScene = runScene(canvas, opts.makeScene(w, h), opts.still, win);
   };
-  start();
-  win.addEventListener("resize", start);
-  return () => {
+  const stop = () => {
     stopScene();
-    win.removeEventListener("resize", start);
+    win.cancelAnimationFrame(queued);
+    queued = 0;
+    win.removeEventListener("resize", resized);
   };
+  const rebuild = () => {
+    queued = 0;
+    if (canvas.isConnected) start();
+    else stop();
+  };
+  function resized(): void {
+    if (!canvas.isConnected) return stop();
+    if (queued === 0) queued = win.requestAnimationFrame(rebuild);
+  }
+  start();
+  win.addEventListener("resize", resized);
+  return stop;
 }

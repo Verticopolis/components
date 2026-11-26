@@ -84,6 +84,16 @@ describe("the goals table", () => {
   });
 });
 
+describe("a goal with fewer marks", () => {
+  it("leaves the later cells empty so the columns stay in line", () => {
+    const el = holder();
+    render(scenarioGoalsTemplate([{ label: "Funds", marks: marks(1, ["At least $1M"]) }]), el);
+    const cells = [...el.querySelectorAll("tbody td")];
+    expect(cells).toHaveLength(3);
+    expect(cells.map(text)).toEqual(["✓At least $1M (reached)", "", ""]);
+  });
+});
+
 describe("the details", () => {
   it("shows the facts, the result, the situation and the goals of an open scenario", () => {
     const el = holder();

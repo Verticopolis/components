@@ -7,7 +7,8 @@
  *
  * The caller holds the state: which entry is picked. A press on a row, or the
  * arrow keys, Home and End in the list, ask the caller to pick; the caller
- * redraws with `ModalShell.render`. Enter in the list and the Play button
+ * redraws with `ModalShell.render`, and the picked row scrolls into view
+ * when the list scrolls. Enter in the list and the Play button
  * play the picked entry; a double-click on a row does the same, but the
  * button is always there, so nothing needs one.
  *
@@ -17,6 +18,7 @@
  * Cost: one pass over the entries per draw.
  */
 import { html, nothing, type TemplateResult } from "lit-html";
+import { ref } from "lit-html/directives/ref.js";
 import { iconTemplate, type IconName } from "./icons";
 import { scenarioDetailsTemplate, scenarioTrophiesTemplate, type ScenarioEntry } from "./scenarioList";
 import type { ModalView } from "./uiModal";
@@ -69,12 +71,12 @@ function ids(state: NewScenario): string[] {
 export function newScenarioKeyTarget(state: NewScenario, key: string): string | null {
   const all = ids(state);
   if (all.length === 0) return null;
-  const at = Math.max(0, all.indexOf(state.picked));
+  const at = all.indexOf(state.picked);
   switch (key) {
     case "ArrowDown":
-      return all[Math.min(all.length - 1, at + 1)]!;
+      return at < 0 ? all[0]! : all[Math.min(all.length - 1, at + 1)]!;
     case "ArrowUp":
-      return all[Math.max(0, at - 1)]!;
+      return at < 0 ? all[0]! : all[Math.max(0, at - 1)]!;
     case "Home":
       return all[0]!;
     case "End":
@@ -83,6 +85,10 @@ export function newScenarioKeyTarget(state: NewScenario, key: string): string | 
       return null;
   }
 }
+
+/** Keep the picked row in view when a key moves the pick in a list that scrolls. */
+const scrollNear = (el?: Element) => el?.scrollIntoView?.({ block: "nearest" });
+const leave = () => {};
 
 function option(
   id: string,
@@ -97,6 +103,7 @@ function option(
     class=${picked ? "sl-option selected" : "sl-option"}
     role="option"
     aria-selected=${picked ? "true" : "false"}
+    ${ref(picked ? scrollNear : leave)}
     @click=${() => on.pick(id)}
     @dblclick=${() => {
       on.pick(id);

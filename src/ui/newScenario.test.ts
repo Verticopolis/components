@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { html } from "lit-html";
 import { newScenarioCanPlay, newScenarioKeyTarget, newScenarioView, type NewScenario } from "./newScenario";
 import type { ScenarioEntry } from "./scenarioList";
@@ -57,6 +57,11 @@ describe("the list's keys", () => {
     expect(newScenarioKeyTarget(STATE, "a")).toBeNull();
     expect(newScenarioKeyTarget({ entries: [], picked: "" }, "ArrowDown")).toBeNull();
   });
+
+  it("starts at the first row when nothing is picked yet", () => {
+    expect(newScenarioKeyTarget({ ...STATE, picked: "" }, "ArrowDown")).toBe("free");
+    expect(newScenarioKeyTarget({ ...STATE, picked: "" }, "ArrowUp")).toBe("free");
+  });
 });
 
 describe("the New Scenario dialog", () => {
@@ -110,6 +115,28 @@ describe("the New Scenario dialog", () => {
     expect(on.pick).toHaveBeenLastCalledWith("free");
     key(list, "Enter");
     expect(on.play).toHaveBeenCalledTimes(1);
+  });
+
+  it("scrolls the picked row into view when the pick moves, and only that row", () => {
+    const scroll = vi.fn();
+    const before = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    onTestFinished(() => {
+      Element.prototype.scrollIntoView = before;
+    });
+    document.body.innerHTML = `<dialog id="modal"></dialog>`;
+    const dialog = document.getElementById("modal") as HTMLDialogElement;
+    const shell = new ModalShell(dialog, { gameStopped: () => false, toast: vi.fn() });
+    const on = { pick: vi.fn(), play: vi.fn(), cancel: vi.fn() };
+    shell.open(newScenarioView(STATE, on));
+    expect(scroll).toHaveBeenCalledTimes(1);
+    expect((scroll.mock.contexts[0] as Element).id).toBe("sl-opt-one");
+    expect(scroll).toHaveBeenLastCalledWith({ block: "nearest" });
+    shell.render(newScenarioView({ ...STATE, picked: "three" }, on));
+    expect(scroll).toHaveBeenCalledTimes(2);
+    expect((scroll.mock.contexts[1] as Element).id).toBe("sl-opt-three");
+    shell.render(newScenarioView({ ...STATE, picked: "three" }, on));
+    expect(scroll).toHaveBeenCalledTimes(2);
   });
 
   it("asks for no pick when a key would not move it", () => {

@@ -35,7 +35,8 @@ export interface ScenarioMark {
   readonly earned: boolean;
 }
 
-/** One goal: its name and its Goal, Better and Best marks. */
+/** One goal: its name and its Goal, Better and Best marks, in that order. A
+ *  goal with fewer marks leaves the later cells empty. */
 export interface ScenarioGoal {
   readonly label: string;
   readonly marks: readonly ScenarioMark[];
@@ -98,14 +99,15 @@ export function scenarioGoalsTemplate(goals: readonly ScenarioGoal[]): TemplateR
         (g) =>
           html`<tr>
             <th scope="row">${g.label}</th>
-            ${g.marks.map(
-              (m) =>
-                html`<td class=${m.earned ? "earned" : nothing}>
-                  <span class="sl-tick" aria-hidden="true">${m.earned ? "✓" : ""}</span>${m.text}${
-                    m.earned ? html`<span class="sl-hidden"> (reached)</span>` : nothing
-                  }
-                </td>`,
-            )}
+            ${SCENARIO_TIER_NAMES.map((_, i) => {
+              const m = g.marks[i];
+              if (!m) return html`<td></td>`;
+              return html`<td class=${m.earned ? "earned" : nothing}>
+                <span class="sl-tick" aria-hidden="true">${m.earned ? "✓" : ""}</span>${m.text}${
+                  m.earned ? html`<span class="sl-hidden"> (reached)</span>` : nothing
+                }
+              </td>`;
+            })}
           </tr>`,
       )}
     </tbody>
