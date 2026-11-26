@@ -8,4 +8,5 @@ package: minor
   shows its floors and an elevator's cars, capacity and stops, and carries
   the buttons the game offers (`– Car`, `+ Car`, `Schedule…`, the extend
   arrows, `Sell / Bulldoze`), each calling the game's `act` with its
-  action. `stopsText` words the stops line.
+  action. The game words the stops line and names any offered button that
+  is off; `+ Car` is also off at the catalog's car limit.

@@ -2,7 +2,12 @@ import { html, render } from "lit-html";
 import { describe, expect, it, vi } from "vitest";
 import { catalogFor } from "../tests/catalogFixture";
 import { editorCardTemplate, editorFact } from "./editorCard";
-import { shaftEditorTemplate, stopsText, type ShaftEditAction, type ShaftEditorFacts } from "./shaftEditor";
+import {
+  shaftEditorTemplate,
+  type ShaftEditAction,
+  type ShaftEditorFacts,
+  type ShaftEditorOptions,
+} from "./shaftEditor";
 
 const classic = catalogFor("classic");
 
@@ -13,11 +18,6 @@ const elevator: ShaftEditorFacts = {
   top: 12,
   cars: 2,
   capacity: 21,
-  stops: [
-    { floor: 1, served: true, lobby: true },
-    { floor: 2, served: false, lobby: false },
-    { floor: 3, served: true, lobby: false },
-  ],
 };
 
 const ALL: ReadonlySet<ShaftEditAction> = new Set([
@@ -29,11 +29,14 @@ const ALL: ReadonlySet<ShaftEditAction> = new Set([
   "sell",
 ]);
 
-function draw(t: ShaftEditorFacts, offers: ReadonlySet<ShaftEditAction> = ALL, resale: number | null = 40_000) {
+function draw(t: ShaftEditorFacts, over: Partial<ShaftEditorOptions> = {}) {
   const act = vi.fn();
   const close = vi.fn();
   const el = document.createElement("div");
-  render(shaftEditorTemplate(t, classic, { offers, act, close, resale }), el);
+  render(
+    shaftEditorTemplate(t, classic, { offers: ALL, act, close, resale: 40_000, stops: "skips 1 floor", ...over }),
+    el,
+  );
   const field = (name: string) => el.querySelector(`[data-field="${name}"]`)?.textContent;
   const buttons = () => [...el.querySelectorAll<HTMLButtonElement>("button[data-act]")].map((b) => b.dataset.act);
   const press = (action: string) => el.querySelector<HTMLButtonElement>(`button[data-act="${action}"]`)!;
@@ -60,20 +63,28 @@ describe("shaftEditorTemplate", () => {
   });
 
   it("carries only the buttons the game offers, and no resale line when it gives none", () => {
-    const { buttons, el } = draw(elevator, new Set(["removecar", "addcar"]), null);
+    const { buttons, el } = draw(elevator, { offers: new Set(["removecar", "addcar"]), resale: null });
     expect(buttons()).toEqual(["removecar", "addcar"]);
     expect(el.textContent).not.toContain("Resale");
   });
 
-  it("turns – Car off at one car and + Car off at the catalog's limit", () => {
-    expect(draw({ ...elevator, cars: 1 }).press("removecar").disabled).toBe(true);
-    expect(draw({ ...elevator, cars: 1 }).press("addcar").disabled).toBe(false);
+  it("turns + Car off at the catalog's limit and any button the game turns off", () => {
     expect(draw({ ...elevator, cars: 8 }).press("addcar").disabled).toBe(true);
     expect(draw({ ...elevator, cars: 8 }).press("removecar").disabled).toBe(false);
+    const fewest = draw({ ...elevator, cars: 1 }, { disabled: new Set(["removecar"]) });
+    expect(fewest.press("removecar").disabled).toBe(true);
+    expect(fewest.press("addcar").disabled).toBe(false);
+    // One car with nothing turned off: the fewest cars is the game's rule.
+    expect(draw({ ...elevator, cars: 1 }).press("removecar").disabled).toBe(false);
+  });
+
+  it("shows the game's stops line, and none when it gives none", () => {
+    expect(draw(elevator, { stops: "lobbies and sky lobbies" }).field("stops")).toBe("lobbies and sky lobbies");
+    expect(draw(elevator, { stops: null }).field("stops")).toBeUndefined();
   });
 
   it("gives stairs no cars, stops, schedule or extend, whatever the game offers", () => {
-    const { buttons, field } = draw({ ...elevator, kind: "stairs", cars: 0, stops: [] });
+    const { buttons, field } = draw({ ...elevator, kind: "stairs", cars: 0 });
     expect(buttons()).toEqual(["sell"]);
     expect(field("cars")).toBeUndefined();
     expect(field("stops")).toBeUndefined();
@@ -88,34 +99,11 @@ describe("shaftEditorTemplate", () => {
 
   it("draws the game's problem lines under the facts, and no block without any", () => {
     const el = document.createElement("div");
-    const opts = { offers: ALL, act: () => {}, close: () => {}, resale: null };
+    const opts = { offers: ALL, act: () => {}, close: () => {}, resale: null, stops: null };
     render(shaftEditorTemplate(elevator, classic, { ...opts, lines: [html`<p>Too busy</p>`] }), el);
     expect(el.querySelector(".ed-diagnostics")?.textContent).toBe("Too busy");
     render(shaftEditorTemplate(elevator, classic, opts), el);
     expect(el.querySelector(".ed-diagnostics")).toBeNull();
-  });
-});
-
-describe("stopsText", () => {
-  it("counts the floors a standard elevator skips", () => {
-    expect(stopsText("elevatorStandard", [{ floor: 2, served: true, lobby: false }])).toBe("all floors");
-    expect(
-      stopsText("elevatorStandard", [
-        { floor: 2, served: false, lobby: false },
-        { floor: 3, served: false, lobby: false },
-      ]),
-    ).toBe("skips 2 floors");
-  });
-
-  it("reads an express's policy, counting the lobbies and basements it skips", () => {
-    expect(stopsText("elevatorExpress", [{ floor: 1, served: true, lobby: true }])).toBe("lobbies and sky lobbies");
-    expect(
-      stopsText("elevatorExpress", [
-        { floor: 0, served: false, lobby: false },
-        { floor: 1, served: true, lobby: true },
-        { floor: 5, served: false, lobby: false },
-      ]),
-    ).toBe("lobbies and basements (1 skipped)");
   });
 });
 

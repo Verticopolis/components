@@ -98,8 +98,10 @@ optional block and rows of buttons) for the game's `#editor` element.
 `windows/shaftEditor` builds a shaft's card on it from the facts the game's
 simulation reports (`ShaftEditorFacts`) and the catalog: floors, an
 elevator's cars, capacity and stops, and the buttons the game offers, each
-calling the game's `act` with its action (`ShaftEditAction`). The game runs
-the command and draws the card again.
+calling the game's `act` with its action (`ShaftEditAction`). The rules stay
+the game's: it words the stops line and names any offered button that is off
+(`– Car` at its fewest cars). The game runs the command and draws the card
+again.
 
 The scene is internal for now: `TowerEngine`'s public members mix what a game
 calls with what the scene's own modules share, and its declarations name
