@@ -197,6 +197,7 @@ function facility(key: FacilityKind, row: Row, mode: GameMode): RenderFacility {
     floors: row.floors ?? 1,
     population: row.population ?? 0,
     maxHousehold: row.maxHousehold ?? null,
+    ownHousehold: mode === "modern" && row.maxHousehold !== undefined,
     attendance: row.attendance ?? null,
     transport: row.transport ?? false,
     basement: row.basement ?? false,
