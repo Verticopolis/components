@@ -24,13 +24,14 @@ import type { CrowdActor, Walker } from "./towerCrowd";
 import type { CabActor } from "./cabGraphics";
 import type { MetroTrain } from "./towerMetro";
 import type { PeopleGraphics } from "./peopleGfx";
-import type { ViewFocus, Picked, ScreenRect } from "./towerInputCamera";
+import type { ViewFocus, ScreenRect } from "./towerInputCamera";
+import { pickEntityAt, type PickAt, type Picked } from "./towerPick";
 import type { ThiefSpan } from "./thiefSpan";
 
 export { FLOOR, TILE };
-// The view shapes live in the camera's friend-module; re-exported so
-// consumers keep importing them from this file.
-export type { ViewFocus, Picked } from "./towerInputCamera";
+// The view and pick shapes, re-exported so consumers import them from this file.
+export type { ViewFocus } from "./towerInputCamera";
+export type { PickAt, Picked } from "./towerPick";
 
 /**
  * The Excalibur-powered tower renderer. Excalibur owns the game loop, scene,
@@ -112,23 +113,22 @@ export class TowerEngine {
    *  FRESH engine can be built now, which the recovery path listens for. */
   onContextRestored: (() => void) | null = null;
 
-  // Controller-supplied input hooks (the controller owns tool semantics). `picked` is the
-  // entity under the pointer (or null); `panKey` is a held pan modifier (Space or Shift).
+  // Controller-supplied input hooks (the controller owns tool semantics). `pick()` finds the entity under
+  // the pointer (or null) only when a hook asks for it; `panKey` is a held pan modifier (Space or Shift).
   classifyDown: ((button: number, touch: boolean, panKey: boolean) => "pan" | "action") | null = null;
   spacePanKey: ((press?: Event) => boolean) | null = null; // the game's Space hold as `press` went down
-  onTap: ((tile: number, floor: number, touch: boolean, picked: Picked | null, world: ex.Vector) => void) | null = null;
-  onActionDown: ((tile: number, floor: number, touch: boolean, picked: Picked | null) => void) | null = null;
-  onActionMove: ((tile: number, floor: number, picked: Picked | null) => void) | null = null;
-  onActionUp: ((tile: number, floor: number, picked: Picked | null) => void) | null = null;
+  onTap: ((tile: number, floor: number, touch: boolean, pick: PickAt, world: ex.Vector) => void) | null = null;
+  onActionDown: ((tile: number, floor: number, touch: boolean, pick: PickAt) => void) | null = null;
+  onActionMove: ((tile: number, floor: number, pick: PickAt) => void) | null = null;
+  onActionUp: ((tile: number, floor: number, pick: PickAt) => void) | null = null;
   /** A press cut off by a pinch or a canceled pointer: no onActionUp. */
   onActionCancel: (() => void) | null = null;
-  onHover: ((tile: number, floor: number, picked: Picked | null) => void) | null = null;
-  /** Touch long-press "peek" (the touch equivalent of a desktop hover): fires
-   *  at the hold knee with the pressed cell/entity; onLongPressEnd on release. */
-  onLongPress: ((tile: number, floor: number, picked: Picked | null) => void) | null = null;
+  onHover: ((tile: number, floor: number, pick: PickAt) => void) | null = null;
+  /** Touch long-press "peek" (a touch hover): fires at the hold knee, onLongPressEnd on release. */
+  onLongPress: ((tile: number, floor: number, pick: PickAt) => void) | null = null;
   onLongPressEnd: (() => void) | null = null;
   /** Right-click: inspect whatever is under the cursor, regardless of tool. */
-  onSecondary: ((picked: Picked | null) => void) | null = null;
+  onSecondary: ((pick: PickAt) => void) | null = null;
   /** Drag/click an in-world extend arrow on the selected elevator (#12).
    *  onExtendTo grows/shrinks the dragged end toward a target floor; onExtendEnd
    *  marks the gesture done so cost accounting can reset. */
@@ -433,7 +433,7 @@ export class TowerEngine {
 
   /** Top-most unit/transport whose Excalibur collider contains the point. */
   pickEntityAt(world: ex.Vector): Picked | null {
-    return camera.pickEntityAt(this, world);
+    return pickEntityAt(this, world);
   }
 
   pan(dxScreen: number, dyScreen: number): void {

@@ -1,4 +1,5 @@
-import type { Picked, TowerEngine } from "./TowerEngine";
+import type { TowerEngine } from "./TowerEngine";
+import type { PickAt } from "./towerPick";
 
 /**
  * Touch long-press ("peek"): the hold timer and its lifecycle, as friend
@@ -21,19 +22,15 @@ const LONG_PRESS_SLOP = 14;
 
 /** Arm the hold for a touch press over the given cell/entity. The captured
  *  values are used when the timer fires, so a peek reports the press point, not
- *  wherever a late event lands. No-op off touch or with no peek hook installed. */
-export function armLongPress(
-  engine: TowerEngine,
-  tile: number,
-  floor: number,
-  picked: Picked | null,
-  touch: boolean,
-): void {
+ *  wherever a late event lands. No-op off touch or with no peek hook installed,
+ *  and only then is the entity picked. */
+export function armLongPress(engine: TowerEngine, tile: number, floor: number, pick: PickAt, touch: boolean): void {
   clearLongPress(engine);
   if (!touch || !engine.onLongPress) return;
   // Only a real facility peeks. Empty space and bare floor/lobby tiles raise no
   // card, so arming there would latch the peek and swallow the release for no
   // gain (stealing a slow tap-place or tap-bulldoze). Mirrors pickedAt's rule.
+  const picked = pick();
   if (!picked || picked.kind === "floor" || picked.kind === "lobby") return;
   engine.longPressTimer = setTimeout(() => {
     engine.longPressTimer = null;
@@ -42,7 +39,7 @@ export function armLongPress(
     // later move neither pans nor re-drives the tool (pointerMove also guards on
     // longPressFired, this keeps the two consistent).
     engine.gesture = null;
-    engine.onLongPress?.(tile, floor, picked);
+    engine.onLongPress?.(tile, floor, pick);
   }, LONG_PRESS_MS);
 }
 
