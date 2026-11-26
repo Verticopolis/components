@@ -344,8 +344,8 @@ in this order at the top of every stylesheet:
   of a sheet cannot change their order.
 - `vc.windows`: the game sheets a window module imports itself
   (`game/file-dialog.css`, `game/splash.css`, `game/screen-saver.css`,
-  `game/appearance.css`), each in a layer of its own in that order
-  (`vc.windows.file-dialog` through `vc.windows.appearance`, declared in a
+  `game/appearance.css`, `game/scenario-list.css`), each in a layer of its own in that order
+  (`vc.windows.file-dialog` through `vc.windows.scenario-list`, declared in a
   third statement). A bundler can put the copy a module imports after the
   page's `styles.css`; in its own layer below `vc.page`, that copy cannot
   undo what the game's layout, phone and scheme sheets change in it. Every

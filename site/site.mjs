@@ -43,6 +43,7 @@ export const sidebar = [
       { label: "Alert cards and updates", link: "/controls/alert-cards/" },
       { label: "Appearance", link: "/controls/appearance/" },
       { label: "Open and Save As", link: "/controls/file-dialog/" },
+      { label: "Scenario lists", link: "/controls/scenario-list/" },
       { label: "Icons", link: "/controls/icons/" },
     ],
   },

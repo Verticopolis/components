@@ -313,6 +313,16 @@
   .g-title-said {
     font-size: 12px;
   }
+  /* The scenario lists (gallery/scenarioList.ts): the launch window, then its button. */
+  .g-scenarios {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .g-scenarios .sl-launch {
+    max-width: 100%;
+  }
   /* The Control Panel (gallery/controlPanel.ts) on a patch of desk. */
   .g-control {
     display: flex;

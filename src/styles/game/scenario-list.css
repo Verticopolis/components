@@ -1,0 +1,260 @@
+/* Scenario lists (src/ui/scenarioList.ts, src/ui/newScenario.ts): the
+   launch window's numbered rows, the New Scenario dialog's list box and
+   details, the trophies and the goals table. On a touch screen every row is
+   at least 44 px tall. */
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance, vc.windows.scenario-list;
+
+@layer vc.windows.scenario-list {
+  /* The three marks: dim until earned, then lit in the trophy ink, with the
+     best mark's name beside them. */
+  .sl-trophies {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .sl-trophy-row {
+    display: inline-flex;
+    gap: 1px;
+  }
+  .sl-trophy {
+    display: inline-flex;
+    color: var(--line);
+    opacity: 0.55;
+  }
+  .sl-trophy.on {
+    color: var(--trophy, #b07800);
+    opacity: 1;
+  }
+  .sl-trophy-word {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .sl-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The details: title, facts, then the situation and the goals. */
+  .sl-h {
+    margin: 0 0 4px;
+    font-size: 16px;
+  }
+  .sl-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 12px;
+    margin: 0;
+  }
+  .sl-facts dt {
+    color: var(--muted);
+  }
+  .sl-facts dd {
+    margin: 0;
+  }
+  .sl-group {
+    margin: 8px 0 0;
+    padding: 4px 8px 8px;
+    border: 1px solid var(--line);
+  }
+  .sl-group legend {
+    padding: 0 4px;
+  }
+  .sl-group p {
+    margin: 2px 0;
+  }
+  .sl-lock {
+    margin: 12px 0 0;
+    font-weight: bold;
+  }
+  .sl-goals {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+  }
+  .sl-goals th,
+  .sl-goals td {
+    padding: 2px 6px 2px 0;
+    text-align: left;
+    vertical-align: top;
+  }
+  .sl-goals thead th {
+    font-weight: normal;
+    color: var(--muted);
+  }
+  .sl-goals td.earned {
+    font-weight: bold;
+  }
+  .sl-tick {
+    display: inline-block;
+    width: 12px;
+  }
+
+  /* The launch window's numbered rows. */
+  .sl-launch {
+    width: min(720px, 94vw);
+  }
+  .sl-launch-body {
+    padding: 8px 12px 12px;
+  }
+  .sl-launch-h {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+  .sl-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sl-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sl-row:last-child {
+    border-bottom: 0;
+  }
+  .sl-num {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    color: var(--muted);
+  }
+  .sl-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 10px;
+    align-items: baseline;
+  }
+  .sl-title {
+    font-size: 15px;
+  }
+  .sl-meta,
+  .sl-locked {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .sl-brief {
+    margin: 2px 0 0;
+    font-size: 12px;
+  }
+  .sl-row.locked .sl-title,
+  .sl-row.locked .sl-num {
+    color: var(--muted);
+  }
+  .sl-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sl-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  /* The New Scenario dialog: the list box beside the details. */
+  .sl-dialog {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 12px;
+    width: min(760px, 88vw);
+    min-height: 300px;
+  }
+  .sl-listbox {
+    margin: 0;
+    padding: 2px;
+    list-style: none;
+    overflow: auto;
+  }
+  .sl-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 4px;
+    cursor: default;
+  }
+  .sl-option.selected {
+    background: var(--r-title);
+    color: var(--r-title-fg);
+  }
+  .sl-option.selected .sl-trophy,
+  .sl-option.selected .sl-trophy-word,
+  .sl-option.selected .sl-note {
+    color: inherit;
+  }
+  /* The list's own focus ring sits on the picked row, as a 1995 list box drew it. */
+  .sl-listbox:focus {
+    outline: none;
+  }
+  .sl-listbox:focus-visible .sl-option.selected {
+    outline: 1px dotted var(--r-title-fg);
+    outline-offset: -2px;
+  }
+  .sl-note {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .sl-pane {
+    min-width: 0;
+  }
+  /* The list's trophies leave their words to the details pane. */
+  .sl-option .sl-trophy-word {
+    display: none;
+  }
+
+  /* A phone held sideways: a narrower list, and the goals table's marks may wrap. */
+  @media (max-height: 500px) {
+    .sl-dialog {
+      grid-template-columns: 150px minmax(0, 1fr);
+      min-height: 0;
+    }
+    .sl-listbox {
+      max-height: 62vh;
+    }
+  }
+  /* A narrow window: the list goes over the details. */
+  @media (max-width: 560px) {
+    .sl-dialog {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .sl-listbox {
+      max-height: 30vh;
+    }
+    .sl-row {
+      grid-template-columns: 24px minmax(0, 1fr);
+    }
+    .sl-side {
+      grid-column: 2;
+      justify-content: space-between;
+    }
+  }
+  @media (pointer: coarse) {
+    .sl-option,
+    .sl-row {
+      min-height: 44px;
+    }
+  }
+}
+
+/* The dialog widens the shared modal, which the modal's own rule in vc.page
+   would otherwise hold to 560 px (README, "Cascade layers"). */
+@layer vc.page {
+  #modal:has(> .modal-box > .sl-dialog) {
+    max-width: min(800px, 96vw);
+  }
+}
