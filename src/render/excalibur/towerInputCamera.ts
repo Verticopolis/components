@@ -11,8 +11,9 @@ import { crowdCullNext } from "./crowdCull";
 import { armLongPress, cancelLongPressOnMove, finishLongPress } from "./longPress";
 import { cancelPress, endPress, isFirstContact, isUnusedMouseButton, movesWithButtonUp } from "./pressLifecycle";
 import type { TowerEngine } from "./TowerEngine";
+import { lazyPick, worldToCell } from "./towerPick";
 
-/** Pointer input, entity picking, camera control and the audio view-focus for
+/** Pointer input, camera control and the audio view-focus for
  *  {@link TowerEngine}, as friend functions taking the engine instance
  *  (extracted from `TowerEngine.ts`; the class keeps thin delegations and the
  *  coordinate transforms these read). */
@@ -51,15 +52,6 @@ export interface ViewFocus {
   crowd: number;
 }
 
-/** What the pointer is over (see pickEntityAt), with its cell: a floor or
- *  lobby tile has no id in the view (#1417). */
-export interface Picked {
-  type: "unit" | "transport";
-  id: number;
-  kind: FacilityKind;
-  cell?: { floor: number; x: number };
-}
-
 export interface ScreenRect {
   x: number;
   y: number;
@@ -79,12 +71,6 @@ function tf(ev: ex.PointerEvent): { tile: number; floor: number } {
   return worldToCell(ev.worldPos);
 }
 
-/** World point → grid cell, the single inverse of worldX/worldYTop, shared by
- *  pointer handling and the pick fallback so the two can't drift. */
-function worldToCell(world: ex.Vector): { tile: number; floor: number } {
-  return { tile: Math.floor(world.x / TILE), floor: Math.ceil(-world.y / FLOOR) };
-}
-
 export function bindInput(engine: TowerEngine): void {
   const ptr = engine.engine.input.pointers;
   ptr.on("down", (ev) => pointerDown(engine, ev as ex.PointerEvent));
@@ -100,30 +86,6 @@ export function bindInput(engine: TowerEngine): void {
     if (d === 0) return;
     zoomAt(engine, d < 0 ? 1.12 : 0.89, w.x, w.y);
   });
-}
-
-/** Top-most entity under the point: transports by collider (they overlay units), units by grid. */
-export function pickEntityAt(engine: TowerEngine, world: ex.Vector): Picked | null {
-  let best: Picked | null = null;
-  let bestZ = -Infinity;
-  for (const [id, a] of engine.transportActors) {
-    if (a.z >= bestZ && a.contains(world.x, world.y)) {
-      const t = engine.sim.tower.getTransport(id);
-      if (t) {
-        best = { type: "transport", id, kind: t.kind };
-        bestZ = a.z;
-      }
-    }
-  }
-  // Every unit kind resolves by grid lookup: the tile index is
-  // footprint-complete and rooms sit below transports, so one O(1) unitAt
-  // matches the old O(rooms) actor scan, free of the render's actor model.
-  if (!best) {
-    const { tile, floor } = worldToCell(world);
-    const u = engine.sim.tower.unitAt(floor, tile);
-    if (u) best = { type: "unit", id: u.id, kind: u.kind, cell: { floor, x: tile } };
-  }
-  return best;
 }
 
 function pointerDown(engine: TowerEngine, ev: ex.PointerEvent): void {
@@ -171,18 +133,18 @@ function pointerDown(engine: TowerEngine, ev: ex.PointerEvent): void {
   }
   // Right-click always inspects under the cursor; it never pans or builds.
   if (buttonNum(ev) === 2 && engine.onSecondary) {
-    engine.onSecondary(pickEntityAt(engine, ev.worldPos));
+    engine.onSecondary(lazyPick(engine, ev.worldPos));
     engine.gesture = null;
     return;
   }
   engine.gesture = engine.classifyDown ? engine.classifyDown(buttonNum(ev), touch, panKey) : "pan";
   const { tile, floor } = tf(ev);
-  const picked = pickEntityAt(engine, ev.worldPos);
-  if (engine.gesture === "action") engine.onActionDown?.(tile, floor, touch, picked);
+  const pick = lazyPick(engine, ev.worldPos);
+  if (engine.gesture === "action") engine.onActionDown?.(tile, floor, touch, pick);
   // A held touch peeks the facility under the finger with any tool armed: the
   // hold fires only in the pre-movement window no tool's one-finger drag uses,
   // so the first move past slop hands the gesture back to the tool.
-  armLongPress(engine, tile, floor, picked, touch);
+  armLongPress(engine, tile, floor, pick, touch);
 }
 
 function pointerMove(engine: TowerEngine, ev: ex.PointerEvent): void {
@@ -229,12 +191,12 @@ function pointerMove(engine: TowerEngine, ev: ex.PointerEvent): void {
     engine.lastSx = ev.screenPos.x;
     engine.lastSy = ev.screenPos.y;
   } else if (engine.gesture === "action") {
-    engine.onActionMove?.(tile, floor, pickEntityAt(engine, ev.worldPos));
+    engine.onActionMove?.(tile, floor, lazyPick(engine, ev.worldPos));
   } else if (ev.pointerType !== "Touch") {
     // Hover is a mouse/pen concept. A touch move reaches here only in odd
     // gestureless states; letting it hover would strand a build-preview ghost
     // that no later touch event clears.
-    engine.onHover?.(tile, floor, pickEntityAt(engine, ev.worldPos));
+    engine.onHover?.(tile, floor, lazyPick(engine, ev.worldPos));
   }
 }
 
@@ -283,11 +245,11 @@ function pointerUp(engine: TowerEngine, ev: ex.PointerEvent, how: "release" | "c
   if (engine.gesture === "pan") {
     // Touch taps jitter more than mouse clicks, so allow a larger slop.
     if (engine.moved < (engine.downTouch ? 14 : 5) && how === "release") {
-      engine.onTap?.(tile, floor, ev.pointerType === "Touch", pickEntityAt(engine, ev.worldPos), ev.worldPos);
+      engine.onTap?.(tile, floor, ev.pointerType === "Touch", lazyPick(engine, ev.worldPos), ev.worldPos);
     }
   } else if (engine.gesture === "action") {
     if (how === "cancel") engine.onActionCancel?.();
-    else engine.onActionUp?.(tile, floor, pickEntityAt(engine, ev.worldPos));
+    else engine.onActionUp?.(tile, floor, lazyPick(engine, ev.worldPos));
   }
   engine.gesture = null;
 }

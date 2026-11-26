@@ -19,7 +19,7 @@ describe("a press whose release was lost", () => {
     handlers.move(ptr({ tile: 4, floor: 3, buttons: 0 }));
     expect(e.onActionCancel).toHaveBeenCalledOnce();
     expect(e.onActionMove, "no paint, bulldoze or sizing with the button up").not.toHaveBeenCalled();
-    expect(e.onHover).toHaveBeenCalledWith(4, 3, null);
+    expect(e.onHover).toHaveBeenCalledWith(4, 3, expect.any(Function));
     expect(e.gesture).toBeNull();
   });
 
@@ -27,7 +27,7 @@ describe("a press whose release was lost", () => {
     const { e, handlers } = inputEng({ classifyDown: () => "action" });
     handlers.down(ptr({ tile: 2, floor: 3, primary: true, buttons: 1 }));
     handlers.move(ptr({ tile: 4, floor: 3, buttons: 1 }));
-    expect(e.onActionMove).toHaveBeenCalledWith(4, 3, null);
+    expect(e.onActionMove).toHaveBeenCalledWith(4, 3, expect.any(Function));
     expect(e.onActionCancel).not.toHaveBeenCalled();
   });
 

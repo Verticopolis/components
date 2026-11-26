@@ -55,7 +55,7 @@ describe("pointer down routing", () => {
     const { e, handlers } = inputEng({ classifyDown: () => "action" });
     handlers.down(ptr({ tile: 12, floor: 7 }));
     expect(e.gesture).toBe("action");
-    expect(e.onActionDown).toHaveBeenCalledWith(12, 7, false, null);
+    expect(e.onActionDown).toHaveBeenCalledWith(12, 7, false, expect.any(Function));
   });
 
   it("Shift at the press reaches classifyDown as the pan key (Shift+drag pans)", () => {
@@ -77,7 +77,7 @@ describe("pointer down routing", () => {
       [0, false, false],
       [0, false, false],
     ]);
-    expect(e.onActionDown).toHaveBeenCalledWith(12, 1, false, null);
+    expect(e.onActionDown).toHaveBeenCalledWith(12, 1, false, expect.any(Function));
   });
 
   it("without Shift (and no Space) the pan key is false", () => {
@@ -166,13 +166,29 @@ describe("pointer move routing", () => {
     const { e, handlers } = inputEng({ classifyDown: () => "action" });
     handlers.down(ptr({ tile: 5, floor: 5 }));
     handlers.move(ptr({ tile: 6, floor: 8 }));
-    expect(e.onActionMove).toHaveBeenCalledWith(6, 8, null);
+    expect(e.onActionMove).toHaveBeenCalledWith(6, 8, expect.any(Function));
   });
 
   it("a mouse move with no gesture hovers", () => {
     const { e, handlers } = inputEng();
     handlers.move(ptr({ tile: 9, floor: 4 }));
-    expect(e.onHover).toHaveBeenCalledWith(9, 4, null);
+    expect(e.onHover).toHaveBeenCalledWith(9, 4, expect.any(Function));
+  });
+
+  it("a hover or a drag whose hook never picks walks no transport actor", () => {
+    const contains = vi.fn(() => true);
+    const tower = { getTransport: () => ({ kind: "elevatorStandard" }), unitAt: () => undefined };
+    const shaft = new Map([[7, { z: 1, contains }]]);
+    const { e, handlers } = inputEng({ transportActors: shaft, sim: { tower } });
+    handlers.move(ptr({ tile: 9, floor: 4 }));
+    const drag = inputEng({ classifyDown: () => "action", transportActors: shaft, sim: { tower } });
+    drag.handlers.down(ptr({ tile: 5, floor: 5 }));
+    drag.handlers.move(ptr({ tile: 6, floor: 8 }));
+    expect(contains).not.toHaveBeenCalled();
+    // The hook that asks gets the shaft under the pointer, from one scan.
+    expect(e.onHover.mock.lastCall[2]()).toEqual({ type: "transport", id: 7, kind: "elevatorStandard" });
+    expect(e.onHover.mock.lastCall[2]()).toEqual({ type: "transport", id: 7, kind: "elevatorStandard" });
+    expect(contains).toHaveBeenCalledOnce();
   });
 
   it("a touch move with no gesture never hovers (no stranded ghost)", () => {
@@ -207,7 +223,7 @@ describe("pointer up routing", () => {
     handlers.down(ptr({ tile: 4, floor: 6, sx: 400, sy: 300 }));
     handlers.up(ptr({ tile: 4, floor: 6, sx: 401, sy: 300 }));
     // The release's world point rides along, for a pick finer than a tile (#2092).
-    expect(e.onTap).toHaveBeenCalledWith(4, 6, false, null, ex.vec(4 * TILE, -6 * FLOOR));
+    expect(e.onTap).toHaveBeenCalledWith(4, 6, false, expect.any(Function), ex.vec(4 * TILE, -6 * FLOOR));
   });
 
   it("a long pan is not a tap", () => {
@@ -222,7 +238,7 @@ describe("pointer up routing", () => {
     const { e, handlers } = inputEng({ classifyDown: () => "action" });
     handlers.down(ptr({ tile: 2, floor: 2 }));
     handlers.up(ptr({ tile: 2, floor: 3 }));
-    expect(e.onActionUp).toHaveBeenCalledWith(2, 3, null);
+    expect(e.onActionUp).toHaveBeenCalledWith(2, 3, expect.any(Function));
   });
 
   it("an arrow-tap (no drag) extends the selected shaft one floor and ends the gesture", () => {
@@ -304,7 +320,8 @@ describe("long-press to peek (touch hold)", () => {
     handlers.down(ptr({ touch: true, tile: 8, floor: 3, sx: 400, sy: 300 }));
     expect(e.onLongPress).not.toHaveBeenCalled(); // not yet at the knee
     vi.advanceTimersByTime(500);
-    expect(e.onLongPress).toHaveBeenCalledWith(8, 3, { type: "unit", id: 7, kind: "office", cell: { floor: 3, x: 8 } });
+    expect(e.onLongPress).toHaveBeenCalledWith(8, 3, expect.any(Function));
+    expect(e.onLongPress.mock.lastCall[2]()).toEqual({ type: "unit", id: 7, kind: "office", cell: { floor: 3, x: 8 } });
     expect(e.longPressFired).toBe(true);
   });
 
@@ -337,7 +354,7 @@ describe("long-press to peek (touch hold)", () => {
     handlers.up(ptr({ touch: true, tile: 4, floor: 6, sx: 401, sy: 300 }));
     vi.advanceTimersByTime(1000);
     expect(e.onLongPress).not.toHaveBeenCalled();
-    expect(e.onTap).toHaveBeenCalledWith(4, 6, true, null, ex.vec(4 * TILE, -6 * FLOOR)); // still a tap
+    expect(e.onTap).toHaveBeenCalledWith(4, 6, true, expect.any(Function), ex.vec(4 * TILE, -6 * FLOOR)); // still a tap
   });
 
   it("releasing after a peek dismisses it and swallows the tap", () => {
@@ -448,7 +465,7 @@ describe("long-press to peek (touch hold)", () => {
   it("with no contact down, a mouse move still hovers", () => {
     const { e, handlers } = inputEng();
     handlers.move(ptr({ touch: false, pointerId: 99, tile: 6, floor: 2 }));
-    expect(e.onHover).toHaveBeenCalledWith(6, 2, null);
+    expect(e.onHover).toHaveBeenCalledWith(6, 2, expect.any(Function));
   });
 
   it("a new press after a lost release dismisses the orphaned peek, not just its latch", () => {

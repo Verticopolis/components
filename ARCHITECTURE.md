@@ -129,18 +129,21 @@ label (`towerOverlay.ts`, `towerGhostLabel.ts`).
 
 ## Input: a press becomes a hook
 
-The scene owns the camera and pointer input. It hit-tests the world
-(`towerInputCamera.ts`), classifies the gesture (tap, drag, long press,
-pinch, a secondary press) and calls the game back through a hook with the
-tile, the floor and what was picked. The game decides what the press means.
+The scene owns the camera and pointer input (`towerInputCamera.ts`). It
+classifies the gesture (tap, drag, long press, pinch, a secondary press) and
+calls the game back through a hook with the tile, the floor and a `pick()`
+that hit-tests the world (`towerPick.ts`) the first time the hook asks, so a
+hover or a drag that never needs the entity under the pointer scans nothing.
+The game decides what the press means.
 
 ```mermaid
 flowchart LR
     Pointer["pointer · touch · keyboard"] --> TE["TowerEngine<br/>Excalibur input"]
-    TE --> Cam["towerInputCamera<br/>hit test, pan, zoom"]
+    TE --> Cam["towerInputCamera<br/>pan, zoom"]
     TE --> Press["pressLifecycle · longPress<br/>pinchTracker · pointerButtonGuard"]
     Press --> Hooks["onTap · onActionDown/Move/Up<br/>onHover · onLongPress · onSecondary<br/>onExtendTo"]
     Cam --> Hooks
+    Hooks -->|"pick(), when asked"| Pick["towerPick<br/>hit test"]
     Hooks --> Game["the game's controllers"]
     Game -->|"ghost, selection"| Overlay["towerOverlay"]
 ```
