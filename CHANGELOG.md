@@ -21,6 +21,17 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.9.0 (2026-11-26)
+
+- **minor**: `windows/inspectCard` draws the inspect card: `unitCardTemplate`,
+  `transportCardTemplate` and `refusalCardTemplate`, with `statusText`,
+  `occupantsText` and `loadLines` for the lines a game words itself.
+- **minor**: `windows/inspectPanel` shows the card: `InspectPanel` renders, pins and
+  hides it in the game's `#inspector` element, and `InspectController`
+  picks the card for a pick and keeps a closed card closed.
+- **minor**: `RenderFacility` gains an optional `ownHousehold`, which the room card
+  reads to count a household against its own size.
+
 ## 2.8.0 (2026-11-26)
 
 - **minor**: `render/excalibur/TowerEngine`: the pointer hooks (`onTap`, `onActionDown`,
