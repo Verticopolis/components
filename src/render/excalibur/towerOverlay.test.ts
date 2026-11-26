@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { ON_THE_ESCAPE } from "./guardPosition";
 import { FLOOR, TILE } from "../scale";
 import {
@@ -246,7 +246,7 @@ describe("preview and selection painters", () => {
 
   it("selecting an elevator draws extend arrows and registers their hit-rects", () => {
     const s = spyCtx();
-    const e = eng({ selectedId: 7 });
+    const e = eng({ selectedId: 7, onExtendTo: vi.fn() });
     e.sim.tower.getUnit = () => undefined;
     e.sim.tower.getTransport = () => ({ kind: "elevatorStandard", x: 100, width: 4, top: 20, bottom: 4 });
     drawOverlay(e, s.ctx);
@@ -263,6 +263,23 @@ describe("preview and selection painters", () => {
     // Both tabs are drawn where their hit rects sit.
     expect(s.log).toContain(`fillRect:${JSON.stringify([cx - tabW / 2, top - 11 - 3, tabW, 11])}`);
     expect(s.log).toContain(`fillRect:${JSON.stringify([cx - tabW / 2, bottom + 3, tabW, 11])}`);
+  });
+
+  it("selecting an elevator in a game that does not extend shafts outlines it but grows no arrows", () => {
+    const s = spyCtx();
+    const e = eng({ selectedId: 7, onExtendTo: null });
+    e.sim.tower.getUnit = () => undefined;
+    e.sim.tower.getTransport = () => ({ kind: "elevatorStandard", x: 100, width: 4, top: 20, bottom: 4 });
+    drawOverlay(e, s.ctx);
+    expect(e.arrowHit).toEqual({});
+    expect(s.painted()).toBe(true);
+    // Neither tab is drawn where the arrows would sit.
+    const cx = 100 + (4 * TILE) / 2;
+    const tabW = Math.min(4 * TILE, 18);
+    const top = 300 - 20;
+    const bottom = top + 17 * FLOOR;
+    expect(s.log).not.toContain(`fillRect:${JSON.stringify([cx - tabW / 2, top - 11 - 3, tabW, 11])}`);
+    expect(s.log).not.toContain(`fillRect:${JSON.stringify([cx - tabW / 2, bottom + 3, tabW, 11])}`);
   });
 
   it("selecting a non-elevator shaft outlines it but grows no arrows", () => {

@@ -418,7 +418,8 @@ function drawTransportSelection(engine: TowerEngine, ctx: CanvasRenderingContext
   const top = engine.worldToScreenY(t.top);
   const bottom = top + (t.top - t.bottom + 1) * FLOOR * z;
   strokeSelection(ctx, sx, top, sw, bottom - top);
-  if (!isElevatorKind(t.kind)) return; // only lifts extend by a tappable arrow
+  // Only lifts extend by a tappable arrow, and only in a game that handles it.
+  if (!isElevatorKind(t.kind) || !engine.onExtendTo) return;
 
   // Small, subtle tabs centered on the shaft, discoverable without dominating
   // the view. The hit rect is a touch larger than the drawn tab for easy use.
