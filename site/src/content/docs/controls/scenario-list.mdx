@@ -1,0 +1,18 @@
+---
+title: Scenario lists
+description: The launch window's numbered rows and the New Scenario dialog, drawn from the same entries.
+---
+
+import Demo from "../../../components/Demo.astro";
+
+A game with scenarios lists them two ways from the same entries. The launch window (`scenarioLaunchTemplate` from `windows/scenarioList`) is one large window a game can open on: a heading, the scenarios as numbered rows, each with its brief, its trophies and a Play button, and a foot the game fills (a sandbox's buttons, say). The New Scenario dialog (`newScenarioView` from `windows/newScenario`) is a view for the shared modal, as File > New Game… worked in a 1994 program: a list box on the left, the picked scenario's details on the right, and Play and Cancel along the foot.
+
+Each entry is what the game says it is: a title, a few facts (its rules, its length), a brief, its goals with their Goal, Better and Best marks, the best result kept so far, and, when it is not open yet, why. The lists read no saves. The trophies light one per mark reached, with the best mark's name beside them, so the result never rests on color alone, and the goals table ticks each mark the best run reached. A locked scenario shows why it is locked and has no Play button.
+
+In the dialog, a press picks a row, and the arrow keys, Home and End move the pick. Enter and the Play button play it, and a double-click does the same, but the button is always there. Entries the game lists first, such as a sandbox, carry their own details. On a touch screen every row is at least 44 pixels tall, and on a narrow window the list sits over the details.
+
+A screen saver scene can move behind the launch window: `startSceneBackdrop` from `windows/screenSaver/sceneBackdrop` runs a scene on a canvas the page draws with the `scene-backdrop` class, at the saver's chunky pixel size, builds it again when the window is resized, and holds one still frame with reduced motion. Here it is Endless Tower, a crane laying rooms floor by floor.
+
+The scenarios here are made up, and Play only says which was pressed.
+
+<Demo name="scenario-list" />

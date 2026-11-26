@@ -178,6 +178,7 @@ frames the player's manual, the title screen on the desk, and
 (`src/ui/titleScreen/`), the Information bar and status bar (`src/ui/bars/`),
 the Tools window (`src/ui/palette/`), the Map window
 (`overviewMapWindow.ts`), the inspect card (`inspectCard.ts`, `inspectPanel.ts`), the editor card (`editorCard.ts`, and `shaftEditor.ts` for a shaft), the Open and Save As windows (`src/ui/fileDialog/`),
+the scenario lists and the New Scenario dialog (`scenarioList.ts`, `newScenario.ts`),
 the screen savers (`src/ui/screenSaver/`), the Appearance dialog, the alert
 card and update box, the fireworks, the page not found desk, a docs site's
 menu bar (`siteMenu.ts`) and the icons. Each window module imports the stylesheet

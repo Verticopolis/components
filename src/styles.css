@@ -21,7 +21,7 @@
 
 @layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
 @layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
-@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance, vc.windows.scenario-list;
 
 /* ---- 1. TOKENS + SHARED CHROME (extracted for reuse by standalone pages) ---
    The retro tokens and the shared window/button/well/kv components live in
@@ -62,6 +62,7 @@
 @import "./styles/game/desk-title.css";
 @import "./styles/game/desk-title-pocket.css";
 @import "./styles/game/appearance.css";
+@import "./styles/game/scenario-list.css";
 
 /* ---- APPEARANCE SCHEMES ---------------------------------------------------
    Options > Appearance… (src/ui/appearance/). Each scheme is scoped to its

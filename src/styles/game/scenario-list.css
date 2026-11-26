@@ -1,0 +1,269 @@
+/* Scenario lists (src/ui/scenarioList.ts, src/ui/newScenario.ts): the
+   launch window's numbered rows, the New Scenario dialog's list box and
+   details, the trophies and the goals table. On a touch screen every row is
+   at least 44 px tall. The `scn-` prefix stays clear of Starlight's own `sl-`
+   classes, since the docs sites load this sheet too. */
+@layer vc.tokens, vc.base, vc.components, vc.windows, vc.page;
+@layer vc.components.button, vc.components.window, vc.components.well, vc.components.kv, vc.components.menu-bar;
+@layer vc.windows.file-dialog, vc.windows.splash, vc.windows.screen-saver, vc.windows.appearance, vc.windows.scenario-list;
+
+@layer vc.windows.scenario-list {
+  /* The three marks: dim until earned, then lit in the trophy ink, with the
+     best mark's name beside them. */
+  .scn-trophies {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .scn-trophy-row {
+    display: inline-flex;
+    gap: 1px;
+  }
+  .scn-trophy {
+    display: inline-flex;
+    color: var(--line);
+    opacity: 0.55;
+  }
+  .scn-trophy.on {
+    color: var(--trophy, #b07800);
+    opacity: 1;
+  }
+  .scn-trophy-word {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .scn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The details: title, facts, then the situation and the goals. */
+  .scn-h {
+    margin: 0 0 4px;
+    font-size: 16px;
+  }
+  .scn-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 12px;
+    margin: 0;
+  }
+  .scn-facts dt {
+    color: var(--muted);
+  }
+  .scn-facts dd {
+    margin: 0;
+  }
+  .scn-group {
+    margin: 8px 0 0;
+    padding: 4px 8px 8px;
+    border: 1px solid var(--line);
+  }
+  .scn-group legend {
+    padding: 0 4px;
+  }
+  .scn-group p {
+    margin: 2px 0;
+  }
+  .scn-lock {
+    margin: 12px 0 0;
+    font-weight: bold;
+  }
+  .scn-goals {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+  }
+  .scn-goals th,
+  .scn-goals td {
+    padding: 2px 6px 2px 0;
+    text-align: left;
+    vertical-align: top;
+  }
+  .scn-goals thead th {
+    font-weight: normal;
+    color: var(--muted);
+  }
+  .scn-goals td.earned {
+    font-weight: bold;
+  }
+  .scn-tick {
+    display: inline-block;
+    width: 12px;
+  }
+
+  /* The launch window's numbered rows. */
+  .scn-launch {
+    width: min(720px, 94vw);
+  }
+  .scn-launch-body {
+    padding: 8px 12px 12px;
+  }
+  .scn-launch-h {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+  .scn-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .scn-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .scn-row:last-child {
+    border-bottom: 0;
+  }
+  .scn-num {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    color: var(--muted);
+  }
+  .scn-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 10px;
+    align-items: baseline;
+  }
+  .scn-title {
+    font-size: 15px;
+  }
+  .scn-meta,
+  .scn-locked {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .scn-brief {
+    margin: 2px 0 0;
+    font-size: 12px;
+  }
+  .scn-row.locked .scn-title,
+  .scn-row.locked .scn-num {
+    color: var(--muted);
+  }
+  .scn-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .scn-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  /* The New Scenario dialog: the list box beside the details. */
+  .scn-dialog {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 12px;
+    width: min(760px, 88vw);
+    min-height: 300px;
+  }
+  .scn-listbox {
+    margin: 0;
+    padding: 2px;
+    list-style: none;
+    overflow: auto;
+  }
+  .scn-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 4px;
+    cursor: default;
+  }
+  .scn-option.selected {
+    background: var(--r-title);
+    color: var(--r-title-fg);
+  }
+  .scn-option.selected .scn-trophy,
+  .scn-option.selected .scn-trophy-word,
+  .scn-option.selected .scn-note {
+    color: inherit;
+  }
+  /* The list's own focus ring sits on the picked row, as a 1995 list box drew it. */
+  .scn-listbox:focus {
+    outline: none;
+  }
+  .scn-listbox:focus-visible .scn-option.selected {
+    outline: 1px dotted var(--r-title-fg);
+    outline-offset: -2px;
+  }
+  .scn-note {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .scn-pane {
+    min-width: 0;
+  }
+  /* The list's trophies leave their words to the details pane. */
+  .scn-option .scn-trophy-word {
+    display: none;
+  }
+
+  /* A phone held sideways: a narrower list, and the goals table's marks may wrap. */
+  @media (max-height: 500px) {
+    .scn-dialog {
+      grid-template-columns: 150px minmax(0, 1fr);
+      min-height: 0;
+    }
+    .scn-listbox {
+      max-height: 62vh;
+    }
+  }
+  /* A narrow window: the list goes over the details. */
+  @media (max-width: 560px) {
+    .scn-dialog {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .scn-listbox {
+      max-height: 30vh;
+    }
+    .scn-row {
+      grid-template-columns: 24px minmax(0, 1fr);
+    }
+    .scn-side {
+      grid-column: 2;
+      justify-content: space-between;
+    }
+  }
+  @media (pointer: coarse) {
+    .scn-option,
+    .scn-row {
+      min-height: 44px;
+    }
+  }
+}
+
+/* The dialog widens the shared modal, which the modal's own rule in vc.page
+   would otherwise hold to 560 px (README, "Cascade layers"). */
+@layer vc.page {
+  #modal:has(> .modal-box > .scn-dialog) {
+    max-width: min(800px, 96vw);
+  }
+  /* The modal's own list indent and paragraph spacing would push the list box
+     off the edge and gap its rows. */
+  .modal-box .scn-listbox {
+    margin: 0;
+  }
+  .modal-box .scn-option {
+    margin: 0;
+  }
+}

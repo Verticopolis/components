@@ -31,6 +31,7 @@ import { messageBoxes } from "./messageBoxes.js";
 import { alertCards } from "./alertCards.js";
 import { appearanceDemo } from "./appearance.js";
 import { fileDialogDemo } from "./fileDialog.js";
+import { scenarioListDemo } from "./scenarioList.js";
 import { titleScreenDemo } from "./titleScreen.js";
 import { controlPanelDemo } from "./controlPanel.js";
 import { fireworksDemo } from "./fireworks.js";
@@ -171,6 +172,7 @@ export const DEMOS = {
   "alert-cards": shows(alertCards),
   appearance: shows(appearanceDemo),
   "file-dialog": shows(fileDialogDemo),
+  "scenario-list": shows(scenarioListDemo),
   "title-screen": shows(titleScreenDemo),
   fireworks: shows(fireworksDemo),
   palette: shows(paletteDemo),
