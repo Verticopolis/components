@@ -3,12 +3,17 @@
  * window's numbered rows over three made-up scenarios, and a button that
  * opens the same scenarios in the New Scenario dialog. The first has its
  * best result kept, the second is open and unplayed, and the third is
- * locked. Play only says which was pressed.
+ * locked. The launch window sits over the screen saver's Endless Tower,
+ * running as a backdrop (`windows/screenSaver/sceneBackdrop`). Play only
+ * says which was pressed.
  */
 import { html, render, type TemplateResult } from "lit-html";
 import { ref } from "lit-html/directives/ref.js";
 import { newScenarioView, type NewScenario } from "../lib/ui/newScenario.js";
 import { scenarioLaunchTemplate, type ScenarioEntry, type ScenarioMark } from "../lib/ui/scenarioList.js";
+import { startSceneBackdrop } from "../lib/ui/screenSaver/sceneBackdrop.js";
+import { seeded } from "./screenSaver.js";
+import { endlessTower } from "../lib/ui/screenSaver/towerScenes.js";
 import { ModalShell } from "../lib/ui/uiModal.js";
 
 const marks = (reached: number, texts: readonly string[]): ScenarioMark[] =>
@@ -95,17 +100,20 @@ export function scenarioListDemo(): TemplateResult {
   function draw(): void {
     if (!root) return;
     render(
-      html`${scenarioLaunchTemplate(
-        {
-          title: "Sample Game",
-          icon: "brand",
-          heading: "Choose a scenario",
-          entries: ENTRIES,
-          foot: html`<span><b>Sandbox.</b> Every tool and no money limit.</span>
+      html`<div class="g-backdrop">
+          <canvas class="scene-backdrop" aria-hidden="true" ${ref(backdrop)}></canvas>
+          ${scenarioLaunchTemplate(
+            {
+              title: "Sample Game",
+              icon: "brand",
+              heading: "Choose a scenario",
+              entries: ENTRIES,
+              foot: html`<span><b>Sandbox.</b> Every tool and no money limit.</span>
               <button type="button" class="btn" @click=${() => say("Sandbox pressed.")}>New Sandbox</button>`,
-        },
-        { play: (id) => say(`Play ${title(id)}.`) },
-      )}
+            },
+            { play: (id) => say(`Play ${title(id)}.`) },
+          )}
+        </div>
         <div class="g-row">
           <button type="button" class="btn" @click=${openDialog}>New Scenario…</button>
         </div>
@@ -113,6 +121,18 @@ export function scenarioListDemo(): TemplateResult {
       root,
     );
   }
+  let backdropCanvas: HTMLCanvasElement | null = null;
+  /** The Endless Tower scene behind the launch window, started once, from a
+   *  fixed seed so a still frame (reduced motion) is the same every visit. */
+  const backdrop = (el?: Element) => {
+    if (!(el instanceof HTMLCanvasElement) || el === backdropCanvas) return;
+    backdropCanvas = el;
+    const layer = () => document.createElement("canvas").getContext("2d");
+    startSceneBackdrop(el, {
+      makeScene: (w, h) => endlessTower(w, h, seeded(7), layer),
+      still: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    });
+  };
   const madeRoot = (el?: Element) => {
     if (el instanceof HTMLElement && el !== root) {
       root = el;

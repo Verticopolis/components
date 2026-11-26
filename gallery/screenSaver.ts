@@ -19,7 +19,7 @@ import { endlessTower, nightShift } from "../lib/ui/screenSaver/towerScenes.js";
 const MARQUEE = ["Sample Tower", "Population 1,234", "Three stars", "The hotel is full tonight"];
 
 /** A small seeded random source, so a still frame is the same every time. */
-function seeded(seed: number): Rng {
+export function seeded(seed: number): Rng {
   let a = seed >>> 0;
   return () => {
     a = (a + 0x6d2b79f5) >>> 0;

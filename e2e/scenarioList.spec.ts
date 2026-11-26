@@ -9,6 +9,10 @@ import { SCHEMES, openPage, pickScheme } from "./site";
 
 const PAGE = "controls/scenario-list/";
 
+// The Endless Tower backdrop holds one seeded still frame, so the shots never
+// catch it moving.
+test.use({ contextOptions: { reducedMotion: "reduce" } });
+
 async function openDialog(page: Page) {
   await page.getByRole("button", { name: "New Scenario…", exact: true }).click();
   const box = page.getByRole("dialog", { name: "New Scenario", exact: true });

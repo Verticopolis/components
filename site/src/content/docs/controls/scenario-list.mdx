@@ -11,6 +11,8 @@ Each entry is what the game says it is: a title, a few facts (its rules, its len
 
 In the dialog, a press picks a row, and the arrow keys, Home and End move the pick. Enter and the Play button play it, and a double-click does the same, but the button is always there. Entries the game lists first, such as a sandbox, carry their own details. On a touch screen every row is at least 44 pixels tall, and on a narrow window the list sits over the details.
 
+A screen saver scene can move behind the launch window: `startSceneBackdrop` from `windows/screenSaver/sceneBackdrop` runs a scene on a canvas the page draws with the `scene-backdrop` class, at the saver's chunky pixel size, builds it again when the window is resized, and holds one still frame with reduced motion. Here it is Endless Tower, a crane laying rooms floor by floor.
+
 The scenarios here are made up, and Play only says which was pressed.
 
 <Demo name="scenario-list" />
