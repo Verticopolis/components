@@ -20,13 +20,14 @@ import {
   Vector2,
 } from "three";
 import { climbDrawX, leaveFlight, type Climber } from "../render/climbPath";
+import { advanceGlide, gliding, newGlide, shuffling, type Glide as StepGlide } from "../render/excalibur/crowdLook";
 import type { RenderPerson, RenderTransport } from "../render/renderModel";
 import { castIndex, crewIndex, drawPerson, LOOKS, type Pose } from "../render/pixelSprites/people";
 import { FLOOR, TILE } from "../render/scale";
 import { DEPTH, STORY } from "./bandGeometry";
 import type { Orbit } from "./camera3d";
 import { FLIGHT_FAR, FLIGHT_NEAR } from "./flights3d";
-import { Glide, sample } from "./movers3d";
+import { pruneDrawn, sample, StepPace } from "./movers3d";
 import { slabStack } from "./voxel3d";
 
 /** One figure's cell, in side-view pixels (the side view's own figure bake). */
@@ -101,6 +102,7 @@ export function figureCell(p: RenderPerson, walking: boolean, left: boolean, now
 export interface CrowdSource {
   readonly crowd: { readonly people: readonly RenderPerson[] };
   readonly tower: { readonly transports: readonly RenderTransport[] };
+  readonly clock: { readonly minutes: number };
 }
 
 /** The people walking the floors, placed every frame from the crowd the game sends. */
@@ -117,8 +119,10 @@ export class Crowd {
   private figures: InstancedMesh;
   private chosen: number[] = [];
   private chosenAt = -Infinity;
-  /** Where each figure is drawn, gliding to the game's position between its steps. */
-  private readonly drawn = new Glide();
+  /** Where each figure is drawn, gliding between the game's steps as the side view's people do. */
+  private readonly drawn = new Map<number | string, StepGlide & { seen: number }>();
+  private readonly pace = new StepPace();
+  private frame = 0;
   /** The way each figure last walked, so one who stops keeps facing it. */
   private readonly facing = new Map<number, boolean>();
   /** Each climber's flight and place on its run, as the side view keeps them (`climbPath.ts`). */
@@ -193,7 +197,10 @@ export class Crowd {
       [this.figures, this.cells] = this.make(Math.max(this.chosen.length, this.figures.instanceMatrix.count * 2));
       swapped.push(this.figures);
     }
-    this.drawn.tick(now);
+    this.pace.tick(sim.clock.minutes, now);
+    this.frame++;
+    const { stepped } = this.pace.clock;
+    const progress = this.pace.progress;
     turn.makeRotationY(this.turns ? orbit.theta : 0);
     let n = 0;
     for (const i of this.chosen) {
@@ -203,11 +210,14 @@ export class Crowd {
       // climber keeps to the flight, on the wall in the art look.
       const climbing = p.state === "climbing";
       const z = climbing ? CLIMB_Z : -DEPTH * (0.1 + ((p.seed >>> 3) % 29) / 100);
-      const at = this.drawn.at(p.id, p.x, p.fy);
+      let g = this.drawn.get(p.id);
+      if (!g) this.drawn.set(p.id, (g = { ...newGlide(p.x, p.fy, p.seed % 2 === 0), seen: 0 }));
+      g.seen = this.frame;
+      advanceGlide(g, p.x, p.fy, stepped, progress, true);
+      const at = { x: g.x, y: g.fy };
       let x = at.x;
-      const dx = p.x - at.x;
-      const walking = (p.state === "toShaft" || p.state === "toDest") && Math.abs(dx) > 0.01;
-      if (walking) this.facing.set(p.id, dx < 0);
+      const walking = (p.state === "toShaft" || p.state === "toDest") && gliding(g) && !shuffling(g);
+      if (walking) this.facing.set(p.id, g.left);
       if (climbing) {
         let c = this.climbers.get(p.id);
         if (!c) this.climbers.set(p.id, (c = {}));
@@ -232,7 +242,7 @@ export class Crowd {
       this.cells.setXY(n, u, v);
       n++;
     }
-    this.drawn.prune(this.chosen.length * 2);
+    pruneDrawn(this.drawn, this.frame, this.chosen.length * 2);
     if (this.facing.size > this.chosen.length * 4) this.facing.clear();
     if (this.climbers.size > this.chosen.length * 4) this.climbers.clear();
     this.figures.count = n;

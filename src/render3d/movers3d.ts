@@ -1,63 +1,53 @@
 /**
- * The motion helpers of the Tower in 3D: the glide that smooths cars
+ * The motion helpers of the Tower in 3D: the step pace that glides cars
  * (`cabs3d.ts`) and people (`people3d.ts`) between game steps, the crowd
  * sample (at most the tier's cap, nearest the camera's target first), and
  * the street traffic.
  */
 import { BoxGeometry, Color, DynamicDrawUsage, InstancedMesh, Matrix4, MeshLambertMaterial } from "three";
+import { newStepClock, stepProgress, tickStepClock, type StepClock } from "../render/excalibur/crowdLook";
 import type { RenderPerson } from "../render/renderModel";
 
 const m4 = new Matrix4();
 const tint = new Color();
 
-/** A resizable instanced mesh: grows to the count it is asked for. */
-/** How fast a drawn figure or car catches up with the game, per second. */
-const GLIDE_RATE = 10;
-
 /**
- * Drawn positions that glide toward the game's, so motion stays smooth
- * between simulation steps instead of jumping a step at a time. A jump too
- * long to be a step (a new figure, a teleport) snaps.
+ * The side view's step clock (`crowdLook.ts`) run off this view's frames:
+ * the game moves people and cars once per sim step, and the drawing glides
+ * each from where it is drawn to its new position over one step's length,
+ * at an even pace, the way the side view draws them. Cars (`cabs3d.ts`) and
+ * people (`people3d.ts`) each keep one; they read the same game minute and
+ * frame time, so they stay in step.
  */
-export class Glide {
-  private readonly pos = new Map<number | string, { x: number; y: number; seen: number }>();
-  private frame = 0;
-  private last = 0;
-  private alpha = 1;
+export class StepPace {
+  readonly clock: StepClock = newStepClock(0);
+  private last = -1;
 
-  /** `snapX`, `snapY`: the longest move, in tiles and floors, that still glides. */
-  constructor(
-    private readonly snapX = 8,
-    private readonly snapY = 3,
-  ) {}
-
-  /** Starts a frame at `now` (ms). */
-  tick(now: number): void {
-    const dt = this.last > 0 ? Math.min(0.25, Math.max(0, (now - this.last) / 1000)) : 1;
+  /** Starts a frame at `now` (ms) with the game clock at `minutes`. */
+  tick(minutes: number, now: number): void {
+    if (this.last < 0) this.clock.minutes = minutes;
+    const dt = this.last < 0 ? 0 : Math.min(MAX_FRAME_MS, Math.max(0, now - this.last));
     this.last = now;
-    this.alpha = 1 - Math.exp(-dt * GLIDE_RATE);
-    this.frame++;
+    tickStepClock(this.clock, minutes, dt);
   }
 
-  /** The drawn position of `key`, whose game position is `x, y`. */
-  at(key: number | string, x: number, y: number): { readonly x: number; readonly y: number } {
-    const d = this.pos.get(key);
-    if (!d || Math.abs(d.x - x) > this.snapX || Math.abs(d.y - y) > this.snapY) {
-      const fresh = { x, y, seen: this.frame };
-      this.pos.set(key, fresh);
-      return fresh;
-    }
-    d.x += (x - d.x) * this.alpha;
-    d.y += (y - d.y) * this.alpha;
-    d.seen = this.frame;
-    return d;
+  /** How far through the current step the drawing is, 0 to 1. */
+  get progress(): number {
+    return stepProgress(this.clock);
   }
+}
 
-  /** Forgets keys not drawn this frame once more than `max` are held. */
-  prune(max: number): void {
-    if (this.pos.size <= max) return;
-    for (const [k, d] of this.pos) if (d.seen !== this.frame) this.pos.delete(k);
-  }
+/** The longest frame counted, so a stall (a hidden tab) never jumps the glide. */
+const MAX_FRAME_MS = 250;
+
+/** Drops the entries of `drawn` not used on frame `frame` once it holds more than `max`. */
+export function pruneDrawn<T extends { seen: number }>(
+  drawn: Map<number | string, T>,
+  frame: number,
+  max: number,
+): void {
+  if (drawn.size <= max) return;
+  for (const [k, d] of drawn) if (d.seen !== frame) drawn.delete(k);
 }
 
 const STREET_PAINT = [0xc83c3c, 0x3c6ec8, 0xe6e6e6, 0xdcb43c, 0x2c2c34, 0x4a8a5a, 0xe07a2c];

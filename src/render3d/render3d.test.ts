@@ -15,7 +15,7 @@ import { slabStack, VOXEL } from "./voxel3d";
 import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
 import { changedBands, joinRuns, towerBands } from "./floorDigest";
 import { CONSTRUCTION, GUTTED, lookFor, LOOKS_3D } from "./looks3d";
-import { sample } from "./movers3d";
+import { sample, StepPace } from "./movers3d";
 import { FrameClock, startTier, stepDown } from "./quality";
 import { resolveTime, timeOfDayAt } from "./sky3d";
 
@@ -153,6 +153,26 @@ describe("buildBand", () => {
       { min: 10, max: 20 },
     ]);
     expect(uncovered({ min: 0, max: 20 }, [{ min: -5, max: 30 }])).toEqual([]);
+  });
+});
+
+describe("StepPace", () => {
+  it("paces a glide evenly over the game's step length", () => {
+    const pace = new StepPace();
+    // Steps land every 100 ms of frames at 20 ms.
+    let minutes = 0;
+    for (let t = 0; t <= 600; t += 20) {
+      if (t % 100 === 0) minutes++;
+      pace.tick(minutes, t);
+    }
+    // 600 ms is a step frame; 40 ms on is about 40 percent of the way.
+    pace.tick(minutes, 620);
+    pace.tick(minutes, 640);
+    expect(pace.clock.stepped).toBe(false);
+    expect(pace.progress).toBeGreaterThan(0.3);
+    expect(pace.progress).toBeLessThan(0.7);
+    pace.tick(minutes + 1, 660);
+    expect(pace.clock.stepped).toBe(true);
   });
 });
 

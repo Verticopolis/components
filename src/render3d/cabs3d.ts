@@ -26,7 +26,8 @@ import type { FacilityKind, RenderTransport } from "../render/renderModel";
 import { FLOOR, TILE } from "../render/scale";
 import { drawCar } from "../render/sprites";
 import { DEPTH, SLAB, STORY } from "./bandGeometry";
-import { Glide } from "./movers3d";
+import { glideCar, newCarDraw, type CarDrawState } from "../render/carMotion";
+import { pruneDrawn, StepPace } from "./movers3d";
 
 const KINDS: readonly FacilityKind[] = ["elevatorStandard", "elevatorService", "elevatorExpress"];
 /** The cab frame's color on the box's sides, per kind (`drawCarBack`). */
@@ -90,6 +91,15 @@ export function cabCell(kind: FacilityKind, load: number, dir: number): [number,
   return [(r * ARROWS.length + a) / COLS, 1 - (row + 1) / ROWS];
 }
 
+/** What the cars read from the game each frame. */
+export interface CabSource {
+  readonly tower: {
+    readonly elevators?: readonly RenderTransport[];
+    readonly transports: readonly RenderTransport[];
+  };
+  readonly clock: { readonly minutes: number };
+}
+
 /** Elevator cars, placed every frame from the shafts' car positions. */
 export class Cars {
   private readonly box = new BoxGeometry(1, 1, 1);
@@ -99,8 +109,10 @@ export class Cars {
   private boxes: InstancedMesh;
   private faces: InstancedMesh;
   private cells: InstancedBufferAttribute;
-  /** Where each car is drawn, gliding between the game's steps. */
-  private readonly drawn = new Glide(1, 60);
+  /** Where each car is drawn, gliding between the game's steps as the side view's cars do. */
+  private readonly drawn = new Map<number | string, CarDrawState & { seen: number }>();
+  private readonly pace = new StepPace();
+  private frame = 0;
 
   constructor() {
     this.texture = new CanvasTexture(paintAtlas());
@@ -143,8 +155,10 @@ export class Cars {
   }
 
   /** Places every car; returns the replacement meshes when the old ones were too small. */
-  update(transports: readonly RenderTransport[], now: number): readonly InstancedMesh[] {
-    this.drawn.tick(now);
+  update(sim: CabSource, now: number): readonly InstancedMesh[] {
+    const transports = sim.tower.elevators ?? sim.tower.transports;
+    this.pace.tick(sim.clock.minutes, now);
+    this.frame++;
     let n = 0;
     for (const t of transports) if (FRAME[t.kind] !== undefined) n += t.carPositions.length;
     let swapped: readonly InstancedMesh[] = [];
@@ -167,7 +181,11 @@ export class Cars {
       t.carPositions.forEach((at, c) => {
         const w = t.width - 0.3;
         const cx = t.x + t.width / 2;
-        const cy = this.drawn.at(`${t.id}:${c}`, 0, at).y * STORY + 0.05 + h / 2;
+        const key = `${t.id}:${c}`;
+        let d = this.drawn.get(key);
+        if (!d) this.drawn.set(key, (d = { ...newCarDraw(at), seen: 0 }));
+        d.seen = this.frame;
+        const cy = glideCar(d, at, this.pace.clock.stepped, this.pace.progress).pos * STORY + 0.05 + h / 2;
         m4.makeScale(w, h, DEPTH * 0.4);
         m4.setPosition(cx, cy, -DEPTH * 0.64);
         this.boxes.setMatrixAt(i, m4);
@@ -180,7 +198,7 @@ export class Cars {
         i++;
       });
     }
-    this.drawn.prune(i * 2);
+    pruneDrawn(this.drawn, this.frame, i * 2);
     for (const m of [this.boxes, this.faces]) {
       m.count = i;
       m.instanceMatrix.needsUpdate = true;
