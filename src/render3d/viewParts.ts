@@ -84,8 +84,8 @@ export function gradient(top: number, bottom: number): CanvasTexture {
   return t;
 }
 
-/** Frames between two art repaints; each repaint redraws one band. */
-export const REPAINT_EVERY = 6;
+/** Milliseconds between two art repaints. Each redraws one band (a canvas paint and two texture uploads), so it stays rare. */
+export const REPAINT_MS = 1500;
 
 /** The people window's reach above and below the camera's floor, by tier. */
 const PEOPLE_FLOORS: Readonly<Record<Tier, number>> = { low: 8, medium: 12, high: 16 };

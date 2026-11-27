@@ -26,6 +26,7 @@ import type { FacilityKind, RenderTransport } from "../render/renderModel";
 import { FLOOR, TILE } from "../render/scale";
 import { drawCar } from "../render/sprites";
 import { DEPTH, SLAB, STORY } from "./bandGeometry";
+import { Glide } from "./movers3d";
 
 const KINDS: readonly FacilityKind[] = ["elevatorStandard", "elevatorService", "elevatorExpress"];
 /** The cab frame's color on the box's sides, per kind (`drawCarBack`). */
@@ -98,6 +99,8 @@ export class Cars {
   private boxes: InstancedMesh;
   private faces: InstancedMesh;
   private cells: InstancedBufferAttribute;
+  /** Where each car is drawn, gliding between the game's steps. */
+  private readonly drawn = new Glide(1, 60);
 
   constructor() {
     this.texture = new CanvasTexture(paintAtlas());
@@ -140,7 +143,8 @@ export class Cars {
   }
 
   /** Places every car; returns the replacement meshes when the old ones were too small. */
-  update(transports: readonly RenderTransport[]): readonly InstancedMesh[] {
+  update(transports: readonly RenderTransport[], now: number): readonly InstancedMesh[] {
+    this.drawn.tick(now);
     let n = 0;
     for (const t of transports) if (FRAME[t.kind] !== undefined) n += t.carPositions.length;
     let swapped: readonly InstancedMesh[] = [];
@@ -163,7 +167,7 @@ export class Cars {
       t.carPositions.forEach((at, c) => {
         const w = t.width - 0.3;
         const cx = t.x + t.width / 2;
-        const cy = at * STORY + 0.05 + h / 2;
+        const cy = this.drawn.at(`${t.id}:${c}`, 0, at).y * STORY + 0.05 + h / 2;
         m4.makeScale(w, h, DEPTH * 0.6);
         m4.setPosition(cx, cy, -DEPTH * 0.5);
         this.boxes.setMatrixAt(i, m4);
@@ -176,6 +180,7 @@ export class Cars {
         i++;
       });
     }
+    this.drawn.prune(i * 2);
     for (const m of [this.boxes, this.faces]) {
       m.count = i;
       m.instanceMatrix.needsUpdate = true;

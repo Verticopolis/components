@@ -25,6 +25,8 @@ export const SLAB = 0.28;
 
 const SLAB_RGB: Rgb = [118, 120, 126];
 const DIVIDER: Rgb = [96, 98, 106];
+/** The plaster walls between rooms in the art look. */
+const PARTITION: Rgb = [214, 204, 186];
 const GLASS: Rgb = [150, 186, 214];
 const MULLION: Rgb = [70, 80, 96];
 const ROOF: Rgb = [104, 108, 116];
@@ -102,8 +104,12 @@ function room(solid: BoxWriter, glow: BoxWriter, u: RenderUnit, input: BandInput
   const furnished = !input.art && u.kind !== "floor" && u.state !== "construction" && u.state !== "gutted";
   if (u.kind !== "floor") {
     solid.box(x0, y0, -DEPTH, x1, y0 + 0.03, 0, look.floor, ~FACE.top);
-    // The game's art draws its own room edges, so the art look leaves out the dividers.
     if (!input.art) solid.box(x1 - 0.12, y0, -DEPTH, x1, y0 + h - SLAB, 0, DIVIDER, FACE.back | FACE.bottom);
+    else if (u.kind !== "lobby")
+      // A thin plaster wall at each side of a room, so neighbors read as separate rooms; none across a lobby or a shaft.
+      for (const wx of [x0, x1 - 0.08])
+        if (!input.transports.some((t) => t.kind.startsWith("elevator") && t.x < wx + 0.08 && wx < t.x + t.width))
+          solid.box(wx, y0, -DEPTH, wx + 0.08, y0 + h - SLAB, 0, PARTITION, FACE.back | FACE.bottom);
   }
   for (const p of furnished ? look.furnish(u.width, u.id) : []) {
     const px0 = x0 + Math.max(0, p.x);

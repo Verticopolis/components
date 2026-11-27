@@ -63,6 +63,8 @@ export class Crowd {
   private readonly heads = new Instances(this.head, this.mat, 256);
   private chosen: number[] = [];
   private chosenAt = -Infinity;
+  /** Where each figure is drawn, gliding to the game's position between its steps. */
+  private readonly drawn = new Glide();
   get mesh(): InstancedMesh {
     return this.bodies.mesh;
   }
@@ -90,6 +92,7 @@ export class Crowd {
     );
     const body = this.bodies.mesh;
     const head = this.heads.mesh;
+    this.drawn.tick(now);
     let n = 0;
     for (const i of this.chosen) {
       const p = people[i];
@@ -98,11 +101,13 @@ export class Crowd {
       const z = -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
       const walking = p.state === "toShaft" || p.state === "toDest" || p.state === "climbing";
       const bob = walking ? Math.abs(Math.sin(now / 140 + (p.seed % 17))) * 0.12 : 0;
-      const base = p.fy * STORY + bob;
-      m4.makeTranslation(p.x + 0.5, base + BODY_H / 2, z);
+      const at = this.drawn.at(p.id, p.x, p.fy);
+      const x = at.x;
+      const base = at.y * STORY + bob;
+      m4.makeTranslation(x + 0.5, base + BODY_H / 2, z);
       body.setMatrixAt(n, m4);
       body.setColorAt(n, tint.setHex(p.staff ? STAFF : (CLOTHES[p.seed % CLOTHES.length] ?? STAFF)));
-      m4.makeTranslation(p.x + 0.5, base + BODY_H + HEAD / 2 + 0.02, z);
+      m4.makeTranslation(x + 0.5, base + BODY_H + HEAD / 2 + 0.02, z);
       head.setMatrixAt(n, m4);
       const hair = (p.seed >>> 5) % 3 === 0;
       head.setColorAt(
@@ -111,6 +116,7 @@ export class Crowd {
       );
       n++;
     }
+    this.drawn.prune(this.chosen.length * 2);
     for (const m of [body, head]) {
       m.count = n;
       m.instanceMatrix.needsUpdate = true;
@@ -125,6 +131,55 @@ export class Crowd {
     this.body.dispose();
     this.head.dispose();
     this.mat.dispose();
+  }
+}
+
+/** How fast a drawn figure or car catches up with the game, per second. */
+const GLIDE_RATE = 10;
+
+/**
+ * Drawn positions that glide toward the game's, so motion stays smooth
+ * between simulation steps instead of jumping a step at a time. A jump too
+ * long to be a step (a new figure, a teleport) snaps.
+ */
+export class Glide {
+  private readonly pos = new Map<number | string, { x: number; y: number; seen: number }>();
+  private frame = 0;
+  private last = 0;
+  private alpha = 1;
+
+  /** `snapX`, `snapY`: the longest move, in tiles and floors, that still glides. */
+  constructor(
+    private readonly snapX = 8,
+    private readonly snapY = 3,
+  ) {}
+
+  /** Starts a frame at `now` (ms). */
+  tick(now: number): void {
+    const dt = this.last > 0 ? Math.min(0.25, Math.max(0, (now - this.last) / 1000)) : 1;
+    this.last = now;
+    this.alpha = 1 - Math.exp(-dt * GLIDE_RATE);
+    this.frame++;
+  }
+
+  /** The drawn position of `key`, whose game position is `x, y`. */
+  at(key: number | string, x: number, y: number): { readonly x: number; readonly y: number } {
+    const d = this.pos.get(key);
+    if (!d || Math.abs(d.x - x) > this.snapX || Math.abs(d.y - y) > this.snapY) {
+      const fresh = { x, y, seen: this.frame };
+      this.pos.set(key, fresh);
+      return fresh;
+    }
+    d.x += (x - d.x) * this.alpha;
+    d.y += (y - d.y) * this.alpha;
+    d.seen = this.frame;
+    return d;
+  }
+
+  /** Forgets keys not drawn this frame once more than `max` are held. */
+  prune(max: number): void {
+    if (this.pos.size <= max) return;
+    for (const [k, d] of this.pos) if (d.seen !== this.frame) this.pos.delete(k);
   }
 }
 

@@ -41,7 +41,7 @@ import {
   gradient,
   lotLimits,
   peopleWindowAt,
-  REPAINT_EVERY,
+  REPAINT_MS,
   unitsIn,
   type BandMesh,
   type PeopleWindow,
@@ -318,13 +318,13 @@ export class Tower3dView {
     const sim = this.options.sim();
     if (sim.tower.revision !== this.revision) this.syncStructure(false);
     if (this.dirty.length) this.rebuild(this.dirty.shift()!);
-    for (const m of this.cars.update(sim.tower.elevators ?? sim.tower.transports)) this.scene.add(m);
+    for (const m of this.cars.update(sim.tower.elevators ?? sim.tower.transports, now)) this.scene.add(m);
     for (const m of this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit.ty / STORY, now))
       this.scene.add(m);
     this.traffic.update(now, -90, this.options.catalog.world.lotWidth + 90, GROUND_Y, -DEPTH - 9);
     this.syncSky(resolveTime(this.time, sim.clock.hour));
-    if (++this.repaintAt >= REPAINT_EVERY) {
-      this.repaintAt = 0;
+    if (now - this.repaintAt >= REPAINT_MS) {
+      this.repaintAt = now;
       this.repaintOne(sim);
     }
     clampOrbit(this.orbit, this.limits);
