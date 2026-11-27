@@ -12,7 +12,6 @@
  */
 import {
   CanvasTexture,
-  Color,
   DirectionalLight,
   Fog,
   Group,
@@ -32,7 +31,22 @@ import {
 import { findCatalogFacility } from "../render/catalogIndex";
 import { lobbyHalls, type LobbyHalls } from "../render/lobbyHalls";
 import type { RenderCatalog, RenderRules, RenderSim, RenderUnit } from "../render/renderModel";
-import { BAND_FLOORS, buildBand, SLAB, STORY } from "./bandGeometry";
+import { hangArt, type ArtPaint } from "./bandArt";
+import { BAND_FLOORS, buildBand, DEPTH, STORY } from "./bandGeometry";
+import {
+  artLookAt,
+  artTintAt,
+  builtBox,
+  disposeBand,
+  gradient,
+  lotLimits,
+  peopleWindowAt,
+  REPAINT_EVERY,
+  unitsIn,
+  type BandMesh,
+  type PeopleWindow,
+  type Tower3dStats,
+} from "./viewParts";
 import {
   attachOrbitInput,
   clampOrbit,
@@ -44,13 +58,14 @@ import {
   type OrbitLimits,
 } from "./camera3d";
 import { changedBands, towerBands, type TowerBands } from "./floorDigest";
-import { buildLot } from "./lot3d";
-import { Cars, Crowd } from "./movers3d";
+import { buildLot, GROUND_Y } from "./lot3d";
+import { Cars, Crowd, Traffic } from "./movers3d";
 import { FrameClock, startTier, stepDown, TIERS, type Tier } from "./quality";
 import { resolveTime, skyLight, type LookVariant, type TimeChoice, type TimeOfDay } from "./sky3d";
 
 export type { LookVariant, TimeChoice, TimeOfDay } from "./sky3d";
 export type { Tier } from "./quality";
+export type { Tower3dStats } from "./viewParts";
 
 /** Why the view could not draw. */
 export type Unavailable = "no-webgl2" | "context-lost";
@@ -69,28 +84,6 @@ export interface Tower3dOptions {
   readonly onUnavailable?: (why: Unavailable) => void;
 }
 
-/** The numbers the gate records. */
-export interface Tower3dStats {
-  readonly tier: Tier;
-  readonly frameP50: number;
-  readonly frameP90: number;
-  readonly frameP95: number;
-  readonly drawCalls: number;
-  readonly triangles: number;
-  readonly geometries: number;
-  readonly bands: number;
-  readonly people: number;
-  readonly cars: number;
-  readonly pixelRatio: number;
-  /** Milliseconds the last band rebuild took. */
-  readonly lastBuildMs: number;
-}
-
-interface BandMesh {
-  readonly solid: Mesh | null;
-  readonly glow: Mesh | null;
-}
-
 const FOV = 32;
 
 export class Tower3dView {
@@ -102,6 +95,9 @@ export class Tower3dView {
   private readonly sun = new DirectionalLight();
   private readonly cars = new Cars();
   private readonly crowd = new Crowd();
+  private readonly traffic = new Traffic();
+  private repaintAt = 0;
+  private repaintNext = 0;
   private readonly clock = new FrameClock();
   private solidMat: Material;
   private readonly glowMat = new MeshBasicMaterial({ vertexColors: true, transparent: true });
@@ -145,7 +141,7 @@ export class Tower3dView {
     private readonly renderer: WebGLRenderer,
     private readonly options: Tower3dOptions,
   ) {
-    this.variant = options.variant ?? "lit";
+    this.variant = options.variant ?? "art";
     this.time = options.time ?? (this.variant === "night" ? "night" : "follow");
     this.tier =
       options.tier ??
@@ -156,7 +152,16 @@ export class Tower3dView {
       });
     this.solidMat = this.makeSolidMaterial();
     renderer.outputColorSpace = SRGBColorSpace;
-    this.scene.add(this.tower, this.hemi, this.sun, this.sun.target, this.cars.mesh, this.crowd.mesh);
+    this.scene.add(
+      this.tower,
+      this.hemi,
+      this.sun,
+      this.sun.target,
+      this.cars.mesh,
+      this.crowd.mesh,
+      this.crowd.headMesh,
+      this.traffic.mesh,
+    );
     this.limits = this.computeLimits();
     this.built = this.limits;
     this.orbit = homeOrbit(this.limits, FOV, 1);
@@ -202,7 +207,9 @@ export class Tower3dView {
 
   /** Switches the look (for comparing variants side by side). */
   setVariant(variant: LookVariant): void {
+    const art = (variant === "art") !== (this.variant === "art");
     this.variant = variant;
+    if (art && this.layout) for (const b of [...this.bands.keys(), ...this.layout.units.keys()]) this.rebuild(b);
     const old = this.solidMat;
     this.solidMat = this.makeSolidMaterial();
     for (const b of this.bands.values()) if (b.solid) this.paint(b.solid);
@@ -221,6 +228,15 @@ export class Tower3dView {
     this.orbit.theta += dTheta;
     this.orbit.phi += dPhi;
     clampOrbit(this.orbit, this.limits);
+  }
+
+  /**
+   * The floors and tiles the view wants people for: the whole lot across,
+   * and a tier's reach above and below the floor the camera looks at. The
+   * game hands this to the simulation's people window while the view is open.
+   */
+  peopleWindow(): PeopleWindow {
+    return peopleWindowAt(this.orbit.ty / STORY, this.tier, this.options.catalog.world.lotWidth);
   }
 
   /** The numbers the gate records. */
@@ -275,6 +291,7 @@ export class Tower3dView {
     this.lot?.geometry.dispose();
     this.cars.dispose();
     this.crowd.dispose();
+    this.traffic.dispose();
     this.solidMat.dispose();
     this.glowMat.dispose();
     this.nightMat.dispose();
@@ -302,9 +319,14 @@ export class Tower3dView {
     if (this.dirty.length) this.rebuild(this.dirty.shift()!);
     const swappedCars = this.cars.update(sim.tower.elevators ?? sim.tower.transports);
     if (swappedCars) this.scene.add(swappedCars);
-    const swappedCrowd = this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit.ty / STORY, now);
-    if (swappedCrowd) this.scene.add(swappedCrowd);
+    for (const m of this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit.ty / STORY, now))
+      this.scene.add(m);
+    this.traffic.update(now, -90, this.options.catalog.world.lotWidth + 90, GROUND_Y, -DEPTH - 9);
     this.syncSky(resolveTime(this.time, sim.clock.hour));
+    if (++this.repaintAt >= REPAINT_EVERY) {
+      this.repaintAt = 0;
+      this.repaintOne(sim);
+    }
     clampOrbit(this.orbit, this.limits);
     const far = farPlane(this.orbit, this.limits);
     if (Math.abs(far - this.camera.far) > far * 0.1) {
@@ -355,16 +377,44 @@ export class Tower3dView {
       rows: layout.rows,
       stories: this.stories,
       isPresent: this.options.rules.isPresent,
+      art: this.variant === "art",
     });
     // Swap only once the new band is complete, so no half-built band ever draws.
     const next: BandMesh = {
       solid: this.addMesh(built.solid, this.solidMat, true),
       glow: this.addMesh(built.glow, this.glowMat),
+      art: this.variant === "art" ? this.buildArt(band, layout.units.get(band) ?? []) : null,
     };
     if (old) disposeBand(old);
-    if (next.solid || next.glow) this.bands.set(band, next);
+    if (next.solid || next.glow || next.art) this.bands.set(band, next);
     else this.bands.delete(band);
     this.lastBuildMs = performance.now() - t0;
+  }
+
+  /** Paints a band's room art and hangs it on the back walls. */
+  private buildArt(band: number, units: readonly RenderUnit[]): BandMesh["art"] {
+    const art = hangArt(band, units, this.stories, this.artLook(this.options.sim()), this.artTint());
+    if (art) this.tower.add(art.mesh);
+    return art;
+  }
+
+  /** Repaints the next band's art, so lights, people at work and signs follow the game. */
+  private repaintOne(sim: RenderSim): void {
+    if (this.variant !== "art" || !this.bands.size) return;
+    const keys = [...this.bands.keys()].sort((a, b) => a - b);
+    const band = keys[this.repaintNext % keys.length]!;
+    this.repaintNext = (this.repaintNext + 1) % keys.length;
+    const art = this.bands.get(band)?.art;
+    if (!art) return;
+    art.paint.paint(unitsIn(sim, band), this.stories, this.artLook(sim));
+  }
+
+  private artLook(sim: RenderSim): ArtPaint {
+    return artLookAt(this.drawnTime ?? resolveTime(this.time, sim.clock.hour), sim.clock.hour);
+  }
+
+  private artTint(): number {
+    return artTintAt(this.drawnTime);
   }
 
   private rebuildLot(): void {
@@ -415,6 +465,14 @@ export class Tower3dView {
     const cx = (this.limits.minX + this.limits.maxX) / 2;
     this.sun.position.set(cx + s.sunFrom[0] * 300, s.sunFrom[1] * 300, s.sunFrom[2] * 300);
     this.sun.target.position.set(cx, 20, -3.5);
+    const sim = this.options.sim();
+    for (const b of this.bands.values()) {
+      if (!b.art) continue;
+      (b.art.mesh.material as MeshBasicMaterial).color.setHex(this.artTint());
+      b.art.paint.paint(unitsIn(sim, b.art.paint.band), this.stories, this.artLook(sim));
+    }
+    this.crowd.setNight(time !== "day");
+    this.traffic.setNight(time !== "day");
     if (this.night !== (time === "night")) {
       this.night = time === "night";
       for (const b of this.bands.values()) if (b.solid) this.paint(b.solid);
@@ -426,65 +484,15 @@ export class Tower3dView {
   }
 
   private computeLimits(): OrbitLimits {
-    const sim = this.options.sim();
-    const w = this.options.catalog.world.lotWidth;
-    const low = Math.min(1, sim.tower.lowestFloor);
-    const high = Math.max(2, sim.tower.highestFloor + 1);
-    const minY = low * STORY - SLAB;
-    const maxY = high * STORY;
-    const reach = Math.max(w, maxY - minY);
-    return {
-      minX: -10,
-      maxX: w + 10,
-      minY,
-      maxY,
-      minRadius: STORY * 6,
-      maxRadius: reach * 8,
-      floorY: minY + 1,
-    };
+    const t = this.options.sim().tower;
+    return lotLimits(this.options.catalog.world.lotWidth, t.lowestFloor, t.highestFloor);
   }
 
   private makeSolidMaterial(): Material {
-    return this.variant === "lit"
+    return this.variant === "lit" || this.variant === "art"
       ? new MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0 })
       : new MeshLambertMaterial({ vertexColors: true });
   }
-}
-
-/** The span of built rooms, floor to roof; the lot when nothing is built. */
-function builtBox(units: ReadonlyArray<RenderUnit>, l: OrbitLimits): FrameBox {
-  let minX = Infinity;
-  let maxX = -Infinity;
-  for (const u of units) {
-    minX = Math.min(minX, u.x);
-    maxX = Math.max(maxX, u.x + u.width);
-  }
-  if (!(maxX > minX)) return l;
-  return { minX: minX - 4, maxX: maxX + 4, minY: l.minY, maxY: l.maxY };
-}
-
-function disposeBand(b: BandMesh): void {
-  for (const m of [b.solid, b.glow]) {
-    if (!m) continue;
-    m.geometry.dispose();
-    m.removeFromParent();
-  }
-}
-
-/** A vertical sky gradient as a background texture. */
-function gradient(top: number, bottom: number): CanvasTexture {
-  const c = document.createElement("canvas");
-  c.width = 4;
-  c.height = 256;
-  const g = c.getContext("2d")!;
-  const gr = g.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, `#${new Color(top).getHexString()}`);
-  gr.addColorStop(1, `#${new Color(bottom).getHexString()}`);
-  g.fillStyle = gr;
-  g.fillRect(0, 0, 4, 256);
-  const t = new CanvasTexture(c);
-  t.colorSpace = SRGBColorSpace;
-  return t;
 }
 
 export { BAND_FLOORS };

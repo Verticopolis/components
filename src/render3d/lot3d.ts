@@ -1,7 +1,7 @@
 /**
  * The lot around the tower: earth cut open on the front face so the
  * basements show, grass and a sidewalk at street level, a street behind the
- * tower with a few parked cars, trees, and plain neighbor blocks in the
+ * tower (its traffic is `Traffic` in movers3d), trees, and plain neighbor blocks in the
  * distance. One merged buffer, rebuilt only when the lot or the basements
  * change. Floor 1 is the ground floor; floors 0 and below are basements.
  */
@@ -21,12 +21,6 @@ const LANE: Rgb = [230, 220, 140];
 const TRUNK: Rgb = [96, 70, 50];
 const CROWN: Rgb = [72, 128, 70];
 const NEIGHBOR: Rgb = [150, 168, 190];
-const CAR_PAINT: readonly Rgb[] = [
-  [200, 60, 60],
-  [60, 110, 200],
-  [230, 230, 230],
-  [220, 180, 60],
-];
 
 export interface LotInput {
   readonly lotWidth: number;
@@ -65,22 +59,6 @@ export function buildLot(input: LotInput): BufferGeometry | null {
   w.box(W, g + 0.05, -DEPTH - 0.25, W + 14, g + 0.12, 0, WALK, FACE.bottom | FACE.back);
   w.box(-90, g + 0.05, -DEPTH - 14, W + 90, g + 0.1, -DEPTH - 4, ROAD, ~FACE.top);
   for (let x = -80; x < W + 80; x += 6) w.box(x, g + 0.1, -DEPTH - 9.1, x + 3, g + 0.12, -DEPTH - 8.9, LANE, ~FACE.top);
-  for (let i = 0; i < Math.max(4, Math.round(W / 24)); i++) {
-    const x = -30 + i * 17 + (i % 2) * 5;
-    const z = i % 2 ? -DEPTH - 6.5 : -DEPTH - 11.5;
-    const paint = CAR_PAINT[i % CAR_PAINT.length]!;
-    w.box(x, g + 0.35, z - 0.9, x + 4.2, g + 1.1, z + 0.9, paint, FACE.bottom);
-    w.box(
-      x + 1,
-      g + 1.1,
-      z - 0.8,
-      x + 3.2,
-      g + 1.75,
-      z + 0.8,
-      [paint[0] * 0.7, paint[1] * 0.7, paint[2] * 0.7],
-      FACE.bottom,
-    );
-  }
   for (const [x, z] of [
     [-6, -3],
     [-10, -10],

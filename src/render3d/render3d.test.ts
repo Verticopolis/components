@@ -1,7 +1,8 @@
 import type { FacilityKind, RenderPerson, RenderTransport, RenderUnit } from "../render/renderModel";
 import { kindFacts, kindKeys } from "../tests/catalogKinds";
 import { testRules } from "../tests/renderRules";
-import { bandOf, BAND_FLOORS, buildBand, uncovered, type BandInput } from "./bandGeometry";
+import { BandArt } from "./bandArt";
+import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
 import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
 import { changedBands, joinRuns, towerBands } from "./floorDigest";
@@ -101,8 +102,8 @@ describe("buildBand", () => {
     };
     const g = buildBand(band([], { band: 1, transports: [shaft] })).solid!;
     g.computeBoundingBox();
-    expect(g.boundingBox!.min.y).toBeLessThan(BAND_FLOORS * 3.4);
-    expect(g.boundingBox!.max.y).toBeLessThanOrEqual(2 * BAND_FLOORS * 3.4);
+    expect(g.boundingBox!.min.y).toBeLessThan(BAND_FLOORS * STORY);
+    expect(g.boundingBox!.max.y).toBeLessThanOrEqual(2 * BAND_FLOORS * STORY);
   });
 
   it("puts a roof only where the story above is open sky", () => {
@@ -231,5 +232,43 @@ describe("sky3d", () => {
     expect(timeOfDayAt(23)).toBe("night");
     expect(resolveTime("follow", 2)).toBe("night");
     expect(resolveTime("day", 2)).toBe("day");
+  });
+});
+
+describe("BandArt", () => {
+  const unit = (id: number, kind: RenderUnit["kind"], floor: number, x: number, width: number): RenderUnit => ({
+    id,
+    kind,
+    floor,
+    x,
+    width,
+    state: "occupied",
+    occupants: 0,
+  });
+
+  it("hangs each room's art on its back wall and carpets its floor, inside the band's canvas", () => {
+    const art = new BandArt(0, 1);
+    art.layout([unit(1, "office", 3, 10, 9), unit(2, "floor", 3, 19, 4), unit(3, "office", 9, 0, 9)], () => 1);
+    const g = art.geometry!;
+    // Two rooms in band 0 (the one on floor 9 is band 1's), two quads each.
+    expect(g.index!.count).toBe(2 * 2 * 6);
+    const uv = g.getAttribute("uv");
+    for (let i = 0; i < uv.count; i++) {
+      expect(uv.getX(i)).toBeGreaterThanOrEqual(0);
+      expect(uv.getX(i)).toBeLessThanOrEqual(1);
+      expect(uv.getY(i)).toBeGreaterThanOrEqual(0);
+      expect(uv.getY(i)).toBeLessThanOrEqual(1);
+    }
+    g.computeBoundingBox();
+    expect(g.boundingBox!.min.x).toBe(10);
+    expect(g.boundingBox!.max.x).toBe(23);
+    expect(art.canvas.width).toBe(13 * 10);
+    art.dispose();
+  });
+
+  it("has nothing to hang for a band with no rooms", () => {
+    const art = new BandArt(2, 1);
+    art.layout([unit(1, "office", 3, 10, 9)], () => 1);
+    expect(art.geometry).toBeNull();
   });
 });

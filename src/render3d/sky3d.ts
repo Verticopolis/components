@@ -7,8 +7,8 @@
 export type TimeOfDay = "day" | "dusk" | "night";
 export type TimeChoice = "follow" | TimeOfDay;
 
-/** The looks the owner picks between (Story 1.3). */
-export type LookVariant = "pastel" | "lit" | "night";
+/** The looks the owner picks between (Story 1.3); "art" hangs the game's own room art on the walls. */
+export type LookVariant = "art" | "pastel" | "lit" | "night";
 
 /** The part of the day the clock's hour falls in. */
 export function timeOfDayAt(hour: number): TimeOfDay {

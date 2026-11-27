@@ -16,10 +16,10 @@ import { lookFor, LOOKS_3D, type Rgb } from "./looks3d";
 
 /** Floors per band. */
 export const BAND_FLOORS = 8;
-/** One story's height, in tiles. */
-export const STORY = 3.4;
+/** One story's height, in tiles: the side view's 4.5, so the game's room art fits the walls. */
+export const STORY = 4.5;
 /** A room's depth, front to back wall, in tiles. */
-export const DEPTH = 7;
+export const DEPTH = 4;
 /** The slab under each story. */
 export const SLAB = 0.28;
 
@@ -58,6 +58,8 @@ export interface BandInput {
   readonly stories: (u: RenderUnit) => number;
   /** Whether a unit's people are in it now (its lights are on at night). */
   readonly isPresent: (u: { readonly state: UnitState }) => boolean;
+  /** The game's room art hangs on the back walls (bandArt.ts): no 3D furniture or night glow. */
+  readonly art?: boolean;
 }
 
 export interface BandMeshes {
@@ -92,12 +94,16 @@ function room(solid: BoxWriter, glow: BoxWriter, u: RenderUnit, input: BandInput
   const light = nightLight(u, look.night, input.isPresent);
   solid.lit = light;
   solid.box(x0, y0 - SLAB - behind * 0.1, -DEPTH - behind, x1, y0, 0.15, SLAB_RGB, FACE.back);
-  solid.box(x0, y0, -DEPTH - behind, x1, y0 + h - SLAB, -DEPTH + 0.2 - behind, look.wall, FACE.back | FACE.bottom);
+  // A bare floor gets no back wall of its own in the model looks, so an
+  // unfinished story reads as open structure rather than one more wall.
+  if (u.kind !== "floor" || input.art)
+    solid.box(x0, y0, -DEPTH - behind, x1, y0 + h - SLAB, -DEPTH + 0.2 - behind, look.wall, FACE.back | FACE.bottom);
   const story = STORY - SLAB;
-  const furnished = u.kind !== "floor" && u.state !== "construction" && u.state !== "gutted";
+  const furnished = !input.art && u.kind !== "floor" && u.state !== "construction" && u.state !== "gutted";
   if (u.kind !== "floor") {
     solid.box(x0, y0, -DEPTH, x1, y0 + 0.03, 0, look.floor, ~FACE.top);
-    solid.box(x1 - 0.12, y0, -DEPTH, x1, y0 + h - SLAB, 0, DIVIDER, FACE.back | FACE.bottom);
+    // The game's art draws its own room edges, so the art look leaves out the dividers.
+    if (!input.art) solid.box(x1 - 0.12, y0, -DEPTH, x1, y0 + h - SLAB, 0, DIVIDER, FACE.back | FACE.bottom);
   }
   for (const p of furnished ? look.furnish(u.width, u.id) : []) {
     const px0 = x0 + Math.max(0, p.x);
@@ -106,7 +112,7 @@ function room(solid: BoxWriter, glow: BoxWriter, u: RenderUnit, input: BandInput
     solid.box(px0, base, -p.z1 * DEPTH, px1, base + p.h * story, -p.z0 * DEPTH, p.c, FACE.bottom);
   }
   solid.lit = null;
-  if (light && u.kind !== "floor")
+  if (light && u.kind !== "floor" && !input.art)
     glow.box(
       x0 + 0.25,
       y0 + 0.35 * story,

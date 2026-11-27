@@ -94,51 +94,126 @@ export class Cars {
 }
 
 const CLOTHES = [0x3c5a96, 0xb44a3c, 0x4a8a5a, 0xd8b04a, 0x6a4a8a, 0x2c2c34, 0xe0e0dc, 0x8a6a4a];
+const SKIN = [0xf1c8a0, 0xd9a070, 0xa8704a, 0x7a4a2c, 0xe8b890];
+const HAIR = [0x2a1a10, 0x4a2c18, 0x8a5a2c, 0xd8b060, 0x1a1a1a];
 const STAFF = 0x2a6ab0;
 const HOLD_MS = 500;
+const BODY_H = 1.25;
+const HEAD = 0.46;
 
-/** People on foot, sampled to a cap and placed every frame. */
+/** People on foot, sampled to a cap and placed every frame: a body and a head each. */
 export class Crowd {
-  private readonly body = new BoxGeometry(0.42, 0.95, 0.32);
+  private readonly body = new BoxGeometry(0.55, BODY_H, 0.4);
+  private readonly head = new BoxGeometry(HEAD, HEAD, HEAD);
   private readonly mat = new MeshLambertMaterial({ color: 0xffffff });
-  private readonly inst = new Instances(this.body, this.mat, 256);
+  private readonly bodies = new Instances(this.body, this.mat, 256);
+  private readonly heads = new Instances(this.head, this.mat, 256);
   private chosen: number[] = [];
   private chosenAt = -Infinity;
   get mesh(): InstancedMesh {
-    return this.inst.mesh;
+    return this.bodies.mesh;
+  }
+  get headMesh(): InstancedMesh {
+    return this.heads.mesh;
+  }
+
+  /** After dark the figures glow faintly, so they read against lit rooms. */
+  setNight(on: boolean): void {
+    this.mat.emissive.setHex(on ? 0x5a5048 : 0);
   }
 
   /**
    * Places up to `cap` people, nearest floor `focus` first. Riders are left
-   * to their cars and finished walkers are gone.
+   * to their cars and finished walkers are gone. Returns any mesh that had
+   * to be replaced, for the caller to add to the scene.
    */
-  update(people: readonly RenderPerson[], cap: number, focus: number, now: number): InstancedMesh | null {
+  update(people: readonly RenderPerson[], cap: number, focus: number, now: number): InstancedMesh[] {
     if (now - this.chosenAt > HOLD_MS || this.chosen.length > people.length) {
       this.chosen = sample(people, cap, focus);
       this.chosenAt = now;
     }
-    const swapped = this.inst.ensure(this.chosen.length);
-    const mesh = this.inst.mesh;
+    const swapped = [this.bodies.ensure(this.chosen.length), this.heads.ensure(this.chosen.length)].filter(
+      (m): m is InstancedMesh => m !== null,
+    );
+    const body = this.bodies.mesh;
+    const head = this.heads.mesh;
     let n = 0;
     for (const i of this.chosen) {
       const p = people[i];
       if (!p || p.state === "riding" || p.state === "done") continue;
       // Depth from the seed, so a person keeps their place in the room.
-      const z = -DEPTH * (0.15 + ((p.seed >>> 3) % 64) / 100);
-      m4.makeTranslation(p.x + 0.5, p.fy * STORY + 0.5, z);
-      mesh.setMatrixAt(n, m4);
-      mesh.setColorAt(n, tint.setHex(p.staff ? STAFF : (CLOTHES[p.seed % CLOTHES.length] ?? STAFF)));
+      const z = -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
+      const walking = p.state === "toShaft" || p.state === "toDest" || p.state === "climbing";
+      const bob = walking ? Math.abs(Math.sin(now / 140 + (p.seed % 17))) * 0.12 : 0;
+      const base = p.fy * STORY + bob;
+      m4.makeTranslation(p.x + 0.5, base + BODY_H / 2, z);
+      body.setMatrixAt(n, m4);
+      body.setColorAt(n, tint.setHex(p.staff ? STAFF : (CLOTHES[p.seed % CLOTHES.length] ?? STAFF)));
+      m4.makeTranslation(p.x + 0.5, base + BODY_H + HEAD / 2 + 0.02, z);
+      head.setMatrixAt(n, m4);
+      const hair = (p.seed >>> 5) % 3 === 0;
+      head.setColorAt(
+        n,
+        tint.setHex(hair ? (HAIR[(p.seed >>> 7) % HAIR.length] ?? 0) : (SKIN[(p.seed >>> 9) % SKIN.length] ?? 0)),
+      );
       n++;
     }
-    mesh.count = n;
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    for (const m of [body, head]) {
+      m.count = n;
+      m.instanceMatrix.needsUpdate = true;
+      if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    }
     return swapped;
   }
 
   dispose(): void {
-    this.inst.mesh.dispose();
+    this.bodies.mesh.dispose();
+    this.heads.mesh.dispose();
     this.body.dispose();
+    this.head.dispose();
+    this.mat.dispose();
+  }
+}
+
+const STREET_PAINT = [0xc83c3c, 0x3c6ec8, 0xe6e6e6, 0xdcb43c, 0x2c2c34, 0x4a8a5a, 0xe07a2c];
+const STREET_CARS = 14;
+const STREET_SPEED = 0.012;
+
+/** Cars driving the street behind the tower, both ways, as one instanced mesh. */
+export class Traffic {
+  private readonly box = new BoxGeometry(4.2, 1.3, 1.8);
+  private readonly mat = new MeshLambertMaterial({ color: 0xffffff });
+  readonly mesh: InstancedMesh;
+
+  constructor() {
+    this.mesh = new InstancedMesh(this.box, this.mat, STREET_CARS);
+    this.mesh.instanceMatrix.setUsage(DynamicDrawUsage);
+    this.mesh.frustumCulled = false;
+    for (let i = 0; i < STREET_CARS; i++) this.mesh.setColorAt(i, tint.setHex(STREET_PAINT[i % STREET_PAINT.length]!));
+  }
+
+  /** After dark the cars glow faintly, as if under the street lights. */
+  setNight(on: boolean): void {
+    this.mat.emissive.setHex(on ? 0x403830 : 0);
+  }
+
+  /** Moves every car along a street from `x0` to `x1` at height `ground`, `z` its middle. */
+  update(now: number, x0: number, x1: number, ground: number, z: number): void {
+    const span = x1 - x0;
+    for (let i = 0; i < STREET_CARS; i++) {
+      const east = i % 2 === 0;
+      const speed = STREET_SPEED * (0.75 + ((i * 37) % 10) / 20);
+      const t = (((now * speed + i * (span / STREET_CARS) * 1.7) % span) + span) % span;
+      const x = east ? x0 + t : x1 - t;
+      m4.makeTranslation(x, ground + 0.75, z + (east ? 1.6 : -1.6));
+      this.mesh.setMatrixAt(i, m4);
+    }
+    this.mesh.instanceMatrix.needsUpdate = true;
+  }
+
+  dispose(): void {
+    this.mesh.dispose();
+    this.box.dispose();
     this.mat.dispose();
   }
 }
