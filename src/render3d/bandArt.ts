@@ -75,7 +75,7 @@ export class BandArt {
   geometry: BufferGeometry | null = null;
   frontGeometry: BufferGeometry | null = null;
   private frame: Frame | null = null;
-  /** The elevator shafts, stairs and escalators crossing the band, painted over its rooms as the side view draws them. */
+  /** The elevator shafts crossing the band, painted over its rooms as the side view draws them. */
   private shafts: readonly RenderTransport[] = [];
 
   constructor(
@@ -89,7 +89,7 @@ export class BandArt {
   /** Lays the band's rooms out on the canvas and builds their quads. */
   layout(units: readonly RenderUnit[], stories: Stories, shafts: readonly RenderTransport[] = []): void {
     this.shafts = shafts.filter(
-      (t) => isPainted(t) && t.bottom < (this.band + 1) * BAND_FLOORS && t.top >= this.band * BAND_FLOORS,
+      (t) => isElevator(t) && t.bottom < (this.band + 1) * BAND_FLOORS && t.top >= this.band * BAND_FLOORS,
     );
     this.geometry?.dispose();
     this.frontGeometry?.dispose();
@@ -304,9 +304,8 @@ function inBand(u: RenderUnit, band: number): boolean {
   return Math.floor(u.floor / BAND_FLOORS) === band;
 }
 
-/** The transports the art paints: elevator shafts, stairs and escalators. */
-function isPainted(t: RenderTransport): boolean {
-  return t.kind.startsWith("elevator") || t.kind === "stairs" || t.kind === "escalator";
+function isElevator(t: RenderTransport): boolean {
+  return t.kind === "elevatorStandard" || t.kind === "elevatorService" || t.kind === "elevatorExpress";
 }
 
 /** The band's floors a shaft crosses. */

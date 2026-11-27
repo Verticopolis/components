@@ -12,6 +12,7 @@
 import type { BufferGeometry } from "three";
 import type { RenderSkyBridge, RenderTransport, RenderUnit, UnitState } from "../render/renderModel";
 import { BoxWriter, FACE } from "./boxWriter";
+import { writeFlight } from "./flights3d";
 import { lookFor, LOOKS_3D, type Rgb } from "./looks3d";
 
 /** Floors per band. */
@@ -141,33 +142,14 @@ function nightLight(u: RenderUnit, own: Rgb | null, isPresent: BandInput["isPres
   return isPresent(u) ? own : null;
 }
 
-/** A shaft's back panel and rails on the band's floors, or a flight's steps. The art look paints the panel and the flight. */
+/** A shaft's back panel and rails on the band's floors, or a flight's steps. The art look paints the panel. */
 function shaft(solid: BoxWriter, t: RenderTransport, band: number, art: boolean): void {
   const f0 = Math.max(t.bottom, band * BAND_FLOORS);
   const f1 = Math.min(t.top, (band + 1) * BAND_FLOORS - 1);
   if (f1 < f0) return;
   const look = LOOKS_3D[t.kind];
   if (t.kind === "stairs" || t.kind === "escalator") {
-    // The art look paints the flight on the wall, as the side view draws it.
-    if (art) return;
-    // A flight climbs from its bottom floor to the one above it.
-    if (t.bottom < band * BAND_FLOORS || t.bottom >= (band + 1) * BAND_FLOORS) return;
-    const steps = 10;
-    const run = t.width / steps;
-    for (let i = 0; i < steps; i++) {
-      const sx = t.x + i * run;
-      solid.box(
-        sx,
-        y(t.bottom),
-        -DEPTH * 0.55,
-        sx + run,
-        y(t.bottom) + ((i + 1) * STORY) / steps,
-        -DEPTH * 0.25,
-        look.wall,
-        FACE.bottom | FACE.back,
-      );
-    }
-    solid.box(t.x, y(t.bottom), -DEPTH * 0.58, t.x + t.width, y(t.bottom + 1), -DEPTH * 0.55, look.accent, SHAFT_FACES);
+    writeFlight(solid, t, f0, f1, y, STORY, DEPTH);
     return;
   }
   if (!art)

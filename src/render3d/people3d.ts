@@ -19,11 +19,13 @@ import {
   SRGBColorSpace,
   Vector2,
 } from "three";
-import type { RenderPerson } from "../render/renderModel";
+import { climbDrawX, leaveFlight, type Climber } from "../render/climbPath";
+import type { RenderPerson, RenderTransport } from "../render/renderModel";
 import { castIndex, crewIndex, drawPerson, LOOKS, type Pose } from "../render/pixelSprites/people";
 import { FLOOR, TILE } from "../render/scale";
 import { DEPTH, STORY } from "./bandGeometry";
 import type { Orbit } from "./camera3d";
+import { FLIGHT_FAR, FLIGHT_NEAR } from "./flights3d";
 import { Glide, sample } from "./movers3d";
 
 /** One figure's cell, in side-view pixels (the side view's own figure bake). */
@@ -45,8 +47,8 @@ const HEIGHT = CELL_H * UNIT_Y;
 /** How far the quad's middle sits above the foot line. */
 const LIFT = HEIGHT / 2 - (CELL_H - FOOT - 1) * UNIT_Y;
 const HOLD_MS = 500;
-/** A climber's depth in the art look: just in front of the flight painted on the back wall. */
-const CLIMB_Z = -DEPTH + 0.45;
+/** A climber's depth: the middle of the flight's steps. */
+const CLIMB_Z = (-DEPTH * (FLIGHT_NEAR + FLIGHT_FAR)) / 2;
 const STRIDE_MS = 140;
 
 const m4 = new Matrix4();
@@ -92,6 +94,12 @@ export function figureCell(p: RenderPerson, walking: boolean, left: boolean, now
   return [col / COLS, 1 - (Math.min(row, ROWS - 1) + 1) / ROWS];
 }
 
+/** What the crowd reads from the game each frame. */
+export interface CrowdSource {
+  readonly crowd: { readonly people: readonly RenderPerson[] };
+  readonly tower: { readonly transports: readonly RenderTransport[] };
+}
+
 /** The people walking the floors, placed every frame from the crowd the game sends. */
 export class Crowd {
   private readonly plane = new PlaneGeometry(1, 1);
@@ -105,8 +113,8 @@ export class Crowd {
   private readonly drawn = new Glide();
   /** The way each figure last walked, so one who stops keeps facing it. */
   private readonly facing = new Map<number, boolean>();
-  /** Whether the flights are painted on the back wall (the art look), so climbers keep to the wall. */
-  onWall = true;
+  /** Each climber's flight and place on its run, as the side view keeps them (`climbPath.ts`). */
+  private readonly climbers = new Map<number, Climber & { down?: boolean }>();
 
   constructor() {
     this.texture = new CanvasTexture(paintAtlas());
@@ -149,11 +157,14 @@ export class Crowd {
   }
 
   /**
-   * Places up to `cap` people, nearest the orbit's target floor first, each
-   * turned to face the camera. Riders are left to their cars and finished
+   * Places up to `cap` of the crowd's people, nearest the orbit's target
+   * floor first, each turned to face the camera; a climber goes up a
+   * flight's steps the way the side view draws it. Riders are left to their cars and finished
    * walkers are gone. Returns the new mesh when the old one was too small.
    */
-  update(people: readonly RenderPerson[], cap: number, orbit: Orbit, now: number): InstancedMesh[] {
+  update(sim: CrowdSource, cap: number, orbit: Orbit, now: number): InstancedMesh[] {
+    const people = sim.crowd.people;
+    const transports = sim.tower.transports;
     const focus = orbit.ty / STORY;
     if (now - this.chosenAt > HOLD_MS || this.chosen.length > people.length) {
       this.chosen = sample(people, cap, focus);
@@ -175,15 +186,31 @@ export class Crowd {
       // Depth from the seed, so a person keeps their place in the room; a
       // climber keeps to the flight, on the wall in the art look.
       const climbing = p.state === "climbing";
-      let z = -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
-      if (climbing) z = this.onWall ? CLIMB_Z : -DEPTH * 0.4;
+      const z = climbing ? CLIMB_Z : -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
       const at = this.drawn.at(p.id, p.x, p.fy);
+      let x = at.x;
       const dx = p.x - at.x;
       const walking = (p.state === "toShaft" || p.state === "toDest") && Math.abs(dx) > 0.01;
-      if ((walking || climbing) && Math.abs(dx) > 0.01) this.facing.set(p.id, dx < 0);
+      if (walking) this.facing.set(p.id, dx < 0);
+      if (climbing) {
+        let c = this.climbers.get(p.id);
+        if (!c) this.climbers.set(p.id, (c = {}));
+        if (Math.abs(p.fy - at.y) > 1e-3) c.down = p.fy < at.y;
+        const cx = climbDrawX(c, transports, p.x, p.floor, at.y, c.down === true);
+        if (cx !== undefined) {
+          x = cx - 0.5;
+          this.facing.set(p.id, c.climbLeft === true);
+        }
+      } else {
+        const c = this.climbers.get(p.id);
+        if (c) {
+          leaveFlight(c);
+          this.climbers.delete(p.id);
+        }
+      }
       const left = this.facing.get(p.id) ?? p.seed % 2 === 0;
       m4.makeScale(WIDTH, HEIGHT, 1).premultiply(turn);
-      m4.setPosition(at.x + 0.5, at.y * STORY + LIFT, z);
+      m4.setPosition(x + 0.5, at.y * STORY + LIFT, z);
       this.figures.setMatrixAt(n, m4);
       const [u, v] = figureCell(p, walking, left, now);
       this.cells.setXY(n, u, v);
@@ -191,6 +218,7 @@ export class Crowd {
     }
     this.drawn.prune(this.chosen.length * 2);
     if (this.facing.size > this.chosen.length * 4) this.facing.clear();
+    if (this.climbers.size > this.chosen.length * 4) this.climbers.clear();
     this.figures.count = n;
     this.figures.instanceMatrix.needsUpdate = true;
     this.cells.needsUpdate = true;

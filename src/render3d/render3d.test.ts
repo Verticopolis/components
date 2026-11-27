@@ -9,6 +9,7 @@ import { figureCell } from "./people3d";
 import { paintSplit, type SplitTargets } from "./bandLayers";
 import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
+import { FLIGHT_FAR, FLIGHT_NEAR, writeFlight } from "./flights3d";
 import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
 import { changedBands, joinRuns, towerBands } from "./floorDigest";
 import { CONSTRUCTION, GUTTED, lookFor, LOOKS_3D } from "./looks3d";
@@ -111,11 +112,37 @@ describe("buildBand", () => {
     expect(g.boundingBox!.max.y).toBeLessThanOrEqual(2 * BAND_FLOORS * STORY);
   });
 
-  it("leaves a flight's steps to the wall art in the art look", () => {
+  it("builds a flight's steps out of the wall in both looks", () => {
     const stairs = { id: 6, kind: "stairs", x: 2, width: 8, bottom: 1, top: 2 } as RenderTransport;
-    const steps = buildBand(band([], { transports: [stairs] })).solid;
-    expect(steps).not.toBeNull();
-    expect(buildBand(band([], { transports: [stairs], art: true })).solid).toBeNull();
+    for (const art of [false, true]) {
+      const g = buildBand(band([], { transports: [stairs], art })).solid!;
+      g.computeBoundingBox();
+      // The steps stand in the room, in front of the back wall.
+      expect(g.boundingBox!.min.z).toBeGreaterThan(-4 * FLIGHT_FAR - 1e-6);
+      expect(g.boundingBox!.max.z).toBeLessThan(-4 * FLIGHT_NEAR + 1e-6);
+    }
+  });
+
+  it("climbs a flight's steps one story from the foot of its run to the head", () => {
+    const w = new BoxWriter();
+    const stairs = { id: 6, kind: "stairs", x: 2, width: 8, bottom: 1, top: 2 } as RenderTransport;
+    writeFlight(w, stairs, 1, 1, (f) => f * STORY, STORY, 4);
+    const pos = w.geometry()!.getAttribute("position");
+    // The lowest tread top and the highest, by x along the run.
+    let lowX = Infinity;
+    let highX = -Infinity;
+    let top = -Infinity;
+    for (let i = 0; i < pos.count; i++) {
+      const y = pos.getY(i);
+      if (y <= STORY + 0.5 && y > STORY) lowX = Math.min(lowX, pos.getX(i));
+      if (y > top) top = y;
+    }
+    for (let i = 0; i < pos.count; i++)
+      if (pos.getY(i) >= top - 1.2 && pos.getY(i) <= 2 * STORY) highX = Math.max(highX, pos.getX(i));
+    expect(lowX).toBeLessThan(2 + 2);
+    expect(highX).toBeGreaterThan(2 + 6);
+    // The handrail sits above the top tread, which reaches the floor above.
+    expect(top).toBeGreaterThan(2 * STORY);
   });
 
   it("puts a roof only where the story above is open sky", () => {
@@ -338,12 +365,12 @@ describe("BandArt", () => {
     art.dispose();
   });
 
-  it("hangs a flight's art over the floors it climbs", () => {
+  it("paints no art for a flight, which is built in 3D", () => {
     const art = new BandArt(0, 1);
     const stairs = { id: 6, kind: "stairs", x: 0, width: 8, bottom: 3, top: 4 } as RenderTransport;
     art.layout([unit(1, "office", 3, 0, 9)], () => 1, [stairs]);
-    // The office's wall and carpet, plus one wall quad for each of the flight's two floors.
-    expect(art.geometry!.index!.count).toBe((2 + 2) * 6);
+    // Only the office's wall and carpet: the flight is built in 3D, not painted.
+    expect(art.geometry!.index!.count).toBe(2 * 6);
     art.dispose();
   });
 

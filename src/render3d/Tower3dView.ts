@@ -211,7 +211,6 @@ export class Tower3dView {
   setVariant(variant: LookVariant): void {
     const art = (variant === "art") !== (this.variant === "art");
     this.variant = variant;
-    this.crowd.onWall = variant === "art";
     if (art && this.layout) for (const b of [...this.bands.keys(), ...this.layout.units.keys()]) this.rebuild(b);
     const old = this.solidMat;
     this.solidMat = this.makeSolidMaterial();
@@ -321,7 +320,7 @@ export class Tower3dView {
     if (sim.tower.revision !== this.revision) this.syncStructure(false);
     if (this.dirty.length) this.rebuild(this.dirty.shift()!);
     for (const m of this.cars.update(sim.tower.elevators ?? sim.tower.transports, now)) this.scene.add(m);
-    for (const m of this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit, now)) this.scene.add(m);
+    for (const m of this.crowd.update(sim, TIERS[this.tier].people, this.orbit, now)) this.scene.add(m);
     this.traffic.update(now, -90, this.options.catalog.world.lotWidth + 90, GROUND_Y, -DEPTH - 9);
     this.syncSky(resolveTime(this.time, sim.clock.hour));
     if (++this.artTicks % REFRESH_FRAMES === 0) this.repaintOne(sim);
