@@ -159,7 +159,7 @@ export class Cars {
       swapped = this.meshes;
     }
     const h = STORY - SLAB - 0.15;
-    const front = -DEPTH * 0.2;
+    const front = -DEPTH * 0.44;
     let i = 0;
     for (const t of transports) {
       const frame = FRAME[t.kind];
@@ -168,8 +168,8 @@ export class Cars {
         const w = t.width - 0.3;
         const cx = t.x + t.width / 2;
         const cy = this.drawn.at(`${t.id}:${c}`, 0, at).y * STORY + 0.05 + h / 2;
-        m4.makeScale(w, h, DEPTH * 0.6);
-        m4.setPosition(cx, cy, -DEPTH * 0.5);
+        m4.makeScale(w, h, DEPTH * 0.4);
+        m4.setPosition(cx, cy, -DEPTH * 0.64);
         this.boxes.setMatrixAt(i, m4);
         this.boxes.setColorAt(i, tint.setHex(frame));
         m4.makeScale(w, h, 1);

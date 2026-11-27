@@ -186,7 +186,7 @@ export class Crowd {
       // Depth from the seed, so a person keeps their place in the room; a
       // climber keeps to the flight, on the wall in the art look.
       const climbing = p.state === "climbing";
-      const z = climbing ? CLIMB_Z : -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
+      const z = climbing ? CLIMB_Z : -DEPTH * (0.1 + ((p.seed >>> 3) % 29) / 100);
       const at = this.drawn.at(p.id, p.x, p.fy);
       let x = at.x;
       const dx = p.x - at.x;

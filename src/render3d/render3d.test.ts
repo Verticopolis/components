@@ -10,6 +10,7 @@ import { paintSplit, type SplitTargets } from "./bandLayers";
 import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
 import { FLIGHT_FAR, FLIGHT_NEAR, writeFlight } from "./flights3d";
+import { cutSlab, wellsAt } from "./wells";
 import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
 import { changedBands, joinRuns, towerBands } from "./floorDigest";
 import { CONSTRUCTION, GUTTED, lookFor, LOOKS_3D } from "./looks3d";
@@ -151,6 +152,36 @@ describe("buildBand", () => {
       { min: 10, max: 20 },
     ]);
     expect(uncovered({ min: 0, max: 20 }, [{ min: -5, max: 30 }])).toEqual([]);
+  });
+});
+
+describe("wells", () => {
+  it("opens a slab only over what climbs up through it", () => {
+    const lift = { id: 7, kind: "elevatorStandard", x: 4, width: 4, bottom: 1, top: 5 } as RenderTransport;
+    expect(wellsAt([lift], 1, 4)).toEqual([]);
+    expect(wellsAt([lift], 6, 4)).toEqual([]);
+    const [w] = wellsAt([lift], 3, 4);
+    expect(w!.x0).toBeGreaterThan(4);
+    expect(w!.x1).toBeLessThan(8);
+  });
+
+  it("cuts a slab into whole pieces beside a well and strips behind and in front of it", () => {
+    const pieces = cutSlab(0, 10, -4, 0, [{ x0: 4, x1: 6, z0: -3, z1: -1 }]);
+    expect(pieces).toEqual([
+      { x0: 0, x1: 4, z0: -4, z1: 0 },
+      { x0: 4, x1: 6, z0: -4, z1: -3 },
+      { x0: 4, x1: 6, z0: -1, z1: 0 },
+      { x0: 6, x1: 10, z0: -4, z1: 0 },
+    ]);
+    expect(cutSlab(0, 10, -4, 0, [])).toEqual([{ x0: 0, x1: 10, z0: -4, z1: 0 }]);
+  });
+
+  it("leaves a hole in a room's floor over a shaft that climbs through it", () => {
+    const lift = { id: 7, kind: "elevatorStandard", x: 12, width: 4, bottom: 1, top: 5 } as RenderTransport;
+    const count = (floor: number): number =>
+      buildBand(band([unit("office", { floor })], { transports: [lift] })).solid!.getAttribute("position").count;
+    // Floor 1's slab is whole (the shaft starts there); floor 3's is cut in pieces around the shaft.
+    expect(count(3)).toBeGreaterThan(count(1));
   });
 });
 

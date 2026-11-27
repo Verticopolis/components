@@ -12,8 +12,8 @@ import { BoxWriter, FACE } from "./boxWriter";
 import type { Rgb } from "./looks3d";
 
 /** The depth a flight's steps span, as shares of the room's depth from the open front. */
-export const FLIGHT_NEAR = 0.28;
-export const FLIGHT_FAR = 0.62;
+export const FLIGHT_NEAR = 0.44;
+export const FLIGHT_FAR = 0.8;
 
 interface FlightLook {
   readonly steps: number;

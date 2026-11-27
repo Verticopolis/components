@@ -26,6 +26,7 @@ import {
 import type { RenderTransport, RenderUnit } from "../render/renderModel";
 import { drawTransport } from "../render/sprites";
 import { FLOOR, TILE } from "../render/scale";
+import { cutSlab, wellsAt } from "./wells";
 import { BAND_FLOORS, DEPTH, SLAB, STORY } from "./bandGeometry";
 import { paintSplit, type SplitTargets } from "./bandLayers";
 
@@ -109,7 +110,7 @@ export class BandArt {
       this.texture.dispose();
       this.frontTexture.dispose();
     }
-    this.geometry = quads(units, stories, f, this.band, "wall", this.shafts);
+    this.geometry = quads(units, stories, f, this.band, "wall", this.shafts, shafts);
     this.frontGeometry = quads(units, stories, f, this.band, "front");
   }
 
@@ -371,6 +372,7 @@ function quads(
   band: number,
   layer: "wall" | "front",
   shafts: readonly RenderTransport[] = [],
+  climbs: readonly RenderTransport[] = [],
 ): BufferGeometry | null {
   const list = units.filter((u) => inBand(u, band));
   let shaftQuads = 0;
@@ -379,7 +381,10 @@ function quads(
     shaftQuads += Math.max(0, f1 - f0 + 1);
   }
   if (!list.length && !shaftQuads) return null;
-  const n = list.length * (layer === "wall" ? 2 : 1) + shaftQuads;
+  // The carpet opens where a shaft or a flight climbs through the floor (wells.ts).
+  const carpets =
+    layer === "wall" ? list.map((u) => cutSlab(u.x, u.x + u.width, ART_Z, 0, wellsAt(climbs, u.floor, DEPTH))) : [];
+  const n = list.length + carpets.reduce((sum, c) => sum + c.length, 0) + shaftQuads;
   const pos = new Float32Array(n * 12);
   const uv = new Float32Array(n * 8);
   const nor = new Float32Array(n * 12);
@@ -395,7 +400,7 @@ function quads(
     idx.set([b, b + 1, b + 2, b, b + 2, b + 3], q * 6);
     q++;
   };
-  for (const u of list) {
+  list.forEach((u, i) => {
     const tall = Math.max(1, stories(u));
     const r = pixelRect(u, tall, f);
     const x0 = u.x;
@@ -415,15 +420,24 @@ function quads(
         [u0, v0, u1, v0, u1, v1, u0, v1],
         [0, 0, 1],
       );
-      continue;
+      return;
     }
     // A bare floor hangs a hair behind, so a room on the same tiles wins.
     const z = u.kind === "floor" ? ART_Z - 0.04 : ART_Z;
     quad([x0, y0, z, x1, y0, z, x1, y1, z, x0, y1, z], [u0, v0, u1, v0, u1, v1, u0, v1], [0, 0, 1]);
     const fy = y0 + (u.kind === "floor" ? 0.03 : 0.05);
     const vc = v0 + CARPET_PX / ch;
-    quad([x0, fy, 0, x1, fy, 0, x1, fy, z, x0, fy, z], [u0, v0, u1, v0, u1, vc, u0, vc], [0, 1, 0]);
-  }
+    const ux = (x: number): number => u0 + ((x - x0) / (x1 - x0)) * (u1 - u0);
+    const vz = (d: number): number => v0 + (vc - v0) * (d / ART_Z);
+    for (const p of carpets[i]!) {
+      const [ua, ub, vf, vb] = [ux(p.x0), ux(p.x1), vz(p.z1), vz(p.z0)];
+      quad(
+        [p.x0, fy, p.z1, p.x1, fy, p.z1, p.x1, fy, p.z0, p.x0, fy, p.z0],
+        [ua, vf, ub, vf, ub, vb, ua, vb],
+        [0, 1, 0],
+      );
+    }
+  });
   // A shaft's art one story at a time, so it lines up with the rooms beside it; a hair in front of them.
   for (const t of shafts) {
     const { f0, f1 } = shaftFloors(t, band);

@@ -13,6 +13,7 @@ import type { BufferGeometry } from "three";
 import type { RenderSkyBridge, RenderTransport, RenderUnit, UnitState } from "../render/renderModel";
 import { BoxWriter, FACE } from "./boxWriter";
 import { writeFlight } from "./flights3d";
+import { cutSlab, wellsAt } from "./wells";
 import { lookFor, LOOKS_3D, type Rgb } from "./looks3d";
 
 /** Floors per band. */
@@ -96,7 +97,10 @@ function room(solid: BoxWriter, glow: BoxWriter, u: RenderUnit, input: BandInput
   const behind = u.kind === "floor" ? 0.3 : 0;
   const light = nightLight(u, look.night, input.isPresent);
   solid.lit = light;
-  solid.box(x0, y0 - SLAB - behind * 0.1, -DEPTH - behind, x1, y0, 0.15, SLAB_RGB, FACE.back);
+  // The slab and the floor open over a shaft or a flight that climbs through them.
+  const wells = wellsAt(input.transports, u.floor, DEPTH);
+  for (const p of cutSlab(x0, x1, -DEPTH - behind, 0.15, wells))
+    solid.box(p.x0, y0 - SLAB - behind * 0.1, p.z0, p.x1, y0, p.z1, SLAB_RGB, FACE.back);
   // A bare floor gets no back wall of its own in the model looks, so an
   // unfinished story reads as open structure rather than one more wall.
   if (u.kind !== "floor" || input.art)
@@ -104,7 +108,8 @@ function room(solid: BoxWriter, glow: BoxWriter, u: RenderUnit, input: BandInput
   const story = STORY - SLAB;
   const furnished = !input.art && u.kind !== "floor" && u.state !== "construction" && u.state !== "gutted";
   if (u.kind !== "floor") {
-    solid.box(x0, y0, -DEPTH, x1, y0 + 0.03, 0, look.floor, ~FACE.top);
+    for (const p of cutSlab(x0, x1, -DEPTH, 0, wells))
+      solid.box(p.x0, y0, p.z0, p.x1, y0 + 0.03, p.z1, look.floor, ~FACE.top);
     if (!input.art) solid.box(x1 - 0.12, y0, -DEPTH, x1, y0 + h - SLAB, 0, DIVIDER, FACE.back | FACE.bottom);
     else if (u.kind !== "lobby")
       // A thin plaster wall at each side of a room, so neighbors read as separate rooms; none across a lobby, a shaft or a flight.
