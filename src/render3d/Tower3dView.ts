@@ -31,7 +31,7 @@ import {
 import { findCatalogFacility } from "../render/catalogIndex";
 import { lobbyHalls, type LobbyHalls } from "../render/lobbyHalls";
 import type { RenderCatalog, RenderRules, RenderSim, RenderTransport, RenderUnit } from "../render/renderModel";
-import { hangArt, type ArtPaint } from "./bandArt";
+import { hangArt, tintArt, type ArtPaint } from "./bandArt";
 import { BAND_FLOORS, buildBand, DEPTH, STORY } from "./bandGeometry";
 import {
   artLookAt,
@@ -64,7 +64,7 @@ import { Cars } from "./cabs3d";
 import { Traffic } from "./movers3d";
 import { Crowd } from "./people3d";
 import { FrameClock, startTier, stepDown, TIERS, type Tier } from "./quality";
-import { resolveTime, skyLight, type LookVariant, type TimeChoice, type TimeOfDay } from "./sky3d";
+import { isArt, resolveTime, skyLight, type LookVariant, type TimeChoice, type TimeOfDay } from "./sky3d";
 
 export type { LookVariant, TimeChoice, TimeOfDay } from "./sky3d";
 export type { Tier } from "./quality";
@@ -145,6 +145,7 @@ export class Tower3dView {
     private readonly options: Tower3dOptions,
   ) {
     this.variant = options.variant ?? "art";
+    this.crowd.setVoxel(this.variant === "voxel");
     this.time = options.time ?? (this.variant === "night" ? "night" : "follow");
     this.tier =
       options.tier ??
@@ -209,8 +210,9 @@ export class Tower3dView {
 
   /** Switches the look (for comparing variants side by side). */
   setVariant(variant: LookVariant): void {
-    const art = (variant === "art") !== (this.variant === "art");
+    const art = (isArt(variant) || isArt(this.variant)) && variant !== this.variant;
     this.variant = variant;
+    this.crowd.setVoxel(variant === "voxel");
     if (art && this.layout) for (const b of [...this.bands.keys(), ...this.layout.units.keys()]) this.rebuild(b);
     const old = this.solidMat;
     this.solidMat = this.makeSolidMaterial();
@@ -346,7 +348,7 @@ export class Tower3dView {
     const sim = this.options.sim();
     this.revision = sim.tower.revision;
     this.halls = lobbyHalls(sim.tower.lobbyHeights());
-    const next = towerBands(sim.tower, this.stories, this.variant !== "art");
+    const next = towerBands(sim.tower, this.stories, !isArt(this.variant));
     const changed = changedBands(this.layout, next);
     const basements = changed.some((b) => b <= 0) || !this.lot;
     this.layout = next;
@@ -374,16 +376,15 @@ export class Tower3dView {
       rows: layout.rows,
       stories: this.stories,
       isPresent: this.options.rules.isPresent,
-      art: this.variant === "art",
+      art: isArt(this.variant),
     });
     // Swap only once the new band is complete, so no half-built band ever draws.
     const next: BandMesh = {
       solid: this.addMesh(built.solid, this.solidMat, true),
       glow: this.addMesh(built.glow, this.glowMat),
-      art:
-        this.variant === "art"
-          ? this.buildArt(band, layout.units.get(band) ?? [], layout.transports.get(band) ?? [])
-          : null,
+      art: isArt(this.variant)
+        ? this.buildArt(band, layout.units.get(band) ?? [], layout.transports.get(band) ?? [])
+        : null,
     };
     if (old) disposeBand(old);
     if (next.solid || next.glow || next.art) this.bands.set(band, next);
@@ -393,14 +394,15 @@ export class Tower3dView {
 
   /** Paints a band's room art and hangs it on the back walls. */
   private buildArt(band: number, units: readonly RenderUnit[], shafts: readonly RenderTransport[]): BandMesh["art"] {
-    const art = hangArt(band, units, this.stories, this.artLook(this.options.sim()), this.artTint(), shafts);
+    const look = this.artLook(this.options.sim());
+    const art = hangArt(band, units, this.stories, look, this.artTint(), shafts, this.variant === "voxel");
     if (art) this.tower.add(...art.meshes);
     return art;
   }
 
   /** Repaints the rooms that changed in the next band, so lights, people at work and signs follow the game. */
   private repaintOne(sim: RenderSim): void {
-    if (this.variant !== "art" || !this.bands.size) return;
+    if (!isArt(this.variant) || !this.bands.size) return;
     const keys = [...this.bands.keys()].sort((a, b) => a - b);
     const band = keys[this.repaintNext % keys.length]!;
     this.repaintNext = (this.repaintNext + 1) % keys.length;
@@ -468,7 +470,7 @@ export class Tower3dView {
     const sim = this.options.sim();
     for (const b of this.bands.values()) {
       if (!b.art) continue;
-      for (const m of b.art.meshes) (m.material as MeshBasicMaterial).color.setHex(this.artTint());
+      for (const m of b.art.meshes) tintArt(m, this.artTint());
       b.art.paint.paint(unitsIn(sim, b.art.paint.band), this.stories, this.artLook(sim));
     }
     this.crowd.setNight(time !== "day");
@@ -489,7 +491,7 @@ export class Tower3dView {
   }
 
   private makeSolidMaterial(): Material {
-    return this.variant === "lit" || this.variant === "art"
+    return this.variant === "lit" || isArt(this.variant)
       ? new MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0 })
       : new MeshLambertMaterial({ vertexColors: true });
   }

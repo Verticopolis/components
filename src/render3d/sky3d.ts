@@ -7,8 +7,17 @@
 export type TimeOfDay = "day" | "dusk" | "night";
 export type TimeChoice = "follow" | TimeOfDay;
 
-/** The looks the owner picks between (Story 1.3); "art" hangs the game's own room art on the walls. */
-export type LookVariant = "art" | "pastel" | "lit" | "night";
+/**
+ * The looks the owner picks between (Story 1.3); "art" hangs the game's own
+ * room art on the walls, and "voxel" gives that art and the people depth
+ * (`voxel3d.ts`).
+ */
+export type LookVariant = "art" | "voxel" | "pastel" | "lit" | "night";
+
+/** Whether a look hangs the game's own room art. */
+export function isArt(variant: LookVariant): boolean {
+  return variant === "art" || variant === "voxel";
+}
 
 /** The part of the day the clock's hour falls in. */
 export function timeOfDayAt(hour: number): TimeOfDay {

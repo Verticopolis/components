@@ -27,6 +27,7 @@ import type { RenderTransport, RenderUnit } from "../render/renderModel";
 import { drawTransport } from "../render/sprites";
 import { FLOOR, TILE } from "../render/scale";
 import { cutSlab, wellsAt } from "./wells";
+import { shadeOf, VOXEL } from "./voxel3d";
 import { BAND_FLOORS, DEPTH, SLAB, STORY } from "./bandGeometry";
 import { paintSplit, type SplitTargets } from "./bandLayers";
 
@@ -282,6 +283,7 @@ export function hangArt(
   look: ArtPaint,
   tint: number,
   shafts: readonly RenderTransport[] = [],
+  voxel = false,
 ): { readonly paint: BandArt; readonly meshes: readonly Mesh[] } | null {
   const paint = new BandArt(band, 1);
   paint.layout(units, stories, shafts);
@@ -290,15 +292,29 @@ export function hangArt(
     return null;
   }
   paint.paint(units, stories, look);
-  const meshes = [new Mesh(paint.geometry, new MeshBasicMaterial({ map: paint.texture, color: tint }))];
-  if (paint.frontGeometry)
-    meshes.push(
-      new Mesh(
-        paint.frontGeometry,
-        new MeshBasicMaterial({ map: paint.frontTexture, color: tint, transparent: true, alphaTest: 0.04 }),
-      ),
+  const meshes: Mesh[] = [new Mesh(paint.geometry, new MeshBasicMaterial({ map: paint.texture, color: tint }))];
+  // The voxel look stacks the furniture layer a few art pixels deep toward the wall (voxel3d.ts).
+  let slices = voxel ? FURNITURE_SLICES : 1;
+  if (!paint.frontGeometry) slices = 0;
+  for (let i = 0; i < slices; i++) {
+    const m = new Mesh(
+      paint.frontGeometry!,
+      new MeshBasicMaterial({ map: paint.frontTexture, transparent: !voxel, alphaTest: voxel ? 0.5 : 0.04 }),
     );
+    m.userData.shade = shadeOf(i, slices);
+    m.position.z = -i * VOXEL;
+    meshes.push(tintArt(m, tint));
+  }
   return { paint, meshes };
+}
+
+/** How many art pixels deep the voxel look stacks the furniture layer. */
+const FURNITURE_SLICES = 6;
+
+/** Gives an art mesh the time of day's tint, darkened for a voxel stack's inner copies. */
+export function tintArt(m: Mesh, tint: number): Mesh {
+  (m.material as MeshBasicMaterial).color.setHex(tint).multiplyScalar((m.userData.shade as number | undefined) ?? 1);
+  return m;
 }
 
 function inBand(u: RenderUnit, band: number): boolean {

@@ -11,6 +11,7 @@ import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from
 import { BoxWriter, FACE } from "./boxWriter";
 import { FLIGHT_FAR, FLIGHT_NEAR, writeFlight } from "./flights3d";
 import { cutSlab, wellsAt } from "./wells";
+import { slabStack, VOXEL } from "./voxel3d";
 import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
 import { changedBands, joinRuns, towerBands } from "./floorDigest";
 import { CONSTRUCTION, GUTTED, lookFor, LOOKS_3D } from "./looks3d";
@@ -152,6 +153,20 @@ describe("buildBand", () => {
       { min: 10, max: 20 },
     ]);
     expect(uncovered({ min: 0, max: 20 }, [{ min: -5, max: 30 }])).toEqual([]);
+  });
+});
+
+describe("slabStack", () => {
+  it("stacks a quad one art pixel apart, darker inside than on its faces", () => {
+    const g = slabStack(4);
+    const pos = g.getAttribute("position");
+    const col = g.getAttribute("color");
+    expect(g.index!.count).toBe(4 * 6);
+    expect(pos.getZ(4) - pos.getZ(0)).toBeCloseTo(VOXEL);
+    expect(pos.getZ(0)).toBeCloseTo(-pos.getZ(15));
+    expect(col.getX(0)).toBe(1);
+    expect(col.getX(4)).toBeLessThan(1);
+    expect(col.getX(15)).toBe(1);
   });
 });
 

@@ -6,6 +6,7 @@
  * instanced cell offset. The whole crowd stays one draw call.
  */
 import {
+  type BufferGeometry,
   CanvasTexture,
   Color,
   DoubleSide,
@@ -15,7 +16,6 @@ import {
   Matrix4,
   MeshBasicMaterial,
   NearestFilter,
-  PlaneGeometry,
   SRGBColorSpace,
   Vector2,
 } from "three";
@@ -27,6 +27,7 @@ import { DEPTH, STORY } from "./bandGeometry";
 import type { Orbit } from "./camera3d";
 import { FLIGHT_FAR, FLIGHT_NEAR } from "./flights3d";
 import { Glide, sample } from "./movers3d";
+import { slabStack } from "./voxel3d";
 
 /** One figure's cell, in side-view pixels (the side view's own figure bake). */
 const CELL_W = 30;
@@ -47,6 +48,8 @@ const HEIGHT = CELL_H * UNIT_Y;
 /** How far the quad's middle sits above the foot line. */
 const LIFT = HEIGHT / 2 - (CELL_H - FOOT - 1) * UNIT_Y;
 const HOLD_MS = 500;
+/** How many art pixels deep a figure is in the voxel look. */
+const FIGURE_SLICES = 5;
 /** A climber's depth: the middle of the flight's steps. */
 const CLIMB_Z = (-DEPTH * (FLIGHT_NEAR + FLIGHT_FAR)) / 2;
 const STRIDE_MS = 140;
@@ -102,7 +105,12 @@ export interface CrowdSource {
 
 /** The people walking the floors, placed every frame from the crowd the game sends. */
 export class Crowd {
-  private readonly plane = new PlaneGeometry(1, 1);
+  private readonly flat = slabStack(1);
+  /** The voxel look's figure: the cutout stacked a few art pixels deep (voxel3d.ts). */
+  private readonly deep = slabStack(FIGURE_SLICES);
+  private geo: BufferGeometry = this.flat;
+  /** Whether figures turn to face the camera; the voxel look's stand square to the front. */
+  private turns = true;
   private readonly texture: CanvasTexture;
   private readonly mat: MeshBasicMaterial;
   private cells: InstancedBufferAttribute;
@@ -122,7 +130,7 @@ export class Crowd {
     this.texture.magFilter = NearestFilter;
     this.texture.minFilter = NearestFilter;
     this.texture.generateMipmaps = false;
-    this.mat = new MeshBasicMaterial({ map: this.texture, alphaTest: 0.5, side: DoubleSide });
+    this.mat = new MeshBasicMaterial({ map: this.texture, alphaTest: 0.5, side: DoubleSide, vertexColors: true });
     const cell = new Vector2(1 / COLS, 1 / ROWS);
     this.mat.onBeforeCompile = (shader) => {
       shader.uniforms.figCell = { value: cell };
@@ -143,12 +151,20 @@ export class Crowd {
   private make(capacity: number): [InstancedMesh, InstancedBufferAttribute] {
     const cells = new InstancedBufferAttribute(new Float32Array(capacity * 2), 2);
     cells.setUsage(DynamicDrawUsage);
-    this.plane.setAttribute("figAt", cells);
-    const m = new InstancedMesh(this.plane, this.mat, capacity);
+    this.geo.setAttribute("figAt", cells);
+    const m = new InstancedMesh(this.geo, this.mat, capacity);
     m.instanceMatrix.setUsage(DynamicDrawUsage);
     m.frustumCulled = false;
     m.count = 0;
     return [m, cells];
+  }
+
+  /** Gives the figures the voxel look's depth, or back to flat cutouts. */
+  setVoxel(on: boolean): void {
+    this.turns = !on;
+    this.geo = on ? this.deep : this.flat;
+    this.geo.setAttribute("figAt", this.cells);
+    this.figures.geometry = this.geo;
   }
 
   /** After dark the figures dim a little, as the room art does. */
@@ -178,7 +194,7 @@ export class Crowd {
       swapped.push(this.figures);
     }
     this.drawn.tick(now);
-    turn.makeRotationY(orbit.theta);
+    turn.makeRotationY(this.turns ? orbit.theta : 0);
     let n = 0;
     for (const i of this.chosen) {
       const p = people[i];
@@ -227,7 +243,8 @@ export class Crowd {
 
   dispose(): void {
     this.figures.dispose();
-    this.plane.dispose();
+    this.flat.dispose();
+    this.deep.dispose();
     this.mat.dispose();
     this.texture.dispose();
   }
