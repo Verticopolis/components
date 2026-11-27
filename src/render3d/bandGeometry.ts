@@ -76,7 +76,7 @@ export function buildBand(input: BandInput): BandMeshes {
   const solid = new BoxWriter(input.units.length * 8 + 64);
   const glow = new BoxWriter(input.units.length + 8);
   for (const u of input.units) room(solid, glow, u, input);
-  for (const t of input.transports) shaft(solid, t, input.band);
+  for (const t of input.transports) shaft(solid, t, input.band, input.art === true);
   for (const b of input.bridges) bridge(solid, b);
   shell(solid, input);
   return { solid: solid.geometry(), glow: glow.geometry(), faces: solid.faceCount + glow.faceCount };
@@ -131,8 +131,8 @@ function nightLight(u: RenderUnit, own: Rgb | null, isPresent: BandInput["isPres
   return isPresent(u) ? own : null;
 }
 
-/** A shaft's back panel and rails on the band's floors, or a flight's steps. */
-function shaft(solid: BoxWriter, t: RenderTransport, band: number): void {
+/** A shaft's back panel and rails on the band's floors, or a flight's steps. The art look paints the panel. */
+function shaft(solid: BoxWriter, t: RenderTransport, band: number, art: boolean): void {
   const f0 = Math.max(t.bottom, band * BAND_FLOORS);
   const f1 = Math.min(t.top, (band + 1) * BAND_FLOORS - 1);
   if (f1 < f0) return;
@@ -158,7 +158,8 @@ function shaft(solid: BoxWriter, t: RenderTransport, band: number): void {
     solid.box(t.x, y(t.bottom), -DEPTH * 0.58, t.x + t.width, y(t.bottom + 1), -DEPTH * 0.55, look.accent, SHAFT_FACES);
     return;
   }
-  solid.box(t.x, y(f0) - SLAB, -DEPTH + 0.22, t.x + t.width, y(f1 + 1) - SLAB, -DEPTH + 0.5, look.wall, SHAFT_FACES);
+  if (!art)
+    solid.box(t.x, y(f0) - SLAB, -DEPTH + 0.22, t.x + t.width, y(f1 + 1) - SLAB, -DEPTH + 0.5, look.wall, SHAFT_FACES);
   for (const rx of [t.x + 0.25, t.x + t.width - 0.4])
     solid.box(rx, y(f0) - SLAB, -DEPTH * 0.82, rx + 0.15, y(f1 + 1) - SLAB, -DEPTH * 0.8, look.accent, SHAFT_FACES);
 }

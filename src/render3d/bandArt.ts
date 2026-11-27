@@ -20,7 +20,8 @@ import {
   NearestFilter,
   SRGBColorSpace,
 } from "three";
-import type { RenderUnit } from "../render/renderModel";
+import type { RenderTransport, RenderUnit } from "../render/renderModel";
+import { drawTransport } from "../render/sprites";
 import { FLOOR, TILE } from "../render/scale";
 import { BAND_FLOORS, DEPTH, SLAB, STORY } from "./bandGeometry";
 import { paintSplit, type SplitTargets } from "./bandLayers";
@@ -65,6 +66,8 @@ export class BandArt {
   geometry: BufferGeometry | null = null;
   frontGeometry: BufferGeometry | null = null;
   private frame: Frame | null = null;
+  /** The elevator shafts crossing the band, painted over its rooms as the side view draws them. */
+  private shafts: readonly RenderTransport[] = [];
 
   constructor(
     readonly band: number,
@@ -75,12 +78,15 @@ export class BandArt {
   }
 
   /** Lays the band's rooms out on the canvas and builds their quads. */
-  layout(units: readonly RenderUnit[], stories: Stories): void {
+  layout(units: readonly RenderUnit[], stories: Stories, shafts: readonly RenderTransport[] = []): void {
+    this.shafts = shafts.filter(
+      (t) => isElevator(t) && t.bottom < (this.band + 1) * BAND_FLOORS && t.top >= this.band * BAND_FLOORS,
+    );
     this.geometry?.dispose();
     this.frontGeometry?.dispose();
     this.geometry = null;
     this.frontGeometry = null;
-    this.frame = frameFor(units, stories, this.band, this.detail);
+    this.frame = frameFor(units, stories, this.band, this.detail, this.shafts);
     const f = this.frame;
     if (!f) return;
     const w = Math.max(1, Math.ceil(f.tiles * TILE * f.scale));
@@ -94,7 +100,7 @@ export class BandArt {
       this.texture.dispose();
       this.frontTexture.dispose();
     }
-    this.geometry = quads(units, stories, f, this.band, "wall");
+    this.geometry = quads(units, stories, f, this.band, "wall", this.shafts);
     this.frontGeometry = quads(units, stories, f, this.band, "front");
   }
 
@@ -122,6 +128,22 @@ export class BandArt {
       if (!inBand(u, this.band)) continue;
       const r = pixelRect(u, stories(u), f);
       paintSplit(t, d, u, r.x, r.y, r.w, r.h);
+    }
+    // The shafts over the rooms, as the side view stacks them; nothing of a room stands in front of one.
+    for (const s of this.shafts) {
+      const x = (s.x - f.x0) * TILE;
+      const w = s.width * TILE;
+      shell.save();
+      shell.beginPath();
+      shell.rect(x, 0, w, f.floors * FLOOR);
+      shell.clip();
+      try {
+        drawTransport(shell, s, x, (f.top - (s.top + 1)) * FLOOR, w, FLOOR);
+      } catch {
+        // A shaft its painter can't draw leaves the rooms behind it showing.
+      }
+      shell.restore();
+      front.clearRect(x, 0, w, f.floors * FLOOR);
     }
     this.texture.needsUpdate = true;
     this.frontTexture.needsUpdate = true;
@@ -156,28 +178,47 @@ export function hangArt(
   stories: Stories,
   look: ArtPaint,
   tint: number,
+  shafts: readonly RenderTransport[] = [],
 ): { readonly paint: BandArt; readonly meshes: readonly Mesh[] } | null {
   const paint = new BandArt(band, 1);
-  paint.layout(units, stories);
-  if (!paint.geometry || !paint.frontGeometry) {
+  paint.layout(units, stories, shafts);
+  if (!paint.geometry) {
     paint.dispose();
     return null;
   }
   paint.paint(units, stories, look);
-  const wall = new Mesh(paint.geometry, new MeshBasicMaterial({ map: paint.texture, color: tint }));
-  const front = new Mesh(
-    paint.frontGeometry,
-    new MeshBasicMaterial({ map: paint.frontTexture, color: tint, transparent: true, alphaTest: 0.04 }),
-  );
-  return { paint, meshes: [wall, front] };
+  const meshes = [new Mesh(paint.geometry, new MeshBasicMaterial({ map: paint.texture, color: tint }))];
+  if (paint.frontGeometry)
+    meshes.push(
+      new Mesh(
+        paint.frontGeometry,
+        new MeshBasicMaterial({ map: paint.frontTexture, color: tint, transparent: true, alphaTest: 0.04 }),
+      ),
+    );
+  return { paint, meshes };
 }
 
 function inBand(u: RenderUnit, band: number): boolean {
   return Math.floor(u.floor / BAND_FLOORS) === band;
 }
 
-/** The canvas frame for a band's rooms, or null when it has none. */
-function frameFor(units: readonly RenderUnit[], stories: Stories, band: number, detail: number): Frame | null {
+function isElevator(t: RenderTransport): boolean {
+  return t.kind === "elevatorStandard" || t.kind === "elevatorService" || t.kind === "elevatorExpress";
+}
+
+/** The band's floors a shaft crosses. */
+function shaftFloors(t: RenderTransport, band: number): { readonly f0: number; readonly f1: number } {
+  return { f0: Math.max(t.bottom, band * BAND_FLOORS), f1: Math.min(t.top, (band + 1) * BAND_FLOORS - 1) };
+}
+
+/** The canvas frame for a band's rooms and shafts, or null when it has none. */
+function frameFor(
+  units: readonly RenderUnit[],
+  stories: Stories,
+  band: number,
+  detail: number,
+  shafts: readonly RenderTransport[],
+): Frame | null {
   let x0 = Infinity;
   let x1 = -Infinity;
   let top = -Infinity;
@@ -187,6 +228,11 @@ function frameFor(units: readonly RenderUnit[], stories: Stories, band: number, 
     x0 = Math.min(x0, u.x);
     x1 = Math.max(x1, u.x + u.width);
     top = Math.max(top, u.floor + Math.max(1, stories(u)));
+  }
+  for (const t of shafts) {
+    x0 = Math.min(x0, t.x);
+    x1 = Math.max(x1, t.x + t.width);
+    top = Math.max(top, shaftFloors(t, band).f1 + 1);
   }
   if (!(x1 > x0)) return null;
   const tiles = x1 - x0;
@@ -222,10 +268,16 @@ function quads(
   f: Frame,
   band: number,
   layer: "wall" | "front",
+  shafts: readonly RenderTransport[] = [],
 ): BufferGeometry | null {
   const list = units.filter((u) => inBand(u, band));
-  if (!list.length) return null;
-  const n = list.length * (layer === "wall" ? 2 : 1);
+  let shaftQuads = 0;
+  for (const t of shafts) {
+    const { f0, f1 } = shaftFloors(t, band);
+    shaftQuads += Math.max(0, f1 - f0 + 1);
+  }
+  if (!list.length && !shaftQuads) return null;
+  const n = list.length * (layer === "wall" ? 2 : 1) + shaftQuads;
   const pos = new Float32Array(n * 12);
   const uv = new Float32Array(n * 8);
   const nor = new Float32Array(n * 12);
@@ -269,6 +321,24 @@ function quads(
     const fy = y0 + (u.kind === "floor" ? 0.03 : 0.05);
     const vc = v0 + CARPET_PX / ch;
     quad([x0, fy, 0, x1, fy, 0, x1, fy, z, x0, fy, z], [u0, v0, u1, v0, u1, vc, u0, vc], [0, 1, 0]);
+  }
+  // A shaft's art one story at a time, so it lines up with the rooms beside it; a hair in front of them.
+  for (const t of shafts) {
+    const { f0, f1 } = shaftFloors(t, band);
+    const u0 = ((t.x - f.x0) * TILE) / cw;
+    const u1 = ((t.x + t.width - f.x0) * TILE) / cw;
+    const z = ART_Z + 0.02;
+    for (let fl = f0; fl <= f1; fl++) {
+      const v0 = 1 - ((f.top - fl) * FLOOR) / ch;
+      const v1 = 1 - ((f.top - fl - 1) * FLOOR) / ch;
+      const y0 = fl * STORY;
+      const y1 = (fl + 1) * STORY - SLAB;
+      quad(
+        [t.x, y0, z, t.x + t.width, y0, z, t.x + t.width, y1, z, t.x, y1, z],
+        [u0, v0, u1, v0, u1, v1, u0, v1],
+        [0, 0, 1],
+      );
+    }
   }
   const g = new BufferGeometry();
   g.setAttribute("position", new BufferAttribute(pos, 3));

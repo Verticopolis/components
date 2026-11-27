@@ -1,7 +1,7 @@
 /**
- * What moves in the Tower in 3D: elevator cars and people, each one
- * instanced mesh, so thousands of figures cost a couple of draw calls. The
- * crowd is sampled: at most the tier's cap, nearest the camera's target
+ * What moves in the Tower in 3D besides the cars (`cabs3d.ts`): people and
+ * street traffic, each instanced, so thousands of figures cost a couple of
+ * draw calls. The crowd is sampled: at most the tier's cap, nearest the camera's target
  * first, with the choice held for half a second so figures don't flicker.
  */
 import {
@@ -13,17 +13,11 @@ import {
   MeshLambertMaterial,
   type Material,
 } from "three";
-import type { RenderPerson, RenderTransport } from "../render/renderModel";
-import { DEPTH, SLAB, STORY } from "./bandGeometry";
+import type { RenderPerson } from "../render/renderModel";
+import { DEPTH, STORY } from "./bandGeometry";
 
 const m4 = new Matrix4();
 const tint = new Color();
-
-const CAR_COLORS: Readonly<Record<string, number>> = {
-  elevatorStandard: 0xc4baa0,
-  elevatorService: 0xa8a090,
-  elevatorExpress: 0xc8c8e2,
-};
 
 /** A resizable instanced mesh: grows to the count it is asked for. */
 class Instances {
@@ -49,47 +43,6 @@ class Instances {
     this.mesh = this.make(Math.max(n, old.instanceMatrix.count * 2));
     old.dispose();
     return this.mesh;
-  }
-}
-
-/** Elevator cars, placed every frame from the shafts' car positions. */
-export class Cars {
-  private readonly box = new BoxGeometry(1, 1, 1);
-  private readonly mat = new MeshLambertMaterial({ color: 0xffffff });
-  private readonly inst = new Instances(this.box, this.mat, 64);
-  get mesh(): InstancedMesh {
-    return this.inst.mesh;
-  }
-
-  /** Places every car; returns a replacement mesh when the old one was too small. */
-  update(transports: readonly RenderTransport[]): InstancedMesh | null {
-    let n = 0;
-    for (const t of transports) if (CAR_COLORS[t.kind] !== undefined) n += t.carPositions.length;
-    const swapped = this.inst.ensure(n);
-    const mesh = this.inst.mesh;
-    let i = 0;
-    for (const t of transports) {
-      const color = CAR_COLORS[t.kind];
-      if (color === undefined) continue;
-      for (const at of t.carPositions) {
-        const h = STORY - SLAB - 0.15;
-        m4.makeScale(t.width - 0.8, h, DEPTH * 0.6);
-        m4.setPosition(t.x + t.width / 2, at * STORY + 0.05 + h / 2, -DEPTH * 0.5);
-        mesh.setMatrixAt(i, m4);
-        mesh.setColorAt(i, tint.setHex(color));
-        i++;
-      }
-    }
-    mesh.count = i;
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    return swapped;
-  }
-
-  dispose(): void {
-    this.inst.mesh.dispose();
-    this.box.dispose();
-    this.mat.dispose();
   }
 }
 

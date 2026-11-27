@@ -30,7 +30,7 @@ import {
 } from "three";
 import { findCatalogFacility } from "../render/catalogIndex";
 import { lobbyHalls, type LobbyHalls } from "../render/lobbyHalls";
-import type { RenderCatalog, RenderRules, RenderSim, RenderUnit } from "../render/renderModel";
+import type { RenderCatalog, RenderRules, RenderSim, RenderTransport, RenderUnit } from "../render/renderModel";
 import { hangArt, type ArtPaint } from "./bandArt";
 import { BAND_FLOORS, buildBand, DEPTH, STORY } from "./bandGeometry";
 import {
@@ -59,7 +59,8 @@ import {
 } from "./camera3d";
 import { changedBands, towerBands, type TowerBands } from "./floorDigest";
 import { buildLot, GROUND_Y } from "./lot3d";
-import { Cars, Crowd, Traffic } from "./movers3d";
+import { Cars } from "./cabs3d";
+import { Crowd, Traffic } from "./movers3d";
 import { FrameClock, startTier, stepDown, TIERS, type Tier } from "./quality";
 import { resolveTime, skyLight, type LookVariant, type TimeChoice, type TimeOfDay } from "./sky3d";
 
@@ -157,7 +158,7 @@ export class Tower3dView {
       this.hemi,
       this.sun,
       this.sun.target,
-      this.cars.mesh,
+      ...this.cars.meshes,
       this.crowd.mesh,
       this.crowd.headMesh,
       this.traffic.mesh,
@@ -252,7 +253,7 @@ export class Tower3dView {
       geometries: info.memory.geometries,
       bands: this.bands.size,
       people: this.crowd.mesh.count,
-      cars: this.cars.mesh.count,
+      cars: this.cars.meshes[0]!.count,
       pixelRatio: this.renderer.getPixelRatio(),
       lastBuildMs: this.lastBuildMs,
     };
@@ -317,8 +318,7 @@ export class Tower3dView {
     const sim = this.options.sim();
     if (sim.tower.revision !== this.revision) this.syncStructure(false);
     if (this.dirty.length) this.rebuild(this.dirty.shift()!);
-    const swappedCars = this.cars.update(sim.tower.elevators ?? sim.tower.transports);
-    if (swappedCars) this.scene.add(swappedCars);
+    for (const m of this.cars.update(sim.tower.elevators ?? sim.tower.transports)) this.scene.add(m);
     for (const m of this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit.ty / STORY, now))
       this.scene.add(m);
     this.traffic.update(now, -90, this.options.catalog.world.lotWidth + 90, GROUND_Y, -DEPTH - 9);
@@ -383,7 +383,10 @@ export class Tower3dView {
     const next: BandMesh = {
       solid: this.addMesh(built.solid, this.solidMat, true),
       glow: this.addMesh(built.glow, this.glowMat),
-      art: this.variant === "art" ? this.buildArt(band, layout.units.get(band) ?? []) : null,
+      art:
+        this.variant === "art"
+          ? this.buildArt(band, layout.units.get(band) ?? [], layout.transports.get(band) ?? [])
+          : null,
     };
     if (old) disposeBand(old);
     if (next.solid || next.glow || next.art) this.bands.set(band, next);
@@ -392,8 +395,8 @@ export class Tower3dView {
   }
 
   /** Paints a band's room art and hangs it on the back walls. */
-  private buildArt(band: number, units: readonly RenderUnit[]): BandMesh["art"] {
-    const art = hangArt(band, units, this.stories, this.artLook(this.options.sim()), this.artTint());
+  private buildArt(band: number, units: readonly RenderUnit[], shafts: readonly RenderTransport[]): BandMesh["art"] {
+    const art = hangArt(band, units, this.stories, this.artLook(this.options.sim()), this.artTint(), shafts);
     if (art) this.tower.add(...art.meshes);
     return art;
   }
@@ -404,9 +407,7 @@ export class Tower3dView {
     const keys = [...this.bands.keys()].sort((a, b) => a - b);
     const band = keys[this.repaintNext % keys.length]!;
     this.repaintNext = (this.repaintNext + 1) % keys.length;
-    const art = this.bands.get(band)?.art;
-    if (!art) return;
-    art.paint.paint(unitsIn(sim, band), this.stories, this.artLook(sim));
+    this.bands.get(band)?.art?.paint.paint(unitsIn(sim, band), this.stories, this.artLook(sim));
   }
 
   private artLook(sim: RenderSim): ArtPaint {

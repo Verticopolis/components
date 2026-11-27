@@ -2,6 +2,7 @@ import type { FacilityKind, RenderPerson, RenderTransport, RenderUnit } from "..
 import { kindFacts, kindKeys } from "../tests/catalogKinds";
 import { testRules } from "../tests/renderRules";
 import { BandArt } from "./bandArt";
+import { cabCell } from "./cabs3d";
 import { paintSplit, type SplitTargets } from "./bandLayers";
 import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
@@ -335,5 +336,16 @@ describe("paintSplit", () => {
     };
     paintSplit(t, look, floor, 0, 0, 30, 45);
     expect(log).toEqual(["front clear 0,0,60,90"]);
+  });
+});
+
+describe("cabCell", () => {
+  it("picks the atlas cell for the cab's kind, riders and lantern", () => {
+    // 7 rider counts x 3 lanterns across, 3 kinds down; texture v runs up.
+    expect(cabCell("elevatorStandard", 0, 0)).toEqual([0, 1 - 1 / 3]);
+    expect(cabCell("elevatorStandard", 2, 1)).toEqual([7 / 21, 1 - 1 / 3]);
+    expect(cabCell("elevatorExpress", 1, -1)).toEqual([5 / 21, 1 - 3 / 3]);
+    // A fuller car shows the most riders the atlas holds.
+    expect(cabCell("elevatorService", 30, 0)).toEqual([18 / 21, 1 - 2 / 3]);
   });
 });
