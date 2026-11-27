@@ -61,7 +61,8 @@ import {
 import { changedBands, towerBands, type TowerBands } from "./floorDigest";
 import { buildLot, GROUND_Y } from "./lot3d";
 import { Cars } from "./cabs3d";
-import { Crowd, Traffic } from "./movers3d";
+import { Traffic } from "./movers3d";
+import { Crowd } from "./people3d";
 import { FrameClock, startTier, stepDown, TIERS, type Tier } from "./quality";
 import { resolveTime, skyLight, type LookVariant, type TimeChoice, type TimeOfDay } from "./sky3d";
 
@@ -161,7 +162,6 @@ export class Tower3dView {
       this.sun.target,
       ...this.cars.meshes,
       this.crowd.mesh,
-      this.crowd.headMesh,
       this.traffic.mesh,
     );
     this.limits = this.computeLimits();
@@ -320,8 +320,7 @@ export class Tower3dView {
     if (sim.tower.revision !== this.revision) this.syncStructure(false);
     if (this.dirty.length) this.rebuild(this.dirty.shift()!);
     for (const m of this.cars.update(sim.tower.elevators ?? sim.tower.transports, now)) this.scene.add(m);
-    for (const m of this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit.ty / STORY, now))
-      this.scene.add(m);
+    for (const m of this.crowd.update(sim.crowd.people, TIERS[this.tier].people, this.orbit, now)) this.scene.add(m);
     this.traffic.update(now, -90, this.options.catalog.world.lotWidth + 90, GROUND_Y, -DEPTH - 9);
     this.syncSky(resolveTime(this.time, sim.clock.hour));
     if (++this.artTicks % REFRESH_FRAMES === 0) this.repaintOne(sim);

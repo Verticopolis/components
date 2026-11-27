@@ -1,139 +1,16 @@
 /**
- * What moves in the Tower in 3D besides the cars (`cabs3d.ts`): people and
- * street traffic, each instanced, so thousands of figures cost a couple of
- * draw calls. The crowd is sampled: at most the tier's cap, nearest the camera's target
- * first, with the choice held for half a second so figures don't flicker.
+ * The motion helpers of the Tower in 3D: the glide that smooths cars
+ * (`cabs3d.ts`) and people (`people3d.ts`) between game steps, the crowd
+ * sample (at most the tier's cap, nearest the camera's target first), and
+ * the street traffic.
  */
-import {
-  BoxGeometry,
-  Color,
-  DynamicDrawUsage,
-  InstancedMesh,
-  Matrix4,
-  MeshLambertMaterial,
-  type Material,
-} from "three";
+import { BoxGeometry, Color, DynamicDrawUsage, InstancedMesh, Matrix4, MeshLambertMaterial } from "three";
 import type { RenderPerson } from "../render/renderModel";
-import { DEPTH, STORY } from "./bandGeometry";
 
 const m4 = new Matrix4();
 const tint = new Color();
 
 /** A resizable instanced mesh: grows to the count it is asked for. */
-class Instances {
-  mesh: InstancedMesh;
-  constructor(
-    private readonly geometry: BoxGeometry,
-    private readonly material: Material,
-    capacity: number,
-  ) {
-    this.mesh = this.make(capacity);
-  }
-  private make(capacity: number): InstancedMesh {
-    const m = new InstancedMesh(this.geometry, this.material, capacity);
-    m.instanceMatrix.setUsage(DynamicDrawUsage);
-    m.frustumCulled = false;
-    m.count = 0;
-    return m;
-  }
-  /** Makes room for `n`; returns the new mesh when it had to be replaced. */
-  ensure(n: number): InstancedMesh | null {
-    if (n <= this.mesh.instanceMatrix.count) return null;
-    const old = this.mesh;
-    this.mesh = this.make(Math.max(n, old.instanceMatrix.count * 2));
-    old.dispose();
-    return this.mesh;
-  }
-}
-
-const CLOTHES = [0x3c5a96, 0xb44a3c, 0x4a8a5a, 0xd8b04a, 0x6a4a8a, 0x2c2c34, 0xe0e0dc, 0x8a6a4a];
-const SKIN = [0xf1c8a0, 0xd9a070, 0xa8704a, 0x7a4a2c, 0xe8b890];
-const HAIR = [0x2a1a10, 0x4a2c18, 0x8a5a2c, 0xd8b060, 0x1a1a1a];
-const STAFF = 0x2a6ab0;
-const HOLD_MS = 500;
-const BODY_H = 1.25;
-const HEAD = 0.46;
-
-/** People on foot, sampled to a cap and placed every frame: a body and a head each. */
-export class Crowd {
-  private readonly body = new BoxGeometry(0.55, BODY_H, 0.4);
-  private readonly head = new BoxGeometry(HEAD, HEAD, HEAD);
-  private readonly mat = new MeshLambertMaterial({ color: 0xffffff });
-  private readonly bodies = new Instances(this.body, this.mat, 256);
-  private readonly heads = new Instances(this.head, this.mat, 256);
-  private chosen: number[] = [];
-  private chosenAt = -Infinity;
-  /** Where each figure is drawn, gliding to the game's position between its steps. */
-  private readonly drawn = new Glide();
-  get mesh(): InstancedMesh {
-    return this.bodies.mesh;
-  }
-  get headMesh(): InstancedMesh {
-    return this.heads.mesh;
-  }
-
-  /** After dark the figures glow faintly, so they read against lit rooms. */
-  setNight(on: boolean): void {
-    this.mat.emissive.setHex(on ? 0x5a5048 : 0);
-  }
-
-  /**
-   * Places up to `cap` people, nearest floor `focus` first. Riders are left
-   * to their cars and finished walkers are gone. Returns any mesh that had
-   * to be replaced, for the caller to add to the scene.
-   */
-  update(people: readonly RenderPerson[], cap: number, focus: number, now: number): InstancedMesh[] {
-    if (now - this.chosenAt > HOLD_MS || this.chosen.length > people.length) {
-      this.chosen = sample(people, cap, focus);
-      this.chosenAt = now;
-    }
-    const swapped = [this.bodies.ensure(this.chosen.length), this.heads.ensure(this.chosen.length)].filter(
-      (m): m is InstancedMesh => m !== null,
-    );
-    const body = this.bodies.mesh;
-    const head = this.heads.mesh;
-    this.drawn.tick(now);
-    let n = 0;
-    for (const i of this.chosen) {
-      const p = people[i];
-      if (!p || p.state === "riding" || p.state === "done") continue;
-      // Depth from the seed, so a person keeps their place in the room.
-      const z = -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
-      const walking = p.state === "toShaft" || p.state === "toDest" || p.state === "climbing";
-      const bob = walking ? Math.abs(Math.sin(now / 140 + (p.seed % 17))) * 0.12 : 0;
-      const at = this.drawn.at(p.id, p.x, p.fy);
-      const x = at.x;
-      const base = at.y * STORY + bob;
-      m4.makeTranslation(x + 0.5, base + BODY_H / 2, z);
-      body.setMatrixAt(n, m4);
-      body.setColorAt(n, tint.setHex(p.staff ? STAFF : (CLOTHES[p.seed % CLOTHES.length] ?? STAFF)));
-      m4.makeTranslation(x + 0.5, base + BODY_H + HEAD / 2 + 0.02, z);
-      head.setMatrixAt(n, m4);
-      const hair = (p.seed >>> 5) % 3 === 0;
-      head.setColorAt(
-        n,
-        tint.setHex(hair ? (HAIR[(p.seed >>> 7) % HAIR.length] ?? 0) : (SKIN[(p.seed >>> 9) % SKIN.length] ?? 0)),
-      );
-      n++;
-    }
-    this.drawn.prune(this.chosen.length * 2);
-    for (const m of [body, head]) {
-      m.count = n;
-      m.instanceMatrix.needsUpdate = true;
-      if (m.instanceColor) m.instanceColor.needsUpdate = true;
-    }
-    return swapped;
-  }
-
-  dispose(): void {
-    this.bodies.mesh.dispose();
-    this.heads.mesh.dispose();
-    this.body.dispose();
-    this.head.dispose();
-    this.mat.dispose();
-  }
-}
-
 /** How fast a drawn figure or car catches up with the game, per second. */
 const GLIDE_RATE = 10;
 

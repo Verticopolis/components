@@ -5,6 +5,7 @@ import { kindFacts, kindKeys } from "../tests/catalogKinds";
 import { testRules } from "../tests/renderRules";
 import { BandArt } from "./bandArt";
 import { cabCell } from "./cabs3d";
+import { figureCell } from "./people3d";
 import { paintSplit, type SplitTargets } from "./bandLayers";
 import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
@@ -215,6 +216,21 @@ describe("quality", () => {
     expect(stepped).toBe(false);
     for (let i = 0; i < 200 && !stepped; i++) stepped = c.record(30, (t += 30));
     expect(stepped).toBe(true);
+  });
+});
+
+describe("figureCell", () => {
+  const person = (seed: number, staff = false): RenderPerson => ({ id: 1, seed, staff }) as unknown as RenderPerson;
+  it("shows a standing figure in its first column, facing the way it last walked", () => {
+    expect(figureCell(person(3), false, false, 0)[0]).toBe(0);
+    expect(figureCell(person(3), false, true, 0)[0]).toBe(5 / 10);
+  });
+  it("steps through the four walk frames as time passes", () => {
+    const cols = new Set([0, 140, 280, 420].map((t) => figureCell(person(0), true, false, t)[0] * 10));
+    expect([...cols].sort()).toEqual([1, 2, 3, 4]);
+  });
+  it("gives the cast and the housekeeping crew their own rows", () => {
+    expect(figureCell(person(2), false, false, 0)[1]).not.toBe(figureCell(person(2, true), false, false, 0)[1]);
   });
 });
 
