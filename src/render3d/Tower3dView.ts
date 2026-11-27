@@ -394,7 +394,7 @@ export class Tower3dView {
   /** Paints a band's room art and hangs it on the back walls. */
   private buildArt(band: number, units: readonly RenderUnit[]): BandMesh["art"] {
     const art = hangArt(band, units, this.stories, this.artLook(this.options.sim()), this.artTint());
-    if (art) this.tower.add(art.mesh);
+    if (art) this.tower.add(...art.meshes);
     return art;
   }
 
@@ -468,7 +468,7 @@ export class Tower3dView {
     const sim = this.options.sim();
     for (const b of this.bands.values()) {
       if (!b.art) continue;
-      (b.art.mesh.material as MeshBasicMaterial).color.setHex(this.artTint());
+      for (const m of b.art.meshes) (m.material as MeshBasicMaterial).color.setHex(this.artTint());
       b.art.paint.paint(unitsIn(sim, b.art.paint.band), this.stories, this.artLook(sim));
     }
     this.crowd.setNight(time !== "day");

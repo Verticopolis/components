@@ -2,6 +2,7 @@ import type { FacilityKind, RenderPerson, RenderTransport, RenderUnit } from "..
 import { kindFacts, kindKeys } from "../tests/catalogKinds";
 import { testRules } from "../tests/renderRules";
 import { BandArt } from "./bandArt";
+import { paintSplit, type SplitTargets } from "./bandLayers";
 import { bandOf, BAND_FLOORS, buildBand, STORY, uncovered, type BandInput } from "./bandGeometry";
 import { BoxWriter, FACE } from "./boxWriter";
 import { clampOrbit, farPlane, homeOrbit, orbitPosition, type OrbitLimits } from "./camera3d";
@@ -263,6 +264,12 @@ describe("BandArt", () => {
     expect(g.boundingBox!.min.x).toBe(10);
     expect(g.boundingBox!.max.x).toBe(23);
     expect(art.canvas.width).toBe(13 * 10);
+    // The furniture stands in front of the wall, one quad per room, on a canvas of the same size.
+    const front = art.frontGeometry!;
+    expect(front.index!.count).toBe(2 * 6);
+    front.computeBoundingBox();
+    expect(front.boundingBox!.min.z).toBeGreaterThan(g.boundingBox!.min.z + 1);
+    expect(art.frontCanvas.width).toBe(art.canvas.width);
     art.dispose();
   });
 
@@ -270,5 +277,63 @@ describe("BandArt", () => {
     const art = new BandArt(2, 1);
     art.layout([unit(1, "office", 3, 10, 9)], () => 1);
     expect(art.geometry).toBeNull();
+  });
+});
+
+describe("paintSplit", () => {
+  /** A 2D context that takes any call and records the clears and copies. */
+  function fakeCtx(log: string[], name: string): CanvasRenderingContext2D {
+    const target: Record<string, unknown> = {
+      canvas: { name },
+      globalCompositeOperation: "source-over",
+      getTransform: () => ({}),
+      createLinearGradient: () => ({ addColorStop: () => {} }),
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      measureText: () => ({ width: 4 }),
+      clearRect: (x: number, y: number, w: number, h: number) => log.push(`${name} clear ${x},${y},${w},${h}`),
+      drawImage: (src: { name: string }) => log.push(`${name} copy from ${src.name}`),
+    };
+    return new Proxy(target, {
+      get: (t, k: string) => (k in t ? t[k] : () => {}),
+      set: (t, k: string, v) => {
+        t[k] = v;
+        return true;
+      },
+    }) as unknown as CanvasRenderingContext2D;
+  }
+
+  const lobby: RenderUnit = { id: 1, kind: "lobby", floor: 1, x: 0, width: 3, state: "occupied", occupants: 0 };
+  const floor: RenderUnit = { id: 2, kind: "floor", floor: 2, x: 0, width: 3, state: "occupied", occupants: 0 };
+  const look = { lit: false, anim: 0, hour: 12, staffed: true };
+
+  it("splits a lobby tile by tile: the shell put back after its furniture, the furniture cleared of wall", () => {
+    const log: string[] = [];
+    const t: SplitTargets = {
+      shell: fakeCtx(log, "shell"),
+      front: fakeCtx(log, "front"),
+      aside: fakeCtx(log, "aside"),
+      scale: 1,
+    };
+    paintSplit(t, look, lobby, 0, 0, 30, 45);
+    for (const x of [0, 10, 20]) {
+      // Each tile's wall is set aside at its break and copied back at its end.
+      expect(log).toContain(`aside clear ${x},0,10,45`);
+      expect(log).toContain(`shell clear ${x},0,10,45`);
+      // Each tile's furniture starts from transparency at its break.
+      expect(log).toContain(`front clear ${x},0,10,45`);
+    }
+    expect(log.filter((l) => l === "shell copy from aside")).toHaveLength(3);
+  });
+
+  it("leaves a room with no split all wall", () => {
+    const log: string[] = [];
+    const t: SplitTargets = {
+      shell: fakeCtx(log, "shell"),
+      front: fakeCtx(log, "front"),
+      aside: fakeCtx(log, "aside"),
+      scale: 2,
+    };
+    paintSplit(t, look, floor, 0, 0, 30, 45);
+    expect(log).toEqual(["front clear 0,0,60,90"]);
   });
 });

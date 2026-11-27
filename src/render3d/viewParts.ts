@@ -15,7 +15,7 @@ export interface BandMesh {
   readonly solid: Mesh | null;
   readonly glow: Mesh | null;
   /** The game's room art on the back walls, in the art look. */
-  readonly art: { readonly paint: BandArt; readonly mesh: Mesh } | null;
+  readonly art: { readonly paint: BandArt; readonly meshes: readonly Mesh[] } | null;
 }
 
 /** The camera's limits for a lot `lotWidth` tiles wide, built from `lowestFloor` to `highestFloor`. */
@@ -60,8 +60,10 @@ export function disposeBand(b: BandMesh): void {
     m.removeFromParent();
   }
   if (b.art) {
-    b.art.mesh.removeFromParent();
-    (b.art.mesh.material as Material).dispose();
+    for (const m of b.art.meshes) {
+      m.removeFromParent();
+      (m.material as Material).dispose();
+    }
     b.art.paint.dispose();
   }
 }
