@@ -1,3 +1,5 @@
+import type { WebGLRenderer } from "three";
+import { describe, expect, it, vi } from "vitest";
 import type { FacilityKind, RenderPerson, RenderTransport, RenderUnit } from "../render/renderModel";
 import { kindFacts, kindKeys } from "../tests/catalogKinds";
 import { testRules } from "../tests/renderRules";
@@ -137,6 +139,13 @@ describe("towerBands", () => {
     expect(changedBands(null, after).sort()).toEqual([0, bandOf(20)].sort());
   });
 
+  it("leaves a band alone when only a room's state changes and states are left out", () => {
+    const a = [unit("office", { floor: 2 })];
+    const before = towerBands(tower(a), oneStory, false);
+    const after = towerBands(tower([{ ...a[0]!, state: "fire" }]), oneStory, false);
+    expect(changedBands(before, after)).toEqual([]);
+  });
+
   it("marks the band a tall room's upper stories reach", () => {
     const tall = (stories: number) => towerBands(tower([unit("cinema", { floor: 7 })]), () => stories);
     expect(changedBands(tall(1), tall(2))).toEqual([0, 1]);
@@ -271,6 +280,33 @@ describe("BandArt", () => {
     front.computeBoundingBox();
     expect(front.boundingBox!.min.z).toBeGreaterThan(g.boundingBox!.min.z + 1);
     expect(art.frontCanvas.width).toBe(art.canvas.width);
+    art.dispose();
+  });
+
+  it("repaints only the rooms whose look changed, a few at a time", () => {
+    const art = new BandArt(0, 1);
+    const rooms = [unit(1, "office", 3, 0, 9), unit(2, "office", 3, 9, 9), unit(3, "office", 3, 18, 9)];
+    art.layout(rooms, () => 1);
+    const look = { lit: false, anim: 0, hour: 12 };
+    const renderer = { copyTextureToTexture: vi.fn() } as unknown as WebGLRenderer;
+    // A 2D context that takes any call, so the painters run without a real canvas.
+    const ctx: object = new Proxy(
+      { getTransform: () => ({}), measureText: () => ({ width: 4 }) },
+      {
+        get: (t, k: string) => (k in t ? t[k as keyof typeof t] : () => ({ addColorStop: () => {} })),
+        set: () => true,
+      },
+    );
+    const spy = vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(ctx as CanvasRenderingContext2D);
+    art.paint(rooms, () => 1, look);
+    expect(art.refresh(rooms, () => 1, look, renderer, 2)).toBe(0);
+    const busy = rooms.map((u) => ({ ...u, occupants: 4 }));
+    expect(art.refresh(busy, () => 1, look, renderer, 2)).toBe(2);
+    expect(art.refresh(busy, () => 1, look, renderer, 2)).toBe(1);
+    expect(art.refresh(busy, () => 1, look, renderer, 2)).toBe(0);
+    // Only the changed rooms' pixels go up, on both the wall and the furniture textures.
+    expect(renderer.copyTextureToTexture).toHaveBeenCalledTimes(6);
+    spy.mockRestore();
     art.dispose();
   });
 

@@ -33,6 +33,9 @@ export interface SplitTargets {
   readonly aside: CanvasRenderingContext2D;
   /** The canvas scale (canvas pixels per world pixel). */
   readonly scale: number;
+  /** Where the canvases start on the band's canvas, in its pixels: a room-sized scratch canvas sits at its room. */
+  readonly ox?: number;
+  readonly oy?: number;
 }
 
 /** A piece of a room that paints with one break: the room, or one lobby tile. */
@@ -69,8 +72,8 @@ export function paintSplit(
   for (const p of pieces(u, x, y, w, h)) {
     const s = t.scale;
     const px: PxRect = {
-      x: Math.floor(p.x * s),
-      y: Math.floor(y * s),
+      x: Math.floor(p.x * s) - (t.ox ?? 0),
+      y: Math.floor(y * s) - (t.oy ?? 0),
       w: Math.ceil((p.x + p.w) * s) - Math.floor(p.x * s),
       h: Math.ceil((y + h) * s) - Math.floor(y * s),
     };

@@ -47,10 +47,16 @@ function push<T>(m: Map<number, T[]>, k: number, v: T): void {
   else m.set(k, [v]);
 }
 
-/** Splits `tower` into bands. `stories` is a unit's height in stories. */
+/**
+ * Splits `tower` into bands. `stories` is a unit's height in stories. With
+ * `withState` false a room's state leaves its band's digest alone: the art
+ * look repaints a changed room in place (`BandArt.refresh`) instead of
+ * rebuilding its band.
+ */
 export function towerBands(
   tower: Pick<RenderTower, "units" | "transports" | "skyBridges">,
   stories: (u: RenderUnit) => number,
+  withState = true,
 ): TowerBands {
   const units = new Map<number, RenderUnit[]>();
   const transports = new Map<number, RenderTransport[]>();
@@ -65,7 +71,10 @@ export function towerBands(
     push(units, band, u);
     const tall = Math.max(1, stories(u));
     touch(band, (d) =>
-      mix(mix(mix(mix(mix(mixText(d, u.kind), u.id), u.x), u.width), u.floor * 64 + tall), STATES.indexOf(u.state)),
+      mix(
+        mix(mix(mix(mix(mixText(d, u.kind), u.id), u.x), u.width), u.floor * 64 + tall),
+        withState ? STATES.indexOf(u.state) : 0,
+      ),
     );
     for (let f = u.floor; f < u.floor + tall; f++) {
       push(spans, f, { min: u.x, max: u.x + u.width });

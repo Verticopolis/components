@@ -41,7 +41,8 @@ import {
   gradient,
   lotLimits,
   peopleWindowAt,
-  REPAINT_MS,
+  REFRESH_FRAMES,
+  REFRESH_ROOMS,
   unitsIn,
   type BandMesh,
   type PeopleWindow,
@@ -97,7 +98,7 @@ export class Tower3dView {
   private readonly cars = new Cars();
   private readonly crowd = new Crowd();
   private readonly traffic = new Traffic();
-  private repaintAt = 0;
+  private artTicks = 0;
   private repaintNext = 0;
   private readonly clock = new FrameClock();
   private solidMat: Material;
@@ -323,10 +324,7 @@ export class Tower3dView {
       this.scene.add(m);
     this.traffic.update(now, -90, this.options.catalog.world.lotWidth + 90, GROUND_Y, -DEPTH - 9);
     this.syncSky(resolveTime(this.time, sim.clock.hour));
-    if (now - this.repaintAt >= REPAINT_MS) {
-      this.repaintAt = now;
-      this.repaintOne(sim);
-    }
+    if (++this.artTicks % REFRESH_FRAMES === 0) this.repaintOne(sim);
     clampOrbit(this.orbit, this.limits);
     const far = farPlane(this.orbit, this.limits);
     if (Math.abs(far - this.camera.far) > far * 0.1) {
@@ -349,7 +347,7 @@ export class Tower3dView {
     const sim = this.options.sim();
     this.revision = sim.tower.revision;
     this.halls = lobbyHalls(sim.tower.lobbyHeights());
-    const next = towerBands(sim.tower, this.stories);
+    const next = towerBands(sim.tower, this.stories, this.variant !== "art");
     const changed = changedBands(this.layout, next);
     const basements = changed.some((b) => b <= 0) || !this.lot;
     this.layout = next;
@@ -401,13 +399,15 @@ export class Tower3dView {
     return art;
   }
 
-  /** Repaints the next band's art, so lights, people at work and signs follow the game. */
+  /** Repaints the rooms that changed in the next band, so lights, people at work and signs follow the game. */
   private repaintOne(sim: RenderSim): void {
     if (this.variant !== "art" || !this.bands.size) return;
     const keys = [...this.bands.keys()].sort((a, b) => a - b);
     const band = keys[this.repaintNext % keys.length]!;
     this.repaintNext = (this.repaintNext + 1) % keys.length;
-    this.bands.get(band)?.art?.paint.paint(unitsIn(sim, band), this.stories, this.artLook(sim));
+    this.bands
+      .get(band)
+      ?.art?.paint.refresh(unitsIn(sim, band), this.stories, this.artLook(sim), this.renderer, REFRESH_ROOMS);
   }
 
   private artLook(sim: RenderSim): ArtPaint {

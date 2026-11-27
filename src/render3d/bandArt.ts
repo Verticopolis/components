@@ -19,6 +19,9 @@ import {
   LinearMipmapLinearFilter,
   NearestFilter,
   SRGBColorSpace,
+  Texture,
+  Vector2,
+  type WebGLRenderer,
 } from "three";
 import type { RenderTransport, RenderUnit } from "../render/renderModel";
 import { drawTransport } from "../render/sprites";
@@ -63,6 +66,12 @@ export class BandArt {
   readonly frontCanvas = document.createElement("canvas");
   readonly frontTexture: CanvasTexture;
   private readonly aside = document.createElement("canvas");
+  /** Room-sized canvases a changed room repaints on: its shell, its furniture, and the shell held aside. */
+  private readonly scratch = [0, 1, 2].map(() => document.createElement("canvas"));
+  private readonly scratchTex = this.scratch.slice(0, 2).map((c) => new Texture(c));
+  /** What each room looked like when it was last painted, and the light it was painted in. */
+  private readonly painted = new Map<number, string>();
+  private lit: boolean | null = null;
   geometry: BufferGeometry | null = null;
   frontGeometry: BufferGeometry | null = null;
   private frame: Frame | null = null;
@@ -129,10 +138,25 @@ export class BandArt {
       const r = pixelRect(u, stories(u), f);
       paintSplit(t, d, u, r.x, r.y, r.w, r.h);
     }
-    // The shafts over the rooms, as the side view stacks them; nothing of a room stands in front of one.
+    this.paintShafts(shell, front, f, -Infinity, Infinity);
+    for (const u of units) if (inBand(u, this.band)) this.painted.set(u.id, signature(u));
+    this.lit = look.lit;
+    this.texture.needsUpdate = true;
+    this.frontTexture.needsUpdate = true;
+  }
+
+  /** The shafts over the rooms between world pixels `x0` and `x1`, as the side view stacks them; nothing of a room stands in front of one. */
+  private paintShafts(
+    shell: CanvasRenderingContext2D,
+    front: CanvasRenderingContext2D,
+    f: Frame,
+    x0: number,
+    x1: number,
+  ): void {
     for (const s of this.shafts) {
       const x = (s.x - f.x0) * TILE;
       const w = s.width * TILE;
+      if (x >= x1 || x + w <= x0) continue;
       shell.save();
       shell.beginPath();
       shell.rect(x, 0, w, f.floors * FLOOR);
@@ -145,8 +169,81 @@ export class BandArt {
       shell.restore();
       front.clearRect(x, 0, w, f.floors * FLOOR);
     }
-    this.texture.needsUpdate = true;
-    this.frontTexture.needsUpdate = true;
+  }
+
+  /**
+   * Repaints up to `max` rooms whose state changed since they were painted,
+   * each on room-sized scratch canvases, and uploads just those pixels into
+   * the band's textures, so a busy tower never re-uploads a whole band. A
+   * change of light repaints the band. Returns how many rooms it repainted.
+   */
+  refresh(
+    units: readonly RenderUnit[],
+    stories: Stories,
+    look: ArtPaint,
+    renderer: WebGLRenderer,
+    max: number,
+  ): number {
+    const f = this.frame;
+    if (!f) return 0;
+    if (look.lit !== this.lit) {
+      this.paint(units, stories, look);
+      return max;
+    }
+    let n = 0;
+    for (const u of units) {
+      if (n >= max) break;
+      if (u.kind === "floor" || !inBand(u, this.band)) continue;
+      const sig = signature(u);
+      if (this.painted.get(u.id) === sig) continue;
+      this.painted.set(u.id, sig);
+      this.repaintRoom(u, stories, look, renderer, f);
+      n++;
+    }
+    return n;
+  }
+
+  private repaintRoom(u: RenderUnit, stories: Stories, look: ArtPaint, renderer: WebGLRenderer, f: Frame): void {
+    const r = pixelRect(u, stories(u), f);
+    const s = f.scale;
+    const ox = Math.floor(r.x * s);
+    const oy = Math.floor(r.y * s);
+    const w = Math.min(this.canvas.width, Math.ceil((r.x + r.w) * s)) - ox;
+    const h = Math.min(this.canvas.height, Math.ceil((r.y + r.h) * s)) - oy;
+    if (w <= 0 || h <= 0 || ox < 0 || oy < 0) return;
+    const [shellC, frontC, asideC] = this.scratch;
+    for (const c of this.scratch) {
+      c.width = w;
+      c.height = h;
+    }
+    const shell = shellC.getContext("2d");
+    const front = frontC.getContext("2d");
+    const aside = asideC.getContext("2d");
+    if (!shell || !front || !aside) return;
+    shell.fillStyle = look.lit ? "#141a2c" : "#c8c4b8";
+    shell.fillRect(0, 0, w, h);
+    for (const ctx of [shell, front]) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.setTransform(s, 0, 0, s, -ox, -oy);
+    }
+    const d = { lit: look.lit, anim: look.anim, hour: look.hour, staffed: true };
+    paintSplit({ shell, front, aside, scale: s, ox, oy }, d, u, r.x, r.y, r.w, r.h);
+    this.paintShafts(shell, front, f, r.x, r.x + r.w);
+    // Keep the band's own canvases true, then send only the room's pixels to the GPU.
+    const band = [this.canvas.getContext("2d"), this.frontCanvas.getContext("2d")];
+    [shellC, frontC].forEach((c, i) => {
+      const ctx = band[i];
+      if (!ctx) return;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(ox, oy, w, h);
+      ctx.drawImage(c, ox, oy);
+      ctx.restore();
+    });
+    // Texture rows run bottom up (flipY), so the room lands `oy + h` rows from the top.
+    const at = new Vector2(ox, this.canvas.height - oy - h);
+    renderer.copyTextureToTexture(this.scratchTex[0], this.texture, null, at);
+    renderer.copyTextureToTexture(this.scratchTex[1], this.frontTexture, null, at);
   }
 
   dispose(): void {
@@ -159,6 +256,11 @@ export class BandArt {
       c.height = 0;
     }
   }
+}
+
+/** What a room's art depends on besides its kind and place, which a change of either rebuilds. */
+function signature(u: RenderUnit): string {
+  return `${u.state}|${u.subtype ?? ""}|${u.occupants}|${u.outForMeal ?? 0}|${u.customersIn ?? 0}`;
 }
 
 /** A canvas texture that keeps the art's pixels crisp up close. */
