@@ -211,6 +211,7 @@ export class Tower3dView {
   setVariant(variant: LookVariant): void {
     const art = (variant === "art") !== (this.variant === "art");
     this.variant = variant;
+    this.crowd.onWall = variant === "art";
     if (art && this.layout) for (const b of [...this.bands.keys(), ...this.layout.units.keys()]) this.rebuild(b);
     const old = this.solidMat;
     this.solidMat = this.makeSolidMaterial();

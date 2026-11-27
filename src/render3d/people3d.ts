@@ -33,8 +33,8 @@ const FOOT = 29;
 const BODY_X = 11;
 /** Atlas pixels per art pixel. */
 const PX = 2;
-/** Per facing: standing, then the four walk frames. */
-const FRAMES = 5;
+/** Per facing: standing, the four walk frames, then the four climb frames. */
+const FRAMES = 9;
 const COLS = FRAMES * 2;
 const ROWS = LOOKS.length;
 /** World units per side-view pixel, the same scale the room art hangs at. */
@@ -45,6 +45,8 @@ const HEIGHT = CELL_H * UNIT_Y;
 /** How far the quad's middle sits above the foot line. */
 const LIFT = HEIGHT / 2 - (CELL_H - FOOT - 1) * UNIT_Y;
 const HOLD_MS = 500;
+/** A climber's depth in the art look: just in front of the flight painted on the back wall. */
+const CLIMB_Z = -DEPTH + 0.45;
 const STRIDE_MS = 140;
 
 const m4 = new Matrix4();
@@ -82,7 +84,10 @@ function paintAtlas(): HTMLCanvasElement {
 /** The atlas cell a person shows, as its texture offset (texture v runs up). */
 export function figureCell(p: RenderPerson, walking: boolean, left: boolean, now: number): [number, number] {
   const row = p.staff ? crewIndex(p.seed, false) : castIndex(p.seed);
-  const frame = walking ? 1 + (Math.floor(now / STRIDE_MS + Math.abs(p.seed)) % 4) : 0;
+  const step = Math.floor(now / STRIDE_MS + Math.abs(p.seed)) % 4;
+  let frame = 0;
+  if (p.state === "climbing") frame = 5 + step;
+  else if (walking) frame = 1 + step;
   const col = (left ? FRAMES : 0) + frame;
   return [col / COLS, 1 - (Math.min(row, ROWS - 1) + 1) / ROWS];
 }
@@ -100,6 +105,8 @@ export class Crowd {
   private readonly drawn = new Glide();
   /** The way each figure last walked, so one who stops keeps facing it. */
   private readonly facing = new Map<number, boolean>();
+  /** Whether the flights are painted on the back wall (the art look), so climbers keep to the wall. */
+  onWall = true;
 
   constructor() {
     this.texture = new CanvasTexture(paintAtlas());
@@ -165,12 +172,15 @@ export class Crowd {
     for (const i of this.chosen) {
       const p = people[i];
       if (!p || p.state === "riding" || p.state === "done") continue;
-      // Depth from the seed, so a person keeps their place in the room.
-      const z = -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
+      // Depth from the seed, so a person keeps their place in the room; a
+      // climber keeps to the flight, on the wall in the art look.
+      const climbing = p.state === "climbing";
+      let z = -DEPTH * (0.12 + ((p.seed >>> 3) % 48) / 100);
+      if (climbing) z = this.onWall ? CLIMB_Z : -DEPTH * 0.4;
       const at = this.drawn.at(p.id, p.x, p.fy);
       const dx = p.x - at.x;
       const walking = (p.state === "toShaft" || p.state === "toDest") && Math.abs(dx) > 0.01;
-      if (walking) this.facing.set(p.id, dx < 0);
+      if ((walking || climbing) && Math.abs(dx) > 0.01) this.facing.set(p.id, dx < 0);
       const left = this.facing.get(p.id) ?? p.seed % 2 === 0;
       m4.makeScale(WIDTH, HEIGHT, 1).premultiply(turn);
       m4.setPosition(at.x + 0.5, at.y * STORY + LIFT, z);

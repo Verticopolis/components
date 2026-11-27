@@ -106,9 +106,13 @@ function room(solid: BoxWriter, glow: BoxWriter, u: RenderUnit, input: BandInput
     solid.box(x0, y0, -DEPTH, x1, y0 + 0.03, 0, look.floor, ~FACE.top);
     if (!input.art) solid.box(x1 - 0.12, y0, -DEPTH, x1, y0 + h - SLAB, 0, DIVIDER, FACE.back | FACE.bottom);
     else if (u.kind !== "lobby")
-      // A thin plaster wall at each side of a room, so neighbors read as separate rooms; none across a lobby or a shaft.
+      // A thin plaster wall at each side of a room, so neighbors read as separate rooms; none across a lobby, a shaft or a flight.
       for (const wx of [x0, x1 - 0.08])
-        if (!input.transports.some((t) => t.kind.startsWith("elevator") && t.x < wx + 0.08 && wx < t.x + t.width))
+        if (
+          !input.transports.some(
+            (t) => t.x < wx + 0.08 && wx < t.x + t.width && t.bottom <= u.floor && u.floor <= t.top,
+          )
+        )
           solid.box(wx, y0, -DEPTH, wx + 0.08, y0 + h - SLAB, 0, PARTITION, FACE.back | FACE.bottom);
   }
   for (const p of furnished ? look.furnish(u.width, u.id) : []) {
@@ -137,13 +141,15 @@ function nightLight(u: RenderUnit, own: Rgb | null, isPresent: BandInput["isPres
   return isPresent(u) ? own : null;
 }
 
-/** A shaft's back panel and rails on the band's floors, or a flight's steps. The art look paints the panel. */
+/** A shaft's back panel and rails on the band's floors, or a flight's steps. The art look paints the panel and the flight. */
 function shaft(solid: BoxWriter, t: RenderTransport, band: number, art: boolean): void {
   const f0 = Math.max(t.bottom, band * BAND_FLOORS);
   const f1 = Math.min(t.top, (band + 1) * BAND_FLOORS - 1);
   if (f1 < f0) return;
   const look = LOOKS_3D[t.kind];
   if (t.kind === "stairs" || t.kind === "escalator") {
+    // The art look paints the flight on the wall, as the side view draws it.
+    if (art) return;
     // A flight climbs from its bottom floor to the one above it.
     if (t.bottom < band * BAND_FLOORS || t.bottom >= (band + 1) * BAND_FLOORS) return;
     const steps = 10;

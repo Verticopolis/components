@@ -111,6 +111,13 @@ describe("buildBand", () => {
     expect(g.boundingBox!.max.y).toBeLessThanOrEqual(2 * BAND_FLOORS * STORY);
   });
 
+  it("leaves a flight's steps to the wall art in the art look", () => {
+    const stairs = { id: 6, kind: "stairs", x: 2, width: 8, bottom: 1, top: 2 } as RenderTransport;
+    const steps = buildBand(band([], { transports: [stairs] })).solid;
+    expect(steps).not.toBeNull();
+    expect(buildBand(band([], { transports: [stairs], art: true })).solid).toBeNull();
+  });
+
   it("puts a roof only where the story above is open sky", () => {
     expect(uncovered({ min: 0, max: 20 }, [{ min: 5, max: 10 }])).toEqual([
       { min: 0, max: 5 },
@@ -223,11 +230,16 @@ describe("figureCell", () => {
   const person = (seed: number, staff = false): RenderPerson => ({ id: 1, seed, staff }) as unknown as RenderPerson;
   it("shows a standing figure in its first column, facing the way it last walked", () => {
     expect(figureCell(person(3), false, false, 0)[0]).toBe(0);
-    expect(figureCell(person(3), false, true, 0)[0]).toBe(5 / 10);
+    expect(figureCell(person(3), false, true, 0)[0]).toBe(9 / 18);
   });
   it("steps through the four walk frames as time passes", () => {
-    const cols = new Set([0, 140, 280, 420].map((t) => figureCell(person(0), true, false, t)[0] * 10));
+    const cols = new Set([0, 140, 280, 420].map((t) => Math.round(figureCell(person(0), true, false, t)[0] * 18)));
     expect([...cols].sort()).toEqual([1, 2, 3, 4]);
+  });
+  it("climbs in the climb frames while on a flight", () => {
+    const climber = { ...person(0), state: "climbing" } as RenderPerson;
+    const cols = new Set([0, 140, 280, 420].map((t) => Math.round(figureCell(climber, false, false, t)[0] * 18)));
+    expect([...cols].sort()).toEqual([5, 6, 7, 8]);
   });
   it("gives the cast and the housekeeping crew their own rows", () => {
     expect(figureCell(person(2), false, false, 0)[1]).not.toBe(figureCell(person(2, true), false, false, 0)[1]);
@@ -323,6 +335,15 @@ describe("BandArt", () => {
     // Only the changed rooms' pixels go up, on both the wall and the furniture textures.
     expect(renderer.copyTextureToTexture).toHaveBeenCalledTimes(6);
     spy.mockRestore();
+    art.dispose();
+  });
+
+  it("hangs a flight's art over the floors it climbs", () => {
+    const art = new BandArt(0, 1);
+    const stairs = { id: 6, kind: "stairs", x: 0, width: 8, bottom: 3, top: 4 } as RenderTransport;
+    art.layout([unit(1, "office", 3, 0, 9)], () => 1, [stairs]);
+    // The office's wall and carpet, plus one wall quad for each of the flight's two floors.
+    expect(art.geometry!.index!.count).toBe((2 + 2) * 6);
     art.dispose();
   });
 
