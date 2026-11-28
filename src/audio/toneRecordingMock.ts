@@ -22,6 +22,8 @@ export type NodeRec = {
 /** The nodes built since the last reset, and the per-beat callback the mocked
  *  Transport hands back. Tests clear them in beforeEach. */
 export const beat: { step: null | ((t: number) => void) } = { step: null };
+/** The mocked Transport's position, which a test can read and set. */
+export const transport: { seconds: number } = { seconds: 0 };
 export const graph: { nodes: NodeRec[] } = { nodes: [] };
 /** Every Tone.setContext call, in order: the context passed and whether the
  *  previous one was disposed. Cleared by {@link resetToneFaults}. */
@@ -43,6 +45,7 @@ export function resetToneFaults(): void {
   toneFaults.triggerError = null;
   contextSwaps.length = 0;
   contextCalls.length = 0;
+  transport.seconds = 0;
 }
 
 /** A self-returning chainable stub for a Tone node: any property access or
@@ -128,6 +131,12 @@ export function toneMock() {
       contextSwaps.push({ context, disposeOld });
     },
     getTransport: () => ({
+      get seconds() {
+        return transport.seconds;
+      },
+      set seconds(s: number) {
+        transport.seconds = s;
+      },
       bpm: node(), // chainable: supports both `bpm.value = …` and `bpm.rampTo(…)`
       scheduleRepeat: (cb: (t: number) => void) => ((beat.step = cb), 1),
       start: () => {},

@@ -59,7 +59,7 @@ flowchart LR
     Host["the host game"] -->|"start() on the first gesture"| Facade["AudioEngine facade<br/>Audio.ts (no Tone import)"]
     Host -->|"sfx(name)"| Facade
     Host -->|"update(ViewFocus) about 6 Hz"| Facade
-    Host -->|"setVolumes · setMuted · setProgram · setAway"| Facade
+    Host -->|"setVolumes · setMuted · setProgram · setAway · continueMusic"| Facade
     Facade -->|"lazy import once"| Tone["ToneAudioEngine<br/>ToneAudioEngine.ts"]
     Tone --> Voices["action cues<br/>toneVoices.ts · tonePercussion.ts"]
     Tone --> Music["music tracks<br/>toneTracks.ts · toneMusicVoices.ts"]
@@ -148,6 +148,15 @@ torn-down audio engine.
 
 `setProgram("splash" | "game")` picks the track; the splash theme crossfades to
 the in-game bed on entry.
+
+A page can hand its track over to the next one. `musicTime` says how far into
+its loop the music is, and `continueMusic(seconds, asOf)` on the next page's
+facade (with `asOf` the `Date.now()` the position was read at) moves the
+Transport to that point plus the time since, wrapped into the loop, as soon as
+the player can hear it (`toneMusicPart.ts`). A launcher that hands over to a
+game page this way keeps the same theme playing from the same beat; the new
+page builds its graph silently while it is away, and the jump lands when it
+comes on screen.
 
 Leaving the page silences it. `awayWatch.ts` reports the player away while the
 tab is hidden or the page has lost focus, and `setAway` fades the master out,
