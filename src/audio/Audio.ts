@@ -16,6 +16,8 @@ interface AudioEngineImpl {
   setAway(away: boolean): void;
   setVolumes(music: number, ambience: number, sfx: number): void;
   setProgram(program: ProgramKind): void;
+  readonly musicTime: number | null;
+  continueMusic(seconds: number, asOf: number): void;
   update(focus: ViewFocus): void;
   sfx(name: SfxName): void;
   dispose(): void;
@@ -71,6 +73,8 @@ export class AudioEngine {
   /** Latest focus seen before the engine loaded, replayed once it's ready so the
    *  correct scene is showing immediately rather than a frame later. */
   private lastFocus: ViewFocus | null = null;
+  /** A track position handed over before the engine loaded. */
+  private handover: { seconds: number; asOf: number } | null = null;
   /** The latest cue fired while the engine was loading, and when. */
   private pendingCue: { name: SfxName; at: number } | null = null;
 
@@ -112,6 +116,8 @@ export class AudioEngine {
         impl.setMuted(this.muted);
         impl.setVolumes(this.heardMusic(), this.ambienceVolume, this.sfxVolume);
         impl.setProgram(this.program);
+        if (this.handover) impl.continueMusic(this.handover.seconds, this.handover.asOf);
+        this.handover = null;
         // Before start(), so a player who left during the load hears nothing:
         // the master builds silent and the context goes to sleep.
         impl.setAway(this.away);
@@ -150,6 +156,24 @@ export class AudioEngine {
   setProgram(program: ProgramKind): void {
     this.program = program;
     this.impl?.setProgram(program);
+  }
+
+  /** How far into its loop the music is, in seconds, or null before the
+   *  engine has started. A page handing over to another passes it on. */
+  get musicTime(): number | null {
+    return this.impl?.musicTime ?? null;
+  }
+
+  /** Carry the music on from another page that played the same track: it was
+   *  `seconds` into its loop at the wall-clock time `asOf` (`Date.now()`). The
+   *  track jumps there, plus the time since, once the player can hear it, so
+   *  a page that opens as another goes away (a launcher handing over to a
+   *  game) carries the tune on from the same beat. Ignored unless both are
+   *  finite numbers; stored until the engine loads. */
+  continueMusic(seconds: number, asOf: number): void {
+    if (!Number.isFinite(seconds) || !Number.isFinite(asOf)) return;
+    if (this.impl) this.impl.continueMusic(seconds, asOf);
+    else this.handover = { seconds, asOf };
   }
 
   /** Set the player volume levels (0..1 each). Inputs are clamped, and a
@@ -209,6 +233,7 @@ export class AudioEngine {
     this.generation++;
     this.loading = false;
     this.pendingCue = null;
+    this.handover = null;
     this.impl?.dispose();
     this.impl = null;
     this.started = false;

@@ -48,6 +48,12 @@ class StubEngine {
   setProgram(program: string): void {
     this.program = program;
   }
+  musicTime: number | null = 7.5;
+  handovers: Array<[number, number]> = [];
+  continueMusic(seconds: number, asOf: number): void {
+    this.handovers.push([seconds, asOf]);
+    this.calls.push("continueMusic");
+  }
   update(focus: unknown): void {
     this.lastFocus = focus;
   }
@@ -105,6 +111,31 @@ describe("AudioEngine facade lazy loading", () => {
     expect(loader).not.toHaveBeenCalled();
     expect(built).toHaveLength(0);
     expect(audio.started).toBe(false);
+  });
+
+  it("hands a track position over to the engine before it starts, and reads it back", async () => {
+    const audio = new AudioEngine(loader);
+    expect(audio.musicTime).toBeNull();
+    audio.continueMusic(12.5, 1000);
+    audio.start();
+    await vi.waitFor(() => expect(audio.started).toBe(true));
+    expect(built[0].handovers).toEqual([[12.5, 1000]]);
+    expect(built[0].calls.indexOf("continueMusic")).toBeLessThan(built[0].calls.indexOf("start"));
+    expect(audio.musicTime).toBe(7.5);
+    audio.continueMusic(3, 2000); // live: straight to the engine
+    expect(built[0].handovers).toEqual([
+      [12.5, 1000],
+      [3, 2000],
+    ]);
+  });
+
+  it("ignores a handover that is not a pair of finite numbers", async () => {
+    const audio = new AudioEngine(loader);
+    audio.continueMusic(Number.NaN, 1000);
+    audio.continueMusic(4, Number.POSITIVE_INFINITY);
+    audio.start();
+    await vi.waitFor(() => expect(audio.started).toBe(true));
+    expect(built[0].handovers).toEqual([]);
   });
 
   it("forwards the current muted state to the engine on load", async () => {

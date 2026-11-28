@@ -13,7 +13,8 @@ import type { ViewFocus } from "../render/excalibur/TowerEngine";
 vi.mock("tone", async () => (await import("./toneRecordingMock")).toneMock());
 vi.mock("./lightSynth", async () => (await import("./toneRecordingMock")).lightSynthMock());
 
-import { contextCalls, graph, resetToneFaults, toneFaults, type NodeRec } from "./toneRecordingMock";
+import { contextCalls, graph, resetToneFaults, toneFaults, transport, type NodeRec } from "./toneRecordingMock";
+import { programFor } from "./toneTracks";
 import { ToneAudioEngine } from "./ToneAudioEngine";
 
 const triggerCount = (): number => graph.nodes.reduce((sum, n) => sum + n.triggers.length, 0);
@@ -129,5 +130,27 @@ describe("ToneAudioEngine: the player leaving the page", () => {
     expect(update.mock.calls[0][3]).toBe(true);
     eng.update(focus());
     expect(update.mock.calls[1][3]).toBe(true);
+  });
+
+  it("carries a handed-over track on from its beat, once the player is back to hear it", () => {
+    vi.setSystemTime(50_000);
+    eng.setProgram("splash");
+    eng.setAway(true);
+    transport.seconds = 0.2;
+    eng.continueMusic(6, 48_000);
+    expect(transport.seconds).toBe(0.2); // away: nothing to hear yet
+    vi.setSystemTime(51_000);
+    eng.setAway(false);
+    expect(transport.seconds).toBeCloseTo(9 % programFor("splash").loopEnd);
+    transport.seconds = 1;
+    eng.setAway(true);
+    eng.setAway(false);
+    expect(transport.seconds).toBe(1); // taken once
+  });
+
+  it("reads how far into its loop the music is", () => {
+    const loop = programFor("game").loopEnd;
+    transport.seconds = loop + 2.5;
+    expect(eng.musicTime).toBeCloseTo(2.5);
   });
 });

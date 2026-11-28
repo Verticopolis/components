@@ -16,12 +16,13 @@ import { createSfxVoices, playSfx, type SfxVoices } from "./toneVoices";
 import { createPercussion, type PercVoices } from "./tonePercussion";
 import { createRain, type RainVoices } from "./toneRain";
 import { ContextSleep, usePlaybackContext } from "./toneContext";
-import { programFor, type Program, type ProgramKind, type TrackVoice } from "./toneTracks";
+import { programFor, type ProgramKind } from "./toneTracks";
 import { CrowdLayer } from "./toneCrowd";
 import type { LightMonoSynth, LightPolySynth } from "./lightSynth";
 import { createMusicVoices } from "./toneMusicVoices";
 import { createRoomTone } from "./toneRoomTone";
 import { FirstCueLatch } from "./firstCueLatch";
+import * as track from "./toneMusicPart";
 
 /** Audio context states with a stopped clock, where a cue cannot sound:
  *  autoplay not yet allowed or the tab backgrounded ("suspended"), Safari's
@@ -29,8 +30,6 @@ import { FirstCueLatch } from "./firstCueLatch";
 const SILENT_CONTEXT_STATES: ReadonlySet<string> = new Set(["suspended", "interrupted", "closed"]);
 /** How long the master fade into an away sleep plays before the clock stops. */
 const SLEEP_AFTER_FADE_MS = 150;
-
-type NoteVoice = { triggerAttackRelease: (f: number, d: number, t: number, v: number) => unknown };
 
 /**
  * Music + ambient audio for the tower, built on Tone.js.
@@ -51,8 +50,7 @@ type NoteVoice = { triggerAttackRelease: (f: number, d: number, t: number, v: nu
  * dynamic `import()` on the first gesture.
  */
 
-// Re-export the jingle name vocabulary from its new home so existing importers
-// (the Audio facade, tests) keep resolving `SfxName` from this module.
+// The facade and the tests import the jingle names from here.
 export type { SfxName };
 
 export class ToneAudioEngine {
@@ -77,6 +75,7 @@ export class ToneAudioEngine {
   private bassVoice: LightMonoSynth | null = null;
   private hook: LightPolySynth | null = null;
   private perc: PercVoices | null = null; // heartbeat + taps; routing doc in tonePercussion
+  private voices: track.TrackVoices = track.NO_VOICES;
   private musicGain: Tone.Gain | null = null;
   /** Warm lowpass + sub high-pass on the music (never bright/harsh, no rumble). */
   private musicTone: Tone.Filter | null = null;
@@ -114,6 +113,8 @@ export class ToneAudioEngine {
   /** The player left the page (`watchAway`): silent, and asleep once faded. */
   private away = false;
   private readonly sleep = new ContextSleep();
+  /** A track position another page handed over, until it is heard. */
+  private handover: track.MusicHandover | null = null;
   /** The latest focus `update` saw, so leaving can stop the crowd at once. */
   private focus: ViewFocus | null = null;
   /** Player-set levels 0..1, kept even while the graph isn't built so start()
@@ -180,6 +181,7 @@ export class ToneAudioEngine {
       ({ arp: this.arp, bass: this.bassVoice, hook: this.hook } = createMusicVoices(this.musicGain));
 
       this.perc = createPercussion(this.musicBus, this.musicLevel);
+      this.voices = { arp: this.arp, bassVoice: this.bassVoice, hook: this.hook, perc: this.perc };
 
       // The crowd/venue ambience layer rides the distance-filtered bed so
       // zoom muffles and opens it with everything else. Its two voice seeds
@@ -211,6 +213,7 @@ export class ToneAudioEngine {
       if (this.away) this.sleep.sleepAfter(SLEEP_AFTER_FADE_MS); // left during the load
       this.applyScene(this.scene, 0.01);
       this.applyDetail(this.detail, 0.01);
+      this.takeHandover();
     } catch {
       this.dispose();
     }
@@ -242,6 +245,24 @@ export class ToneAudioEngine {
     if (this.away && this.started) this.sleep.sleepAfter(SLEEP_AFTER_FADE_MS);
     else if (this.silent) this.sleep.cancel();
     else this.sleep.wake();
+    this.takeHandover();
+  }
+
+  /** How far into its loop the music is, in seconds; null before start(). */
+  get musicTime(): number | null {
+    return this.started ? track.loopSeconds(programFor(this.program).loopEnd) : null;
+  }
+
+  /** Carry on the track another page was `seconds` into at the wall-clock time
+   *  `asOf`: it jumps there, plus the time since, once the player can hear it. */
+  continueMusic(seconds: number, asOf: number): void {
+    this.handover = { seconds, asOf };
+    this.takeHandover();
+  }
+  private takeHandover(): void {
+    if (!this.handover || !this.started || this.away) return;
+    track.joinHandover(this.handover, programFor(this.program).loopEnd, Date.now());
+    this.handover = null;
   }
 
   /** Player volume levels, 0..1 each (clamped, ramped). Safe before start().
@@ -342,40 +363,16 @@ export class ToneAudioEngine {
       this.musicPart?.stop();
       this.musicPart?.dispose();
       this.musicPart = null;
-      const prog: Program = programFor(this.program);
-      const part = new Tone.Part(
-        (time, ev) => {
-          try {
-            if (this.silent) return; // a stray Tone error must not stop the Transport
-            this.noteVoice(ev.voice)?.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, ev.vel);
-          } catch {
-            /* skip this note */
-          }
-        },
-        prog.events.map((e) => [e.t, e] as [number, typeof e]),
-      );
-      part.loop = true;
-      part.loopEnd = prog.loopEnd;
-      part.start(0);
-      this.musicPart = part;
+      this.musicPart = track.loopingPart(programFor(this.program), (time, ev) => {
+        try {
+          if (this.silent) return; // a stray Tone error must not stop the Transport
+          track.trackVoice(ev.voice, this.voices)?.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, ev.vel);
+        } catch {
+          /* skip this note */
+        }
+      });
     } catch {
       /* rebuild failed; leave the part null so a later setProgram can retry */
-    }
-  }
-
-  /** Resolve a track voice tag to its live synth (owner request: a switch). */
-  private noteVoice(v: TrackVoice): NoteVoice | null {
-    switch (v) {
-      case "arp":
-        return this.arp;
-      case "bass":
-        return this.bassVoice;
-      case "hook":
-        return this.hook;
-      case "thump":
-        return this.perc?.thump ?? null;
-      case "tap":
-        return this.perc?.tap ?? null;
     }
   }
 
@@ -487,6 +484,7 @@ export class ToneAudioEngine {
     this.musicPart = null;
     this.arp = this.hook = this.bassVoice = null;
     this.perc = null;
+    this.voices = track.NO_VOICES;
     this.sfxVoices = null;
     this.ambNoise = null;
     this.ambFilter = this.ambTone = this.bedFilter = null;
