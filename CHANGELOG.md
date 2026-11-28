@@ -21,6 +21,14 @@ release; it refuses a version with no section (README, "Releasing").
 Entries up to 0.2.2 were written afterward from the history of the pull
 requests that made each version.
 
+## 2.11.0 (2026-11-28)
+
+- **minor**: `audio/Audio`: `AudioEngine` gains `musicTime` (how far into its loop the
+  music is) and `continueMusic(seconds, asOf)`, which carries a track on from
+  the beat another page handed over, once the player can hear it. A page that
+  opens as another playing the same theme goes away keeps the tune going
+  instead of starting it again.
+
 ## 2.10.0 (2026-11-26)
 
 - **minor**: `windows/editorCard` draws the editor card's frame: `editorCardTemplate`
