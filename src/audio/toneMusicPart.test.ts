@@ -1,5 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
-import { handoverSeconds, NO_VOICES, trackVoice, type NoteVoice } from "./toneMusicPart";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("tone", async () => (await import("./toneRecordingMock")).toneMock());
+
+import { transport } from "./toneRecordingMock";
+import { handoverSeconds, LoopClock, NO_VOICES, trackVoice, type NoteVoice } from "./toneMusicPart";
 
 describe("handoverSeconds", () => {
   it("adds the time since the handover to its position", () => {
@@ -31,5 +35,44 @@ describe("trackVoice", () => {
     expect(trackVoice("thump", voices)).toBe(voices.perc.thump);
     expect(trackVoice("tap", voices)).toBe(voices.perc.tap);
     expect(trackVoice("tap", NO_VOICES)).toBeNull();
+  });
+});
+
+describe("LoopClock", () => {
+  beforeEach(() => {
+    transport.seconds = 0;
+  });
+
+  it("has no place in the loop until a part is built", () => {
+    const clock = new LoopClock();
+    transport.seconds = 5;
+    expect(clock.seconds).toBeNull();
+    clock.built(20);
+    expect(clock.seconds).toBeCloseTo(5);
+    transport.seconds = 47;
+    expect(clock.seconds).toBeCloseTo(7);
+    clock.built(0);
+    expect(clock.seconds).toBeNull();
+  });
+
+  it("moves to a held beat once, when joined", () => {
+    const clock = new LoopClock();
+    clock.built(20);
+    clock.hold({ seconds: 3, asOf: 1000 });
+    expect(transport.seconds).toBe(0);
+    clock.join(2000);
+    expect(transport.seconds).toBeCloseTo(4);
+    transport.seconds = 9;
+    clock.join(3000);
+    expect(transport.seconds).toBe(9);
+  });
+
+  it("drops a beat it cannot place, with no part built", () => {
+    const clock = new LoopClock();
+    clock.hold({ seconds: 3, asOf: 0 });
+    clock.join(0);
+    clock.built(20);
+    clock.join(0);
+    expect(transport.seconds).toBe(0);
   });
 });

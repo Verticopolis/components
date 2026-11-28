@@ -113,8 +113,8 @@ export class ToneAudioEngine {
   /** The player left the page (`watchAway`): silent, and asleep once faded. */
   private away = false;
   private readonly sleep = new ContextSleep();
-  /** A track position another page handed over, until it is heard. */
-  private handover: track.MusicHandover | null = null;
+  /** Where the music is in its loop, and a beat handed over until it is heard. */
+  private readonly clock = new track.LoopClock();
   /** The latest focus `update` saw, so leaving can stop the crowd at once. */
   private focus: ViewFocus | null = null;
   /** Player-set levels 0..1, kept even while the graph isn't built so start()
@@ -204,8 +204,7 @@ export class ToneAudioEngine {
       // the legacy money synth; recipes and dry-bus rationale in toneVoices).
       this.sfxVoices = createSfxVoices(this.sfxBus);
 
-      // Kick off the Transport (the looping music part and the venue programs
-      // schedule on it).
+      // Start the Transport; the looping music part and venue programs run on it.
       Tone.getTransport().start();
       this.buildMusicPart();
 
@@ -250,19 +249,16 @@ export class ToneAudioEngine {
 
   /** How far into its loop the music is, in seconds; null before start(). */
   get musicTime(): number | null {
-    return this.started ? track.loopSeconds(programFor(this.program).loopEnd) : null;
+    return this.started ? this.clock.seconds : null;
   }
 
-  /** Carry on the track another page was `seconds` into at the wall-clock time
-   *  `asOf`: it jumps there, plus the time since, once the player can hear it. */
+  /** Carry on another page's track from `seconds` in at wall-clock `asOf` (plus the time since), once heard. */
   continueMusic(seconds: number, asOf: number): void {
-    this.handover = { seconds, asOf };
+    this.clock.hold({ seconds, asOf });
     this.takeHandover();
   }
   private takeHandover(): void {
-    if (!this.handover || !this.started || this.away) return;
-    track.joinHandover(this.handover, programFor(this.program).loopEnd, Date.now());
-    this.handover = null;
+    if (this.started && !this.away) this.clock.join(Date.now());
   }
 
   /** Player volume levels, 0..1 each (clamped, ramped). Safe before start().
@@ -363,7 +359,9 @@ export class ToneAudioEngine {
       this.musicPart?.stop();
       this.musicPart?.dispose();
       this.musicPart = null;
-      this.musicPart = track.loopingPart(programFor(this.program), (time, ev) => {
+      this.clock.built(0);
+      const prog = programFor(this.program);
+      this.musicPart = track.loopingPart(prog, (time, ev) => {
         try {
           if (this.silent) return; // a stray Tone error must not stop the Transport
           track.trackVoice(ev.voice, this.voices)?.triggerAttackRelease(midiToFreq(ev.midi), ev.dur, time, ev.vel);
@@ -371,6 +369,7 @@ export class ToneAudioEngine {
           /* skip this note */
         }
       });
+      this.clock.built(prog.loopEnd);
     } catch {
       /* rebuild failed; leave the part null so a later setProgram can retry */
     }
@@ -482,6 +481,7 @@ export class ToneAudioEngine {
       }
     }
     this.musicPart = null;
+    this.clock.built(0);
     this.arp = this.hook = this.bassVoice = null;
     this.perc = null;
     this.voices = track.NO_VOICES;

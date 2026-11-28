@@ -55,6 +55,38 @@ export function joinHandover(h: MusicHandover, loopEnd: number, now: number): vo
   }
 }
 
+/**
+ * The music's place in its loop. It keeps the built part's loop length, so
+ * reading the place never rebuilds the track, and holds a beat another page
+ * handed over until the player can hear it.
+ */
+export class LoopClock {
+  private loopEnd = 0;
+  private handover: MusicHandover | null = null;
+
+  /** A part looping every `loopEnd` seconds was built; 0 when none is. */
+  built(loopEnd: number): void {
+    this.loopEnd = loopEnd;
+  }
+
+  /** Seconds into the loop, or null with no part built. */
+  get seconds(): number | null {
+    return this.loopEnd > 0 ? loopSeconds(this.loopEnd) : null;
+  }
+
+  /** Keep a handed-over beat until {@link join}. */
+  hold(h: MusicHandover): void {
+    this.handover = h;
+  }
+
+  /** Move to the held beat, if there is one, as of `now`, and let it go. */
+  join(now: number): void {
+    if (!this.handover) return;
+    joinHandover(this.handover, this.loopEnd, now);
+    this.handover = null;
+  }
+}
+
 /** What a track note plays on. */
 export type NoteVoice = { triggerAttackRelease: (f: number, d: number, t: number, v: number) => unknown };
 

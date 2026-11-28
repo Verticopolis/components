@@ -12,6 +12,11 @@ import type { ViewFocus } from "../render/excalibur/TowerEngine";
 
 vi.mock("tone", async () => (await import("./toneRecordingMock")).toneMock());
 vi.mock("./lightSynth", async () => (await import("./toneRecordingMock")).lightSynthMock());
+// The real tracks, with a spy to tell when one is rebuilt.
+vi.mock("./toneTracks", async (actual) => {
+  const real = await actual<typeof import("./toneTracks")>();
+  return { ...real, programFor: vi.fn(real.programFor) };
+});
 
 import { contextCalls, graph, resetToneFaults, toneFaults, transport, type NodeRec } from "./toneRecordingMock";
 import { programFor } from "./toneTracks";
@@ -152,5 +157,12 @@ describe("ToneAudioEngine: the player leaving the page", () => {
     const loop = programFor("game").loopEnd;
     transport.seconds = loop + 2.5;
     expect(eng.musicTime).toBeCloseTo(2.5);
+  });
+
+  it("reads the loop and takes a handover without rebuilding the track", () => {
+    vi.mocked(programFor).mockClear();
+    void eng.musicTime;
+    eng.continueMusic(1, Date.now());
+    expect(programFor).not.toHaveBeenCalled();
   });
 });
