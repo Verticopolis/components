@@ -1,0 +1,504 @@
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-g5ptsecz"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>The desk | Verticopolis components</title><link rel="canonical" href="https://components.verticopolis.com/pr-preview/pr-155/docs/desk/"/><link rel="sitemap" href="/pr-preview/pr-155/sitemap-index.xml"/><style>@layer starlight, vc;</style><script>(function(){try{var s=localStorage.getItem("vc-components-scheme");if(["skyline","high_contrast"].indexOf(s)>=0)document.documentElement.setAttribute("data-scheme",s)}catch(e){}})();</script><link rel="shortcut icon" href="/pr-preview/pr-155/favicon.png" type="image/png"/><meta name="generator" content="Astro v7.4.12"/><meta name="generator" content="Starlight v0.42.7"/><meta property="og:title" content="The desk"/><meta property="og:type" content="article"/><meta property="og:url" content="https://components.verticopolis.com/pr-preview/pr-155/docs/desk/"/><meta property="og:locale" content="en"/><meta property="og:description" content="The 1994 desk: its windows, their rules, the window menu, the layout and the stylesheet."/><meta property="og:site_name" content="Verticopolis components"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="The 1994 desk: its windows, their rules, the window menu, the layout and the stylesheet."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/pr-preview/pr-155/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/starlight.0_sMOAdi.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/high-contrast.Dud6eLhF.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/common.Cb7Lpm6A.css"><style>@layer vc.tokens{:root{--bg:var(--r-desktop);--panel:var(--r-face);--ink:var(--r-ink);--accent:var(--r-title);--panel-light:#d7d7d7;--muted:#2f2f38;--good:#15722e;--bad:#b01023;--bad-ink:#9a0e1f;--money:#005000;--line:#7a7a7a;--r-face:silver;--r-shadow:gray;--r-dark:#000;--r-light:#dfdfdf;--r-hi:#fff;--r-title:navy;--r-title-fg:#fff;--r-ink:#000;--r-desktop:teal;--r-workspace:var(--r-face);--r-font:"MS Sans Serif", "Tahoma", "Geneva", "Segoe UI", sans-serif;--bevel-out:inset -1px -1px var(--r-dark), inset 1px 1px var(--r-hi), inset -2px -2px var(--r-shadow), inset 2px 2px var(--r-light);--bevel-in:inset 1px 1px var(--r-dark), inset -1px -1px var(--r-hi), inset 2px 2px var(--r-shadow), inset -2px -2px var(--r-light);--win-shadow:2px 2px 0 #0006;--rung-vlow:#2048b0;--rung-low:#1e7a2e;--rung-avg:#c8a000;--rung-high:#b02020;--splash-sky:linear-gradient(#161634 0%, #241f4c 34%, #5b3560 62%, #c65a63 86%, #ef8560 100%);--splash-amber:#ffc94a;--splash-sun:radial-gradient(circle, #ffe6a0 0%, var(--splash-amber) 52%, #f18f4b 100%);--splash-sun-glow:#ffb35742;--splash-building:#201643;--splash-cream:#e6dcc0;--splash-plate-ink:#20204a;--splash-ink:#0d0d10;--splash-wordmark:#f7f1e4;--splash-tagline:#ffd9a8;--splash-premise:#e7ddf5}html[data-scheme=skyline]{--r-face:#ebe7dc;--r-light:#f7f5ef;--r-hi:#fff;--r-shadow:#a59fb4;--r-dark:#4a4560;--r-title:#33378f;--r-desktop:#3b3c7a;--panel-light:#f4f2ec;--line:#8b8698;--muted:#3c3850;--money:#0b5a1f;--sky-line:#8b8698;--sky-title:linear-gradient(180deg, #5a63c8 0%, #3d429e 42%, #2a2766 100%);--sky-title-off:linear-gradient(180deg, #77739a 0%, #66618a 45%, #555075 100%);--sky-btn:linear-gradient(#fff, #e4e0d5);--sky-btn-down:linear-gradient(#d8d3c6, #efece4);--sky-violet:linear-gradient(#7880dc, #4a50b0);--sky-rose:linear-gradient(#d06a7c, #9c3048);--bevel-out:inset 0 0 0 1px var(--sky-line);--bevel-in:inset 0 0 0 1px var(--sky-line), inset 1px 1px 0 1px #4a45602e;--win-shadow:2px 3px 0 #14103252}html[data-scheme=high_contrast]{--r-face:#000;--r-light:#000;--r-hi:#fff;--r-shadow:#fff;--r-dark:#fff;--r-title:#ff0;--r-title-fg:#000;--r-ink:#fff;--r-desktop:#000;--panel-light:#000;--ink:#fff;--muted:#fff;--line:#fff;--good:#7dff7d;--bad:#ff8a8a;--bad-ink:#ff8a8a;--money:#7dff7d;--bevel-out:inset 0 0 0 2px #fff;--bevel-in:inset 0 0 0 2px #ff0;--win-shadow:0 0 0 1px #fff}}@layer vc.base,vc.components,vc.windows,vc.page,vc.components.button,vc.components.window,vc.components.well,vc.components.kv;@layer vc.components.menu-bar{.menubar{z-index:30;background:var(--r-face);box-shadow:inset 0 -1px var(--r-shadow);font-family:var(--r-font);color:var(--r-ink);flex:none;align-items:center;padding:1px 2px;font-size:12px;display:flex;position:relative}.menubar-brand{display:none}.mb-menu{position:relative}.mb-title{font:inherit;color:inherit;cursor:default;background:0 0;border:0;padding:3px 8px}.mb-title u{text-decoration:underline}.mb-title[aria-expanded=true]{box-shadow:inset 1px 1px var(--r-shadow), inset -1px -1px var(--r-hi)}.mb-title:focus-visible,.mb-item:focus-visible{outline:1px dotted var(--r-ink);outline-offset:-3px}.mb-pop{background:var(--r-face);min-width:220px;box-shadow:var(--bevel-out), var(--win-shadow);flex-direction:column;padding:3px;display:flex;position:absolute;top:100%;left:0}.mb-pop[hidden]{display:none}.mb-item{font:inherit;color:var(--r-ink);text-align:left;cursor:default;white-space:nowrap;background:0 0;border:0;justify-content:space-between;gap:24px;padding:4px 12px 4px 22px;display:flex;position:relative}a.mb-item{text-decoration:none}.mb-item[hidden]{display:none}.mb-item:hover,.mb-item:focus-visible{background:var(--r-title);color:var(--r-title-fg)}.mb-item[aria-disabled=true]{color:var(--r-shadow);background:0 0}.mb-item[aria-checked=true]:before{content:"✓";position:absolute;left:7px}.mb-item kbd{font:inherit;opacity:.8}.mb-sep{border:0;border-top:1px solid var(--r-shadow);border-bottom:1px solid var(--r-hi);margin:3px 2px}.mb-sep[hidden]{display:none}}
+</style><link rel="stylesheet" href="/pr-preview/pr-155/_astro/deskTaskbar.DaBsq3JC.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/Demo.DnqsWP7Y.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/deskControlPanel.COyAunui.css"><script type="module" src="/pr-preview/pr-155/_astro/page.cNngjUgL.js"></script></head><body class="astro-g5ptsecz"><a class="sl-skip-link astro-qb7clj6f" href="#_top">Skip to content</a><div class="page sl-flex astro-yntsjkba"><header class="header astro-yntsjkba"><div id="site-menubar-host"></div><script type="module" src="/pr-preview/pr-155/_astro/MenuBar.astro_astro_type_script_index_0_lang.bRjUEhfX.js"></script><div class="vc-bar"><a href="/pr-preview/pr-155/" class="site-title vc-bar-title"><img src="/pr-preview/pr-155/_astro/pwa-192x192.B7C8LqMV.png" width="192" height="192" alt=""><span class="vc-name" translate="no"><span class="vc-full">Verticopolis components</span><span class="vc-short" aria-hidden="true">Components</span></span></a><div class="vc-bar-search print:hidden"><site-search class=" astro-b5kgnn7o" data-translations="{&quot;placeholder&quot;:&quot;Search&quot;}"><button data-open-modal disabled aria-label="Search" aria-keyshortcuts="Control+K" class="astro-b5kgnn7o"><svg aria-hidden="true" class="astro-b5kgnn7o astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-b5kgnn7o" aria-hidden="true">Search</span><kbd class="sl-hidden md:sl-flex astro-b5kgnn7o" style="display: none;"><kbd class="astro-b5kgnn7o">Ctrl</kbd><kbd class="astro-b5kgnn7o">K</kbd></kbd></button><dialog style="padding:0" aria-label="Search" class="astro-b5kgnn7o"><div class="dialog-frame sl-flex astro-b5kgnn7o"><button data-close-modal class="sl-flex md:sl-hidden astro-b5kgnn7o">Cancel</button><div class="search-container astro-b5kgnn7o"><div id="starlight__search" class="astro-b5kgnn7o"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/pr-preview/pr-155/_astro/Search.astro_astro_type_script_index_0_lang.YNGHfIHJ.js"></script></div><div class="vc-bar-links print:hidden"><a class="vc-bar-game" href="https://verticopolis.com/" data-game-link><span class="vc-full">Play the game</span><span class="vc-short" aria-hidden="true">Play</span></a><a class="vc-bar-github" href="https://github.com/Verticopolis/components"><span class="vc-sr-only">GitHub</span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"></path></svg></a><div class="vc-bar-theme"><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script></div></div></div><script type="module" src="/pr-preview/pr-155/_astro/Mermaid.astro_astro_type_script_index_0_lang.DSEL4w5M.js"></script></header><nav class="sidebar print:hidden astro-yntsjkba" aria-label="Main"><button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden astro-r2osgdlg"><svg aria-hidden="true" class="open-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg><svg aria-hidden="true" class="close-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg><span class="sr-only astro-r2osgdlg">Menu</span></button><script type="module">var e=class extends HTMLElement{constructor(){super();let e=matchMedia(`(min-width: 50em)`),t=()=>{this.popover=e.matches?null:`auto`};t(),e.addEventListener(`change`,()=>t()),this.addEventListener(`toggle`,({newState:e})=>this.trapFocus(e===`open`))}trapFocus(e){document.querySelectorAll(`.main-frame, .sl-skip-link`).forEach(t=>{t.toggleAttribute(`inert`,e)})}};customElements.define(`sl-sidebar-pane`,e);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script><sl-sidebar-pane popover id="starlight__sidebar" class="sidebar-pane astro-yntsjkba"><div class="sidebar-content sl-flex astro-yntsjkba"><sl-sidebar-state-persist data-hash="0c2jmm3" class="astro-ipdry5cl"><script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script><ul class="top-level astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Overview</span></a></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Windows and controls</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="0"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/buttons/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Buttons</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/windows/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Windows</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/wells/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Wells, fields and key-value rows</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/menu-bar/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Menu bar</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/message-boxes/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Message boxes</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/alert-cards/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Alert cards and updates</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/appearance/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Appearance</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/file-dialog/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Open and Save As</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/scenario-list/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Scenario lists</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/icons/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Icons</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Desktop</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="1"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/pocket-desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Pocket desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/information-bar/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Information bar and status bar</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/tools/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Tools window</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/layout/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Where windows open</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/control-panel/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Control Panel</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/title-screen/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Title screen</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/map/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Map window</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/screen-saver/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Screen saver</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/fireworks/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Fireworks</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/not-found/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Page not found</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/sounds/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Sounds</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs-sites/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Docs sites</span></a></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">The tower</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="2"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/lobbies/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Lobbies</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/stairs-and-escalators/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Stairs and escalators</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/elevators/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Elevators</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/rooms/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Rooms</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/people/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">People</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Docs</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="3"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/architecture/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Architecture</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/design-system/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Design system</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/desk/" aria-current="page" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/audio/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Audio</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/atlas/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Sprite atlas</span></a></li></ul></details></li></ul><script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script></sl-sidebar-state-persist><div class="md:sl-hidden"><div class="mobile-preferences sl-flex astro-p4azlveh"><div class="social-icons astro-p4azlveh"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script></div></div></div></sl-sidebar-pane></nav><div class="main-frame astro-yntsjkba"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-lrzkfocr"><aside class="right-sidebar-container print:hidden astro-lrzkfocr"><div class="right-sidebar astro-lrzkfocr"><div class="lg:sl-hidden astro-qok35upx"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-66cqc7ze"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-66cqc7ze"><details id="starlight__mobile-toc" class="astro-66cqc7ze"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-66cqc7ze"><span class="toggle sl-flex astro-66cqc7ze">On this page<svg aria-hidden="true" class="caret astro-66cqc7ze astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-66cqc7ze"></span></summary><div class="dropdown astro-66cqc7ze"><ul class="isMobile astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#what-the-package-gives-a-game" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">What the package gives a game</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#putting-a-window-on-the-desk" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Putting a window on the desk</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#a-windows-life" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">A window’s life</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#resizing" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Resizing</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-window-menu" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The window menu</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-taskbar" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The taskbar</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#where-windows-open" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Where windows open</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-pocket-desk" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The pocket desk</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-class-contract" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The class contract</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#cost" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Cost</span></a></li></ul></div></details></nav></mobile-starlight-toc><script type="module" src="/pr-preview/pr-155/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.C3fM4Kra.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-qok35upx"><div class="sl-container astro-qok35upx"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#what-the-package-gives-a-game" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">What the package gives a game</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#putting-a-window-on-the-desk" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Putting a window on the desk</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#a-windows-life" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">A window’s life</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#resizing" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Resizing</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-window-menu" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The window menu</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-taskbar" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The taskbar</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#where-windows-open" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Where windows open</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-pocket-desk" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The pocket desk</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-class-contract" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The class contract</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#cost" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Cost</span></a></li></ul></nav></starlight-toc><script type="module" src="/pr-preview/pr-155/_astro/TableOfContents.astro_astro_type_script_index_0_lang.BpJaGz7G.js"></script></div></div></div></aside><div class="main-pane astro-lrzkfocr"><main data-pagefind-body class="astro-g5ptsecz" lang="en" dir="ltr"><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><h1 id="_top" class="astro-bebwqqxs">The desk</h1></div></div><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><div class="sl-markdown-content"><p>On a computer, and on a touchscreen with room for it, the game runs as a 1994
+desktop: each part of the game is its own window on a teal desk, with a
+taskbar along the bottom. A smaller touchscreen gets the pocket desk, where
+the tower fills the screen (see <a href="#the-pocket-desk">The pocket desk</a>). This
+package holds the desk’s windows, its window menu, its taskbar, its geometry
+and its stylesheets. A game decides when the desk comes up and which desk it
+gets, which of its own elements become windows, and what the taskbar’s
+Start menu holds and does. The component gallery shows
+<a href="https://components.verticopolis.com/desktop/desk/">the desk live</a> and
+<a href="https://components.verticopolis.com/desktop/layout/">where its windows open</a>.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="what-the-package-gives-a-game">What the package gives a game</h2><a class="sl-anchor-link" href="#what-the-package-gives-a-game"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “What the package gives a game”</span></a></div>
+<table>
+<thead>
+<tr>
+<th>Import</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">windows/desk/deskWindow</code></td>
+<td><code dir="auto">DeskWindow</code>, one window on the desk: minimize, maximize and restore, the size grip, the focus, and a move by the title bar. <code dir="auto">buildFrame</code> draws a frame for content that has no window of its own.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskTaskbar</code></td>
+<td><code dir="auto">DeskTaskbar</code>, the taskbar: the Start button and its menu, a button per open window, and the tray (the Control Panel’s monitor, the speaker and the clock). <code dir="auto">shownItems</code> and <code dir="auto">trayClock</code> are the pure parts it draws from.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskPocket</code></td>
+<td><code dir="auto">deskMode</code> (which desk a screen gets), <code dir="auto">pocketBody</code> (the grid inside the pocket tower window), the body classes <code dir="auto">DESK_TOUCH_CLASS</code> and <code dir="auto">DESK_POCKET_CLASS</code>, <code dir="auto">POCKET_BODY_CLASS</code>, and the media queries <code dir="auto">TOUCH_MQ</code> and <code dir="auto">TOUCH_DESK_MQ</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskControlPanel</code></td>
+<td><code dir="auto">ControlPanel</code>, the Control Panel’s window: the large icons the game picks from the four the package draws (<code dir="auto">ControlIcon</code>), their names and tooltips, an object count, and a ✕. Each press goes to the game; <code dir="auto">setLabel</code> renames an icon, such as “Sounds: Off”.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskWindowMenu</code></td>
+<td><code dir="auto">WindowMenu</code>, the menu a right-click on a title bar or a taskbar button opens (Restore, Minimize, Maximize, Close), with <code dir="auto">windowMenuState</code> and <code dir="auto">runWindowCommand</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskHelp</code></td>
+<td><code dir="auto">buildHelpWindow</code>, the Help window: the Player’s Manual in a page frame under its own menu bar (a <code dir="auto">MenuBarModel</code> the game gives, with <code dir="auto">menus.render</code> for fresh check marks; Alt stays with the game’s bar; <code dir="auto">dispose</code> takes its page listeners off) and Contents, Back, Forward and Open in Browser, with <code dir="auto">setNav</code> turning Back and Forward on and off. The game decides what the menus and buttons do and which page the frame shows.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskGeometry</code></td>
+<td>Pure functions over plain numbers: <code dir="auto">defaultLayout</code> (where each window opens the first time), <code dir="auto">fitRect</code> (a saved place kept on a smaller screen), <code dir="auto">resizedTo</code> (a resize held to its limits) and <code dir="auto">parseLayout</code> (a saved layout read back safely), with <code dir="auto">DESK_WINDOW_IDS</code>, the size limits and the layout constants.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/movableWindow</code></td>
+<td><code dir="auto">MovableWindow</code>, the drag by the title bar that every movable window uses, the desk’s included.</td>
+</tr>
+<tr>
+<td><code dir="auto">styles/game/desk.css</code></td>
+<td>The look: every desk window, the taskbar, the Start menu, the tray, the window menu and the Control Panel’s icons. Part of <code dir="auto">styles.css</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">styles/game/desk-pocket.css</code></td>
+<td>The desk on a touchscreen: the touch chrome and the pocket desk. Part of <code dir="auto">styles.css</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">windows/desk/deskTitle</code></td>
+<td><code dir="auto">DeskTitle</code>, the title screen on the desk: the window’s title bar and the taskbar around the page’s splash, on a computer or (<code dir="auto">show(true)</code>) the pocket desk. Given <code dir="auto">controlPanel</code>, it also holds the Control Panel, opened by <code dir="auto">openControl()</code> or the tray’s monitor over the title window, so the Start menu can read the same over the title screen as over a tower.</td>
+</tr>
+<tr>
+<td><code dir="auto">styles/game/desk-title.css</code></td>
+<td>The title screen on the desk: the splash as a window over the teal desk, and where its Control Panel opens. Its buttons are the scheme’s plain push buttons, except the main one (Continue, or New Tower with no tower to continue), which keeps the default ring and bold text and wears the scheme’s accent: amber in Classic, violet in Skyline (<code dir="auto">schemes/skyline.css</code>), yellow in High Contrast (<code dir="auto">schemes/high-contrast.css</code>). Part of <code dir="auto">styles.css</code>.</td>
+</tr>
+<tr>
+<td><code dir="auto">styles/game/desk-title-pocket.css</code></td>
+<td>The title screen on the pocket desk: the same window fitted to a phone, upright and sideways. Part of <code dir="auto">styles.css</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The taskbar, its Start menu and the tray are drawn here
+(<code dir="auto">DeskTaskbar</code>); the game names the menu’s items and decides what each press
+does. The Control Panel’s window is drawn here too (<code dir="auto">ControlPanel</code>); the game
+names its icons and decides what each one opens.</p>
+<pre class="mermaid">flowchart LR
+  subgraph Game["The game"]
+    Controller["Desk controller&lt;br/&gt;(when the desk is up, saved places)"]
+    Items["Start menu items,&lt;br/&gt;tray actions"]
+    Own["Its own windows&lt;br/&gt;(Map, Bulletin, Tools, Control Panel)"]
+  end
+  subgraph Package["@verticopolis/components"]
+    Taskbar["DeskTaskbar"]
+    Pocket["deskMode, pocketBody"]
+    DW["DeskWindow, buildFrame"]
+    WM["WindowMenu"]
+    Geo["deskGeometry"]
+    Mover["MovableWindow"]
+    CSS["desk.css, desk-pocket.css,&lt;br/&gt;desk-title.css, desk-title-pocket.css"]
+  end
+  Controller --&gt;|"which desk"| Pocket
+  Controller --&gt;|"a button per window"| Taskbar
+  Items --&gt;|"items, start, sound,&lt;br/&gt;controlPanel"| Taskbar
+  Controller --&gt;|"a DeskWindowSpec per window"| DW
+  Controller --&gt;|"first places, saved places"| Geo
+  Own --&gt;|"taken over by"| DW
+  Taskbar --&gt;|"right-click on a button"| WM
+  WM --&gt;|"runWindowCommand"| DW
+  DW --&gt;|"moves with"| Mover
+  DW --&gt;|"resizes with resizedTo"| Geo
+  CSS -.-&gt;|"styles"| DW
+  CSS -.-&gt;|"styles"| Taskbar</pre>
+<div class="sl-heading-wrapper level-h2"><h2 id="putting-a-window-on-the-desk">Putting a window on the desk</h2><a class="sl-anchor-link" href="#putting-a-window-on-the-desk"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Putting a window on the desk”</span></a></div>
+<p>A game hands <code dir="auto">DeskWindow</code> a <code dir="auto">DeskWindowSpec</code> for each window:</p>
+<ul>
+<li><code dir="auto">id</code>: the window’s name, which the window menu and the saved layout use.</li>
+<li><code dir="auto">el</code>: the window. Either a frame from <code dir="auto">buildFrame(doc, id, title, close, icon)</code> (the game moves its content into the frame’s <code dir="auto">body</code>), or a window the
+game already draws with its own <code dir="auto">.win-title</code> and ✕. The desk adds the title
+bar’s icon, then minimize, and maximize where it is allowed, in front of the
+window’s own ✕.</li>
+<li><code dir="auto">label</code>: the name on its taskbar button and in its buttons’ labels.</li>
+<li><code dir="auto">icon</code>: the URL of the title bar’s icon, for a window that draws its own
+title bar; <code dir="auto">./favicon.png</code> beside the page when absent. A <code dir="auto">buildFrame</code>
+frame already has its icon (the <code dir="auto">icon</code> it was given), and <code dir="auto">DeskWindow</code>
+leaves it alone.</li>
+<li><code dir="auto">layer</code>: <code dir="auto">app</code> for the tower, which stays under the small windows even when
+maximized, or <code dir="auto">tool</code> for the small windows, which stack among themselves.</li>
+<li><code dir="auto">limits</code>: the smallest size for a window that resizes (<code dir="auto">TOWER_LIMITS</code>,
+<code dir="auto">TOOLS_LIMITS</code>, <code dir="auto">HELP_LIMITS</code>), or null for a window of one size.
+<code dir="auto">heightOnly</code> keeps the width (Tools).</li>
+<li><code dir="auto">canMax</code>: whether it maximizes (the tower and Help do in the game).</li>
+<li><code dir="auto">isOpen</code>, <code dir="auto">open</code>, <code dir="auto">close</code>: whether the game has it open, and how the game
+opens and closes it. A window without <code dir="auto">close</code> never closes on the desk
+(Info and Tools, so nothing the player plays with can be lost).</li>
+<li><code dir="auto">changed</code>: heard after a move, a resize, a minimize, a restore, a maximize
+and an un-maximize, for the taskbar, the saved layout and the analytics.</li>
+<li><code dir="auto">pressed</code>: heard on any press in the window, so the game can bring it to
+the front.</li>
+</ul>
+<p><code dir="auto">DeskWindow</code> adds three classes the stylesheet reads: <code dir="auto">desk-minimized</code>,
+<code dir="auto">desk-maximized</code> and <code dir="auto">desk-active</code> (the window with the focus, whose title bar
+is navy; every other title bar is gray). The game sets <code dir="auto">desk</code> on <code dir="auto">&lt;body&gt;</code>
+while the desk is up; the window rules are keyed on it, so the same windows
+keep the game’s ordinary layout on a phone or the title screen. <code dir="auto">dispose</code>
+takes everything the desk added off again.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="a-windows-life">A window’s life</h2><a class="sl-anchor-link" href="#a-windows-life"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “A window’s life”</span></a></div>
+<pre class="mermaid">stateDiagram-v2
+  [*] --&gt; Normal: opened
+  Normal --&gt; Minimized: minimize button, window menu,&lt;br/&gt;or its taskbar button while in front
+  Minimized --&gt; Normal: its taskbar button, the game's&lt;br/&gt;Window menu, or Restore
+  Normal --&gt; Maximized: maximize button, double-click on&lt;br/&gt;the title bar, or Maximize
+  Maximized --&gt; Normal: restore button, double-click,&lt;br/&gt;or Restore
+  Maximized --&gt; Minimized: minimize
+  Normal --&gt; Closed: its ✕ or Close (when the game can close it)
+  Maximized --&gt; Closed: its ✕ or Close
+  Closed --&gt; Normal: the game opens it again</pre>
+<ul>
+<li>A minimized window is hidden but still laid out, so the tower’s canvas keeps
+its size while it waits on the taskbar.</li>
+<li>A maximized window fills the desk and remembers the place it had, which a
+restore puts back. It has no size grip and does not move.</li>
+<li>Windows stack in the order they were pressed, and only the last one pressed
+has a lit title bar.</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="resizing">Resizing</h2><a class="sl-anchor-link" href="#resizing"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Resizing”</span></a></div>
+<p>A window with <code dir="auto">limits</code> gets a size grip at its bottom right corner. Nothing
+resizes while the pointer moves: a dotted outline shows the size, and the
+window takes it once, on release, so the tower’s canvas resizes once per
+resize.</p>
+<pre class="mermaid">sequenceDiagram
+  participant P as Pointer
+  participant G as Size grip
+  participant D as DeskWindow
+  participant Geo as resizedTo
+  P-&gt;&gt;G: press
+  G-&gt;&gt;D: start: the window's rect, the pointer's spot
+  D-&gt;&gt;D: draw the dotted outline
+  loop each move
+    P-&gt;&gt;G: move
+    G-&gt;&gt;Geo: start rect, the move, the limits, the desk's size
+    Geo--&gt;&gt;D: the size asked for, within the limits and the desk
+    D-&gt;&gt;D: move the outline
+  end
+  P-&gt;&gt;G: release
+  D-&gt;&gt;D: take the outline away, take the size
+  D--&gt;&gt;D: changed("resize")</pre>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-window-menu">The window menu</h2><a class="sl-anchor-link" href="#the-window-menu"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The window menu”</span></a></div>
+<p>A right-click on a window’s title bar or taskbar button, or Shift+F10 or the
+context menu key on a focused taskbar button, opens <code dir="auto">WindowMenu</code> for that
+window: Restore, Minimize, Maximize and Close. <code dir="auto">windowMenuState</code> grays each
+one that does not apply: Restore while the window is in front at its own
+size, Minimize while it is minimized, Maximize for a window that cannot
+maximize or already has, Close for a window the game never closes. Up and
+Down move through the items; Escape or a press outside closes the menu.
+<code dir="auto">runWindowCommand</code> runs the pick, bringing the window to the front first for
+Restore and Maximize, as 1995 did.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-taskbar">The taskbar</h2><a class="sl-anchor-link" href="#the-taskbar"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The taskbar”</span></a></div>
+<p><code dir="auto">new DeskTaskbar(doc, options)</code> draws the taskbar; the game puts its <code dir="auto">root</code>
+under the desk, calls <code dir="auto">start()</code> once it is on the page and <code dir="auto">stop()</code> when the
+desk goes away. <code dir="auto">render(entries)</code> shows one button per open window, each a
+<code dir="auto">TaskEntry</code> (<code dir="auto">id</code>, <code dir="auto">label</code>, <code dir="auto">active</code>, <code dir="auto">minimized</code>); the window in front and
+not minimized is pressed in. <code dir="auto">setSound(on)</code> shows the sound’s state on the
+speaker.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">items</code></td>
+<td>The Start menu, in order: each a <code dir="auto">StartItem</code> (<code dir="auto">id</code>, <code dir="auto">label</code>), a null for a separator</td>
+</tr>
+<tr>
+<td><code dir="auto">shown</code></td>
+<td>Whether an item shows, asked each time the menu opens; a separator with nothing after it goes too</td>
+</tr>
+<tr>
+<td><code dir="auto">start</code></td>
+<td>Heard with an item’s <code dir="auto">id</code> when it is picked</td>
+</tr>
+<tr>
+<td><code dir="auto">task</code></td>
+<td>Heard with a window’s <code dir="auto">id</code> when its button is pressed</td>
+</tr>
+<tr>
+<td><code dir="auto">controlPanel</code></td>
+<td>Opens the Control Panel from the tray’s monitor; without it the tray has no monitor</td>
+</tr>
+<tr>
+<td><code dir="auto">sound</code></td>
+<td>Turns the sound on or off from the tray’s speaker; without it the tray has no speaker</td>
+</tr>
+<tr>
+<td><code dir="auto">windowMenu</code></td>
+<td>The <code dir="auto">WindowMenu</code> handlers (<code dir="auto">state</code>, <code dir="auto">run</code>); without them a right-click on a button does nothing. <code dir="auto">openWindowMenu(id, x, y)</code> opens it from a title bar</td>
+</tr>
+<tr>
+<td><code dir="auto">icon</code>, <code dir="auto">className</code>, <code dir="auto">now</code></td>
+<td>The button icon (<code dir="auto">DESK_ICON</code> when absent), a class beside <code dir="auto">desk-taskbar</code>, and the clock’s time (the computer’s when absent)</td>
+</tr>
+<tr>
+<td><code dir="auto">opened</code>, <code dir="auto">tray</code></td>
+<td>Heard when the menu opens and when a tray button is pressed, for the analytics</td>
+</tr>
+</tbody>
+</table>
+<p>The menu opens upward with its first item focused. Up and Down move through
+it, Escape closes it and puts the focus back on its button, and a press
+anywhere else closes it. The clock reads like the 1995 tray (<code dir="auto">4:34 PM</code>) and
+wakes once a minute.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="where-windows-open">Where windows open</h2><a class="sl-anchor-link" href="#where-windows-open"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Where windows open”</span></a></div>
+<p><code dir="auto">defaultLayout(deskW, deskH)</code> places every window the first time the desk
+comes up:</p>
+<table>
+<thead>
+<tr>
+<th>Window</th>
+<th>Where it opens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tools</td>
+<td>Top left, <code dir="auto">TOOLS_WIDTH</code> (184 px) wide, as tall as the desk up to 600 px</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>A strip across the top, between Tools and the right-hand column</td>
+</tr>
+<tr>
+<td>Tower</td>
+<td>Under Info, between Tools and the column, down to the foot of the desk; at least 320 by 240</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>The top of the right-hand column, <code dir="auto">SIDE_COLUMN</code> (300 px) wide</td>
+</tr>
+<tr>
+<td>Bulletin</td>
+<td>The foot of the column; on a desk too short for it under the Map, over the tower’s sky at the left</td>
+</tr>
+<tr>
+<td>Tower Info</td>
+<td>Under Info, left of the column</td>
+</tr>
+<tr>
+<td>Control Panel</td>
+<td>The middle of the desk</td>
+</tr>
+</tbody>
+</table>
+<p>Windows of one size take their own size, so only their corner counts. A
+saved place goes through <code dir="auto">fitRect</code> when the desk opens: a window bigger than
+the desk shrinks to fit (never below its limits), and its title bar stays on
+the screen so it can always be dragged back. <code dir="auto">parseLayout</code> reads a saved
+layout and drops anything that is not a usable rectangle, so a damaged store
+opens that window’s default place.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-pocket-desk">The pocket desk</h2><a class="sl-anchor-link" href="#the-pocket-desk"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The pocket desk”</span></a></div>
+<p><code dir="auto">deskMode(screen)</code> decides which desk a screen gets. The game reads the
+screen (<code dir="auto">TOUCH_MQ</code>, <code dir="auto">TOUCH_DESK_MQ</code> and its own computer and width checks)
+and sets the body class that goes with the answer:</p>
+<table>
+<thead>
+<tr>
+<th>The screen</th>
+<th><code dir="auto">deskMode</code></th>
+<th>Body classes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A computer with room for the desk</td>
+<td><code dir="auto">desk</code></td>
+<td><code dir="auto">desk</code></td>
+</tr>
+<tr>
+<td>A touchscreen at least 1024 by 600 (a sideways tablet, a 12.9 inch iPad held upright)</td>
+<td><code dir="auto">desk</code></td>
+<td><code dir="auto">desk</code>, <code dir="auto">desk-touch</code></td>
+</tr>
+<tr>
+<td>A smaller touchscreen (a phone held either way, a smaller upright tablet)</td>
+<td><code dir="auto">pocket</code></td>
+<td><code dir="auto">desk</code>, <code dir="auto">desk-touch</code>, <code dir="auto">desk-pocket</code></td>
+</tr>
+<tr>
+<td>Anything else</td>
+<td>null</td>
+<td>none: the game’s own layout</td>
+</tr>
+</tbody>
+</table>
+<p>A tester’s switch overrides the screen: <code dir="auto">off</code> gives no desk, <code dir="auto">pocket</code> the
+pocket desk anywhere, and <code dir="auto">any</code> the full desk on any screen at least
+tablet-wide.</p>
+<p>On a touchscreen (<code dir="auto">body.desk-touch</code>) the taskbar and the menu rows are 44 px
+tall, each title-bar button has a 44 px touch area, and the Start menu opens
+just above the taller taskbar. When a page opts into a phone’s
+cutout area (<code dir="auto">viewport-fit=cover</code> in its viewport meta), the desk area keeps
+in from the safe-area insets on every side and the taskbar pads its sides and
+foot, so no window or tool sits under a notch. On the pocket desk
+(<code dir="auto">body.desk-pocket</code>) the tower window fills the desk and never moves; it has
+no Minimize or Maximize button. The game builds <code dir="auto">pocketBody(doc)</code> inside it
+and moves Info, Tools and the tower’s stage into that grid; the stylesheet
+stacks them on an upright phone and puts Tools at the left on a sideways
+phone or an upright tablet. On an upright phone the pinned Inspect and
+Bulldoze show their icons alone, and Info’s traffic chip shows its meter and
+word without the “Traffic” label, so the five rating stars and “Backed up” fit
+a 360 px phone. The Map floats over the tower at its phone size; on a sideways
+phone, where the tower’s view is short, it may take that view’s whole height,
+and the map keeps its shape in the middle of the card. The Bulletin, Tower
+Info and the Control Panel open across the top of the desk at the height of
+what they hold, with the tower showing below; the Bulletin stops at a third of
+the desk and its log scrolls. A drag by the title bar slides any of them, or
+the Map, to another spot inside the desk. The taskbar switches between them. On an upright
+phone the seven Tools tabs share the strip’s width, and the tools row scrolls
+sideways with no fade, so its last tool shows whole. The Start button shows
+its icon alone and each window’s button its word alone. The gallery’s Pocket
+desk page shows a sample one live, in a phone-shaped frame.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-class-contract">The class contract</h2><a class="sl-anchor-link" href="#the-class-contract"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The class contract”</span></a></div>
+<p><code dir="auto">desk.css</code> and <code dir="auto">desk-pocket.css</code> style the desk’s pieces. Their class names
+are the contract:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code dir="auto">.desk-area</code></td>
+<td>The desk the windows sit on, above the taskbar</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-taskbar</code></td>
+<td>The 28 px bar along the bottom (<code dir="auto">DeskTaskbar</code> draws it and everything in it)</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-start</code>, <code dir="auto">.desk-start-menu</code>, <code dir="auto">.desk-start-stripe</code>, <code dir="auto">.desk-start-list</code></td>
+<td>The Start button and the menu it opens upward, with its stripe down the side and its <code dir="auto">.mb-item</code> rows</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-tasks</code>, <code dir="auto">.desk-task</code> (<code dir="auto">.on</code> while in front)</td>
+<td>One button per open window</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-tray</code>, <code dir="auto">.desk-tray-display</code>, <code dir="auto">.desk-tray-sound</code> (<code dir="auto">.muted</code>), <code dir="auto">.desk-tray-clock</code></td>
+<td>The tray: the Control Panel’s monitor, the speaker and the clock</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-win-menu</code></td>
+<td>The window menu (<code dir="auto">WindowMenu</code> draws it)</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-control-icons</code>, <code dir="auto">.desk-control-icon</code>, <code dir="auto">.desk-control-status</code></td>
+<td>The Control Panel’s icons and its status line</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-outline</code>, <code dir="auto">.desk-grip</code></td>
+<td>The resize outline and the size grip (<code dir="auto">DeskWindow</code> draws them)</td>
+</tr>
+<tr>
+<td><code dir="auto">body.desk-touch</code>, <code dir="auto">body.desk-pocket</code></td>
+<td>The touch chrome and the pocket desk (<code dir="auto">DESK_TOUCH_CLASS</code>, <code dir="auto">DESK_POCKET_CLASS</code>)</td>
+</tr>
+<tr>
+<td><code dir="auto">.desk-pocket-body</code></td>
+<td>The grid inside the pocket tower window (<code dir="auto">pocketBody</code> draws it)</td>
+</tr>
+</tbody>
+</table>
+<p>The title screen on the desk (<code dir="auto">desk-title.css</code>) is keyed on
+<code dir="auto">body.desk-title</code>: the splash sits in a window with a <code dir="auto">.desk-title-bar</code> over
+the teal desk, with the taskbar below it. <code dir="auto">DeskTitle.show(true)</code> puts it on
+the pocket desk instead and adds <code dir="auto">body.desk-title-pocket</code>
+(<code dir="auto">DESK_TITLE_POCKET_CLASS</code>, <code dir="auto">desk-title-pocket.css</code>): the window keeps its
+menu bar and fills the screen above the 44 px taskbar, under the browser’s own
+bars. On an upright phone the poster fills its top and the buttons stack in
+the gray bar below (two by two on a short screen); held sideways, the buttons
+stand in a gray panel beside the poster. The poster takes the height the
+buttons leave and the premise line is hidden. On a screen too short even for
+that the window scrolls, so every button and the credit line can be reached.
+The toast rail (<code dir="auto">#toast-wrap</code>) moves to the foot of the poster, so a notice
+shown with the title screen up covers neither the logo nor the buttons; the
+menu bar and the taskbar, with the menus they open, draw over it.
+A second <code dir="auto">show</code> switches between the
+two, as turning a tablet can.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="cost">Cost</h2><a class="sl-anchor-link" href="#cost"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Cost”</span></a></div>
+<p>Nothing on the desk runs per frame. A move writes two styles per pointer move,
+a resize draws an outline and sets the size once on release, the window menu
+is drawn once and re-rendered (only the grayed items change) each time it
+opens, the taskbar re-renders when a window opens, closes, minimizes or takes
+the focus and once a minute for its clock, and the geometry is plain
+arithmetic.</p>
+</div><footer class="sl-flex astro-ddtxxk7k"><div class="meta sl-flex astro-ddtxxk7k"></div><div class="pagination-links print:hidden astro-b5raizh3" dir="ltr"><a href="/pr-preview/pr-155/docs/design-system/" rel="prev" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg><span class="astro-b5raizh3">Previous<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Design system</span></span></a><a href="/pr-preview/pr-155/docs/audio/" rel="next" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17.92 11.62a1.001 1.001 0 0 0-.21-.33l-5-5a1.003 1.003 0 1 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1.002 1.002 0 0 0 .325 1.639 1 1 0 0 0 1.095-.219l5-5a1 1 0 0 0 .21-.33 1 1 0 0 0 0-.76Z"/></svg><span class="astro-b5raizh3">Next<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Audio</span></span></a></div></footer></div></div></main></div></div></div></div></body></html>

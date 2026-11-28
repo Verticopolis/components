@@ -1,0 +1,700 @@
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-g5ptsecz"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Sprite atlas | Verticopolis components</title><link rel="canonical" href="https://components.verticopolis.com/pr-preview/pr-155/docs/atlas/"/><link rel="sitemap" href="/pr-preview/pr-155/sitemap-index.xml"/><style>@layer starlight, vc;</style><script>(function(){try{var s=localStorage.getItem("vc-components-scheme");if(["skyline","high_contrast"].indexOf(s)>=0)document.documentElement.setAttribute("data-scheme",s)}catch(e){}})();</script><link rel="shortcut icon" href="/pr-preview/pr-155/favicon.png" type="image/png"/><meta name="generator" content="Astro v7.4.12"/><meta name="generator" content="Starlight v0.42.7"/><meta property="og:title" content="Sprite atlas"/><meta property="og:type" content="article"/><meta property="og:url" content="https://components.verticopolis.com/pr-preview/pr-155/docs/atlas/"/><meta property="og:locale" content="en"/><meta property="og:description" content="The baked sprite atlas: the archive, the manifest, depth layers and how it is checked."/><meta property="og:site_name" content="Verticopolis components"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="The baked sprite atlas: the archive, the manifest, depth layers and how it is checked."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/pr-preview/pr-155/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/starlight.0_sMOAdi.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/high-contrast.Dud6eLhF.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/common.Cb7Lpm6A.css"><style>@layer vc.tokens{:root{--bg:var(--r-desktop);--panel:var(--r-face);--ink:var(--r-ink);--accent:var(--r-title);--panel-light:#d7d7d7;--muted:#2f2f38;--good:#15722e;--bad:#b01023;--bad-ink:#9a0e1f;--money:#005000;--line:#7a7a7a;--r-face:silver;--r-shadow:gray;--r-dark:#000;--r-light:#dfdfdf;--r-hi:#fff;--r-title:navy;--r-title-fg:#fff;--r-ink:#000;--r-desktop:teal;--r-workspace:var(--r-face);--r-font:"MS Sans Serif", "Tahoma", "Geneva", "Segoe UI", sans-serif;--bevel-out:inset -1px -1px var(--r-dark), inset 1px 1px var(--r-hi), inset -2px -2px var(--r-shadow), inset 2px 2px var(--r-light);--bevel-in:inset 1px 1px var(--r-dark), inset -1px -1px var(--r-hi), inset 2px 2px var(--r-shadow), inset -2px -2px var(--r-light);--win-shadow:2px 2px 0 #0006;--rung-vlow:#2048b0;--rung-low:#1e7a2e;--rung-avg:#c8a000;--rung-high:#b02020;--splash-sky:linear-gradient(#161634 0%, #241f4c 34%, #5b3560 62%, #c65a63 86%, #ef8560 100%);--splash-amber:#ffc94a;--splash-sun:radial-gradient(circle, #ffe6a0 0%, var(--splash-amber) 52%, #f18f4b 100%);--splash-sun-glow:#ffb35742;--splash-building:#201643;--splash-cream:#e6dcc0;--splash-plate-ink:#20204a;--splash-ink:#0d0d10;--splash-wordmark:#f7f1e4;--splash-tagline:#ffd9a8;--splash-premise:#e7ddf5}html[data-scheme=skyline]{--r-face:#ebe7dc;--r-light:#f7f5ef;--r-hi:#fff;--r-shadow:#a59fb4;--r-dark:#4a4560;--r-title:#33378f;--r-desktop:#3b3c7a;--panel-light:#f4f2ec;--line:#8b8698;--muted:#3c3850;--money:#0b5a1f;--sky-line:#8b8698;--sky-title:linear-gradient(180deg, #5a63c8 0%, #3d429e 42%, #2a2766 100%);--sky-title-off:linear-gradient(180deg, #77739a 0%, #66618a 45%, #555075 100%);--sky-btn:linear-gradient(#fff, #e4e0d5);--sky-btn-down:linear-gradient(#d8d3c6, #efece4);--sky-violet:linear-gradient(#7880dc, #4a50b0);--sky-rose:linear-gradient(#d06a7c, #9c3048);--bevel-out:inset 0 0 0 1px var(--sky-line);--bevel-in:inset 0 0 0 1px var(--sky-line), inset 1px 1px 0 1px #4a45602e;--win-shadow:2px 3px 0 #14103252}html[data-scheme=high_contrast]{--r-face:#000;--r-light:#000;--r-hi:#fff;--r-shadow:#fff;--r-dark:#fff;--r-title:#ff0;--r-title-fg:#000;--r-ink:#fff;--r-desktop:#000;--panel-light:#000;--ink:#fff;--muted:#fff;--line:#fff;--good:#7dff7d;--bad:#ff8a8a;--bad-ink:#ff8a8a;--money:#7dff7d;--bevel-out:inset 0 0 0 2px #fff;--bevel-in:inset 0 0 0 2px #ff0;--win-shadow:0 0 0 1px #fff}}@layer vc.base,vc.components,vc.windows,vc.page,vc.components.button,vc.components.window,vc.components.well,vc.components.kv;@layer vc.components.menu-bar{.menubar{z-index:30;background:var(--r-face);box-shadow:inset 0 -1px var(--r-shadow);font-family:var(--r-font);color:var(--r-ink);flex:none;align-items:center;padding:1px 2px;font-size:12px;display:flex;position:relative}.menubar-brand{display:none}.mb-menu{position:relative}.mb-title{font:inherit;color:inherit;cursor:default;background:0 0;border:0;padding:3px 8px}.mb-title u{text-decoration:underline}.mb-title[aria-expanded=true]{box-shadow:inset 1px 1px var(--r-shadow), inset -1px -1px var(--r-hi)}.mb-title:focus-visible,.mb-item:focus-visible{outline:1px dotted var(--r-ink);outline-offset:-3px}.mb-pop{background:var(--r-face);min-width:220px;box-shadow:var(--bevel-out), var(--win-shadow);flex-direction:column;padding:3px;display:flex;position:absolute;top:100%;left:0}.mb-pop[hidden]{display:none}.mb-item{font:inherit;color:var(--r-ink);text-align:left;cursor:default;white-space:nowrap;background:0 0;border:0;justify-content:space-between;gap:24px;padding:4px 12px 4px 22px;display:flex;position:relative}a.mb-item{text-decoration:none}.mb-item[hidden]{display:none}.mb-item:hover,.mb-item:focus-visible{background:var(--r-title);color:var(--r-title-fg)}.mb-item[aria-disabled=true]{color:var(--r-shadow);background:0 0}.mb-item[aria-checked=true]:before{content:"✓";position:absolute;left:7px}.mb-item kbd{font:inherit;opacity:.8}.mb-sep{border:0;border-top:1px solid var(--r-shadow);border-bottom:1px solid var(--r-hi);margin:3px 2px}.mb-sep[hidden]{display:none}}
+</style><link rel="stylesheet" href="/pr-preview/pr-155/_astro/deskTaskbar.DaBsq3JC.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/Demo.DnqsWP7Y.css"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/deskControlPanel.COyAunui.css"><script type="module" src="/pr-preview/pr-155/_astro/page.cNngjUgL.js"></script></head><body class="astro-g5ptsecz"><a class="sl-skip-link astro-qb7clj6f" href="#_top">Skip to content</a><div class="page sl-flex astro-yntsjkba"><header class="header astro-yntsjkba"><div id="site-menubar-host"></div><script type="module" src="/pr-preview/pr-155/_astro/MenuBar.astro_astro_type_script_index_0_lang.bRjUEhfX.js"></script><div class="vc-bar"><a href="/pr-preview/pr-155/" class="site-title vc-bar-title"><img src="/pr-preview/pr-155/_astro/pwa-192x192.B7C8LqMV.png" width="192" height="192" alt=""><span class="vc-name" translate="no"><span class="vc-full">Verticopolis components</span><span class="vc-short" aria-hidden="true">Components</span></span></a><div class="vc-bar-search print:hidden"><site-search class=" astro-b5kgnn7o" data-translations="{&quot;placeholder&quot;:&quot;Search&quot;}"><button data-open-modal disabled aria-label="Search" aria-keyshortcuts="Control+K" class="astro-b5kgnn7o"><svg aria-hidden="true" class="astro-b5kgnn7o astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-b5kgnn7o" aria-hidden="true">Search</span><kbd class="sl-hidden md:sl-flex astro-b5kgnn7o" style="display: none;"><kbd class="astro-b5kgnn7o">Ctrl</kbd><kbd class="astro-b5kgnn7o">K</kbd></kbd></button><dialog style="padding:0" aria-label="Search" class="astro-b5kgnn7o"><div class="dialog-frame sl-flex astro-b5kgnn7o"><button data-close-modal class="sl-flex md:sl-hidden astro-b5kgnn7o">Cancel</button><div class="search-container astro-b5kgnn7o"><div id="starlight__search" class="astro-b5kgnn7o"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/pr-preview/pr-155/_astro/Search.astro_astro_type_script_index_0_lang.YNGHfIHJ.js"></script></div><div class="vc-bar-links print:hidden"><a class="vc-bar-game" href="https://verticopolis.com/" data-game-link><span class="vc-full">Play the game</span><span class="vc-short" aria-hidden="true">Play</span></a><a class="vc-bar-github" href="https://github.com/Verticopolis/components"><span class="vc-sr-only">GitHub</span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"></path></svg></a><div class="vc-bar-theme"><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script></div></div></div><script type="module" src="/pr-preview/pr-155/_astro/Mermaid.astro_astro_type_script_index_0_lang.DSEL4w5M.js"></script></header><nav class="sidebar print:hidden astro-yntsjkba" aria-label="Main"><button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden astro-r2osgdlg"><svg aria-hidden="true" class="open-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg><svg aria-hidden="true" class="close-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg><span class="sr-only astro-r2osgdlg">Menu</span></button><script type="module">var e=class extends HTMLElement{constructor(){super();let e=matchMedia(`(min-width: 50em)`),t=()=>{this.popover=e.matches?null:`auto`};t(),e.addEventListener(`change`,()=>t()),this.addEventListener(`toggle`,({newState:e})=>this.trapFocus(e===`open`))}trapFocus(e){document.querySelectorAll(`.main-frame, .sl-skip-link`).forEach(t=>{t.toggleAttribute(`inert`,e)})}};customElements.define(`sl-sidebar-pane`,e);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script><sl-sidebar-pane popover id="starlight__sidebar" class="sidebar-pane astro-yntsjkba"><div class="sidebar-content sl-flex astro-yntsjkba"><sl-sidebar-state-persist data-hash="0c2jmm3" class="astro-ipdry5cl"><script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script><ul class="top-level astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Overview</span></a></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Windows and controls</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="0"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/buttons/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Buttons</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/windows/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Windows</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/wells/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Wells, fields and key-value rows</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/menu-bar/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Menu bar</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/message-boxes/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Message boxes</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/alert-cards/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Alert cards and updates</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/appearance/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Appearance</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/file-dialog/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Open and Save As</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/scenario-list/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Scenario lists</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/controls/icons/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Icons</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Desktop</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="1"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/pocket-desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Pocket desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/information-bar/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Information bar and status bar</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/tools/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Tools window</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/layout/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Where windows open</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/control-panel/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Control Panel</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/title-screen/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Title screen</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/map/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Map window</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/screen-saver/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Screen saver</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/fireworks/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Fireworks</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/desktop/not-found/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Page not found</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/sounds/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Sounds</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs-sites/" class="large astro-rmhv4bp6"><span class="astro-rmhv4bp6">Docs sites</span></a></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">The tower</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="2"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/lobbies/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Lobbies</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/stairs-and-escalators/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Stairs and escalators</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/elevators/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Elevators</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/rooms/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Rooms</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/tower/people/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">People</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Docs</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="3"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/architecture/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Architecture</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/design-system/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Design system</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/desk/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The desk</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/audio/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Audio</span></a></li><li class="astro-rmhv4bp6"><a href="/pr-preview/pr-155/docs/atlas/" aria-current="page" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Sprite atlas</span></a></li></ul></details></li></ul><script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script></sl-sidebar-state-persist><div class="md:sl-hidden"><div class="mobile-preferences sl-flex astro-p4azlveh"><div class="social-icons astro-p4azlveh"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script></div></div></div></sl-sidebar-pane></nav><div class="main-frame astro-yntsjkba"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-lrzkfocr"><aside class="right-sidebar-container print:hidden astro-lrzkfocr"><div class="right-sidebar astro-lrzkfocr"><div class="lg:sl-hidden astro-qok35upx"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-66cqc7ze"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-66cqc7ze"><details id="starlight__mobile-toc" class="astro-66cqc7ze"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-66cqc7ze"><span class="toggle sl-flex astro-66cqc7ze">On this page<svg aria-hidden="true" class="caret astro-66cqc7ze astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-66cqc7ze"></span></summary><div class="dropdown astro-66cqc7ze"><ul class="isMobile astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#getting-it" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Getting it</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#how-it-is-made" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">How it is made</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#archive-layout" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Archive layout</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-manifest" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The manifest</span></a><ul class="isMobile astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#anchors" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Anchors</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#frame-names" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Frame names</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#reading-a-room" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Reading a room</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#depth-layers" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Depth layers</span></a><ul class="isMobile astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#soft-furniture" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Soft furniture</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-world-outside-the-tower" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The world outside the tower</span></a><ul class="isMobile astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#seeded-by-the-tower" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Seeded by the tower</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#the-sky" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">The sky</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#draw-order" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Draw order</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-app-icon" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The app icon</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#how-it-is-checked" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">How it is checked</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#not-in-the-atlas-yet" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Not in the atlas yet</span></a></li></ul></div></details></nav></mobile-starlight-toc><script type="module" src="/pr-preview/pr-155/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.C3fM4Kra.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-qok35upx"><div class="sl-container astro-qok35upx"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#getting-it" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Getting it</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#how-it-is-made" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">How it is made</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#archive-layout" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Archive layout</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-manifest" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The manifest</span></a><ul class="astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#anchors" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Anchors</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#frame-names" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Frame names</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#reading-a-room" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Reading a room</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#depth-layers" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Depth layers</span></a><ul class="astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#soft-furniture" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Soft furniture</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-world-outside-the-tower" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The world outside the tower</span></a><ul class="astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#seeded-by-the-tower" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Seeded by the tower</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#the-sky" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">The sky</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#draw-order" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">Draw order</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-app-icon" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The app icon</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#how-it-is-checked" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">How it is checked</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#not-in-the-atlas-yet" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Not in the atlas yet</span></a></li></ul></nav></starlight-toc><script type="module" src="/pr-preview/pr-155/_astro/TableOfContents.astro_astro_type_script_index_0_lang.BpJaGz7G.js"></script></div></div></div></aside><div class="main-pane astro-lrzkfocr"><main data-pagefind-body class="astro-g5ptsecz" lang="en" dir="ltr"><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><h1 id="_top" class="astro-bebwqqxs">Sprite atlas</h1></div></div><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><div class="sl-markdown-content"><p>Verticopolis draws all of its art in code, and that art is CC BY 4.0
+(<a href="https://github.com/Verticopolis/components/blob/main/ASSETS-LICENSE.md">ASSETS-LICENSE.md</a>). The sprite atlas packs it into
+texture pages and a JSON manifest so any frontend can use the
+same art without porting the drawing code.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="getting-it">Getting it</h2><a class="sl-anchor-link" href="#getting-it"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Getting it”</span></a></div>
+<p>Each release of this package carries the atlas for that version, from v0.2.2
+on: the sprite atlas workflow (<code dir="auto">.github/workflows/sprite-atlas.yml</code>) bakes it
+from the release tag (<code dir="auto">v&lt;version&gt;</code>, for example <code dir="auto">v0.2.2</code>) and attaches
+<code dir="auto">verticopolis-atlas-&lt;tag&gt;.zip</code> and a <code dir="auto">.sha256</code> file beside it to that tag’s
+GitHub release. Check the archive against the checksum before you unpack it.
+Nothing generated is committed to this repository.</p>
+<p>The bake finishes a few minutes after the release is published, so a release
+without the two files has no atlas yet. Pin your frontend to a release tag
+that has one, and fetch it from that release.</p>
+<p>For maintainers:</p>
+<ul>
+<li><strong>Release components</strong> (<code dir="auto">.github/workflows/components-release.yml</code>) tags
+<code dir="auto">v&lt;version&gt;</code> and publishes the release when a release PR raises the version
+(README, “Releasing”), then calls the sprite atlas workflow for that tag.
+The bake runs beside the npm publish and nothing waits on it, so a slow or
+failed bake never holds a release back.</li>
+<li>Run the “Sprite atlas” workflow by hand only to backfill a release: a
+failed bake, or a release from before the bake was part of the release.
+Start it from the Actions tab with “Use workflow from” set to the release
+tag. It runs only from a plain <code dir="auto">v&lt;x.y.z&gt;</code> tag, checks out that tag and
+nothing else, bakes the atlas and attaches the zip, then the checksum.
+v0.2.2 is the first release that can carry an atlas: the
+<code dir="auto">components-v&lt;x.y.z&gt;</code> tags up to 0.2.1 predate the restored <code dir="auto">atlas</code> script,
+so a bake on one fails. It only adds assets, so it relies on releases
+staying mutable (GitHub’s immutable releases setting is off).</li>
+<li>When both files are already attached, a run is an audit: it checks the
+attached zip against the attached checksum and re-bakes, passing only when
+the bake reproduces that checksum.</li>
+</ul>
+<p>To build it yourself:</p>
+<div class="expressive-code"><link rel="stylesheet" href="/pr-preview/pr-155/_astro/ec.w36nc.css"><script type="module" src="/pr-preview/pr-155/_astro/ec.0vx5m.js"></script><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">npm</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">ci</span></div></div><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">npm</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">run</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">atlas</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--out</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">dist-atlas</span><span style="--0:#D6DEEB;--1:#403F53">            </span><span style="--0:#919F9F;--1:#5F636F"># whole catalog</span></div></div><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">npm</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">run</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">atlas</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--out</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">dist-atlas</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--filter</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">room/office</span><span style="--0:#D6DEEB;--1:#403F53">   </span><span style="--0:#919F9F;--1:#5F636F"># a slice, written as verticopolis-atlas-preview.zip</span></div></div><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">npm</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">run</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">atlas</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--out</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">dist-atlas</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--catalog</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">my-catalog.json</span><span style="--0:#D6DEEB;--1:#403F53">   </span><span style="--0:#919F9F;--1:#5F636F"># cut to a game's own Modern render catalog</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="npm cinpm run atlas -- --out dist-atlas            # whole catalognpm run atlas -- --out dist-atlas --filter room/office   # a slice, written as verticopolis-atlas-preview.zipnpm run atlas -- --out dist-atlas --catalog my-catalog.json   # cut to a game&#x27;s own Modern render catalog"><div></div></button></div></figure></div>
+<p>The bake draws with the components’ own Modern render catalog
+(<code dir="auto">src/tests/catalogFixture.ts</code>) unless <code dir="auto">--catalog</code> names a game’s.</p>
+<p>The release copy is baked inside the pinned Playwright image (the same
+<code dir="auto">mcr.microsoft.com/playwright:v&lt;lockfile playwright version&gt;-jammy</code> the
+screenshot workflows use), with Playwright’s own Chromium from that image. A
+host browser works for a preview (point
+<code dir="auto">PW_CHROME</code> at it), but it rasterizes text and curves slightly differently, so
+its pixels and checksum will not match the release. To bake in the pinned
+image locally, run <code dir="auto">npm ci &amp;&amp; npm run atlas -- --out dist-atlas</code> inside that
+image with the repository mounted.</p>
+<p>Before it writes anything, the export checks the atlas against the game’s own
+paint for the sample signatures in <code dir="auto">src/render/atlas/samples.ts</code> and stops on
+any mismatch, then checks that every image comes back out of the packed pages.
+A <code dir="auto">--filter</code> run is a preview: it skips the sample check and is written as
+<code dir="auto">verticopolis-atlas-preview.zip</code>. A release archive takes its name from the
+tag, with each run of characters other than letters, digits, <code dir="auto">.</code>, <code dir="auto">_</code> and <code dir="auto">-</code>
+turned into one <code dir="auto">-</code>.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="how-it-is-made">How it is made</h2><a class="sl-anchor-link" href="#how-it-is-made"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “How it is made”</span></a></div>
+<p>Each draw routine runs once, at the game’s canonical size (a 10 x 45 pixel tile
+per floor column), in a real 2D canvas set up the way the game sets up its own
+bake canvases. The 2x and 4x pages are nearest-neighbor upscales of those 1x
+pages. The art is never redrawn larger: the routines use fixed pixel literals
+(Verticopolis/web#812, Verticopolis/web#813), so a larger redraw changes the geometry.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="archive-layout">Archive layout</h2><a class="sl-anchor-link" href="#archive-layout"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Archive layout”</span></a></div>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="text"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">verticopolis-atlas/</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">manifest.json</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">ATTRIBUTION.txt          the CC BY 4.0 attribution line</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">ASSETS-LICENSE.md        the asset license, verbatim</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">icon/icon.svg            the app icon (see "The app icon")</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">icon/...                 its maskable SVG and PNGs up to 1024 x 1024</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">1x/page-000.png          512 x 512 color page</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">1x/page-000.normal.png   its normal map</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">2x/...                   1024 x 1024</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">4x/...                   2048 x 2048</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="verticopolis-atlas/  manifest.json  ATTRIBUTION.txt          the CC BY 4.0 attribution line  ASSETS-LICENSE.md        the asset license, verbatim  icon/icon.svg            the app icon (see &quot;The app icon&quot;)  icon/...                 its maskable SVG and PNGs up to 1024 x 1024  1x/page-000.png          512 x 512 color page  1x/page-000.normal.png   its normal map  2x/...                   1024 x 1024  4x/...                   2048 x 2048"><div></div></button></div></figure></div>
+<p>Every rectangle in the manifest is in 1x pixels. For a 2x or 4x page, multiply
+<code dir="auto">x</code>, <code dir="auto">y</code>, <code dir="auto">w</code> and <code dir="auto">h</code> (and any <code dir="auto">dx</code>, <code dir="auto">dy</code>, anchor) by the scale; the page index
+stays the same. Sample the pages with nearest filtering: each image has a
+one-pixel transparent gutter (two pixels between neighbors at 1x), which is not
+enough for linear filtering.</p>
+<p>Normal maps are tangent-space, OpenGL convention (+X right, +Y up, +Z toward the
+viewer), encoded as <code dir="auto">rgb = n * 0.5 + 0.5</code>, and share their color page’s layout.
+Height comes from luminance times coverage, with each sprite’s outline (a
+visible pixel next to a transparent one) sunk to half height so silhouettes
+read as beveled. Each normal map is taken over the whole frame before it is
+trimmed or sliced, so neither cut bevels, and a frame’s own border does not
+either (rooms tile side by side). A layer’s normals come from the frame it
+completes, masked to the layer’s pixels; the base frame’s pixels right next to
+a layer keep their own normals, so a composed normal map can differ from a
+fresh one by up to a pixel around each layer. Normal alpha is 255 wherever the
+color pixel shows and 0 elsewhere, so a loader that premultiplies alpha leaves
+the vectors intact.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-manifest">The manifest</h2><a class="sl-anchor-link" href="#the-manifest"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The manifest”</span></a></div>
+<p><code dir="auto">schema</code> is the manifest version (currently 1). Frame names and the meaning of
+every field are stable within a schema version; a change a reader could notice
+bumps it. New frames or optional fields do not.</p>
+<ul>
+<li><code dir="auto">game</code>: the release the atlas was baked from. <code dir="auto">version</code> is this package’s
+version (<code dir="auto">@verticopolis/components</code>, the same version the tag names) and
+<code dir="auto">commit</code> is the commit it was baked from. The field keeps its name from
+when the art lived in the game’s repository.</li>
+<li><code dir="auto">frames</code>: frame name to record. A record has the full frame size (<code dir="auto">w</code>, <code dir="auto">h</code>),
+its <code dir="auto">anchor</code>, structured <code dir="auto">keys</code> (the same values the name spells), and
+<code dir="auto">parts</code>: the packed pieces with their offset inside the frame (transparent
+borders are trimmed; a frame wider than a page, like the metro, is cut into
+column slices). <code dir="auto">parts</code> is empty for a fully transparent frame. A room frame
+can also carry <code dir="auto">layers</code>, the same room split for depth (see
+<a href="#depth-layers">Depth layers</a>).</li>
+<li><code dir="auto">chains</code>: composed layers indexed by a simulation number. To show input <code dir="auto">n</code>, draw
+the frame, then steps <code dir="auto">1..min(n, max)</code> in order with ordinary source-over
+blending; a <code dir="auto">null</code> step draws nothing. A chain with <code dir="auto">alternativeTo</code> is drawn
+instead of the chain it names, never with it (the recycling center’s
+<code dir="auto">fillExact</code>, the exact alternative to its <code dir="auto">fill</code> eighths).</li>
+<li><code dir="auto">overlays</code>: single named layers drawn the same way.</li>
+<li><code dir="auto">cycles</code>: looping pictures over a frame (the cinema’s marquee and screen),
+by name, each with its <code dir="auto">rate</code> (steps a second) and <code dir="auto">steps</code>. At <code dir="auto">t</code> seconds
+of the game’s animation clock, draw step <code dir="auto">floor(t * rate) % steps.length</code> of
+each, source-over, right after the frame’s parts and before its chain steps;
+step 0 (the frame itself) is <code dir="auto">null</code>. A frame carries only the cycles that
+change it.</li>
+<li><code dir="auto">animations</code>: frame names in play order, the seconds each holds (<code dir="auto">dt</code>), and
+whether the last frame loops into the first.</li>
+<li><code dir="auto">signature</code>: which inputs are baked into frames, which a frontend composes,
+which animate, and the exact rule for each (<code dir="auto">signature.rules</code>). The rules
+are prose for whoever ports a reader; one that stops applying is removed
+without a schema bump.</li>
+<li><code dir="auto">variants</code>: the sampled placements behind each room variant.</li>
+<li><code dir="auto">data</code>: small tables (the sky color at each quarter hour, the skyline fills,
+the shirt colors, the person build sizes, the sampled seeds, the recycling
+fill breaks), the scenery layout (<code dir="auto">scenery</code>), the sky’s motion (<code dir="auto">sky</code>) and
+the game’s draw order (<code dir="auto">depth</code>).</li>
+</ul>
+<div class="sl-heading-wrapper level-h3"><h3 id="anchors">Anchors</h3><a class="sl-anchor-link" href="#anchors"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Anchors”</span></a></div>
+<p>Rooms, structure tiles, shafts, cars, escapes and awnings anchor at their top
+left, which sits on the grid point of the unit’s left column at the top of its
+highest floor. People anchor at the feet (the contact-shadow row). The crane
+anchors at its bottom center over the roof. The sun, moon and clouds anchor at
+the point the game positions them by.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="frame-names">Frame names</h3><a class="sl-anchor-link" href="#frame-names"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Frame names”</span></a></div>
+<p>Names follow the render model’s strings: the <code dir="auto">FacilityKind</code> keys and the
+<code dir="auto">UnitState</code> names (<code dir="auto">render/renderModel.ts</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rooms</td>
+<td><code dir="auto">room/&lt;kind&gt;/&lt;state&gt;/&lt;subtype or -&gt;/w&lt;tiles&gt;/&lt;lit or unlit&gt;/&lt;open, closed or always&gt;/&lt;late, notlate or any&gt;/v&lt;variant&gt;[/home or /away]</code></td>
+</tr>
+<tr>
+<td>Fire, construction</td>
+<td>animation <code dir="auto">fire/&lt;kind&gt;</code>, <code dir="auto">construction/&lt;kind&gt;</code>; frames <code dir="auto">.../&lt;i&gt;</code></td>
+</tr>
+<tr>
+<td>Structure</td>
+<td><code dir="auto">structure/floor</code>, <code dir="auto">structure/lobby/&lt;ground or sky&gt;/&lt;lit&gt;/v&lt;0-3&gt;</code>, animation <code dir="auto">structure/entrance/&lt;grand-left, grand-right, grand-solo or service&gt;/&lt;lit&gt;/&lt;staffed or unstaffed&gt;</code></td>
+</tr>
+<tr>
+<td>Shafts</td>
+<td><code dir="auto">shaft/&lt;elevator kind&gt;[/w&lt;tiles&gt;]/&lt;top, stop, skip, bottom, single, top-skip, bottom-skip or single-skip&gt;</code>, <code dir="auto">transport/stairs[/w&lt;tiles&gt;]</code>, <code dir="auto">transport/escalator[/w&lt;tiles&gt;]</code> (<code dir="auto">w&lt;tiles&gt;</code> only on a legacy width, see below)</td>
+</tr>
+<tr>
+<td>Cars</td>
+<td><code dir="auto">car/&lt;elevator kind&gt;[/w&lt;tiles&gt;]/&lt;idle, up or down&gt;/&lt;full or notfull&gt;/s&lt;0-3&gt;</code> with a <code dir="auto">riders</code> chain (sampled seeds in <code dir="auto">data.carSeeds</code>)</td>
+</tr>
+<tr>
+<td>People</td>
+<td><code dir="auto">person/&lt;seated, standing, walker, rider or hiVis&gt;/&lt;shirt&lt;i&gt;, staff, impatient or fedUp&gt;</code>, one <code dir="auto">shirt&lt;i&gt;</code> per entry of <code dir="auto">data.shirts</code></td>
+</tr>
+<tr>
+<td>Facade</td>
+<td><code dir="auto">facade/escape/&lt;left or right&gt;/&lt;0 or 1&gt;</code>, <code dir="auto">facade/awning/&lt;left or right&gt;</code>, animation <code dir="auto">facade/crane/&lt;lit&gt;</code></td>
+</tr>
+<tr>
+<td>Vehicles</td>
+<td><code dir="auto">vehicle/streetcar/s&lt;0-3&gt;</code> (sampled seeds in <code dir="auto">data.streetCarSeeds</code>), <code dir="auto">vehicle/garbagetruck</code>, <code dir="auto">vehicle/metrotrain/&lt;headlight or dark&gt;</code></td>
+</tr>
+<tr>
+<td>Sky</td>
+<td><code dir="auto">sky/gradient</code> (one column per quarter hour), <code dir="auto">sky/sun</code>, <code dir="auto">sky/moon</code>, <code dir="auto">sky/cloud/&lt;overcast or rain&gt;/&lt;0-4&gt;</code>, <code dir="auto">sky/skyline/&lt;far or near&gt;</code></td>
+</tr>
+<tr>
+<td>Scenery</td>
+<td><code dir="auto">scenery/roundabout</code>, animation <code dir="auto">scenery/fountain</code>, <code dir="auto">scenery/plaza-lamp/a&lt;0, 25, 50, 75 or 100&gt;</code>, <code dir="auto">scenery/street-lamp/a&lt;...&gt;</code> (with the “375 ST” sign), <code dir="auto">scenery/planter</code>, <code dir="auto">scenery/tree/v&lt;0-7&gt;</code>, <code dir="auto">scenery/bush</code>, <code dir="auto">scenery/ground/&lt;sidewalk, forecourt or road&gt;</code>, <code dir="auto">scenery/ground/grass/s&lt;0-2&gt;/&lt;flat or tuft&gt;</code> (the looks the lot uses), <code dir="auto">scenery/ground/pave/&lt;plain or joint&gt;</code> (see “The world outside the tower”)</td>
+</tr>
+</tbody>
+</table>
+<p>A shaft is drawn floor by floor: <code dir="auto">top</code> for its top floor, <code dir="auto">bottom</code> for its
+bottom floor, <code dir="auto">stop</code> or <code dir="auto">skip</code> for each floor between (an express skip floor
+has no stop line), and <code dir="auto">single</code> for a one-floor shaft. <code dir="auto">top-skip</code>,
+<code dir="auto">bottom-skip</code> and <code dir="auto">single-skip</code> cover a shaft whose skip list holds one of its
+own end floors (<code dir="auto">top-skip</code> looks the same as <code dir="auto">top</code>: the motor housing covers
+that stop line).</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="reading-a-room">Reading a room</h2><a class="sl-anchor-link" href="#reading-a-room"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Reading a room”</span></a></div>
+<p>The web game re-bakes a room whenever its signature changes
+(<code dir="auto">src/render/excalibur/roomSignature.ts</code>). The atlas bakes the static part of
+that signature into frame names and leaves the rest as layers. The reference
+reader is <code dir="auto">src/render/atlas/lookup.ts</code>; in short:</p>
+<ol>
+<li>A burning or unbuilt room plays <code dir="auto">fire/&lt;kind&gt;</code> or <code dir="auto">construction/&lt;kind&gt;</code>.</li>
+<li>Otherwise build the frame name from the kind, state, subtype (a subtype
+the simulation does not list for the kind uses <code dir="auto">-</code>), the kind’s catalog width
+(a room at another width is drawn stretched, below), the lighting, the
+business hours at the current hour, the late night (23:00 to 06:00) of a
+condo, studio or apartment, and the variant you picked for that room.</li>
+<li>For most rooms, append <code dir="auto">/home</code> when <code dir="auto">occupants &gt; 0</code>, else <code dir="auto">/away</code>, and on a
+home frame draw the <code dir="auto">occupants</code> chain up to <code dir="auto">occupants - outForMeal</code>
+(rounded up, at least 0, at most the chain’s <code dir="auto">max</code>). Read <code dir="auto">outForMeal</code> as
+between 0 and <code dir="auto">occupants</code>: a negative or non-finite value is nobody out, and
+a value over <code dir="auto">occupants</code> is everybody out. A non-finite <code dir="auto">occupants</code> is
+nobody.</li>
+<li>A parking space draws the <code dir="auto">dead</code> overlay when it is not chained to a ramp;
+otherwise it draws <code dir="auto">car&lt;id % 7&gt;</code> when it holds a car (the game’s presence
+roll is spelled out in <code dir="auto">signature.rules.parkingRoll</code>; the game re-paints a
+space only when the garage’s use crosses a sixth, so its cars can trail the
+live use slightly). A recycling center
+draws its <code dir="auto">fillExact</code> chain up to the number of entries in
+<code dir="auto">data.recyclingFillBreaks</code> at or below its fill (clamped to 0..1, a
+non-finite fill read as 0). Each break is a fill where the picture changes
+(a bag joins the pile, a gauge row lights, the pile stacks a second row past
+0.5, the gauge turns amber past 0.7 and red with FULL at 1), written as the
+first fill that shows it, so every fill matches the game’s paint exactly.
+The older <code dir="auto">fill</code> chain, up to <code dir="auto">round(fill * 8)</code>, follows the game’s re-bake
+buckets instead; between its steps a pile can differ by a bag or a gauge
+pixel. Draw one of the two, never both. An atlas built before
+<code dir="auto">fillExact</code> existed has only <code dir="auto">fill</code>; fall back to it when the chain is
+missing.</li>
+<li>A cinema draws its <code dir="auto">cycles</code> (see below) after the frame’s parts and before
+its occupant steps.</li>
+</ol>
+<p>The chain layers carry the occupants: step <code dir="auto">k</code> holds exactly the pixels that
+change when the visible count goes from <code dir="auto">k - 1</code> to <code dir="auto">k</code>, at their place in the
+room (for most rooms, the figure that sits down in that slot). Draw them in
+order; a single step on its own is not a standalone figure.</p>
+<p>Room frames exist for each kind’s catalog width only. A room imported from an
+old tower (a TDT file) or loaded from an old save keeps its original width,
+anything from one tile to the lot’s width, too many to bake. Such a room uses
+its catalog-width frame or animation: compose it as usual (chains, overlays and
+layers, all in catalog-width coordinates), then scale the picture horizontally
+to the room’s real width, nearest neighbor from its left edge. The reference
+reader returns that width as <code dir="auto">stretchTo</code>. The result approximates the web
+game, which redraws the room at its real width (its furniture and figures keep
+their spacing), so it is a fallback rather than a match.</p>
+<p>A shaft’s width is a small set: a legacy save keeps the narrower width canon
+used to have (stairs and escalators 4 tiles, the standard elevator 3, the
+express 4), and the atlas bakes those too, named with a <code dir="auto">w&lt;tiles&gt;</code> segment
+after the kind (<code dir="auto">transport/stairs/w4</code>, <code dir="auto">transport/escalator/w4</code>,
+<code dir="auto">shaft/elevatorStandard/w3/top</code>, <code dir="auto">car/elevatorExpress/w4/idle/notfull/s0</code>),
+on pages of their own after the scenery’s. <code dir="auto">lookupShaft</code> in the reference
+reader names them; a shaft at any other width (only a damaged save carries
+one) uses its catalog frames with <code dir="auto">stretchTo</code>. A legacy frame’s <code dir="auto">keys</code> carry
+its <code dir="auto">width</code>; a catalog-width frame’s carry none.</p>
+<p>Room variety in the web comes from each room’s floor, column and id, which no
+finite atlas can cover. The atlas bakes four sampled placements per kind (the
+metro, which fills the lot, has one); pick one per room, for example from its
+position, and keep it.</p>
+<p>The cinema’s marquee and screen read the animation clock. The atlas bakes
+each cinema frame at clock 0 and carries the rest as two <code dir="auto">cycles</code>: the
+marquee bulbs swap colors 4 times a second (<code dir="auto">marquee</code>, 2 steps) and the
+screen steps through its 5 frames 2.5 times a second (<code dir="auto">screen</code>), so together
+they repeat every 2 seconds. At <code dir="auto">t</code> seconds draw <code dir="auto">marquee</code> step
+<code dir="auto">floor(t * 4) % 2</code> and <code dir="auto">screen</code> step <code dir="auto">floor(t * 2.5) % 5</code> over the frame,
+then the occupant steps, and the room matches the game’s paint at that clock
+(the game’s clock never runs negative). The one exception is a clock within
+rounding (about 1e-13 s) of a screen step, where the game adds the room’s
+seed before it rounds down and can land on the next step a moment early.
+A closed cinema (its shutter down) carries no cycles. The game itself keeps
+whatever moment its last re-bake caught, so a frontend that animates them
+shows more motion than the game does.</p>
+<p>The crane’s motion never repeats in the game. Its animation is a sampled
+stretch (<code dir="auto">loop: false</code>); play it forward and back, or hold, as suits you.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="depth-layers">Depth layers</h2><a class="sl-anchor-link" href="#depth-layers"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Depth layers”</span></a></div>
+<p>A frontend that draws rooms with depth can use a room’s shell and its furniture
+separately: for example, a 2.5D cutaway that sets the furniture a little in
+front of the back wall. A room frame that supports this (and a lobby tile or
+entrance frame, below) carries an optional <code dir="auto">layers</code> field next to its
+<code dir="auto">parts</code>:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="json"><code><div class="ec-line"><div class="code"><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">layers</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span></div></div><div class="ec-line"><div class="code"><span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">"shell"</span><span style="--0:#D6DEEB;--1:#403F53">: [ { </span><span style="--0:#7FDBCA;--1:#096E72">"rect"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span><span style="--0:#FFFFFF;--1:#984E4D">...</span><span style="--0:#D6DEEB;--1:#403F53">}, </span><span style="--0:#7FDBCA;--1:#096E72">"dx"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#7FDBCA;--1:#096E72">"dy"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">0</span><span style="--0:#D6DEEB;--1:#403F53"> } ],</span></div></div><div class="ec-line"><div class="code"><span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">"furniture"</span><span style="--0:#D6DEEB;--1:#403F53">: [ </span><span style="--0:#FFFFFF;--1:#984E4D">...</span><span style="--0:#D6DEEB;--1:#403F53"> ],</span></div></div><div class="ec-line"><div class="code"><span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">"soft"</span><span style="--0:#D6DEEB;--1:#403F53">: [ </span><span style="--0:#FFFFFF;--1:#984E4D">...</span><span style="--0:#D6DEEB;--1:#403F53"> ],</span></div></div><div class="ec-line"><div class="code"><span class="indent">  </span><span style="--0:#7FDBCA;--1:#096E72">"chains"</span><span style="--0:#D6DEEB;--1:#403F53">: { </span><span style="--0:#7FDBCA;--1:#096E72">"occupants"</span><span style="--0:#D6DEEB;--1:#403F53">: { </span><span style="--0:#7FDBCA;--1:#096E72">"shell"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span><span style="--0:#FF6A83;--1:#A24848">null</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#FFFFFF;--1:#984E4D">...</span><span style="--0:#D6DEEB;--1:#403F53">], </span><span style="--0:#7FDBCA;--1:#096E72">"furniture"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span><span style="--0:#FF6A83;--1:#A24848">null</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#FFFFFF;--1:#984E4D">...</span><span style="--0:#D6DEEB;--1:#403F53">], </span><span style="--0:#7FDBCA;--1:#096E72">"soft"</span><span style="--0:#D6DEEB;--1:#403F53">: [</span><span style="--0:#FF6A83;--1:#A24848">null</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#FFFFFF;--1:#984E4D">...</span><span style="--0:#D6DEEB;--1:#403F53">] } }</span></div></div><div class="ec-line"><div class="code"><span style="--0:#D6DEEB;--1:#403F53">}</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="&quot;layers&quot;: {  &quot;shell&quot;: [ { &quot;rect&quot;: {...}, &quot;dx&quot;: 0, &quot;dy&quot;: 0 } ],  &quot;furniture&quot;: [ ... ],  &quot;soft&quot;: [ ... ],  &quot;chains&quot;: { &quot;occupants&quot;: { &quot;shell&quot;: [null, ...], &quot;furniture&quot;: [null, ...], &quot;soft&quot;: [null, ...] } }}"><div></div></button></div></figure></div>
+<p>A cab or the train carries <code dir="auto">front</code> in place of <code dir="auto">soft</code> (and the cab <code dir="auto">front</code>
+chain steps); see below.</p>
+<ul>
+<li><code dir="auto">shell</code> is the room with its furniture and seated people taken out: the
+ceiling, back wall, windows, wall art and floor band, plus whatever the game
+draws over the room after its furniture, such as the night scrim (on an
+empty home or workplace at night, and on a condo whose residents are
+asleep), the notice badge, a hotel room’s roaches (and an infested room’s
+grime) and a sleeping guest’s “z”, ceiling lights and glow washes drawn last
+(security, housekeeping, amusements), a cinema’s aisle lights and EXIT signs,
+the wedding hall’s petal row, and the metro’s exit stairs, platform and
+track. The aquatic center keeps its pool whole on the shell: the diver on
+the board and the swimmers in the pool stay there (they arrive as shell
+steps), and only the deck-chair loungers come forward as furniture (at the
+catalog’s size every attendee is a diver or a swimmer, so the chairs are
+empty).</li>
+<li><code dir="auto">furniture</code> holds the pixels that differ between the shell and the flat
+frame, transparent everywhere else.</li>
+<li><code dir="auto">chains</code> splits the frame’s chain step by step, under the same key
+(<code dir="auto">occupants</code>; a frame with no chain, such as an <code dir="auto">/away</code> frame, has none):
+<code dir="auto">shell</code> holds what the step changes on the shell (an office’s downlights or
+a condo’s ceiling light, switched on by the first occupant, or the aquatic
+center’s swimmers), <code dir="auto">furniture</code> holds the people who sit down. Each list
+starts with a null step 0 and is trimmed on its own, like a frame’s chain
+steps.</li>
+<li><code dir="auto">soft</code> (with its own steps in <code dir="auto">chains</code>) is an optional alternative to
+<code dir="auto">furniture</code>; see below.</li>
+</ul>
+<p>Each picture is a list of placed parts like <code dir="auto">parts</code> (a picture wider than a
+page, like the metro’s, is cut into column slices; an occupant step always
+fits one page, and the export refuses one that does not). To show <code dir="auto">n</code> visible
+occupants, draw with ordinary source-over blending, in this order:</p>
+<ol>
+<li>the <code dir="auto">shell</code> parts,</li>
+<li>the chain’s <code dir="auto">shell</code> steps <code dir="auto">1..min(n, len - 1)</code>, then the frame’s <code dir="auto">cycles</code>
+steps, if it has any,</li>
+<li>the <code dir="auto">furniture</code> parts,</li>
+<li>the chain’s <code dir="auto">furniture</code> steps <code dir="auto">1..min(n, len - 1)</code>.</li>
+</ol>
+<p>The result is the frame’s own <code dir="auto">parts</code> plus its chain steps <code dir="auto">1..n</code>, exactly.
+Pass the visible occupant count itself and clamp it to each list on its own:
+a depth list can run past the chain’s <code dir="auto">max</code> when a step changes only pixels
+the flat frame hides (a light behind a desk). A layered frame has at most one
+chain, plus any chain marked <code dir="auto">alternativeTo</code> it (split the same way, under its
+own key, and drawn in its place), and its overlays (only the parking space has
+any) draw after these four (and after a vehicle’s front, below), in front.
+Draw anything of your own that belongs between the wall and the furniture
+(walkers, a depth offset) between steps 2 and 3. Any list can be empty (a
+fully transparent picture).</p>
+<p>What that means for the pictures:</p>
+<ul>
+<li>The furniture layer holds only the pixels that differ. Where a piece of
+furniture happens to match the wall behind it, or where a mark drawn after
+the furniture covers it, the furniture layer is transparent and the shell
+shows that pixel. Once an occupant step puts a pixel in the furniture, the
+later steps keep it there (each step only adds), so a frontend that offsets
+the furniture moves that pixel with it even where a later step shows the
+shell’s color.</li>
+<li>A mark drawn after the furniture sits on the shell, so the furniture layer
+carries the furniture as the flat frame shows it (darkened under the night
+scrim).</li>
+<li>A soft shadow or glow drawn with the furniture (a restaurant’s candles, a
+hotel or condo lamp) is baked into <code dir="auto">furniture</code> as opaque pixels: the
+translucent paint over the wall behind it. Offset from the shell, it shows
+as a box of wall color. Use <code dir="auto">soft</code> for those rooms.</li>
+<li>The hotel’s roaches and its sleeping guest’s “z” draw after the furniture
+ends, so they sit on the shell, even the roach on the bed and the “z” over
+the sleeper.</li>
+<li>Structure drawn over the furniture sits on the shell and hides the furniture
+under it in both pictures: the metro’s platform deck covers the contact
+shadow under its benches and bins, and the cinema’s EXIT signs cover the
+seats they overlap. A frontend that offsets the furniture shows those pieces
+cut off where the structure covered them.</li>
+<li>The shell’s normal map is its own (it is a picture without the furniture).
+The furniture’s normals, and the soft furniture’s, come from the flat frame,
+masked to their pixels, like any other layer.</li>
+</ul>
+<p>The game marks the split in each room’s draw routine, and in the lobby and
+entrance art (<code dir="auto">src/render/pixelSprites/layers.ts</code>): one call where the shell
+ends and, in a room that draws over its furniture, one where the furniture
+ends and the marks drawn over it begin. A routine that draws some of its
+shell late, over furniture already in place, wraps that art in a third call
+(the recycling center’s deck curb and wall gauge). In the game the first two
+do nothing and the third only runs its draw, once. The
+export paints each split frame (and each occupant step) again with the marks
+live and records the canvas at them, once for the exact split and once more
+for the soft furniture; the flat frame comes from the ordinary paint, so
+adding layers never changes a frame’s pixels. The export also requires every
+kind that splits to have furniture in some frame, since a shell that still
+showed the furniture would compose back too.</p>
+<p>A frame has no <code dir="auto">layers</code>, and a frontend draws it flat, when:</p>
+<ul>
+<li>the room is vacant and shows its LEASE or SALE card (office, condo, studio,
+apartment), is closed and shows its shutter, or is gutted;</li>
+<li>it is a burning or unbuilt room (those are animations).</li>
+</ul>
+<p>Every room kind splits otherwise: office, condo, studio, apartment, the three
+hotel grades, fast food, restaurant, food hall, cinema, shop, amusements,
+boutique bay, fitness club, clinic, nightclub, spa, sky bar, daycare,
+security, medical center, housekeeping, party hall, wedding hall, aquatic
+center, metro station, recycling center, parking ramp and parking space. The
+recycling center’s chain is its <code dir="auto">fill</code>: the wall gauge (and its FULL cue)
+changes on the shell, the day’s pile in front, and its <code dir="auto">fillExact</code> chain
+splits the same way. The deck curb and the gauge
+draw after the machines, as the game draws them, and land on the shell; the
+furniture stops at the curb, which stays whole on the shell. The parking
+ramp’s furniture is the car parked at its foot. A parking space’s shell is the whole bay and its
+furniture list is empty: its car comes as a <code dir="auto">car&lt;i&gt;</code> overlay (and a dead
+space’s red X as <code dir="auto">dead</code>), which draws in front of everything.</p>
+<p>The lobby splits too, so a concourse can be drawn with depth like the rooms
+beside it. Every <code dir="auto">structure/lobby/...</code> tile carries <code dir="auto">layers</code>: the column,
+console, sky-lobby bench, chandelier and planter come forward, while the
+wall, windows, cornice, floor, carpet, sconce, framed print and the recessed
+panel above the console stay on the shell (the sconce and print tile has an
+empty furniture list). Each frame of the
+<code dir="auto">structure/entrance/...</code> animations carries its own <code dir="auto">layers</code> too: the facade,
+glass, awning, doors and carpet (or the service door and its plate) are the
+shell, and the palms, the potted plant, the reception desk and its attendant,
+and the doorman are the furniture. Neither has a chain, so a frontend draws
+the shell and then the furniture (or the soft furniture).</p>
+<p>The elevator cabs (<code dir="auto">car/...</code>) and the metro train (<code dir="auto">vehicle/metrotrain/...</code>)
+carry the people inside them, so they split three ways and add a <code dir="auto">front</code>
+picture (the cab with <code dir="auto">front</code> steps in its <code dir="auto">riders</code> chain), drawn after the
+furniture:</p>
+<ol start="5">
+<li>the <code dir="auto">front</code> parts,</li>
+<li>the chain’s <code dir="auto">front</code> steps <code dir="auto">1..min(n, len - 1)</code>.</li>
+</ol>
+<p>The shell is the interior seen through the doors or windows, the furniture
+the riders, and the front the vehicle around them: a cab’s door frames,
+center seam, FULL bar and lantern, and the train’s body, cut away where the
+saloon windows are, with the glints on its window glass. A frontend that sets
+the riders a little behind the front keeps them inside the vehicle. Like the
+furniture, the front holds the flat frame’s pixels where they differ from
+what is under them, so a cab’s translucent door frames carry the rider color
+they cover. The service cab’s kick plate and the express cab’s livery band
+run along the cab floor on the shell, behind the riders, as the game draws
+them: the riders’ legs and contact shadows cross every row of the band, and a
+band split partway along would tear where the layers part. No rider reaches
+the right side frame; the first rider’s contact shadow meets the left frame
+column, which the door frame over it (front) carries as the shadow color. A
+frame with a front has no <code dir="auto">soft</code> picture. The street cars and the garbage
+truck show no one inside and are drawn flat; <code dir="auto">data.depth</code> names the plane
+each draws on.</p>
+<p>The layers’ own images are packed on pages after the frame images’, so a
+frontend that ignores <code dir="auto">layers</code> reads the same frames, parts and pages as before
+they existed. The images added to frames that had already shipped (the
+recycling center’s <code dir="auto">fillExact</code> chain, flat and split, and the cinema’s
+<code dir="auto">cycles</code>) pack on pages after all of those, so they moved no older part and
+changed no older page. The same goes for the scenery, which joined the atlas later: its
+images pack on pages of their own between the older frames’ pages and the
+layers’. The layers’ pages come last, so their page numbers can change when a
+family is added; read them from the manifest, never from an older one. An
+entrance animation can carry <code dir="auto">soft</code> on some of its frames and not
+others (each frame splits on its own).</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="soft-furniture">Soft furniture</h3><a class="sl-anchor-link" href="#soft-furniture"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Soft furniture”</span></a></div>
+<p><code dir="auto">soft</code> is the furniture painted on a transparent background instead of over
+the shell, so its glows and soft shadows keep their transparency. Draw it in
+place of <code dir="auto">furniture</code> (and its <code dir="auto">chains</code> steps in place of the <code dir="auto">furniture</code>
+steps); the order is the same. Over the shell it looks the same to the eye,
+but translucent paint rounds a step or two differently on its own than over
+the wall. Marks the game draws over the furniture (the night scrim) land on
+the soft furniture only where it has pixels; the shell carries them everywhere
+else. An opaque mark drawn over the furniture (a hotel roach on the bed, a
+sleeping guest’s “z”, a notice badge) is therefore on both the shell and the
+soft furniture: offset the soft furniture and it shows twice. In <code dir="auto">furniture</code>
+the same mark stays on the shell only, leaving a gap in the furniture under
+it. In the current atlas 8% of the soft furniture’s pixels differ from the
+flat frame (each pixel counted once per occupant count it shows at), by at
+most 2 of 255 in any channel; the export prints this measure and refuses an
+atlas whose soft furniture strays more than 4 of 255 or misses a pixel of the
+furniture. Use <code dir="auto">furniture</code> when exact pixels matter, and <code dir="auto">soft</code> when the
+furniture moves away from the wall.</p>
+<p>A frame has no <code dir="auto">soft</code> when an occupant step would have to change a
+translucent soft pixel, which source-over cannot do (it can only paint over
+one), or when its soft pass fails; the export counts them and names the
+first few. In the current atlas
+that is about one layered frame in nine, where an occupant step changes a
+glow or a soft shadow in the restaurant, food hall, party hall, amusements,
+boutique bay, fitness club and nightclub; those frames offer <code dir="auto">furniture</code>
+only.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-world-outside-the-tower">The world outside the tower</h2><a class="sl-anchor-link" href="#the-world-outside-the-tower"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The world outside the tower”</span></a></div>
+<p>The scenery around the lot comes as its own frames, painted by the game’s
+scenery painters (<code dir="auto">src/render/excalibur/towerSceneryDraw.ts</code>), and
+<code dir="auto">data.scenery</code> publishes the game’s own placement table (<code dir="auto">sceneryPieces</code> in
+<code dir="auto">src/render/sceneryLayout.ts</code>) and the rules it seeds the rest by. Positions
+are in pixels at 1x: x from the lot’s left edge and y from the ground line
+(negative is up), for a frame’s top-left corner. <code dir="auto">lotTiles</code> is the lot’s width
+in tiles, <code dir="auto">tileW</code> a tile’s width and <code dir="auto">floorH</code> a floor’s height, in pixels.
+The game sizes the lot from the tower catalog’s world; both catalogs state the
+same one, and the atlas publishes its positions for it.
+Draw, back to front (the planes are the ones in
+<a href="#draw-order">Draw order</a>):</p>
+<ol>
+<li>The skyline, seeded by the tower (see below): solid rectangles in the two
+<code dir="auto">data.skylineFills</code> colors (the <code dir="auto">sky/skyline/&lt;far or near&gt;</code> frames are those
+fills), the far band first.</li>
+<li><code dir="auto">ground.dirt</code> and <code dir="auto">ground.line</code>: solid fills in their <code dir="auto">color</code>. The dirt
+spans <code dir="auto">x</code> to <code dir="auto">x + w</code> from y 0 down <code dir="auto">h</code> pixels; the ground line spans the
+same x and runs <code dir="auto">h</code> pixels from <code dir="auto">y</code>.</li>
+<li><code dir="auto">ground.strip</code>: one frame per lot tile at x <code dir="auto">tile * tileW</code> and <code dir="auto">y</code>, drawn
+left to right. Each frame is one column wider than <code dir="auto">tileW</code>, as the game
+paints it, and the next tile covers that column. The tower paves one span
+from its leftmost to its rightmost ground-floor room, widened by
+<code dir="auto">apronPadTiles</code> on each side and kept on the lot; a paved tile uses
+<code dir="auto">scenery/ground/pave/joint</code> when its index is a multiple of <code dir="auto">jointEvery</code>
+and <code dir="auto">scenery/ground/pave/plain</code> otherwise, and any other tile uses the
+grass frame <code dir="auto">ground.strip.grass[tile]</code> names.</li>
+<li><code dir="auto">ground.runs</code>, in order: the plaza sidewalk, the roundabout, the left road,
+the forecourt, the right sidewalk and the right road. Fill each run’s box
+(<code dir="auto">x</code>, <code dir="auto">y</code>, <code dir="auto">w</code>, <code dir="auto">h</code>) with copies of its frame placed at <code dir="auto">tileOriginX</code> plus
+whole multiples of the frame’s width, clipped to the box (the roundabout’s
+box holds exactly one copy). That puts every lane dash where the game has
+it, and the left road’s last column over the roundabout’s first, as the
+game draws it.</li>
+<li><code dir="auto">props</code>, in order: the fountain (an animation; its motions share no period,
+so its 24 frames at 0.1 s sample a stretch close to a loop), the two plaza
+lamps, the street lamp with its “375 ST” sign, and the planter. The lamps
+fade in through dusk and out through dawn (<code dir="auto">lamp.fadeIn</code> and
+<code dir="auto">lamp.fadeOut</code>, in hours, a straight ramp); the atlas carries them at 0,
+25, 50, 75 and 100 percent lit.</li>
+<li>The lot’s trees and bushes, seeded by the tower (see below).</li>
+</ol>
+<p>The props and plants stand apart from the tower and the ground, so a frontend
+that draws with depth can set each at its own distance.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="seeded-by-the-tower">Seeded by the tower</h3><a class="sl-anchor-link" href="#seeded-by-the-tower"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Seeded by the tower”</span></a></div>
+<p>The skyline and the plants are a pure function of the tower’s founding seed
+(the simulation’s initial RNG seed, fixed for the tower’s life), through this
+hash, where <code dir="auto">int32</code>, <code dir="auto">imul32</code>, <code dir="auto">^</code> and <code dir="auto">&gt;&gt;&gt;</code> are as in
+<code dir="auto">signature.rules.parkingRoll</code>:</p>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="text"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">hash01(n): h = int32(trunc(n)); h = imul32(h ^ (h &gt;&gt;&gt; 16), 0x45d9f3b);</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">           </span></span><span style="--0:#d6deeb;--1:#403f53">h = imul32(h ^ (h &gt;&gt;&gt; 16), 0x45d9f3b); h = h ^ (h &gt;&gt;&gt; 16);</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">           </span></span><span style="--0:#d6deeb;--1:#403f53">return (h as unsigned) / 2^32</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="hash01(n): h = int32(trunc(n)); h = imul32(h ^ (h >>> 16), 0x45d9f3b);           h = imul32(h ^ (h >>> 16), 0x45d9f3b); h = h ^ (h >>> 16);           return (h as unsigned) / 2^32"><div></div></button></div></figure></div>
+<p>The skyline (<code dir="auto">skyline</code>): for each band in <code dir="auto">bands</code>, a building at every tile
+<code dir="auto">t</code> from <code dir="auto">start - overscanTiles</code> while <code dir="auto">t &lt; lotTiles + overscanTiles</code>, stepping
+by <code dir="auto">step</code>. It is <code dir="auto">w.base + hash01(seed + t * w.key) * w.span</code> tiles wide and
+<code dir="auto">hFloors.base + hash01(seed + t * hFloors.key) * hFloors.span</code> floors tall
+(both fractional; <code dir="auto">w * tileW</code> by <code dir="auto">hFloors * floorH</code> pixels), with its left
+edge at x <code dir="auto">t * tileW</code> and its bottom on the ground line. The game draws each
+rectangle on its own in the band’s translucent <code dir="auto">frame</code> color, the far band
+first, so where two overlap the color deepens; it scales a solid fill to the
+fractional size with nearest sampling, with no rounding of its own.</p>
+<p>The plants (<code dir="auto">plants.rule</code>): a candidate at every tile <code dir="auto">t</code> from <code dir="auto">margin</code>
+while <code dir="auto">t &lt; lotTiles - margin</code>, stepping by <code dir="auto">step</code>. With <code dir="auto">r = hash01(seed * 3 + t)</code>, skip it when <code dir="auto">r &lt; skipBelow</code>; it is a bush when <code dir="auto">r &lt; bushBelow</code> and a
+tree otherwise. It stands on tile <code dir="auto">t + floor(hash01(seed + t * jitter.key) * jitter.span) + jitter.min</code>, scaled <code dir="auto">scale.base + hash01(seed + t * scale.key) * scale.span</code>. Its canvas is <code dir="auto">round(size.tiles * tileW * scale)</code> wide and
+<code dir="auto">round(size.floors * floorH * scale)</code> tall (<code dir="auto">plants.size</code>, by kind), centered on
+the tile’s left edge (x <code dir="auto">tile * tileW - w / 2</code>, which can land on a half pixel;
+the game does not snap it, and draws with nearest sampling),
+with its bottom edge at <code dir="auto">bottomY</code> (its last row one above). The game paints a
+plant at that size, <code dir="auto">w</code> by <code dir="auto">h</code>, with <code dir="auto">plants.paint</code> (rectangles filled in
+order, <code dir="auto">round</code> and <code dir="auto">ceil</code> as in JavaScript):</p>
+<ul>
+<li>a tree, with <code dir="auto">ts = seed + tile</code>: the trunk <code dir="auto">tw = max(trunk.minW, round(w * trunk.w))</code> wide and <code dir="auto">th = round(h * trunk.h)</code> tall at x <code dir="auto">round(w / 2 - tw / 2)</code>, y <code dir="auto">h - th</code>; then each <code dir="auto">canopy</code> layer <code dir="auto">i</code> at x `round(w * (1 - c.w) / 2)
+<ul>
+<li>round((hash01(ts + i * jitterKey) - 0.5) * 2)<code dir="auto">, y </code>round(h - th - h *
+c.y)<code dir="auto">, </code>round(w * c.w)<code dir="auto">wide and</code>round(h * canopyH)` tall;</li>
+</ul>
+</li>
+<li>a bush: <code dir="auto">base</code> at x 0, y <code dir="auto">round(h * base.y)</code>, <code dir="auto">w</code> wide and <code dir="auto">ceil(h * base.h)</code> tall, then <code dir="auto">top</code> at x <code dir="auto">round(w * top.x)</code>, y 0, <code dir="auto">round(w * top.w)</code>
+wide and <code dir="auto">round(h * top.h)</code> tall.</li>
+</ul>
+<p>The <code dir="auto">scenery/tree/v&lt;0-7&gt;</code> and <code dir="auto">scenery/bush</code> frames are those plants at their
+base size (trees seeded 0 to 7), for a frontend that would rather scale a
+frame. A plant is hidden while the paved span reaches within
+<code dir="auto">clearTiles</code> tiles of it: it shows only when <code dir="auto">tile + clearTiles</code> is at most
+the span’s first tile or <code dir="auto">tile - clearTiles</code> is at least the tile after its
+last.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="the-sky">The sky</h3><a class="sl-anchor-link" href="#the-sky"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The sky”</span></a></div>
+<p><code dir="auto">data.sky</code> gives the sky’s motion in the game’s own terms. The sky is drawn
+in screen space, sized to the view (<code dir="auto">viewW</code> by <code dir="auto">viewH</code> pixels), behind the
+world, in this order:</p>
+<ol>
+<li>The background: <code dir="auto">data.skyColors[floor(hour) * background.columnsPerHour]</code>,
+the color of the whole game hour (it changes on the hour).</li>
+<li>The sun (<code dir="auto">sky/sun</code>) from <code dir="auto">sun.rise</code> (inclusive) to <code dir="auto">sun.set</code> (exclusive),
+and the moon (<code dir="auto">sky/moon</code>) for the rest of the day, along the same arc. With
+the time as <code dir="auto">hour + minute / 60</code>, at fraction <code dir="auto">p</code> of its stretch (the day
+from rise to set, or the night from set to rise) the disc’s center (the
+frame’s <code dir="auto">anchor</code>) is at x
+<code dir="auto">p * viewW</code> and y <code dir="auto">viewH * baseY - sin(p * PI) * viewH * lift</code>.</li>
+<li>The clouds, on cloudy and rainy days: <code dir="auto">clouds.weathers</code> maps the simulation’s
+weather (<code dir="auto">cloudy</code> or <code dir="auto">rain</code>) to its frames, <code dir="auto">sky/cloud/&lt;frames&gt;/&lt;i&gt;</code>, one
+per entry in <code dir="auto">clouds.list</code>. At <code dir="auto">t</code> seconds of the game’s animation clock
+(never negative), cloud <code dir="auto">i</code>’s frame <code dir="auto">anchor</code> is at x <code dir="auto">((offset % (viewW + pad)) + t * speed) % (viewW + pad) - pad / 2</code> and y <code dir="auto">viewH * top + row * viewH * band</code>, with <code dir="auto">%</code> the floating-point remainder.</li>
+</ol>
+<p>On rainy days the game also draws <code dir="auto">sky.rain</code> in front of the world, over the
+open sky only: the view above the ground line (the bottom of floor 1), less
+each above-ground floor row’s runs of built tiles, so no rain falls on the
+building or the basements (a wedding hall’s garden crown is open sky). Inside
+that clip it draws a <code dir="auto">tint</code> fill, then <code dir="auto">count</code> streaks stroked
+<code dir="auto">lineWidth</code> wide in <code dir="auto">stroke</code>, streak <code dir="auto">i</code> from x <code dir="auto">((i * xMul) &gt;&gt;&gt; 0) % viewW</code>
+(the product taken as a double, then wrapped to an unsigned 32-bit integer)
+and y <code dir="auto">((i * yStep) % viewH + t * speed) % viewH</code>, to <code dir="auto">dx</code>, <code dir="auto">dy</code> pixels
+further.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="draw-order">Draw order</h3><a class="sl-anchor-link" href="#draw-order"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Draw order”</span></a></div>
+<p><code dir="auto">data.depth</code> lists the game’s draw planes back to front, each with its <code dir="auto">z</code>
+(the game’s Excalibur z; higher draws in front) and the frame families on it:
+the sky, the two skyline bands, the dirt and ground line, the ground strip,
+the ground runs and roundabout, the props and plants, the fire escapes and
+crane, the floor and lobby tiles, the rooms, the ambient walkers, the burning
+and unbuilt rooms, the parking ramp’s cars, the metro train and garbage truck,
+the shafts and stairs, the cabs, the commuting crowd and the overlays (the
+rain draws there, in front of everything). Things
+on one plane draw in the order the game adds them. People appear on two
+planes: the walkers pacing the floors and lobby, and the crowd in front of
+them, which is every commuter the simulation moves, the people waiting at an
+elevator on the lobby floor among them. A crowd figure is the
+<code dir="auto">person/walker/...</code> frame: <code dir="auto">shirt&lt;i&gt;</code> with i = |seed| mod the shirt count,
+<code dir="auto">staff</code> for staff, and <code dir="auto">fedUp</code> once a tenant (never staff) has waited more
+than 25 seconds on its current call, the game’s cue that they are fed up.
+Its feet stand 3 px above the bottom of its floor (at its fractional floor
+while it climbs stairs), and a tenant riding a cab is hidden, since the cab’s
+riders show them.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="the-app-icon">The app icon</h2><a class="sl-anchor-link" href="#the-app-icon"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “The app icon”</span></a></div>
+<p><code dir="auto">icon/</code> holds the game’s app icon, drawn in code like every sprite
+(<code dir="auto">scripts/app-icon-svg.mjs</code>): a stepped art-deco tower with lit windows and a
+setting sun on a dusk sky. <code dir="auto">icon.svg</code> bleeds to every edge and
+<code dir="auto">icon-maskable.svg</code> keeps the tower inside the maskable safe zone (the center
+80 percent). The PNGs are the ones the web app ships, kept here in <code dir="auto">assets/app-icon/</code>: <code dir="auto">icon-1024x1024.png</code>
+(the desktop master), <code dir="auto">pwa-512x512.png</code>, <code dir="auto">pwa-maskable-512x512.png</code>,
+<code dir="auto">pwa-192x192.png</code>, <code dir="auto">apple-touch-icon.png</code> (180) and <code dir="auto">favicon.png</code> (64),
+rasterized from the same mark by the web repository’s <code dir="auto">scripts/gen-pwa-icons.mjs</code>. They fall under
+the same asset license as the rest of the atlas.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="how-it-is-checked">How it is checked</h2><a class="sl-anchor-link" href="#how-it-is-checked"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “How it is checked”</span></a></div>
+<p>The export’s own pre-flight composes atlas frames and
+layers for the sample room signatures with the reference reader, paints the
+same rooms through the game’s own paint functions (<code dir="auto">src/render/regionPaint.ts</code>,
+which the region compositor and the burning-room canvas call), and requires an
+exact pixel match. Settled rooms are painted at two region offsets; burning and
+unbuilt rooms at the per-unit origin the game paints them at. A control case compares two different
+pictures and must report a mismatch. The bake refuses to write a layer that
+would not compose back to the game’s pixels. A unit test rebuilds every frame
+and layer from the packed pages through the manifest.</p>
+<p>A room frame with depth layers is also composed through its depth split (the
+shell and its occupant steps, then its cycles, then the furniture and its
+occupant steps, then a vehicle’s front and its steps) and held to the same
+paint. The samples include recycling fills between the eighths and cinemas at
+clocks other than 0. The bake also recomposes every cinema frame at each
+pairing of its marquee and screen steps, empty and at its full house (and at
+every count in between at one pairing), flat and through its exact depth
+layers (not the soft furniture, which only approximates the frame), and
+requires the game’s paint at a clock that shows that pairing; a unit test holds that the recycling and cinema art read their
+fill and clock only through the breaks and cycles the atlas carries. After packing,
+the export rebuilds every layered frame from the pages through the
+manifest, shell then furniture (then a vehicle’s front) with their steps at
+every occupant count, and requires its flat frame’s pixels. It also measures
+how far the soft furniture drifts from the flat frame, prints the share of
+pixels and the largest channel difference, and refuses an atlas whose soft
+furniture strays past the limit, misses a pixel of the furniture, or (in a
+full export) is missing from every frame.</p>
+<p>The same check covers the other families (<code dir="auto">verifyExtras.ts</code>): a whole express
+and standard shaft rebuilt from their floor pieces (skip floor included), cabs
+with composed riders, a walker, lobby tiles, entrance poses, a fire escape,
+the sky strip and the scenery (a fountain frame, the street lamp and sign, a
+paved ground tile and the road), each against the game’s draw call with the
+game’s arguments. The lobby tiles and entrance poses are also composed through
+their depth layers.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="not-in-the-atlas-yet">Not in the atlas yet</h2><a class="sl-anchor-link" href="#not-in-the-atlas-yet"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore>Section titled “Not in the atlas yet”</span></a></div>
+<p>Event cameos (Santa, the VIP limo, the thief, the explosion) are not exported
+yet (<a href="https://github.com/Verticopolis/components/issues/6">Verticopolis/components#6</a>).</p>
+</div><footer class="sl-flex astro-ddtxxk7k"><div class="meta sl-flex astro-ddtxxk7k"></div><div class="pagination-links print:hidden astro-b5raizh3" dir="ltr"><a href="/pr-preview/pr-155/docs/audio/" rel="prev" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg><span class="astro-b5raizh3">Previous<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Audio</span></span></a></div></footer></div></div></main></div></div></div></div></body></html>
