@@ -140,6 +140,8 @@ describe("ToneAudioEngine: the player leaving the page", () => {
   it("carries a handed-over track on from its beat, once the player is back to hear it", () => {
     vi.setSystemTime(50_000);
     eng.setProgram("splash");
+    vi.advanceTimersByTime(800); // the crossfade's swap
+    vi.setSystemTime(50_000);
     eng.setAway(true);
     transport.seconds = 0.2;
     eng.continueMusic(6, 48_000);
@@ -151,6 +153,16 @@ describe("ToneAudioEngine: the player leaving the page", () => {
     eng.setAway(true);
     eng.setAway(false);
     expect(transport.seconds).toBe(1); // taken once
+  });
+
+  it("waits for a program swap to build the new track before it takes a handover", () => {
+    vi.setSystemTime(50_000);
+    eng.setProgram("splash");
+    transport.seconds = 0.2;
+    eng.continueMusic(20, 50_000);
+    expect(transport.seconds).toBe(0.2); // the old track is still fading out
+    vi.advanceTimersByTime(800);
+    expect(transport.seconds).toBeCloseTo(20.8 % programFor("splash").loopEnd);
   });
 
   it("reads how far into its loop the music is", () => {

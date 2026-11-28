@@ -258,7 +258,8 @@ export class ToneAudioEngine {
     this.takeHandover();
   }
   private takeHandover(): void {
-    if (this.started && !this.away) this.clock.join(Date.now());
+    // A swap in progress builds the new track first, so the beat lands on its loop.
+    if (this.started && !this.away && this.swapTimer === null) this.clock.join(Date.now());
   }
 
   /** Player volume levels, 0..1 each (clamped, ramped). Safe before start().
@@ -276,10 +277,9 @@ export class ToneAudioEngine {
     this.sfxBus?.gain.rampTo(this.sfxVolume * this.sfxVolume, 0.08);
   }
 
-  /** Choose which composed track plays: `"splash"` on the start screen,
-   *  `"game"` in the tower. Safe before start() (stored, applied on build).
-   *  Live, it CROSSFADES so the splash theme flows into the in-game bed instead
-   *  of cutting. A repeat of the current program is a no-op. */
+  /** Choose which composed track plays: `"splash"` on the start screen, `"game"` in the tower.
+   *  Safe before start() (stored, applied on build). Live, it crossfades so the splash theme
+   *  flows into the in-game bed. A repeat of the current program is a no-op. */
   setProgram(program: ProgramKind): void {
     if (program === this.program) return;
     this.program = program;
@@ -296,6 +296,7 @@ export class ToneAudioEngine {
     this.swapTimer = setTimeout(() => {
       this.swapTimer = null;
       this.buildMusicPart();
+      this.takeHandover();
       this.musicGain?.gain.rampTo(this.musicLevel, FADE);
       this.perc?.percGain.gain.rampTo(this.musicLevel, FADE);
     }, FADE * 1000);
@@ -353,8 +354,7 @@ export class ToneAudioEngine {
    *  prior part first so a switch never stacks two tracks. */
   private buildMusicPart(): void {
     if (!this.arp || !this.bassVoice || !this.hook) return;
-    // One guard over the whole rebuild: if construction throws, musicPart stays
-    // null (never stacked) and the crossfade still swells the gain back.
+    // One guard: if construction throws, musicPart stays null and the crossfade still swells back.
     try {
       this.musicPart?.stop();
       this.musicPart?.dispose();
